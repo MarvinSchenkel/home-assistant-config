@@ -1,0 +1,50 @@
+---
+alias: areas_livingroom_lights_off
+description: Turns the livingroom lights off when not motion has been detected for a while or when we watch tv
+mode: single
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_livingroom
+    to: 'off'
+    for:
+      seconds: 900
+  - platform: state
+    entity_id: sensor.pir_livingroom_luminance
+  - platform: state
+    entity_id: variable.livingroom_current_scene
+    to: 'movie'
+  - platform: state
+    entity_id: variable.livingroom_darklight
+    to: 'light'
+condition:
+  - condition: state
+    entity_id: group.living_room_lights
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.pir_livingroom
+        state: 'off'
+        for:
+          seconds: 900
+      - condition: state
+        entity_id: variable.livingroom_current_scene
+        state: 'movie'
+      - condition: state
+        entity_id: sensor.livingroom_darklight
+        state: 'light'
+action:
+  - service: switch.turn_off
+    entity_id:
+      - switch.circadian_lighting_livingroom_ceiling
+      - switch.circadian_lighting_livingroom_corner
+      - switch.circadian_lighting_livingroom_dinnerkitchen    
+  - service: light.turn_off
+    entity_id: group.living_room_lights

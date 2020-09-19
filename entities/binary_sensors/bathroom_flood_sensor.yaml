@@ -1,0 +1,6 @@
+platform: template
+sensors:
+  bathroom_flood:
+    value_template: >
+      {{  states("sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood") | int > 1 
+          and states("sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood") | int < 3  }}

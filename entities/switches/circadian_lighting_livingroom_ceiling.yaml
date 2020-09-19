@@ -1,0 +1,5 @@
+platform: circadian_lighting
+name: livingroom_ceiling
+lights_brightness:
+  - light.fibaro_ceiling
+max_brightness: 12

@@ -1,0 +1,5 @@
+rest_command:
+  bed_flat_to_chill:
+    url: !secret rest_bed_to_chill
+  bed_chill_to_flat:
+    url: !secret rest_bed_to_flat

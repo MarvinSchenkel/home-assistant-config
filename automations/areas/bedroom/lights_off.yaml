@@ -1,0 +1,47 @@
+---
+alias: areas_bedroom_lights_off
+description: Turns the bedroom lights off when not motion has been detected for a while or when we go to sleep
+mode: single
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_bedroom
+    to: 'off'
+    for:
+      seconds: 60
+  - platform: state
+    entity_id:
+      - sensor.marvin_status
+      - sensor.laura_status
+    to: 'Slaapt'
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.pir_bedroom
+        state: 'off'
+        for:
+          seconds: 60
+      - condition: state
+        entity_id: sensor.marvin_status
+        state: 'Slaapt'
+      - condition: state
+        entity_id: sensor.laura_status
+        state: 'Slaapt'
+action:
+  - service: switch.turn_off
+    data:
+      entity_id:
+        - switch.circadian_lighting_bedroom
+  - service: light.turn_off
+    data:
+      entity_id: 
+        - light.bedside_left
+        - light.bedside_right
+      transition: 5

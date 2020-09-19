@@ -1,0 +1,33 @@
+alias: 'script_play_random_music'
+sequence:
+  - service: media_player.shuffle_set
+    data:      
+      shuffle: true
+    data_template:
+      entity_id: '{{ sonos_entity }}'
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: '{{ genre == "normal" }}'
+      sequence:
+        - service: media_player.select_source
+          data_template:
+            entity_id: '{{ sonos_entity }}'
+            source: '{{ ["Ambient / Relax", "Deep", "Trance", "Progressive", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Coffee Club"] | random }}'
+    - conditions:
+        - condition: template
+          value_template: '{{ genre == "chill" }}'
+      sequence:
+        - service: media_player.select_source
+          data_template:
+            entity_id: '{{ sonos_entity }}'
+            source: '{{ ["Ambient / Relax", "Chill step", "Chillout Lounge", "Chillout Lounge", "Lounge - Soft House", "Lounge - Soft House", "The Wind Down"] | random }}'  
+    - conditions:
+        - condition: template
+          value_template: '{{ genre == "morning" }}'
+      sequence:
+        - service: media_player.select_source
+          data_template:
+            entity_id: '{{ sonos_entity }}'
+            source: '{{ ["Meditative Guitar", "Ambient Relaxation"] | random }}'
+      

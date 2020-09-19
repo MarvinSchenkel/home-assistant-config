@@ -1,0 +1,23 @@
+---
+description: Mark person as just left based on the device tracker
+alias: presence_just_left
+mode: single
+trigger:
+  - platform: state
+    entity_id: device_tracker.ms_iphonexs
+    from: 'home'
+    to: 'not_home'
+  - platform: state
+    entity_id: device_tracker.laura_la
+    from: 'home'
+    to: 'not_home'
+action:
+  - service: input_select.select_option
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'device_tracker.ms_iphonexs' %}
+          input_select.marvin_status_dropdown
+        {% else %}
+          input_select.laura_status_dropdown
+        {% endif %}
+      option: Net weg

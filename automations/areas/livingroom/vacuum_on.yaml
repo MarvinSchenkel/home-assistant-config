@@ -1,0 +1,29 @@
+---
+description: Turn on our Roborock when we have left our house
+alias: areas_livingroom_vacuum_on
+mode: queued
+trigger:
+  - platform: state
+    entity_id: input_select.marvin_status_dropdown
+    to: 'Weg'
+  - platform: state
+    entity_id: input_select.laura_status_dropdown
+    to: 'Weg'
+condition:
+  condition: and
+  conditions:
+    - condition: state
+      entity_id: input_select.marvin_status_dropdown
+      state: 'Weg'
+    - condition: state
+      entity_id: input_select.laura_status_dropdown
+      state: 'Weg'
+    - condition: state
+      entity_id: vacuum.xiaomi_vacuum_cleaner
+      state: 'docked'
+      for:
+        hours: 6
+action:
+  - service: vacuum.start
+    data:
+      entity_id: vacuum.xiaomi_vacuum_cleaner

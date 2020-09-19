@@ -1,0 +1,61 @@
+# https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/rooms.html
+
+rooms:
+  - name: Woonkamer
+    icon: mdi:sofa
+    light: group.living_room_lights
+    temperature: sensor.pir_livingroom_temperature
+    motion: binary_sensor.pir_livingroom
+    media_player: media_player.living_room
+    vacuum:
+      entity: vacuum.xiaomi_vacuum_cleaner
+      advanced_view: 'true'
+    more_entities:
+      entities:
+        - entity: sensor.pir_livingroom_battery_level
+        - entity: sensor.pir_livingroom_luminance
+        - entity: variable.livingroom_darklight
+
+  - name: Slaapkamer
+    icon: fas:bed
+    light: group.bedroom_lights
+    temperature: sensor.pir_bedroom_temperature
+    motion: binary_sensor.pir_bedroom
+    media_player: media_player.bedroom
+    more_entities:
+      entities:
+        - entity: sensor.pir_bedroom_battery_level
+        - entity: sensor.pir_bedroom_luminance
+        - entity: variable.bedroom_darklight
+
+  - name: Badkamer
+    icon: mdi:shower
+    light: light.fibaro_bathroom
+    temperature: sensor.pir_bathroom_temperature
+    motion: binary_sensor.pir_bathroom
+    media_player: media_player.bathroom
+    more_entities:
+      entities:
+        - entity: sensor.pir_bathroom_battery_level
+        - entity: sensor.pir_bathroom_luminance
+
+  - name: Hal
+    icon: mdi:key
+    light: light.fibaro_hallway
+    temperature: sensor.pir_hallway_temperature
+    motion: binary_sensor.pir_hallway
+    more_entities:
+      entities:
+        - entity: sensor.pir_hallway_battery_level
+        - entity: sensor.pir_hallway_luminance
+        - entity: variable.hallway_darklight
+
+  - name: WC
+    icon: mdi:paper-roll
+    light: light.fibaro_wc
+    temperature: sensor.pir_wc_temperature
+    motion: binary_sensor.pir_wc
+    more_entities:
+      entities:
+        - entity: sensor.pir_wc_battery_level
+        - entity: sensor.pir_wc_luminance

@@ -1,0 +1,36 @@
+---
+alias: areas_bathroom_lights_off
+description: Turns the bathroom lights off when not motion has been detected for a while
+mode: single
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_bathroom
+    to: 'off'
+    for:
+      seconds: 90
+condition:
+  - condition: state
+    entity_id: light.fibaro_bathroom
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.pir_bathroom
+    state: 'off'
+    for:
+      seconds: 90
+  # Nobody is showering
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.bathroom_flood
+        state: 'off'
+action:
+  service: light.turn_off
+  data:
+    entity_id: light.fibaro_bathroom

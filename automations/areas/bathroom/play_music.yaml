@@ -1,0 +1,79 @@
+---
+alias: areas_bathroom_play_music
+description: Play music automatically in the bathroom based on several scenarios
+mode: single
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_bathroom    
+  - platform: state
+    entity_id: sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood
+  - platform: state
+    entity_id: sensor.marvin_status
+    to: 'Net wakker'
+  - platform: state
+    entity_id: sensor.laura_status
+    to: 'Net wakker'
+condition:
+  - condition: state
+    entity_id: binary_sensor.pir_bathroom
+    state: 'on'  
+  - condition: or
+    conditions:
+      # Morning routine during weekdays
+      - condition: and
+        conditions:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: sensor.marvin_status
+            state: 'Net wakker'
+          - condition: state
+            entity_id: sensor.laura_status
+            state: 'Net wakker'
+        - condition: state
+          entity_id: binary_sensor.workday
+          state: 'on'
+      # Shower is on and when no music is playing already
+      - condition: and
+        conditions:
+          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+          - condition: time
+            before: "22:00:00"
+          - condition: state
+            entity_id: binary_sensor.bathroom_flood
+            state: 'on'
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: media_player.bathroom
+                state: 'paused'
+              - condition: state
+                entity_id: media_player.bathroom
+                state: 'idle'  
+action:
+  - choose:
+      # Play normal music when showering
+      - conditions:
+          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+          - condition: time
+            before: "22:00:00"
+          - condition: state
+            entity_id: binary_sensor.bathroom_flood
+            state: 'on'
+        sequence:
+          - service: script.play_random_music
+            data:
+              sonos_entity: media_player.bathroom
+              genre: 'normal'
+    # Else, play a chill morning music list
+    default:
+      - service: script.play_random_music
+        data:
+          sonos_entity: media_player.bathroom
+          genre: 'morning'

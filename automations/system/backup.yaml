@@ -1,0 +1,11 @@
+---
+description: Create a backup of Home assistant every night
+alias: system_backup
+mode: single
+trigger:
+  platform: time
+  at: '02:00:00'
+action:
+  - service: hassio.snapshot_full
+    data_template:
+      name: Automated Backup {{ now().strftime('%Y-%m-%d') }}

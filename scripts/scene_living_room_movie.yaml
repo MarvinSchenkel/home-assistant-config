@@ -1,0 +1,6 @@
+alias: "Movie scene"
+sequence:
+  - service: variable.set_variable
+    data:
+      variable: livingroom_current_scene
+      value: 'movie'

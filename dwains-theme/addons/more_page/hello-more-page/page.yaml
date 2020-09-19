@@ -1,0 +1,3 @@
+- type: entity
+  name: Handmatige lampen
+  entity: input_boolean.manual_lights

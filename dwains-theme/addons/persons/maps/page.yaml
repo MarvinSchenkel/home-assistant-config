@@ -1,0 +1,5 @@
+# dwains_theme
+- type: map
+  aspect_ratio: 16x9
+  entities:
+     - {{ (data | fromjson)['map_tracker'] }}

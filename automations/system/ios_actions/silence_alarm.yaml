@@ -1,0 +1,11 @@
+---
+description: Silence the alarm based on an iOS action
+alias: system_ios_actions_silence_alarm
+mode: single
+trigger:
+  platform: event
+  event_type: ios.action_fired
+  event_data:
+      actionName: alarm_off
+action:
+  service: script.alarm_off

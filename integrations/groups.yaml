@@ -1,0 +1,12 @@
+group:
+  living_room_lights:
+    entities:
+      - light.fibaro_kitchen
+      - light.fibaro_dinner
+      - light.fibaro_ceiling
+      - light.corner_lamp
+
+  bedroom_lights:
+    entities:
+      - light.bedside_left
+      - light.bedside_right

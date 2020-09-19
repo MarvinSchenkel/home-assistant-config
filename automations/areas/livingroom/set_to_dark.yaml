@@ -1,0 +1,18 @@
+---
+description: "Set a variable to dark to keep track of whether it is light or dark"
+alias: areas_livingroom_set_to_dark
+mode: queued
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: template
+    value_template: '{{ states("sensor.pir_livingroom_luminance") | int  < 10 }}'
+condition:
+  - '{{ states("sensor.pir_livingroom_luminance") | int  < 10 }}'
+action:
+  service: variable.set_variable
+  data:
+    variable: livingroom_darklight
+    value: 'dark'

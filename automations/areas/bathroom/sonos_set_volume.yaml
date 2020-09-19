@@ -1,0 +1,48 @@
+---
+description: Set volume of sonos based on motion or water sensor
+alias: areas_bathroom_sonos_set_volume
+mode: queued
+trigger:
+  - platform: state
+    entity_id: binary_sensor.pir_bathroom
+  - platform: state
+    entity_id: sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+condition:
+  - condition: state
+    entity_id: binary_sensor.pir_bathroom
+    state: 'on'
+action:
+  - choose:
+    - conditions:
+        - condition: numeric_state
+          entity_id: sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood
+          above: 1
+          below: 3
+      sequence:
+        - service: media_player.volume_set
+          data:
+            entity_id: media_player.bathroom
+            volume_level: 0.45
+    - conditions:
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: sensor.marvin_status
+              state: 'Net wakker'
+            - condition: state
+              entity_id: sensor.laura_status
+              state: 'Net wakker'
+      sequence:
+        - service: media_player.volume_set
+          data:
+            entity_id: media_player.bathroom
+            volume_level: 0.09
+    default:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.bathroom
+          volume_level: 0.25

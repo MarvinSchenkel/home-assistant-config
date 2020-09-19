@@ -1,0 +1,6 @@
+platform: workday
+name: holiday
+country: NL
+workdays:
+  - holiday
+excludes: []

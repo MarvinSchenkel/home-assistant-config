@@ -1,0 +1,25 @@
+---
+description: Mark a person as extended away, 24h after they have gone
+alias: presence_extended_away
+mode: single
+trigger:
+  - platform: state
+    entity_id: input_select.marvin_status_dropdown
+    to: 'Weg'
+    for:
+      hours: 24
+  - platform: state
+    entity_id: input_select.laura_status_dropdown
+    to: 'Weg'
+    for:
+      hours: 24
+action:
+  - service: input_select.select_option
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'input_select.marvin_status_dropdown' %}
+          input_select.marvin_status_dropdown
+        {% else %}
+          input_select.laura_status_dropdown
+        {% endif %}
+      option: Lang weg

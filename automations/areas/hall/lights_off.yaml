@@ -1,0 +1,52 @@
+---
+alias: areas_hallway_lights_off
+description: Turns the hallway lights on when motion has been detected or when we go to sleep
+mode: single
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_hallway
+    to: 'off'
+    for: 
+      seconds: 80
+  - platform: state
+    entity_id:
+      - sensor.marvin_status
+      - sensor.laura_status
+    to: 'Slaapt'
+  - platform: state
+    entity_id: variable.livingroom_current_scene
+    to: 'movie'
+condition:
+  - condition: state
+    entity_id: light.fibaro_hallway
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.pir_hallway
+        state: 'off'
+        for:
+          seconds: 80
+      - condition: state
+        entity_id: sensor.marvin_status
+        state: 'Slaapt'
+      - condition: state
+        entity_id: sensor.laura_status
+        state: 'Slaapt'
+      - condition: state
+        entity_id: variable.livingroom_current_scene
+        state: 'movie'
+action:
+  # - service: switch.turn_off
+  #   data:
+  #     entity_id: switch.circadian_lighting_hall
+  - service: light.turn_off
+    data:
+      entity_id: light.fibaro_hallway

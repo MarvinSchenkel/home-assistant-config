@@ -1,0 +1,33 @@
+---
+description: Mark person as home 15 minutes after arrival
+alias: presence_home
+mode: single
+trigger:
+  - platform: state
+    entity_id: input_select.marvin_status_dropdown
+    to: 'Net thuis'
+    for:
+      minutes: 15
+  - platform: state
+    entity_id: input_select.laura_status_dropdown
+    to: 'Net thuis'
+    for:
+      minutes: 15
+  - platform: state
+    entity_id: input_select.marvin_status_dropdown
+    from: 'Net weg'
+    to: 'Net thuis'
+  - platform: state
+    entity_id: input_select.laura_status_dropdown
+    from: 'Net weg'
+    to: 'Net thuis'
+action:
+  - service: input_select.select_option
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'input_select.marvin_status_dropdown' %}
+          input_select.marvin_status_dropdown
+        {% else %}
+          input_select.laura_status_dropdown
+        {% endif %}
+      option: Thuis

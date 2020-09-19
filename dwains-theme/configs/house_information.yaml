@@ -1,0 +1,7 @@
+# https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/house_information.html
+
+house_information:
+  favorites:
+    - entity: binary_sensor.pir_hallway
+      icon_on: mdi:bell
+      icon_off: mdi:bell-outline

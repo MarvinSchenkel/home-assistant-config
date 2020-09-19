@@ -1,0 +1,25 @@
+---
+description: Mark person as awake, 40 minutes after begin just awake
+alias: presence_awake
+mode: queued
+trigger:
+  - platform: state
+    entity_id: input_select.marvin_sleep_status_dropdown
+    to: 'Net wakker'
+    for:
+      minutes: 40
+  - platform: state
+    entity_id: input_select.laura_sleep_status_dropdown
+    to: 'Net wakker'
+    for:
+      minutes: 40
+action:
+  - service: input_select.select_option
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'input_select.marvin_sleep_status_dropdown' %}
+          input_select.marvin_sleep_status_dropdown
+        {% else %}
+          input_select.laura_sleep_status_dropdown
+        {% endif %}
+      option: Wakker

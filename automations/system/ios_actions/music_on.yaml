@@ -1,0 +1,11 @@
+---
+description: Play music based on an iOS action
+alias: system_ios_actions_music_on
+mode: single
+trigger:
+  platform: event
+  event_type: ios.action_fired
+  event_data:
+      actionName: music_on
+action:
+  - service: script.play_random_music_living_room

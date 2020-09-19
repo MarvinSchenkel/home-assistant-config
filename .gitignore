@@ -1,0 +1,34 @@
+# Generic ignores
+*.log
+*.db
+*.db-shm
+*.db-wal
+*.pyc
+._*
+__pycache__
+*.sqlite
+*.png
+*.jpg
+
+# Ignore folders
+.storage
+.cloud
+.google.token
+.vscode
+android
+config_files
+deps
+tts
+scripts/alarm
+
+# Ignore specific files
+zwcfg_*
+.ps4*
+zwscene.xml
+options.xml
+OZW_Log.txt
+
+# Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
+ip_bans.yaml
+secrets.yaml
+known_devices.yaml

@@ -1,0 +1,21 @@
+sequence:
+  - condition: and
+    conditions:
+      - condition: template
+        value_template: "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+      - condition: template
+        value_template: "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+      - condition: template
+        value_template: "{{ not is_state('media_player.living_room', 'playing') }}"
+  - service: media_player.shuffle_set
+    data:
+      entity_id: media_player.living_room
+      shuffle: true
+  - service: media_player.select_source
+    data_template:
+      entity_id: media_player.living_room
+      source: '{{ ["Ambient / Relax", "Deep", "Chill step"] | random }}'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room
+      volume_level: 0.12

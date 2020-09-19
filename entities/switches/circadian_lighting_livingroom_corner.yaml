@@ -1,0 +1,4 @@
+platform: circadian_lighting
+name: livingroom_corner
+lights_ct:
+  - light.corner_lamp

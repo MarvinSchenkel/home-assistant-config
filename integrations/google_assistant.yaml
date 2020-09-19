@@ -1,0 +1,8 @@
+google_assistant:
+  project_id: homeassistant-230519
+  service_account: !include ../config_files/googleassistant_serviceaccount.json
+  report_state: true
+  expose_by_default: false
+  entity_config:
+    script.ga_play_music_living_room:
+      name: PLAY_MUSIC_LIVING_ROOM

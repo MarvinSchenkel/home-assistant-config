@@ -1,0 +1,13 @@
+---
+alias: areas_livingroom_play_music
+description: Play music based on the scene of the wall switch
+mode: single
+trigger:
+  - platform: event
+    event_type: zwave.scene_activated
+    event_data:
+      entity_id: zwave.fibaro_dinner
+      scene_id: 14
+      scene_data: 3
+action:
+  - service: script.play_random_music_living_room

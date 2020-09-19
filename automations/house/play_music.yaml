@@ -1,0 +1,40 @@
+---
+description: Automatically play some tunes in the house when we wake up on a weekend day or holiday
+alias: house_play_music
+trigger:
+  - platform: state
+    entity_id: input_select.laura_sleep_status_dropdown
+    to: 'Net wakker'
+  - platform: state
+    entity_id: input_select.marvin_sleep_status_dropdown
+    to: 'Net wakker'
+condition:
+  condition: and
+  conditions:
+    - "{{ not is_state('input_select.marvin_sleep_status_dropdown', 'Slaapt') }}"
+    - "{{ not is_state('input_select.laura_sleep_status_dropdown', 'Slaapt') }}"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.weekend
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.holiday
+          state: 'on'
+action:
+  - service: script.play_random_music
+    data:
+      sonos_entity: media_player.living_room
+      genre: 'chill'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room
+      volume_level: 0.12
+  - service: sonos.join
+    data:
+      master: media_player.living_room
+      entity_id: media_player.bedroom
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.bedroom
+      volume_level: 0.15

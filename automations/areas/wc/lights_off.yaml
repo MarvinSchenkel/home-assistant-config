@@ -1,0 +1,47 @@
+---
+alias: areas_wc_lights_off
+description: Turns the wc lights on when motion has been detected or when we go to sleep
+mode: single
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_wc
+    to: 'off'
+    for: 
+      seconds: 80
+  - platform: state
+    entity_id:
+      - sensor.marvin_status
+      - sensor.laura_status
+    to: 'Slaapt'
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+  - condition: state
+    entity_id: light.fibaro_wc
+    state: 'on'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.pir_wc
+        state: 'off'
+        for:
+          seconds: 80
+      - condition: state
+        entity_id: sensor.marvin_status
+        state: 'Slaapt'
+      - condition: state
+        entity_id: sensor.laura_status
+        state: 'Slaapt'
+action:
+  # - service: switch.turn_off
+  #   data:
+  #     entity_id: switch.circadian_lighting_wc
+  - service: light.turn_off
+    data:
+      entity_id: light.fibaro_wc
+      transition: 5

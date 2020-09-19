@@ -1,0 +1,18 @@
+ios:
+  push:
+    categories:
+      - name: Alarm
+        identifier: 'alarm'
+        actions:
+          - identifier: 'SOUND_ALARM'
+            title: 'Alarm aan'
+            activationMode: 'background'
+            authenticationRequired: true
+            destructive: true
+            behavior: 'default'
+          - identifier: 'SILENCE_ALARM'
+            title: 'Alarm uit'
+            activationMode: 'background'
+            authenticationRequired: true
+            destructive: false
+            behavior: 'default'

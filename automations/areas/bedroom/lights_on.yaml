@@ -1,0 +1,45 @@
+---
+alias: areas_bedroom_lights_on
+description: Turns the bedroom lights on when motion has been detected
+mode: queued
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_bedroom
+  - platform: state
+    entity_id: sensor.pir_bedroom_luminance
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.pir_bedroom
+    state: 'on'
+  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+  - condition: state
+    entity_id: variable.bedroom_darklight
+    state: 'dark'
+action:
+  - service: script.sunlight
+    data:
+      entities:
+        - light.fibaro_hallway
+      turn_on: true
+  # - service: switch.turn_on
+  #   data:
+  #     entity_id:
+  #       - switch.circadian_lighting_bedroom
+  # - service: light.turn_on
+  #   data:
+  #     transition: 2
+  #     entity_id: 
+  #       - light.bedside_left        
+  #       - light.bedside_right
+  #     # kelvin: >-
+  #     #   {{ state_attr('sensor.circadian_values', 'colortemp') | int }}
+  #     brightness_pct: >-
+  #       {{ state_attr('switch.circadian_lighting_bedroom', 'brightness') | int }}

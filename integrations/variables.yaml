@@ -1,0 +1,17 @@
+variable:
+  ###########################
+  ## Hallway
+  ###########################
+  hallway_darklight:
+
+  ###########################
+  ## Living room
+  ###########################
+  livingroom_darklight:
+  livingroom_current_scene:
+    value: 'normal'
+    
+  ###########################
+  ## Bedroom
+  ###########################
+  bedroom_darklight:

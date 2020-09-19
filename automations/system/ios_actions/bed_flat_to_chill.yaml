@@ -1,0 +1,11 @@
+---
+description: Set my auping bed in chill mode when I want to read or watch something in bed
+alias: system_ios_actions_bed_flat_to_chill
+mode: single
+trigger:
+  platform: event
+  event_type: ios.action_fired
+  event_data:
+      actionName: bed_flat_to_chill
+action:
+  service: rest_command.bed_flat_to_chill

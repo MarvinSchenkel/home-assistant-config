@@ -1,0 +1,37 @@
+# https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/persons.html
+
+persons: 
+  - name: Marvin
+    track: sensor.marvin_status #person.marvin
+    picture_path: 'marvin.png'
+    show_map: 'false'
+    addons:
+      - name: Marvin waze
+        icon: fas:waze
+        path: 'dwains-theme/addons/persons/maps/waze.yaml'
+
+      - name: Hello person
+        icon: fas:puzzle-piece
+        path: 'dwains-theme/addons/persons/maps/page.yaml'
+        data:
+          map_tracker: 'person.marvin'
+  - name: Laura
+    track: sensor.laura_status
+    picture_path: 'laura.png'
+    show_map: 'false'
+    addons:
+      - name: Hello person
+        icon: fas:puzzle-piece
+        path: 'dwains-theme/addons/persons/maps/page.yaml'
+        data:
+          map_tracker: 'person.laura'
+#     more_entities:
+#       columns: 1 #optional
+#       entities:
+#         - entity: sensor.steps
+#         - entity: sensor.steps
+#     page_entities:
+#       columns: 2 #optional
+#       entities:
+#         - entity: sensor.steps
+#         - entity: sensor.steps

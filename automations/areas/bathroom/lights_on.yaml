@@ -1,0 +1,22 @@
+---
+alias: areas_bathroom_lights_on
+description: Turns the bathroom lights on when motion has been detected
+mode: queued
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_bathroom
+condition:
+  - condition: state
+    entity_id: binary_sensor.pir_bathroom
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+action:
+  service: light.turn_on
+  data:
+    entity_id: light.fibaro_bathroom

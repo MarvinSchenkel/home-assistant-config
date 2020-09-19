@@ -1,0 +1,55 @@
+---
+alias: areas_livingroom_lights_on
+description: Turns the livingroom lights on when motion has been detected
+mode: queued
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.pir_livingroom
+  - platform: state
+    entity_id: sensor.pir_livingroom_luminance
+  - platform: state
+    entity_id: variable.livingroom_current_scene
+    to: 'normal'
+condition:
+  - condition: state
+    entity_id: binary_sensor.pir_livingroom
+    state: 'on'
+  - condition: state
+    entity_id: variable.livingroom_darklight
+    state: 'dark'
+  - condition: state
+    entity_id: variable.livingroom_current_scene
+    state: 'normal'
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+action:
+  - service: switch.turn_on
+    data:
+      entity_id:
+        - switch.circadian_lighting_livingroom_ceiling
+        - switch.circadian_lighting_livingroom_corner
+        - switch.circadian_lighting_livingroom_dinnerkitchen    
+  - service: light.turn_on
+    data:
+      brightness_pct: >-
+        {{ state_attr('switch.circadian_lighting_livingroom_ceiling', 'brightness') | int }}
+      entity_id: light.fibaro_ceiling
+  - service: light.turn_on
+    data:
+      entity_id: 
+        - light.fibaro_dinner
+        - light.fibaro_kitchen
+      brightness_pct: >-
+        {{ state_attr('switch.circadian_lighting_livingroom_dinnerkitchen', 'brightness') | int }}
+  - service: light.turn_on
+    data:
+      brightness_pct: >-
+        {{ state_attr('switch.circadian_lighting_livingroom_corner', 'brightness') | int }}
+      kelvin: >-
+        {{ state_attr('sensor.circadian_values', 'colortemp') | int }}
+      entity_id: light.corner_lamp

@@ -1,0 +1,21 @@
+---
+description: Activate movie scene
+alias: areas_living_room_scene_normal
+mode: single
+trigger: 
+  - platform: webhook
+    webhook_id: flic_livingroom_single
+  - platform: state
+    entity_id: media_player.living_room_tv
+    to: 'playing'
+    for: '00:00:03'
+  - platform: state
+    entity_id: media_player.kodi
+    to: 'playing'
+condition:
+  - "{{ not is_state('variable.livingroom_current_scene', 'movie') }}"
+action:
+  - service: variable.set_variable
+    data:
+      variable: livingroom_current_scene
+      value: 'movie'

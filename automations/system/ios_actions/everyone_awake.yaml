@@ -1,0 +1,18 @@
+---
+description: Set everyone to awake based on iOS actions
+alias: system_ios_actions_everyone_awake
+mode: single
+trigger:
+  platform: event
+  event_type: ios.action_fired
+  event_data:
+    actionName: everyone_awake
+action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.laura_sleep_status_dropdown
+      option: 'Wakker'
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.marvin_sleep_status_dropdown
+      option: 'Wakker'

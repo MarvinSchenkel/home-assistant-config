@@ -1,0 +1,6 @@
+platform: kodi
+host: !secret kodi_host
+enable_websocket: true
+username: !secret kodi_username
+password: !secret kodi_password
+tcp_port: !secret kodi_port

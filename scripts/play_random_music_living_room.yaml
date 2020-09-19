@@ -1,0 +1,10 @@
+alias: "Play music"
+sequence:
+  - service: script.play_random_music
+    data:
+      sonos_entity: media_player.living_room
+      genre: 'chill'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room
+      volume_level: 0.12

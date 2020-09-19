@@ -1,0 +1,38 @@
+---
+description: Group sonos to the living room when there is music playing and motion is detected
+alias:  areas_bedroom_group_sonos
+mode: queued
+trigger:
+  - platform: state
+    entity_id: binary_sensor.pir_bedroom
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+condition:
+  - condition: state
+    entity_id: binary_sensor.pir_bedroom
+    state: 'on'
+  - condition: state
+    entity_id: media_player.living_room
+    state: 'playing'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: media_player.bedroom
+        state: 'paused'
+      - condition: state
+        entity_id: media_player.bedroom
+        state: 'idle'
+  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+  - '{{ states.media_player.living_room.attributes.source != "TV" }}'
+action:
+  - service: sonos.join
+    data:
+      master: media_player.living_room
+      entity_id: media_player.bedroom
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.bedroom
+      volume_level: 0.20

@@ -1,0 +1,33 @@
+---
+description: Activate normale scene
+alias: areas_living_room_scene_normal
+mode: single
+trigger: 
+  - platform: webhook
+    webhook_id: flic_livingroom_double
+  - platform: state
+    entity_id: media_player.living_room_tv
+    to: 'paused'
+    for: '00:00:05'
+  - platform: state
+    entity_id: media_player.living_room_tv
+    to: 'standby'
+    for: '00:00:05'
+  - platform: state
+    entity_id: media_player.kodi
+    to: 'paused' 
+  - platform: state
+    entity_id: media_player.kodi
+    to: 'idle'
+  - platform: state
+    entity_id: media_player.living_room_tv
+    to: 'off'
+  - platform: time
+    at: '14:00:00'
+condition:
+  - "{{ not is_state('variable.livingroom_current_scene', 'normal') }}"
+action:
+  - service: variable.set_variable
+    data:
+      variable: livingroom_current_scene
+      value: 'normal'

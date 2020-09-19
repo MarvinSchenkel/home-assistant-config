@@ -1,0 +1,11 @@
+---
+description: Turn my bed flat again based on iOS actions
+alias: system_ios_actions_chill_to_flat
+mode: single
+trigger:
+  platform: event
+  event_type: ios.action_fired
+  event_data:
+      actionName: bed_chill_to_flat
+action:
+  service: rest_command.bed_chill_to_flat

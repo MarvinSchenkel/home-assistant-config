@@ -1,0 +1,6 @@
+platform: circadian_lighting
+name: livingroom_dinnerkitchen
+lights_brightness:
+  - light.fibaro_kitchen
+  - light.fibaro_dinner
+max_brightness: 55

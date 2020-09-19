@@ -1,0 +1,11 @@
+---
+description: Sound the alarm when I send the alarm event
+alias: system_events_sound_alarm
+mode: single
+trigger:
+  platform: event
+  event_type: ios.notification_action_fired
+  event_data:
+    actionName: SOUND_ALARM
+action:
+  service: script.scene_alarm_on

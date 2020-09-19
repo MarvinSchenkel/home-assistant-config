@@ -1,0 +1,6 @@
+alias: "Normal scene"
+sequence:
+  - service: variable.set_variable
+    data:
+      variable: livingroom_current_scene
+      value: 'normal'
