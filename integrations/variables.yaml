@@ -9,7 +9,6 @@ variable:
   ###########################
   livingroom_darklight:
   livingroom_current_scene:
-    value: 'normal'
     
   ###########################
   ## Bedroom

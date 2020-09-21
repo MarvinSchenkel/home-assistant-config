@@ -27,7 +27,8 @@ action:
   - service: script.sunlight
     data:
       entities:
-        - light.fibaro_hallway
+        - light.bedside_left
+        - light.bedside_right
       turn_on: true
   # - service: switch.turn_on
   #   data:

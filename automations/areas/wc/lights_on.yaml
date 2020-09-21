@@ -24,14 +24,3 @@ action:
       entities:
         - light.fibaro_wc
       turn_on: true
-  # - service: switch.turn_on
-  #   data:
-  #     entity_id:
-  #       - switch.circadian_lighting_wc
-  # - service: light.turn_on
-  #   data:
-  #     transition: 2
-  #     entity_id: 
-  #       - light.fibaro_wc
-  #     brightness_pct: >-
-  #       {{ state_attr('switch.circadian_lighting_wc', 'brightness') | int }}

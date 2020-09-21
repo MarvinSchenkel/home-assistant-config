@@ -35,10 +35,10 @@ condition:
         entity_id: sensor.laura_status
         state: 'Slaapt'
 action:
-  - service: switch.turn_off
-    data:
-      entity_id:
-        - switch.circadian_lighting_bedroom
+  # - service: switch.turn_off
+  #   data:
+  #     entity_id:
+  #       - switch.circadian_lighting_bedroom
   - service: light.turn_off
     data:
       entity_id: 

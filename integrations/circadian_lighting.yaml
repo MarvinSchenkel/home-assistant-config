@@ -1,4 +1,4 @@
 circadian_lighting:
-  interval: 300
+  interval: 60
   transition: 15
-  sunset_offset: '-00:10:00'
+  sunset_offset: '00:15:00'

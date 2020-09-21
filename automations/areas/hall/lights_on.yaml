@@ -22,14 +22,19 @@ condition:
     entity_id: variable.hallway_darklight
     state: 'dark'
 action:
-  - service: switch.turn_on
+  - service: script.sunlight
     data:
-      entity_id:
-        - switch.circadian_lighting_hall
-  - service: light.turn_on
-    data:
-      transition: 2
-      entity_id: 
+      entities:
         - light.fibaro_hallway
-      brightness_pct: >-
-        {{ state_attr('switch.circadian_lighting_hall', 'brightness') | int }}
+      turn_on: true
+  # - service: switch.turn_on
+  #   data:
+  #     entity_id:
+  #       - switch.circadian_lighting_hall
+  # - service: light.turn_on
+  #   data:
+  #     transition: 2
+  #     entity_id: 
+  #       - light.fibaro_hallway
+  #     brightness_pct: >-
+  #       {{ state_attr('switch.circadian_lighting_hall', 'brightness') | int }}

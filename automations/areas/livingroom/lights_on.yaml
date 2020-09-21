@@ -28,28 +28,47 @@ condition:
     entity_id: input_boolean.manual_lights
     state: 'off'
 action:
-  - service: switch.turn_on
+  - service: script.sunlight
     data:
-      entity_id:
-        - switch.circadian_lighting_livingroom_ceiling
-        - switch.circadian_lighting_livingroom_corner
-        - switch.circadian_lighting_livingroom_dinnerkitchen    
-  - service: light.turn_on
+      entities:
+        - light.fibaro_ceiling
+      turn_on: true
+      max_brightness: 12
+  - service: script.sunlight
     data:
-      brightness_pct: >-
-        {{ state_attr('switch.circadian_lighting_livingroom_ceiling', 'brightness') | int }}
-      entity_id: light.fibaro_ceiling
-  - service: light.turn_on
-    data:
-      entity_id: 
-        - light.fibaro_dinner
+      entities:
         - light.fibaro_kitchen
-      brightness_pct: >-
-        {{ state_attr('switch.circadian_lighting_livingroom_dinnerkitchen', 'brightness') | int }}
-  - service: light.turn_on
+        - light.fibaro_dinner
+      turn_on: true
+      max_brightness: 55
+  - service: script.sunlight
     data:
-      brightness_pct: >-
-        {{ state_attr('switch.circadian_lighting_livingroom_corner', 'brightness') | int }}
-      kelvin: >-
-        {{ state_attr('sensor.circadian_values', 'colortemp') | int }}
-      entity_id: light.corner_lamp
+      entities:
+        - light.corner_lamp
+      turn_on: true
+
+  # - service: switch.turn_on
+  #   data:
+  #     entity_id:
+  #       - switch.circadian_lighting_livingroom_ceiling
+  #       - switch.circadian_lighting_livingroom_corner
+  #       - switch.circadian_lighting_livingroom_dinnerkitchen    
+  # - service: light.turn_on
+  #   data_template:
+  #     brightness_pct: >-
+  #       {{ state_attr('switch.circadian_lighting_livingroom_ceiling', 'brightness') | int }}
+  #     entity_id: light.fibaro_ceiling
+  # - service: light.turn_on
+  #   data_template:
+  #     entity_id: 
+  #       - light.fibaro_dinner
+  #       - light.fibaro_kitchen
+  #     brightness_pct: >-
+  #       {{ state_attr('switch.circadian_lighting_livingroom_dinnerkitchen', 'brightness') | int }}
+  # - service: light.turn_on
+  #   data_template:
+  #     brightness_pct: >-
+  #       {{ state_attr('switch.circadian_lighting_livingroom_corner', 'brightness') | int }}
+  #     kelvin: >-
+  #       {{ state_attr('sensor.circadian_values', 'colortemp') | int }}
+  #     entity_id: light.corner_lamp
