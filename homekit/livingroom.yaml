@@ -1,0 +1,6 @@
+---
+- light.fibaro_ceiling
+- light.fibaro_dinner
+- light.fibaro_kitchen
+- light.corner_lamp
+- binary_sensor.pir_livingroom

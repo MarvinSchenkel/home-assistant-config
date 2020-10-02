@@ -8,7 +8,6 @@ variable:
   ## Living room
   ###########################
   livingroom_darklight:
-  livingroom_current_scene:
     
   ###########################
   ## Bedroom

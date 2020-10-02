@@ -1,6 +1,6 @@
 ---
 description: Activate movie scene
-alias: areas_living_room_scene_normal
+alias: areas_living_room_scene_movie
 mode: single
 trigger: 
   - platform: webhook
@@ -8,14 +8,19 @@ trigger:
   - platform: state
     entity_id: media_player.living_room_tv
     to: 'playing'
-    for: '00:00:03'
   - platform: state
     entity_id: media_player.kodi
     to: 'playing'
 condition:
-  - "{{ not is_state('variable.livingroom_current_scene', 'movie') }}"
   - condition: or
     conditions:
+      # Do not automatically switch from candle scene, since it's a manual scene
+      - "{{ not is_state('input_select.livingroom_current_scene', 'candle') }}"
+      - "{{ trigger.platform == 'webhook' }}"
+  - "{{ not is_state('input_select.livingroom_current_scene', 'movie') }}"
+  - condition: or
+    conditions:
+      - "{{ trigger.platform == 'webhook' }}"
       - condition: and
         conditions:
           - condition: state
@@ -29,7 +34,7 @@ condition:
         entity_id: media_player.kodi
         state: 'playing'      
 action:
-  - service: variable.set_variable
+  - service: input_select.select_option
     data:
-      variable: livingroom_current_scene
-      value: 'movie'
+      entity_id: input_select.livingroom_current_scene
+      option: movie

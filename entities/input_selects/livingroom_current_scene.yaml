@@ -1,4 +1,5 @@
 name: Woonkamer huidige scene
 options:
-  - Normaal
-  - Film
+  - normal
+  - movie
+  - candle

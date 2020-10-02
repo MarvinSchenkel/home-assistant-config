@@ -9,6 +9,10 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.pir_wc
+  # Also apply circadian values when someone is still asleep and light has been manually turned on
+  - platform: state
+    entity_id: light.fibaro_wc
+    to: 'on'
 condition:
   - condition: state
     entity_id: input_boolean.manual_lights

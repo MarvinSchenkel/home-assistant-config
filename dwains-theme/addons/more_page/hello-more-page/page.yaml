@@ -1,3 +1,6 @@
 - type: entity
   name: Handmatige lampen
   entity: input_boolean.manual_lights
+- type: entity
+  name: Woonkamer scene
+  entity: input_select.livingroom_current_scene

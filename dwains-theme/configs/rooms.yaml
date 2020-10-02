@@ -12,6 +12,7 @@ rooms:
       advanced_view: 'true'
     more_entities:
       entities:
+        - entity: input_select.livingroom_current_scene
         - entity: sensor.pir_livingroom_battery_level
         - entity: sensor.pir_livingroom_luminance
         - entity: variable.livingroom_darklight

@@ -17,6 +17,10 @@ condition:
     entity_id: input_boolean.manual_lights
     state: 'off'
 action:
-  service: light.turn_on
-  data:
-    entity_id: light.fibaro_bathroom
+  - service: script.sunlight
+    data:
+      entities:
+        - light.fibaro_bathroom
+      turn_on: true
+      turn_on_transition: 1
+      min_brightness: 62

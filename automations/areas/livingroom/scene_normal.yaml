@@ -25,9 +25,14 @@ trigger:
   - platform: time
     at: '14:00:00'
 condition:
-  - "{{ not is_state('variable.livingroom_current_scene', 'normal') }}"
+  - condition: or
+    conditions:
+      # Do not automatically switch from candle scene, since it's a manual scene
+      - "{{ not is_state('input_select.livingroom_current_scene', 'candle') }}"
+      - "{{ trigger.platform == 'webhook' }}"
+  - "{{ not is_state('input_select.livingroom_current_scene', 'normal') }}"
 action:
-  - service: variable.set_variable
+  - service: input_select.select_option
     data:
-      variable: livingroom_current_scene
-      value: 'normal'
+      entity_id: input_select.livingroom_current_scene
+      option: normal

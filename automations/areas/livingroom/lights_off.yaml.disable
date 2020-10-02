@@ -15,8 +15,8 @@ trigger:
   - platform: state
     entity_id: sensor.pir_livingroom_luminance
   - platform: state
-    entity_id: variable.livingroom_current_scene
-    to: 'movie'
+    entity_id: input_select.livingroom_current_scene
+    to: movie
   - platform: state
     entity_id: variable.livingroom_darklight
     to: 'light'
@@ -35,16 +35,11 @@ condition:
         for:
           seconds: 900
       - condition: state
-        entity_id: variable.livingroom_current_scene
-        state: 'movie'
+        entity_id: input_select.livingroom_current_scene
+        state: movie
       - condition: state
         entity_id: sensor.livingroom_darklight
         state: 'light'
 action:
-  - service: switch.turn_off
-    entity_id:
-      - switch.circadian_lighting_livingroom_ceiling
-      - switch.circadian_lighting_livingroom_corner
-      - switch.circadian_lighting_livingroom_dinnerkitchen    
   - service: light.turn_off
     entity_id: group.living_room_lights

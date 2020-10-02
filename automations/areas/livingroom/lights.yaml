@@ -1,0 +1,88 @@
+---
+alias: areas_livingroom_lights_on
+description: Turns the livingroom lights on when motion has been detected
+mode: queued
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: 
+      - sensor.pir_livingroom_luminance
+      - input_select.livingroom_current_scene
+  - platform: state
+    entity_id: binary_sensor.pir_livingroom
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.pir_livingroom
+    to: 'off'
+    for:
+      seconds: 900
+  - platform: state
+    entity_id: variable.livingroom_darklight
+    to: 'light'
+condition:  
+  - condition: state
+    entity_id: input_boolean.manual_lights
+    state: 'off'
+action:
+  - choose:
+      # Normal scene -> Apply circadian lighting
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.pir_livingroom
+            state: 'on'
+          - condition: state
+            entity_id: variable.livingroom_darklight
+            state: 'dark'
+          - condition: state
+            entity_id: input_select.livingroom_current_scene
+            state: normal
+        sequence:
+          - service: script.sunlight
+            data:
+              entities:
+                - light.fibaro_ceiling
+              turn_on: true
+              max_brightness: 12
+          - service: script.sunlight
+            data:
+              entities:
+                - light.fibaro_kitchen
+                - light.fibaro_dinner
+              turn_on: true
+              max_brightness: 55
+          - service: script.sunlight
+            data:
+              entities:
+                - light.corner_lamp
+              turn_on: true
+      # Candle scene > Do not apply circadian lighting
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.pir_livingroom
+            state: 'on'
+          - condition: state
+            entity_id: variable.livingroom_darklight
+            state: 'dark'
+          - condition: state
+            entity_id: input_select.livingroom_current_scene
+            state: candle
+        sequence:
+          - service: light.turn_off
+            entity_id: 
+              - light.fibaro_ceiling
+              - light.fibaro_kitchen
+          - service: light.turn_on
+            entity_id: light.corner_lamp
+            data:
+              brightness_pct: 20
+          - service: light.turn_on
+            entity_id: light.fibaro_dinner
+            data:
+              brightness_pct: 20
+    # Motion sensor off + (implicit) movie scene
+    default:
+      - service: light.turn_off
+        entity_id: group.living_room_lights
