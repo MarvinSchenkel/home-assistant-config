@@ -8,10 +8,10 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.presence_hallway
+    entity_id: binary_sensor.presence_hall
 condition:
   - condition: state
-    entity_id: binary_sensor.presence_hallway
+    entity_id: binary_sensor.presence_hall
     state: 'on'
   - condition: state
     entity_id: input_boolean.setting_manual_lights

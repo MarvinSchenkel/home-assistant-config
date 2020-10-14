@@ -8,7 +8,7 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.presence_hallway
+    entity_id: binary_sensor.presence_hall
     to: 'off'
     for: 
       seconds: 80
@@ -30,7 +30,7 @@ condition:
   - condition: or
     conditions:
       - condition: state
-        entity_id: binary_sensor.presence_hallway
+        entity_id: binary_sensor.presence_hall
         state: 'off'
         for:
           seconds: 80
