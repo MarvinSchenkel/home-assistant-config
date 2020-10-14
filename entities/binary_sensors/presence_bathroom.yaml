@@ -1,0 +1,9 @@
+---
+# Determine the presence in the bathroom based on
+# - PIR motion sensor
+# - Flood sensor
+platform: template
+sensors:
+  presence_bathroom:
+    value_template: >
+      {{  states("binary_sensor.pir_bathroom") or states("binary_sensor.bathroom_flood") }}

@@ -1,6 +1,6 @@
 alias: "Movie scene"
 sequence:
-  - service: variable.set_variable
+  - service: input_select.select_option
     data:
-      variable: livingroom_current_scene
-      value: 'movie'
+      entity_id: input_select.livingroom_current_scene
+      option: movie

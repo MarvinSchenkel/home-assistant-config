@@ -16,7 +16,19 @@ condition:
   entity_id: input_select.laura_sleep_status_dropdown
   state: 'Slaapt'
 action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.laura_sleep_status_dropdown
-      option: 'Net wakker'
+  - choose:
+      - conditions:
+          - "{{ trigger.platform == 'template' }}"
+        sequence:
+          # Give her 5 more minutes after her alarm before the lights burn her eyes
+          - delay:
+              minutes: 5
+          - service: input_select.select_option
+            data:
+              entity_id: input_select.laura_sleep_status_dropdown
+              option: 'Net wakker'
+    default:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.laura_sleep_status_dropdown
+          option: 'Net wakker'

@@ -1,0 +1,5 @@
+platform: template
+sensors:
+  presence_wc:
+    value_template: >
+      {{  states("binary_sensor.pir_wc")  }}

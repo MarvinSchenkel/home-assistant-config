@@ -1,6 +1,6 @@
-alias: "Normal scene"
+alias: "Candle scene"
 sequence:
   - service: input_select.select_option
     data:
       entity_id: input_select.livingroom_current_scene
-      option: normal
+      option: candle

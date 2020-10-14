@@ -8,7 +8,7 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_hallway
+    entity_id: binary_sensor.presence_hallway
     to: 'off'
     for: 
       seconds: 80
@@ -25,12 +25,12 @@ condition:
     entity_id: light.fibaro_hallway
     state: 'on'
   - condition: state
-    entity_id: input_boolean.manual_lights
+    entity_id: input_boolean.setting_manual_lights
     state: 'off'
   - condition: or
     conditions:
       - condition: state
-        entity_id: binary_sensor.pir_hallway
+        entity_id: binary_sensor.presence_hallway
         state: 'off'
         for:
           seconds: 80
@@ -44,9 +44,6 @@ condition:
         entity_id: variable.livingroom_current_scene
         state: 'movie'
 action:
-  # - service: switch.turn_off
-  #   data:
-  #     entity_id: switch.circadian_lighting_hall
   - service: light.turn_off
     data:
       entity_id: light.fibaro_hallway

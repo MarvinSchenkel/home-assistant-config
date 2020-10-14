@@ -8,13 +8,13 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
 condition:
   - condition: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
     state: 'on'
   - condition: state
-    entity_id: input_boolean.manual_lights
+    entity_id: input_boolean.setting_manual_lights
     state: 'off'
 action:
   - service: script.sunlight

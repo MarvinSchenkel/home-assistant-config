@@ -27,9 +27,10 @@ trigger:
 condition:
   - condition: or
     conditions:
-      # Do not automatically switch from candle scene, since it's a manual scene
+      # Do not automatically switch from candle scene, since it's a manual scene, except at 14:00 (reset time) or when triggered by flic button
       - "{{ not is_state('input_select.livingroom_current_scene', 'candle') }}"
       - "{{ trigger.platform == 'webhook' }}"
+      - "{{ trigger.platform == 'time' }}"
   - "{{ not is_state('input_select.livingroom_current_scene', 'normal') }}"
 action:
   - service: input_select.select_option

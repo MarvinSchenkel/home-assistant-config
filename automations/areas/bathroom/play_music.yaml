@@ -8,9 +8,9 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_bathroom    
+    entity_id: binary_sensor.presence_bathroom    
   - platform: state
-    entity_id: sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood
+    entity_id: binary_sensor.bathroom_flood
   - platform: state
     entity_id: sensor.marvin_status
     to: 'Net wakker'
@@ -19,7 +19,7 @@ trigger:
     to: 'Net wakker'
 condition:
   - condition: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
     state: 'on'  
   - condition: or
     conditions:

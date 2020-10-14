@@ -1,5 +1,5 @@
 ---
-alias: areas_livingroom_lights_on
+alias: areas_livingroom_lights
 description: Turns the livingroom lights on when motion has been detected
 mode: queued
 trigger:
@@ -9,13 +9,13 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: 
-      - sensor.pir_livingroom_luminance
       - input_select.livingroom_current_scene
+      - input_boolean.setting_manual_lights
   - platform: state
-    entity_id: binary_sensor.pir_livingroom
+    entity_id: binary_sensor.presence_livingroom
     to: 'on'
   - platform: state
-    entity_id: binary_sensor.pir_livingroom
+    entity_id: binary_sensor.presence_livingroom
     to: 'off'
     for:
       seconds: 900
@@ -24,14 +24,14 @@ trigger:
     to: 'light'
 condition:  
   - condition: state
-    entity_id: input_boolean.manual_lights
+    entity_id: input_boolean.setting_manual_lights
     state: 'off'
 action:
   - choose:
       # Normal scene -> Apply circadian lighting
       - conditions:
           - condition: state
-            entity_id: binary_sensor.pir_livingroom
+            entity_id: binary_sensor.presence_livingroom
             state: 'on'
           - condition: state
             entity_id: variable.livingroom_darklight
@@ -61,7 +61,7 @@ action:
       # Candle scene > Do not apply circadian lighting
       - conditions:
           - condition: state
-            entity_id: binary_sensor.pir_livingroom
+            entity_id: binary_sensor.presence_livingroom
             state: 'on'
           - condition: state
             entity_id: variable.livingroom_darklight
@@ -81,7 +81,7 @@ action:
           - service: light.turn_on
             entity_id: light.fibaro_dinner
             data:
-              brightness_pct: 20
+              brightness_pct: 7
     # Motion sensor off + (implicit) movie scene
     default:
       - service: light.turn_off

@@ -8,7 +8,7 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
     to: 'off'
     for:
       seconds: 90
@@ -17,19 +17,13 @@ condition:
     entity_id: light.fibaro_bathroom
     state: 'on'
   - condition: state
-    entity_id: input_boolean.manual_lights
+    entity_id: input_boolean.setting_manual_lights
     state: 'off'
   - condition: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
     state: 'off'
     for:
       seconds: 90
-  # Nobody is showering
-  - condition: or
-    conditions:
-      - condition: state
-        entity_id: binary_sensor.bathroom_flood
-        state: 'off'
 action:
   service: light.turn_off
   data:

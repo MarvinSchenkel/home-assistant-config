@@ -8,17 +8,17 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_wc
+    entity_id: binary_sensor.presence_wc
   # Also apply circadian values when someone is still asleep and light has been manually turned on
   - platform: state
     entity_id: light.fibaro_wc
     to: 'on'
 condition:
   - condition: state
-    entity_id: input_boolean.manual_lights
+    entity_id: input_boolean.setting_manual_lights
     state: 'off'
   - condition: state
-    entity_id: binary_sensor.pir_wc
+    entity_id: binary_sensor.presence_wc
     state: 'on'
   - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
   - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"

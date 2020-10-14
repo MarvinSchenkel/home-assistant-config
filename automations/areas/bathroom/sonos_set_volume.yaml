@@ -4,24 +4,21 @@ alias: areas_bathroom_sonos_set_volume
 mode: queued
 trigger:
   - platform: state
-    entity_id: binary_sensor.pir_bathroom
-  - platform: state
-    entity_id: sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood
+    entity_id: binary_sensor.presence_bathroom
   - platform: homeassistant
     event: start
   - platform: event
     event_type: automation_reloaded
 condition:
   - condition: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
     state: 'on'
 action:
   - choose:
     - conditions:
-        - condition: numeric_state
-          entity_id: sensor.fibaro_system_fgfs101_zwave_flood_sensor_flood
-          above: 1
-          below: 3
+        - condition: state
+          entity_id: binary_sensor.bathroom_flood
+          state: 'on'
       sequence:
         - service: media_player.volume_set
           data:

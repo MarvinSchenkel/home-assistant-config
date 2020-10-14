@@ -1,0 +1,9 @@
+---
+# Determine presence in the bedroom based on
+# - PIR Motion sensor
+# - TV status
+platform: template
+sensors:
+  presence_bedroom:
+    value_template: >
+      {{  states("binary_sensor.pir_bedroom") or is_state("media_player.bedroom_tv", "playing") }}

@@ -8,13 +8,13 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_hallway
+    entity_id: binary_sensor.presence_hallway
 condition:
   - condition: state
-    entity_id: binary_sensor.pir_hallway
+    entity_id: binary_sensor.presence_hallway
     state: 'on'
   - condition: state
-    entity_id: input_boolean.manual_lights
+    entity_id: input_boolean.setting_manual_lights
     state: 'off'
   - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
   - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
@@ -27,14 +27,3 @@ action:
       entities:
         - light.fibaro_hallway
       turn_on: true
-  # - service: switch.turn_on
-  #   data:
-  #     entity_id:
-  #       - switch.circadian_lighting_hall
-  # - service: light.turn_on
-  #   data:
-  #     transition: 2
-  #     entity_id: 
-  #       - light.fibaro_hallway
-  #     brightness_pct: >-
-  #       {{ state_attr('switch.circadian_lighting_hall', 'brightness') | int }}

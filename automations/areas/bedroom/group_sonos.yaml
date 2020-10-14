@@ -4,14 +4,14 @@ alias:  areas_bedroom_group_sonos
 mode: queued
 trigger:
   - platform: state
-    entity_id: binary_sensor.pir_bedroom
+    entity_id: binary_sensor.presence_bedroom
   - platform: homeassistant
     event: start
   - platform: event
     event_type: automation_reloaded
 condition:
   - condition: state
-    entity_id: binary_sensor.pir_bedroom
+    entity_id: binary_sensor.presence_bedroom
     state: 'on'
   - condition: state
     entity_id: media_player.living_room

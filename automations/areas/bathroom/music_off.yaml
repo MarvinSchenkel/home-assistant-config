@@ -8,13 +8,13 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_bathroom
+    entity_id: binary_sensor.presence_bathroom
     to: 'off'
     for:
       seconds: 75
 condition:
   condition: state
-  entity_id: binary_sensor.pir_bathroom
+  entity_id: binary_sensor.presence_bathroom
   state: 'off'
   for:
     seconds: 75
