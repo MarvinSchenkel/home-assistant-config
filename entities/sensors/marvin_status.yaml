@@ -1,3 +1,4 @@
+---
 platform: template
 sensors:
   marvin_status:

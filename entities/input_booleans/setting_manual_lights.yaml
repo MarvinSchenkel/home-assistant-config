@@ -1,2 +1,5 @@
+---
+# This setting is used in automations to override automatic 
+# lighting and can be turned on / off via the mobile app
 name: Handmatige verlichting
 icon: mdi:ceiling-light

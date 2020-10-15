@@ -1,4 +1,0 @@
-platform: circadian_lighting
-name: wc
-lights_brightness:
-  - light.fibaro_wc

@@ -1,3 +1,4 @@
+---
 platform: template
 sensors:
   laura_status:

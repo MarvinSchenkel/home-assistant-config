@@ -1,4 +1,0 @@
-platform: circadian_lighting
-name: hall
-lights_brightness:
-  - light.fibaro_hallway

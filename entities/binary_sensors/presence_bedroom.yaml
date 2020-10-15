@@ -6,4 +6,5 @@ platform: template
 sensors:
   presence_bedroom:
     value_template: >
-      {{  states("binary_sensor.pir_bedroom") or is_state("media_player.bedroom_tv", "playing") }}
+      {{  is_state("binary_sensor.pir_bedroom", "on") 
+          or is_state("media_player.bedroom_tv", "playing") }}

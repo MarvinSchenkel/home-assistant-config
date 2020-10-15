@@ -1,5 +1,0 @@
-platform: circadian_lighting
-name: bedroom
-lights_brightness:
-  - light.bedside_left
-  - light.bedside_right

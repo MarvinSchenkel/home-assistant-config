@@ -4,7 +4,9 @@ alias: areas_bathroom_sonos_set_volume
 mode: queued
 trigger:
   - platform: state
-    entity_id: binary_sensor.presence_bathroom
+    entity_id: 
+      - binary_sensor.presence_bathroom
+      - binary_sensor.bathroom_flood
   - platform: homeassistant
     event: start
   - platform: event

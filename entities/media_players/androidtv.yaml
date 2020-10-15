@@ -1,3 +1,4 @@
+---
 platform: androidtv
 name: Living Room TV
 host: !secret android_tv_host

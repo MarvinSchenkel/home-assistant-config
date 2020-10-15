@@ -1,3 +1,5 @@
+---
+# Convert the useless integers from the flood sensor to on/off
 platform: template
 sensors:
   bathroom_flood:

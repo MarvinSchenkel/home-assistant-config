@@ -18,6 +18,7 @@ __pycache__
 android
 config_files
 deps
+image
 tts
 scripts/alarm
 
