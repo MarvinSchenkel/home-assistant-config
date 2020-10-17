@@ -1,3 +1,6 @@
+---
 http:
-  ssl_certificate: /ssl/fullchain.pem
-  ssl_key: /ssl/privkey.pem
+  # Enable parsing x-forwarded header for proxied setup 
+  use_x_forwarded_for: true
+  # Only allow forwarded request from a trusted source
+  trusted_proxies: !secret http_trusted_proxy_ip
