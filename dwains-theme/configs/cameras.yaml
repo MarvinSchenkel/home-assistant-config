@@ -1,3 +1,0 @@
-# https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/cameras.html
- cameras:
-   - entity: camera.buienradar

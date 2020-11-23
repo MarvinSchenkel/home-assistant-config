@@ -3,3 +3,7 @@ rest_command:
     url: !secret rest_bed_to_chill
   bed_chill_to_flat:
     url: !secret rest_bed_to_flat
+  christmas_tree_on:
+    url: !secret rest_christmastree_on
+  christmas_tree_off:
+    url: !secret rest_christmastree_off

@@ -1,0 +1,9 @@
+- type: entities
+  show_header_toggle: false
+  entities:
+    - entity: input_select.marvin_sleep_status_dropdown
+      name: "Slaap status"
+      icon: mdi:sleep
+    - entity: input_select.marvin_status_dropdown
+      name: "Locatie status"
+      icon: mdi:crosshairs-gps

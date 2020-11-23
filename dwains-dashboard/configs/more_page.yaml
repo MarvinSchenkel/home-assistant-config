@@ -1,0 +1,7 @@
+# https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/more_page.html
+
+more_page:
+  addons:
+    - name: Instellingen
+      icon: mdi:cog-outline
+      path: 'dwains-dashboard/addons/more_page/hello-more-page/page.yaml'      

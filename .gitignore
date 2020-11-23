@@ -28,6 +28,8 @@ zwcfg_*
 zwscene.xml
 options.xml
 OZW_Log.txt
+www/marvin
+www/laura
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 ip_bans.yaml

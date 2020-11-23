@@ -1,0 +1,1 @@
+adaptive_lighting: !include_dir_list ../entities/adaptive_lights
