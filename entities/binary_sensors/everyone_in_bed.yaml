@@ -1,0 +1,10 @@
+---
+# A binary sensor indicating whether everyone at home
+# is in bed. This sensor can then be used to turn
+# the lights off or put the house in sleep mode
+platform: template
+sensors:
+  everyone_in_bed:
+    value_template: >
+      {{ states("sensor.num_people_in_bed") | int > 0 
+         and states("sensor.num_people_in_bed") | int >= states("sensor.num_people_at_home") | int }}

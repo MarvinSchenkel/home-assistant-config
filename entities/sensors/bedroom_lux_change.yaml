@@ -1,0 +1,7 @@
+---
+platform: derivative
+source: sensor.pir_bedroom_luminance
+name: bedroom_lux_change_per_min
+round: 0
+unit: min
+time_window: "00:01:00"

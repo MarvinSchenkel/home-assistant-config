@@ -1,0 +1,12 @@
+---
+# Define the switch for circadian lighting in the bedroom
+# Make sure to monitor for external changes as well, since
+# I am usting an IKEA TRADFRI remote to manually override
+# the circadian values.
+name: bedroom
+lights:
+  - light.bedside_left
+  - light.bedside_right
+detect_non_ha_changes: true
+take_over_control: true
+interval: 30

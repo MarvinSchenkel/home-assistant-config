@@ -2,6 +2,7 @@
 # Determine presence in the bedroom based on
 # - PIR Motion sensor
 # - TV status
+# - Bed sensor
 platform: template
 sensors:
   presence_bedroom:
