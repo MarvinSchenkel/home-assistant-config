@@ -103,6 +103,11 @@ sequence:
               {% else %}
                 {{ turn_on_transition }}
               {% endif %}
+        - service: light.turn_on
+          data:
+            entity_id: "{{ entity }}"
+            brightness_pct: "{{ brightness }}"
+            transition: "{{ entity_transition }}"
         - choose:
             - conditions: "{{ supports_color_temp }}"
               sequence:

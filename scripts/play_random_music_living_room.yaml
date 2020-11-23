@@ -7,4 +7,4 @@ sequence:
   - service: media_player.volume_set
     data:
       entity_id: media_player.living_room
-      volume_level: 0.12
+      volume_level: 0.10
