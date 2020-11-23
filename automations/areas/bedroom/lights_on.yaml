@@ -24,9 +24,20 @@ condition:
     entity_id: variable.bedroom_darklight
     state: 'dark'
 action:
-  - service: script.sunlight
-    data:
-      entities:
-        - light.bedside_left
-        - light.bedside_right
-      turn_on: true
+  # - service: adaptive_lighting.apply
+  #   data:
+  #     entity_id: switch.adaptive_lighting_bedroom
+  #     lights:
+  #       - light.bedside_left
+  #       - light.bedside_right
+  #     turn_on_lights: true
+  #- service: light.turn_on
+  #  entity_id:
+  #    - light.bedside_left
+  #    - light.bedside_right
+   - service: script.sunlight
+     data:
+       entities:
+         - light.bedside_left
+         - light.bedside_right
+       turn_on: true

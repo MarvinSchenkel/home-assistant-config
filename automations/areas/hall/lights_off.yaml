@@ -18,7 +18,7 @@ trigger:
       - sensor.laura_status
     to: 'Slaapt'
   - platform: state
-    entity_id: variable.livingroom_current_scene
+    entity_id: input_select.livingroom_current_scene
     to: 'movie'
 condition:
   - condition: state
@@ -41,7 +41,7 @@ condition:
         entity_id: sensor.laura_status
         state: 'Slaapt'
       - condition: state
-        entity_id: variable.livingroom_current_scene
+        entity_id: input_select.livingroom_current_scene
         state: 'movie'
 action:
   - service: light.turn_off

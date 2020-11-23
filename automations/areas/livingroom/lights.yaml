@@ -12,8 +12,15 @@ trigger:
       - input_select.livingroom_current_scene
       - input_boolean.setting_manual_lights
   - platform: state
-    entity_id: binary_sensor.presence_livingroom
+    entity_id: 
+      - binary_sensor.presence_livingroom
+      - binary_sensor.pir_livingroom
     to: 'on'
+  - platform: state
+    entity_id: binary_sensor.everyone_in_bed
+    to: 'on'
+    for:
+      seconds: 30
   - platform: state
     entity_id: binary_sensor.presence_livingroom
     to: 'off'
@@ -33,6 +40,9 @@ action:
           - condition: state
             entity_id: binary_sensor.presence_livingroom
             state: 'on'
+          - condition: state
+            entity_id: binary_sensor.everyone_in_bed
+            state: 'off'
           - condition: state
             entity_id: variable.livingroom_darklight
             state: 'dark'
@@ -63,6 +73,9 @@ action:
           - condition: state
             entity_id: binary_sensor.presence_livingroom
             state: 'on'
+          - condition: state
+            entity_id: binary_sensor.everyone_in_bed
+            state: 'off'
           - condition: state
             entity_id: variable.livingroom_darklight
             state: 'dark'

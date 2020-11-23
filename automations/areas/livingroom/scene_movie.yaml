@@ -11,6 +11,10 @@ trigger:
   - platform: state
     entity_id: media_player.kodi
     to: 'playing'
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
 condition:
   - condition: or
     conditions:
@@ -26,13 +30,16 @@ condition:
           - condition: state
             entity_id: media_player.living_room_tv
             state: 'playing'
-          - condition: state
-            entity_id: media_player.living_room_tv
-            attribute: app_name
-            state: "Netflix"
-      - condition: state
-        entity_id: media_player.kodi
-        state: 'playing'      
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: media_player.living_room_tv
+                attribute: app_name
+                state: "Netflix"
+              - condition: state
+                entity_id: media_player.living_room_tv
+                attribute: app_name
+                state: "Kodi"
 action:
   - service: input_select.select_option
     data:

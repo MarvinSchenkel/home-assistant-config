@@ -1,0 +1,28 @@
+---
+alias: areas_christmas_tree
+description: Turns the christmas tree lights on when motion has been detected
+mode: queued
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: 
+      - binary_sensor.presence_livingroom
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.presence_livingroom
+    to: 'off'
+    for:
+      seconds: 900
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.presence_livingroom
+            state: 'on'
+        sequence:
+          - service: rest_command.christmas_tree_on
+    default:
+      - service: rest_command.christmas_tree_off

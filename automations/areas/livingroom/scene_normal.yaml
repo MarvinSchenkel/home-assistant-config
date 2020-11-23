@@ -14,14 +14,11 @@ trigger:
     to: 'standby'
     for: '00:00:05'
   - platform: state
-    entity_id: media_player.kodi
-    to: 'paused' 
-  - platform: state
-    entity_id: media_player.kodi
-    to: 'idle'
-  - platform: state
     entity_id: media_player.living_room_tv
     to: 'off'
+  - platform: state
+    entity_id: media_player.living_room_tv
+    to: 'idle'
   - platform: time
     at: '14:00:00'
 condition:

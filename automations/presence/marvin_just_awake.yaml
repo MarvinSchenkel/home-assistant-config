@@ -5,10 +5,9 @@ mode: single
 trigger: 
   - platform: webhook
     webhook_id: marvin_awake
-  - platform: template
-    value_template: '{{ states("sensor.pir_bedroom_luminance") | int > 50 and is_state("light.bedside_left", "off") }}'
-    for:
-      seconds: 60
+  - platform: state
+    entity_id: variable.bedroom_darklight
+    to: "light"
 condition:
   condition: state
   entity_id: input_select.marvin_sleep_status_dropdown

@@ -5,18 +5,18 @@
 # boolean that will make sure the lights do not change back
 # to the circadian value.
 alias: areas_bedroom_automatic_lighting_off
-mode: queued
+mode: single
+max_exceeded: silent
 trigger:
-  - platform: state
-    entity_id:
-      - light.bedside_left
-      - light.bedside_right
-condition:
-  # Usually lights are triggered by my automations, which means the context.parent_id has a value
-  # When this value is None, the lights have been triggered by either the mobile app or my IKEA remote
-  # TODO: Fix triggers from sunrise script since the parent_id is None there as well :(
-  - "{{ trigger.to_state.context.parent_id == None }}"
+  platform: event
+  event_type: adaptive_lighting.manual_control
+variables:
+  light: "{{ trigger.event.data.entity_id }}"
+  switch: "{{ trigger.entity_id }}"
 action:
   - service: input_boolean.turn_off
     data:
       entity_id: input_boolean.bedroom_automatic_lighting
+  - service: notify.mobile_app_marvins_iphone
+    data_template: 
+      message: "{{ light }}"

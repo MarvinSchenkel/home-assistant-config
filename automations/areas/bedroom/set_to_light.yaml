@@ -8,11 +8,11 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: template
-    value_template: '{{ states("sensor.pir_bedroom_luminance") | int > 50 and is_state("light.bedside_left", "off") }}'
+    value_template: '{{ states("sensor.pir_bedroom_luminance") | int > 30 and is_state("light.bedside_left", "off") }}'
     for:
       seconds: 60
 condition:
-  - '{{ states("sensor.pir_bedroom_luminance") | int > 50 and is_state("light.bedside_left", "off") }}'
+  - '{{ states("sensor.pir_bedroom_luminance") | int > 30 and is_state("light.bedside_left", "off") }}'
 action:
   service: variable.set_variable
   data:

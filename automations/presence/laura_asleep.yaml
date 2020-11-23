@@ -5,6 +5,21 @@ mode: single
 trigger: 
   - platform: webhook
     webhook_id: flic_bed_right
+  - platform: state
+    entity_id: binary_sensor.everyone_in_bed
+    to: 'on'
+    for:
+      seconds: 60
+condition:
+  - condition: or
+    conditions:
+      - condition: and
+        conditions:      
+          - condition: time
+            after: "20:00:00"
+          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+      - "{{ trigger.platform == 'webhook' }}"
 action:
   - service: script.turn_on
     entity_id: script.webhook_marvin_laura_asleep

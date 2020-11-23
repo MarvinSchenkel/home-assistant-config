@@ -5,12 +5,11 @@ mode: single
 trigger: 
   - platform: webhook
     webhook_id: laura_awake
+  - platform: state
+    entity_id: variable.bedroom_darklight
+    to: "light"
   - platform: template
-    value_template: '{{ states("sensor.pir_bedroom_luminance") | int > 50 and is_state("light.bedside_left", "off") }}'
-    for:
-      seconds: 60
-  - platform: template
-    value_template: "{{ states('sensor.date_time') == (as_timestamp(states.sensor.rne_l21_next_alarm.state))| timestamp_custom('%Y-%m-%d, %H:%M', True) }}"
+    value_template: "{{ states('sensor.date_time') == (as_timestamp(states.sensor.rne_l21_volgende_alarm.state))| timestamp_custom('%Y-%m-%d, %H:%M', True) }}"
 condition:
   condition: state
   entity_id: input_select.laura_sleep_status_dropdown
