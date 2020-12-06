@@ -1,0 +1,6 @@
+device_tracker:
+  - platform: fritz  
+    new_device_defaults:
+      track_new_devices: true
+    interval_seconds: 30
+    consider_home: 300  

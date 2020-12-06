@@ -1,2 +1,2 @@
 sensor.marvin_status:
-  entity_picture: "/local/marvin.png"
+  entity_picture: "/local/marvin"

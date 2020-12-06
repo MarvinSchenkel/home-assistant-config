@@ -5,4 +5,5 @@ sensors:
       {{  is_state("binary_sensor.pir_livingroom", "on")  
           or is_state("media_player.living_room_tv", "playing")
           or is_state("media_player.living_room", "playing")
+          or is_state("device_tracker.spoo1_nb134257", "home")
           or is_state("media_player.playstation_4", "on")       }}

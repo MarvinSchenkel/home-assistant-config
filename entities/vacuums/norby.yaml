@@ -1,4 +1,5 @@
 ---
 platform: xiaomi_miio
+name: Norby
 host: !secret vacuum_host
 token: !secret vacuum_token
