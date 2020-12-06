@@ -8,11 +8,9 @@ trigger:
   - platform: state
     entity_id: media_player.living_room_tv
     to: 'paused'
-    for: '00:00:05'
   - platform: state
     entity_id: media_player.living_room_tv
     to: 'standby'
-    for: '00:00:05'
   - platform: state
     entity_id: media_player.living_room_tv
     to: 'off'

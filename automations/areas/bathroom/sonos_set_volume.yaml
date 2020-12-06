@@ -39,7 +39,7 @@ action:
         - service: media_player.volume_set
           data:
             entity_id: media_player.bathroom
-            volume_level: 0.09
+            volume_level: 0.06
     default:
       - service: media_player.volume_set
         data:

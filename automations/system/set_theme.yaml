@@ -1,0 +1,32 @@
+---
+alias: 'system_set_theme'
+description: 'Automatically switch theme to dark so Dwains theme looks nice on mobile'
+initial_state: 'true'
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id: sun.sun
+action:
+  - service: frontend.set_theme
+    data:
+      name: >
+        {% if (is_state('sun.sun', 'above_horizon')) %}
+          dwains-theme-light
+        {% elif (is_state('sun.sun', 'below_horizon')) %}
+          dwains-theme-dark
+        {% else %}
+          dwains-theme-light
+        {% endif %}
+      mode: light
+  - service: frontend.set_theme
+    data:
+      name: >
+        {% if (is_state('sun.sun', 'above_horizon')) %}
+          dwains-theme-light
+        {% elif (is_state('sun.sun', 'below_horizon')) %}
+          dwains-theme-dark
+        {% else %}
+          dwains-theme-light
+        {% endif %}
+      mode: dark

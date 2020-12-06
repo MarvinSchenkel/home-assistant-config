@@ -28,7 +28,6 @@ trigger:
       seconds: 900
   - platform: state
     entity_id: variable.livingroom_darklight
-    to: 'light'
 condition:  
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -67,6 +66,7 @@ action:
             data:
               entities:
                 - light.corner_lamp
+              min_brightness: 15
               turn_on: true
       # Candle scene > Do not apply circadian lighting
       - conditions:
