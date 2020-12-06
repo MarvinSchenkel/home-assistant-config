@@ -1,7 +1,6 @@
  # https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/global.html
  
 global:
-  language: nl
   weather: weather.buienradar # Configure a weather entity see HA docs for more info.
   # outside_temperature: sensor.dark_sky_temperature # Configure a sensor here!
   # outside_humidity: sensor.dark_sky_humidity # Configure a sensor here!

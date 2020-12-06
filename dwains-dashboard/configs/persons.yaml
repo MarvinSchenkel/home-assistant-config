@@ -3,7 +3,7 @@
 persons: 
   - name: Marvin
     track: sensor.marvin_status #person.marvin
-    picture_path: 'marvin'
+    #picture_path: 'marvin'
     show_map: 'false'
     addons:
       - name: Marvin waze
@@ -20,7 +20,7 @@ persons:
           map_tracker: 'person.marvin'
   - name: Laura
     track: sensor.laura_status
-    picture_path: 'laura'
+    #picture_path: 'laura'
     show_map: 'false'
     addons:
       - name: Status
