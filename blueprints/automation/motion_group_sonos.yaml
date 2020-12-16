@@ -1,0 +1,84 @@
+blueprint:
+  name: Motion-activated Music
+  description: Group Sonos to a main device when motion is detected.
+  domain: automation
+  input:
+    presence_entity:
+      name: A sensor to detect presence (can be a motion sensor)
+      selector:
+        entity:
+          domain: binary_sensor
+    sonos_source:
+      name: Sonos source
+      description: Sonos entity to group the target Sonos to
+      selector:
+        entity:
+          integration: sonos
+    sonos_target:
+      name: Sonos target
+      description: Sonos target to group to the source Sonos
+      selector:
+        entity:
+          integration: sonos
+    no_presence_wait:
+      name: Wait time
+      description: Time to leave the sonos grouped after last presence is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    custom_conditions:
+      name: Custom conditions
+      description: A list of custom condititions that also have to be met before grouping the sonos
+
+mode: restart
+max_exceeded: silent
+
+variables:
+  sonos_source: !input sonos_source
+
+trigger:
+- platform: state
+  entity_id: !input presence_entity
+  from: 'off'
+  to: 'on'
+- platform: homeassistant
+  event: start
+- platform: event
+  event_type: automation_reloaded
+
+condition:
+- condition: state
+  entity_id: !input presence_entity
+  state: 'on'
+- condition: state
+  entity_id: !input sonos_source
+  state: 'playing'
+- condition: or
+  conditions:
+    - condition: state
+      entity_id: !input sonos_target
+      state: 'paused'
+    - condition: state
+      entity_id: !input sonos_target
+      state: 'idle'
+- '{{ state_attr(sonos_source, "source")  != "TV" }}'
+- condition: and
+  conditions: !input custom_conditions
+
+action:
+- service: sonos.join
+  data:
+    master: !input sonos_source
+    entity_id: !input sonos_target
+- wait_for_trigger:
+    platform: state
+    entity_id: !input presence_entity
+    from: "on"
+    to: "off"
+- delay: !input no_presence_wait
+- service: sonos.unjoin
+  data:
+    entity_id: !input sonos_target
