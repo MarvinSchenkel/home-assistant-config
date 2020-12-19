@@ -8,7 +8,7 @@ rooms:
     motion: binary_sensor.pir_livingroom
     media_player: media_player.living_room
     vacuum:
-      entity: vacuum.xiaomi_vacuum_cleaner
+      entity: vacuum.norby
       advanced_view: 'true'
     more_entities:
       entities:

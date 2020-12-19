@@ -1,0 +1,46 @@
+- id: '1608141201061'
+  alias: Motion-activated Music
+  description: ''
+  use_blueprint:
+    path: motion_group_sonos.yaml
+    input:
+      no_presence_wait: '120'
+      presence_entity: binary_sensor.presence_bathroom
+      sonos_source:
+        entity_id: media_player.living_room
+      sonos_target:
+        entity_id: media_player.bathroom
+- id: '1608141329213'
+  alias: Motion-activatedMusic
+  description: ''
+  use_blueprint:
+    path: motion_group_sonos.yaml
+    input:
+      no_presence_wait: '120'
+      presence_entity: binary_sensor.presence_bathroom
+      sonos_source:
+        entity_id: media_player.living_room
+      sonos_target:
+        entity_id: media_player.bathroom
+- id: '1608141472942'
+  alias: Motion-activated Music
+  description: ''
+  use_blueprint:
+    path: motion_group_sonos.yaml
+    input:
+      no_presence_wait: '120'
+      presence_entity: binary_sensor.presence_bathroom
+      sonos_source:
+        entity_id: media_player.living_room
+      sonos_target:
+        entity_id: media_player.bathroom
+- id: '1608141560418'
+  alias: Motion-activated Light
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      no_motion_wait: '120'
+      motion_entity: binary_sensor.pir_bedroom
+      light_target:
+        entity_id: light.bedside_right

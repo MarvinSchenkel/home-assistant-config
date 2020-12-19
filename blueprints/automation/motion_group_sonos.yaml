@@ -1,6 +1,8 @@
 blueprint:
-  name: Motion-activated Music
-  description: Group Sonos to a main device when motion is detected.
+  name: Group Sonos on Motion
+  description: >
+    Group a Sonos device to a main device when presence (e.g. motion) is detected and the main device is playing music.
+    Can be extended with custom conditions, for example, only group the Sonos when you're not asleep
   domain: automation
   input:
     presence_entity:
@@ -31,6 +33,7 @@ blueprint:
           unit_of_measurement: seconds
     custom_conditions:
       name: Custom conditions
+      default: []
       description: A list of custom condititions that also have to be met before grouping the sonos
 
 mode: restart

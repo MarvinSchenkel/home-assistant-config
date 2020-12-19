@@ -4,7 +4,7 @@ alias: notification_vacuum_on
 mode: single
 trigger:
   - platform: state
-    entity_id: vacuum.xiaomi_vacuum_cleaner
+    entity_id: vacuum.norby
     to: 'cleaning'
 condition:
   - condition: state
@@ -14,9 +14,10 @@ condition:
     entity_id: input_select.laura_status_dropdown
     state: 'Weg'
 action:
-  - service: notify.mobile_app_rne_l21
-    data: 
-      message: "Norby gaat aan de slag!"
-  - service: notify.mobile_app_marvins_iphone
-    data: 
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+      type: "away_only"
       message: "Norby gaat aan de slag!"

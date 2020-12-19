@@ -13,6 +13,8 @@ trigger:
       - sensor.pir_wc_battery_level
     below: 1
 action:
-  - service: notify.mobile_app_marvins_iphone
-    data_template: 
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
       message: "De batterij van de sensor {{ trigger.to_state.attributes.friendly_name }} is leeg!"

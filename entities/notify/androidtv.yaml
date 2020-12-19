@@ -1,0 +1,4 @@
+---
+platform: nfandroidtv
+name: Woonkamer
+host: !secret android_tv_host

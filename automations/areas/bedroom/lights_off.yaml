@@ -40,4 +40,4 @@ action:
       entity_id: 
         - light.bedside_left
         - light.bedside_right
-      transition: 5
+      transition: 3

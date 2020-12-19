@@ -36,9 +36,12 @@ action:
   - choose:
       # Normal scene -> Apply circadian lighting
       - conditions:
-          - condition: state
-            entity_id: binary_sensor.presence_livingroom
-            state: 'on'
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: binary_sensor.presence_livingroom
+                state: 'on'
+              - "{{ (now() - states.binary_sensor.pir_livingroom.last_changed).total_seconds() < 90 }}"
           - condition: state
             entity_id: binary_sensor.everyone_in_bed
             state: 'off'

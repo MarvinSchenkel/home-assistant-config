@@ -1,0 +1,66 @@
+alias: send_notification
+description: >
+  Automatically send a notification to one or more
+  devices, based on our presence and states of other devices.
+mode: parallel
+max: 100
+
+fields:
+  message:
+    description: The message that needs to be sent to the receivers
+  title:
+    description: Title of the message 
+  receivers:
+    description: List of people that need to receive the notification
+  type:
+    description: Type of the notification, default 'normal'
+
+variables:
+  type: "{{ type | default('normal') }}"
+  home_status: ['Thuis', 'Net Thuis']
+  away_status: ['Weg', 'Net weg', 'Lang weg']
+  laura_state: "{{ states('input_select.laura_status_dropdown') }}"
+  marvin_state: "{{ states('input_select.marvin_status_dropdown') }}"
+
+sequence:
+  - repeat:
+      count: "{{ receivers | length }}" 
+      sequence:
+        - variables:
+            receiver: "{{ receivers[repeat.index-1] }}"
+            name: "{{ receiver[0] | upper }}{{ receiver[1:] }}"
+            title: "{{ title | default('Hey') }} {{ name }}!"
+        # First check if we need to play the notifcation on our TV
+        - choose:
+            - conditions:
+                condition: or
+                conditions:
+                  - "{{ receiver == 'marvin' and marvin_state in home_status and not is_state('media_player.living_room_tv', 'off') }}"
+                  - "{{ receiver == 'laura' and laura_state in home_status and not is_state('media_player.living_room_tv', 'off') }}"
+              sequence:
+                - service: notify.woonkamer
+                  data:
+                    message: "{{ message }}"
+                    title: "{{ title }}"
+                    data:
+                      duration: 7
+                      position: top-right
+
+        # Then check if we need to play it as an alert throughout the house (urgent messages only)
+        # TODO
+
+        # Send mobile notifications
+        - choose:
+            - conditions: "{{ receiver == 'marvin' and (type == 'normal' or (type == 'away_only' and marvin_state in away_status )) }}"
+              sequence:
+                - service: notify.mobile_app_marvins_iphone
+                  data:
+                    message: "{{ message }}"
+                    title: "{{ title }}"
+        - choose:
+            - conditions: "{{ receiver == 'laura' and (type == 'normal' or (type == 'away_only' and laura_state in away_status )) }}"
+              sequence:
+                - service: notify.mobile_app_rne_l21
+                  data:
+                    message: "{{ message }}"
+                    title: "{{ title }}"

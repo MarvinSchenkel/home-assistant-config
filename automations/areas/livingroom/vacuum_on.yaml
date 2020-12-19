@@ -19,11 +19,11 @@ condition:
       entity_id: input_select.laura_status_dropdown
       state: 'Weg'
     - condition: state
-      entity_id: vacuum.xiaomi_vacuum_cleaner
+      entity_id: vacuum.norby
       state: 'docked'
       for:
         hours: 6
 action:
   - service: vacuum.start
     data:
-      entity_id: vacuum.xiaomi_vacuum_cleaner
+      entity_id: vacuum.norby
