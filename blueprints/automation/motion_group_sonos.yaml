@@ -41,11 +41,11 @@ max_exceeded: silent
 
 variables:
   sonos_source: !input sonos_source
+  sonos_target: !input sonos_target
 
 trigger:
 - platform: state
   entity_id: !input presence_entity
-  from: 'off'
   to: 'on'
 - platform: homeassistant
   event: start
@@ -61,12 +61,15 @@ condition:
   state: 'playing'
 - condition: or
   conditions:
+    # Do not trigger the 'action' if our target is already playing some music
     - condition: state
       entity_id: !input sonos_target
       state: 'paused'
     - condition: state
       entity_id: !input sonos_target
       state: 'idle'
+    # However, re-trigger the 'action' if we are already grouped to prevent early ungrouping
+    - '{{ sonos_target in state_attr(sonos_source, "sonos_group") }}'
 - '{{ state_attr(sonos_source, "source")  != "TV" }}'
 - condition: and
   conditions: !input custom_conditions
