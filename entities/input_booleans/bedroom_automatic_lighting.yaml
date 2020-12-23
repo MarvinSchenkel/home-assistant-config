@@ -2,3 +2,4 @@
 # This boolean is used to keep track of whether the bedroom
 # should enable automatic lighting
 name: bedroom_automatic_lighting
+initial: true

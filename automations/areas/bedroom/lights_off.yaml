@@ -21,6 +21,9 @@ condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
     state: 'off'
+  - condition: state
+    entity_id: input_boolean.bedroom_automatic_lighting
+    state: 'on'
   - condition: or
     conditions:
       - condition: state
@@ -38,6 +41,5 @@ action:
   - service: light.turn_off
     data:
       entity_id: 
-        - light.bedside_left
-        - light.bedside_right
+        - light.zha_group_bedroom
       transition: 3

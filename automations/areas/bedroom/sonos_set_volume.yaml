@@ -1,0 +1,25 @@
+---
+description: Set volume of sonos based on motion sensor
+alias: areas_bedroom_sonos_set_volume
+mode: queued
+trigger:
+  - platform: state
+    entity_id: 
+      - binary_sensor.presence_bedroom
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+condition:
+  - condition: state
+    entity_id: binary_sensor.presence_bedroom
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.bedroom_automatic_volume
+    state: 'on'
+action:
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.bedroom
+      volume_level: 0.15
+      

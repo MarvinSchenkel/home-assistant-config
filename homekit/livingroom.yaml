@@ -1,6 +1,5 @@
 ---
-- light.fibaro_ceiling
-- light.fibaro_dinner
-- light.fibaro_kitchen
-- light.corner_lamp
-- binary_sensor.pir_livingroom
+- script.play_random_music_living_room
+- script.scene_living_room_normal
+- script.scene_living_room_movie
+- script.scene_living_room_candle

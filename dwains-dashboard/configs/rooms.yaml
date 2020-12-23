@@ -27,6 +27,8 @@ rooms:
       entities:
         - entity: sensor.pir_bedroom_battery_level
         - entity: sensor.pir_bedroom_luminance
+        - entity: input_boolean.bedroom_automatic_lighting
+        - entity: input_boolean.bedroom_automatic_volume
         - entity: variable.bedroom_darklight
 
   - name: Badkamer

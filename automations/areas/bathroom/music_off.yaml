@@ -13,17 +13,14 @@ trigger:
     for:
       seconds: 75
 condition:
-  condition: state
-  entity_id: binary_sensor.presence_bathroom
-  state: 'off'
-  for:
-    seconds: 75
+  - condition: state
+    entity_id: binary_sensor.presence_bathroom
+    state: 'off'
+    for:
+      seconds: 75 
+  # Only disable if it is playing by its own, since the blueprint takes care of grouped sonos
+  - "{{ state_attr('media_player.bathroom', 'sonos_group') | length == 1 }}"
 action:
-  - service: sonos.unjoin
-    data:
-      entity_id: media_player.bathroom
-  - delay:
-      seconds: 1
   - service: media_player.media_pause
     data:
       entity_id: media_player.bathroom
