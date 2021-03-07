@@ -1,0 +1,4 @@
+platform: picnic
+username: !secret picnic_user
+password: !secret picnic_password
+country_code: "NL"

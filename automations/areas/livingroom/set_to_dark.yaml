@@ -8,9 +8,9 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: template
-    value_template: '{{ states("sensor.pir_livingroom_luminance") | int  < 10 }}'
+    value_template: '{{ states("sensor.pir_kitchen_luminance") | int  < 15 }}'
 condition:
-  - '{{ states("sensor.pir_livingroom_luminance") | int  < 10 }}'
+  - '{{ states("sensor.pir_kitchen_luminance") | int  < 15 }}'
 action:
   service: variable.set_variable
   data:

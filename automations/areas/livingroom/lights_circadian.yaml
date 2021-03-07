@@ -1,0 +1,32 @@
+---
+alias: areas_livingroom_lights_circadian
+description: Adjust living room lights to circadian rythm
+mode: queued
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: group.living_room_lights
+    to: 'on'
+  - platform: time_pattern
+    minutes: "/5"
+
+condition:  
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: 'off'
+  - condition: state
+    entity_id: input_select.livingroom_current_scene
+    state: 'normal'
+
+action:
+- service: script.sunlight
+  data:
+    entities: light.livingroom
+- service: script.sunlight
+  data:
+    entities: light.kitchen
+    max_brightness: 75

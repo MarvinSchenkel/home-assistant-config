@@ -2,59 +2,73 @@
 
 rooms:
   - name: Woonkamer
-    icon: mdi:sofa
+    icon: mdi:fireplace
     light: group.living_room_lights
-    temperature: sensor.pir_livingroom_temperature
-    motion: binary_sensor.pir_livingroom
-    media_player: media_player.living_room
+    temperature: sensor.pir_kitchen_temperature
+    motion: binary_sensor.presence_livingroom
+    media_player: group.living_room_speakers
     vacuum:
       entity: vacuum.norby
       advanced_view: 'true'
     more_entities:
       entities:
         - entity: input_select.livingroom_current_scene
-        - entity: sensor.pir_livingroom_battery_level
-        - entity: sensor.pir_livingroom_luminance
+        - entity: sensor.pir_kitchen_battery_level
+        - entity: sensor.pir_kitchen_luminance
+        - entity: binary_sensor.pir_kitchen
         - entity: variable.livingroom_darklight
+
+  - name: Hal
+    icon: mdi:key
+    light: light.fibaro_hall_downstairs
+    temperature: sensor.pir_hall_downstairs_temperature
+    motion: binary_sensor.presence_hall_downstairs
+    more_entities:
+      entities:
+        - entity: sensor.pir_hall_downstairs_battery_level
+        - entity: sensor.pir_hall_downstairs_luminance
+        - entity: variable.hall_downstairs_darklight
+
+  - name: Overloop
+    icon: mdi:stairs-up
+    light: light.fibaro_hall_upstairs
+    temperature: sensor.pir_hall_upstairs_temperature
+    motion: binary_sensor.presence_hall_upstairs
+    more_entities:
+      entities:
+        - entity: sensor.pir_hall_upstairs_battery_level
+        - entity: sensor.pir_hall_upstairs_luminance
+        - entity: variable.hall_upstairs_darklight
+
+  - name: Badkamer
+    icon: mdi:shower-head
+    light: light.fibaro_bathroom
+    temperature: sensor.pir_bathroom_temperature
+    motion: binary_sensor.presence_bathroom
+    media_player: media_player.sonos_bathroom
+    more_entities:
+      entities:
+        - entity: sensor.pir_bathroom_battery_level
+        - entity: sensor.pir_bathroom_luminance
+        - entity: binary_sensor.pir_bathroom
 
   - name: Slaapkamer
     icon: fas:bed
     light: group.bedroom_lights
     temperature: sensor.pir_bedroom_temperature
-    motion: binary_sensor.pir_bedroom
+    motion: binary_sensor.presence_bedroom
     media_player: media_player.bedroom
     more_entities:
       entities:
         - entity: sensor.pir_bedroom_battery_level
         - entity: sensor.pir_bedroom_luminance
+        - entity: binary_sensor.pir_bedroom
         - entity: input_boolean.bedroom_automatic_lighting
         - entity: input_boolean.bedroom_automatic_volume
         - entity: variable.bedroom_darklight
 
-  - name: Badkamer
-    icon: mdi:shower
-    light: light.fibaro_bathroom
-    temperature: sensor.pir_bathroom_temperature
-    motion: binary_sensor.pir_bathroom
-    media_player: media_player.bathroom
-    more_entities:
-      entities:
-        - entity: sensor.pir_bathroom_battery_level
-        - entity: sensor.pir_bathroom_luminance
-
-  - name: Hal
-    icon: mdi:key
-    light: light.fibaro_hallway
-    temperature: sensor.pir_hallway_temperature
-    motion: binary_sensor.pir_hallway
-    more_entities:
-      entities:
-        - entity: sensor.pir_hallway_battery_level
-        - entity: sensor.pir_hallway_luminance
-        - entity: variable.hallway_darklight
-
   - name: WC
-    icon: mdi:paper-roll
+    icon: mdi:toilet
     light: light.fibaro_wc
     temperature: sensor.pir_wc_temperature
     motion: binary_sensor.pir_wc

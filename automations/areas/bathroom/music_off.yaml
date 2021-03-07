@@ -19,8 +19,8 @@ condition:
     for:
       seconds: 75 
   # Only disable if it is playing by its own, since the blueprint takes care of grouped sonos
-  - "{{ state_attr('media_player.bathroom', 'sonos_group') | length == 1 }}"
+  - "{{ state_attr('media_player.sonos_bathroom', 'sonos_group') | length == 1 }}"
 action:
   - service: media_player.media_pause
     data:
-      entity_id: media_player.bathroom
+      entity_id: media_player.sonos_bathroom

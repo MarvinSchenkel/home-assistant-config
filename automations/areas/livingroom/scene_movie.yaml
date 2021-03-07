@@ -6,8 +6,13 @@ trigger:
   - platform: webhook
     webhook_id: flic_livingroom_single
   - platform: state
-    entity_id: media_player.living_room_tv
+    entity_id: 
+      - media_player.living_room_tv
     to: 'playing'
+  - platform: state
+    entity_id: media_player.apple_tv
+    to: 'playing'
+    for: 3
   - platform: state
     entity_id: media_player.kodi
     to: 'playing'
@@ -28,8 +33,17 @@ condition:
       - condition: and
         conditions:
           - condition: state
-            entity_id: media_player.living_room_tv
+            entity_id: media_player.apple_tv
             state: 'playing'
+          - condition: state
+            entity_id: media_player.apple_tv
+            attribute: app_name
+            state: "Netflix"
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: media_player.living_room_tv
+            state: 'playing'          
           - condition: or
             conditions:
               - condition: state

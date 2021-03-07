@@ -1,0 +1,32 @@
+---
+description: >
+  Actions configured for my IKEA Remote in the living room:
+    - Middle buttion: Toggle normal / movie scene
+alias: areas_livingroom_remote
+
+use_blueprint:
+  path: wormie_dk/zha-ikea-five-button-remote.yaml
+  input:
+    remote: d1b641827c2d934e455536d561d12866
+    button_on_off:
+      # Switch from scene 'normal' to 'movie' or 'any scene' to 'normal'
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.livingroom_current_scene
+                state: 'normal'
+            sequence:
+              - service: scene.turn_on
+                target:
+                  entity_id: scene.livingroom_movie
+                data:
+                  transition: 4
+        default:
+          - service: scene.turn_on
+            entity_id: scene.livingroom_normal
+            data:
+              transition: 2
+    button_brightness_up_short: ~ 
+    button_brightness_down_short: ~
+    button_left_short: ~
+    button_right_short: ~      

@@ -6,13 +6,19 @@ trigger:
   - platform: webhook
     webhook_id: flic_livingroom_double
   - platform: state
-    entity_id: media_player.living_room_tv
-    to: 'paused'
+    entity_id: 
+      - media_player.living_room_tv
+      - media_player.apple_tv
+    to: 
+      - 'paused'
+      - 'idle'
   - platform: state
     entity_id: media_player.living_room_tv
     to: 'standby'
   - platform: state
-    entity_id: media_player.living_room_tv
+    entity_id: 
+      - media_player.living_room_tv
+      - media_player.apple_tv
     to: 'off'
   - platform: state
     entity_id: media_player.living_room_tv

@@ -13,7 +13,7 @@ sequence:
         - service: media_player.select_source
           data_template:
             entity_id: '{{ sonos_entity }}'
-            source: '{{ ["Ambient / Relax", "Deep", "Trance", "Progressive", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Coffee Club"] | random }}'
+            source: '{{ ["Ambient / Relax", "Deep", "Trance", "Progressive", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Coffee Club", "Chill Beats Music \U0001F497 groove, relax, study"] | random }}'
     - conditions:
         - condition: template
           value_template: '{{ genre == "chill" }}'
@@ -21,7 +21,7 @@ sequence:
         - service: media_player.select_source
           data_template:
             entity_id: '{{ sonos_entity }}'
-            source: '{{ ["Ambient / Relax", "Chill step", "Chillout Lounge", "Chillout Lounge", "Lounge - Soft House", "Lounge - Soft House", "The Wind Down"] | random }}'  
+            source: '{{ ["Ambient / Relax", "Chill step", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Lounge - Soft House", "The Wind Down", "Chill Beats Music \U0001F497 groove, relax, study", "Chill Tracks"] | random }}'  
     - conditions:
         - condition: template
           value_template: '{{ genre == "morning" }}'
@@ -29,5 +29,5 @@ sequence:
         - service: media_player.select_source
           data_template:
             entity_id: '{{ sonos_entity }}'
-            source: '{{ ["Meditative Guitar", "Ambient Relaxation"] | random }}'
+            source: '{{ ["Meditative Guitar", "Ambient Relaxation", "Spa Treatment"] | random }}'
       

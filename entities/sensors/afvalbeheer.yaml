@@ -1,0 +1,12 @@
+---
+platform: afvalbeheer
+wastecollector: RMN
+resources:
+  - restafval
+  - gft
+  - papier
+  - pmd
+postcode: !secret home_postal_code
+streetnumber: !secret home_street_number
+dutch: 1
+builtinicons: 0

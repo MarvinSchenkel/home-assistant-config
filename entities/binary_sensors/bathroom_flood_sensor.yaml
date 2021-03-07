@@ -4,4 +4,4 @@ platform: template
 sensors:
   bathroom_flood:
     value_template: >
-      {{  states("binary_sensor.notification_sensor_water_water_leak") }}
+      {{  states("binary_sensor.flood_sensor_water_alarm_water_leak_detected") }}

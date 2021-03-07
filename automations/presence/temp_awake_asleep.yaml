@@ -1,0 +1,27 @@
+---
+alias: temp_awake_asleep
+description: Temp
+mode: single
+trigger:
+  - platform: time
+    at:
+      - "23:00:00"
+      - "07:30:00"
+action:
+  - choose:
+      conditions:
+        - condition: time
+          after: "22:59:00"
+          before: '00:00:00'
+      sequence:
+        - service: script.turn_on
+          entity_id: script.webhook_marvin_laura_asleep
+    default:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.laura_sleep_status_dropdown
+          option: 'Net wakker'
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.marvin_sleep_status_dropdown
+          option: 'Net wakker'

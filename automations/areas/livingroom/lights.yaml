@@ -2,6 +2,7 @@
 alias: areas_livingroom_lights
 description: Turns the livingroom lights on when motion has been detected
 mode: queued
+
 trigger:
   - platform: homeassistant
     event: start
@@ -9,96 +10,39 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: 
-      - input_select.livingroom_current_scene
       - input_boolean.setting_manual_lights
-  - platform: state
-    entity_id: 
-      - binary_sensor.presence_livingroom
-      - binary_sensor.pir_livingroom
-    to: 'on'
+      - variable.livingroom_darklight
   - platform: state
     entity_id: binary_sensor.everyone_in_bed
     to: 'on'
     for:
       seconds: 30
-  - platform: state
-    entity_id: binary_sensor.presence_livingroom
-    to: 'off'
-    for:
-      seconds: 900
-  - platform: state
-    entity_id: variable.livingroom_darklight
+
 condition:  
   - condition: state
     entity_id: input_boolean.setting_manual_lights
     state: 'off'
+  - condition: numeric_state
+    entity_id: sensor.num_people_at_home
+    above: 0 
+
 action:
   - choose:
-      # Normal scene -> Apply circadian lighting
       - conditions:
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id: binary_sensor.presence_livingroom
-                state: 'on'
-              - "{{ (now() - states.binary_sensor.pir_livingroom.last_changed).total_seconds() < 90 }}"
           - condition: state
             entity_id: binary_sensor.everyone_in_bed
             state: 'off'
           - condition: state
             entity_id: variable.livingroom_darklight
             state: 'dark'
-          - condition: state
-            entity_id: input_select.livingroom_current_scene
-            state: normal
         sequence:
-          - service: script.sunlight
+          - service: scene.turn_on
+            target:
+              entity_id: scene.livingroom_normal
             data:
-              entities:
-                - light.fibaro_ceiling
-              turn_on: true
-              max_brightness: 12
-          - service: script.sunlight
-            data:
-              entities:
-                - light.fibaro_kitchen
-                - light.fibaro_dinner
-              turn_on: true
-              max_brightness: 55
-          - service: script.sunlight
-            data:
-              entities:
-                - light.corner_lamp
-              min_brightness: 15
-              turn_on: true
-      # Candle scene > Do not apply circadian lighting
-      - conditions:
-          - condition: state
-            entity_id: binary_sensor.presence_livingroom
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.everyone_in_bed
-            state: 'off'
-          - condition: state
-            entity_id: variable.livingroom_darklight
-            state: 'dark'
-          - condition: state
-            entity_id: input_select.livingroom_current_scene
-            state: candle
-        sequence:
-          - service: light.turn_off
-            entity_id: 
-              - light.fibaro_ceiling
-              - light.fibaro_kitchen
-          - service: light.turn_on
-            entity_id: light.corner_lamp
-            data:
-              brightness_pct: 20
-          - service: light.turn_on
-            entity_id: light.fibaro_dinner
-            data:
-              brightness_pct: 7
-    # Motion sensor off + (implicit) movie scene
+              transition: 3
     default:
       - service: light.turn_off
         entity_id: group.living_room_lights
+        data:
+          transition: 5

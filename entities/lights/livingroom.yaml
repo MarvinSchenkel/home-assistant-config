@@ -1,0 +1,6 @@
+---
+platform: group
+name: livingroom
+entities:
+  - light.fibaro_livingroom
+  - light.dinner

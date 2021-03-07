@@ -1,0 +1,9 @@
+platform: template
+sensors:
+  rmn_next_garbage_pickup:
+    value_template: >-
+      {% if state_attr('sensor.rmn_papier', 'Days-until') | int == states('sensor.rmn_next_pickup_in') | int %} het papier
+      {% elif state_attr('sensor.rmn_gft', 'Days-until') | int == states('sensor.rmn_next_pickup_in') | int %} het GFT
+      {% elif state_attr('sensor.rmn_pmd', 'Days-until') | int == states('sensor.rmn_next_pickup_in') | int %} het PMD
+      {% elif state_attr('sensor.rmn_restafval', 'Days-until') | int == states('sensor.rmn_next_pickup_in') | int %} de grijze container
+      {% endif %}

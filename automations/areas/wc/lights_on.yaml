@@ -20,8 +20,11 @@ condition:
   - condition: state
     entity_id: binary_sensor.presence_wc
     state: 'on'
-  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+  - condition: or
+    conditions:
+      - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+      - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+      - "{{ trigger.entity_id == 'light.fibaro_wc' }}"
 action:
   - service: script.sunlight
     data:

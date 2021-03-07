@@ -1,0 +1,7 @@
+---
+name: livingroom_movie
+entities:
+  light.livingroom:
+    state: 'off'
+  light.kitchen:
+    state: 'off'

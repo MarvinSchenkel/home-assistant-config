@@ -1,0 +1,22 @@
+---
+description: Keep track of the currently activated scene
+alias: system_events_scene_activated
+mode: queued
+
+trigger:
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: scene
+      service: turn_on
+
+variables:
+  scene_room: "{{ trigger.event.data.service_data.entity_id[0].replace('scene.', '').split('_')[0] }}"
+  scene_name: "{{ trigger.event.data.service_data.entity_id[0].replace('scene.', '').split('_')[1] }}"
+
+action:
+  # TODO: Handle multiple rooms
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.livingroom_current_scene
+      option: "{{ scene_name }}"

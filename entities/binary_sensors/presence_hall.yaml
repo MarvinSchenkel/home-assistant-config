@@ -1,5 +1,0 @@
-platform: template
-sensors:
-  presence_hall:
-    value_template: >
-      {{  states("binary_sensor.pir_hallway") }}

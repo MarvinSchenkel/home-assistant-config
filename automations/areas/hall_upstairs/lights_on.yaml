@@ -1,0 +1,32 @@
+---
+alias: areas_hall_upstairs_lights_on
+description: Turns the hallway lights on when motion has been detected
+mode: queued
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.presence_hall_upstairs
+
+condition:
+  - condition: state
+    entity_id: binary_sensor.presence_hall_upstairs
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: 'off'
+  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+  - condition: state
+    entity_id: variable.hall_upstairs_darklight
+    state: 'dark'
+
+action:
+  - service: script.sunlight
+    data:
+      entities:
+        - light.fibaro_hall_upstairs
+      turn_on: true

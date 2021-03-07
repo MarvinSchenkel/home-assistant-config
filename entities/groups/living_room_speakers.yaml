@@ -1,0 +1,4 @@
+living_room_speakers:
+  entities:
+    - media_player.sonos_livingroom
+    - media_player.sonos_kitchen

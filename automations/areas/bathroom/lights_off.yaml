@@ -11,7 +11,7 @@ trigger:
     entity_id: binary_sensor.presence_bathroom
     to: 'off'
     for:
-      seconds: 90
+      seconds: 120
 condition:
   - condition: state
     entity_id: light.fibaro_bathroom
@@ -23,7 +23,7 @@ condition:
     entity_id: binary_sensor.presence_bathroom
     state: 'off'
     for:
-      seconds: 90
+      seconds: 120
 action:
   service: light.turn_off
   data:

@@ -6,8 +6,8 @@ use_blueprint:
   path: motion_group_sonos.yaml
   input:
     presence_entity: binary_sensor.presence_bathroom
-    sonos_source: media_player.living_room
-    sonos_target: media_player.bathroom
+    sonos_source: media_player.sonos_livingroom
+    sonos_target: media_player.sonos_bathroom
     no_presence_wait: 75
     custom_conditions:
       - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"

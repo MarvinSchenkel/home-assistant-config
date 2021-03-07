@@ -2,7 +2,7 @@ variable:
   ###########################
   ## Hallway
   ###########################
-  hallway_darklight:
+  hall_downstairs_darklight:
 
   ###########################
   ## Living room
@@ -13,3 +13,5 @@ variable:
   ## Bedroom
   ###########################
   bedroom_darklight:
+
+  hall_upstairs_darklight:

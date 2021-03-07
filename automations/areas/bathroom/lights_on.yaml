@@ -16,11 +16,13 @@ condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
     state: 'off'
+  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
 action:
   - service: script.sunlight
     data:
       entities:
         - light.fibaro_bathroom
       turn_on: true
+      min_brightness: 70
       turn_on_transition: 1
-      min_brightness: 62

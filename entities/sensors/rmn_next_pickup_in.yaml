@@ -1,0 +1,13 @@
+platform: template
+sensors:
+  rmn_next_pickup_in:
+    value_template: >-
+      {% 
+        set sensors = [ 
+          state_attr('sensor.rmn_papier', 'Days-until') | int,
+          state_attr('sensor.rmn_gft', 'Days-until') | int,
+          state_attr('sensor.rmn_pmd', 'Days-until') | int,
+          state_attr('sensor.rmn_restafval', 'Days-until') | int,
+        ]
+      %}
+      {{ sensors|min }}

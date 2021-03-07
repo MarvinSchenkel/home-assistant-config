@@ -1,0 +1,1 @@
+"""The Picnic Component"""

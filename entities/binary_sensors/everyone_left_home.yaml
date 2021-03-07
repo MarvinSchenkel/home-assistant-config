@@ -1,0 +1,9 @@
+---
+# A binary sensor indicating whether everyone has left home
+# This sensor can then be used to automatically turn devices off
+platform: template
+sensors:
+  everyone_left_home:
+    value_template: >
+      {{ states("input_select.laura_status_dropdown") in ["Net weg", "Weg", "Lang weg"]
+         and states("input_select.marvin_status_dropdown") in ["Net weg", "Weg", "Lang weg"] }}

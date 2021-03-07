@@ -1,0 +1,7 @@
+# Light group: Livingroom
+#
+# This light controls the lights in the livingroom
+#
+# https://www.home-assistant.io/integrations/light.group/
+#
+light: !include_dir_list ../entities/lights

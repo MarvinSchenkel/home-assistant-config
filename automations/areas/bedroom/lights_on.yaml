@@ -32,3 +32,4 @@ action:
        entities:
          - light.zha_group_bedroom
        turn_on: true
+       turn_on_transition: 1

@@ -1,0 +1,9 @@
+---
+# Normal scene is managed by circadian lighting
+# So no need to specify brightness and mireds settings
+name: livingroom_normal
+entities:
+  light.livingroom:
+    state: 'on'
+  light.kitchen:
+    state: 'on'

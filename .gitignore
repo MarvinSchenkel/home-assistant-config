@@ -30,6 +30,7 @@ options.xml
 OZW_Log.txt
 www/marvin
 www/laura
+mqtt_dump.txt
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 ip_bans.yaml

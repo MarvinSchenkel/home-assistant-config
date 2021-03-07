@@ -26,7 +26,7 @@ action:
       sequence:
         - service: media_player.volume_set
           data:
-            entity_id: media_player.bathroom
+            entity_id: media_player.sonos_bathroom
             volume_level: 0.45
     - conditions:
         - condition: or
@@ -40,10 +40,10 @@ action:
       sequence:
         - service: media_player.volume_set
           data:
-            entity_id: media_player.bathroom
+            entity_id: media_player.sonos_bathroom
             volume_level: 0.06
     default:
       - service: media_player.volume_set
         data:
-          entity_id: media_player.bathroom
+          entity_id: media_player.sonos_bathroom
           volume_level: 0.25

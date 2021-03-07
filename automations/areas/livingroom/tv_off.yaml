@@ -8,6 +8,24 @@ trigger:
     to: 'standby'    
     for:
       minutes: 5
+  # Workaround for my TV not turning off when Apple TV turns off
+  - platform: state
+    entity_id: media_player.apple_tv
+    to: 'off'
+  - platform: state
+    entity_id: media_player.bravia_tv
+    attribute: 'source'
+    from: 
+      - 'Woonkamer'
+      - 'PlayStation 5'
+    to:
+      - 'NPO 1 HD'
+      - 'HDMI 1'
+      - 'HDMI 2'
+      - 'HDMI 3/ARC'
+  - platform: state
+    entity_id: binary_sensor.everyone_left_home
+    to: 'on'
 action:
   - service: media_player.turn_off
     entity_id: media_player.living_room_tv

@@ -1,0 +1,2 @@
+---
+scene split: !include_dir_list ../scenes

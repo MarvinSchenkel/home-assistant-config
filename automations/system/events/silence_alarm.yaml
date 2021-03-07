@@ -2,10 +2,12 @@
 description: Silence the alarm when I send the silence event
 alias: system_events_silence_alarm
 mode: single
+
 trigger:
   platform: event
   event_type: ios.notification_action_fired
   event_data:
     actionName: SILENCE_ALARM
+
 action:
   service: script.alarm_off
