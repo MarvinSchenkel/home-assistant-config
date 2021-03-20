@@ -12,6 +12,9 @@ trigger:
     entity_id: 
       - input_boolean.setting_manual_lights
       - variable.livingroom_darklight
+      - sensor.num_people_at_home
+      - sensor.marvin_status
+      - sensor.laura_status
   - platform: state
     entity_id: binary_sensor.everyone_in_bed
     to: 'on'
@@ -21,10 +24,7 @@ trigger:
 condition:  
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
-  - condition: numeric_state
-    entity_id: sensor.num_people_at_home
-    above: 0 
+    state: 'off'  
 
 action:
   - choose:
@@ -35,6 +35,11 @@ action:
           - condition: state
             entity_id: variable.livingroom_darklight
             state: 'dark'
+          - condition: numeric_state
+            entity_id: sensor.num_people_at_home
+            above: 0
+          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
         sequence:
           - service: scene.turn_on
             target:

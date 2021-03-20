@@ -9,4 +9,4 @@ trigger:
 action:
   - service: media_player.media_pause
     data:
-      entity_id: media_player.sonos_living_room
+      entity_id: media_player.sonos_livingroom
