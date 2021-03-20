@@ -1,0 +1,34 @@
+---
+description: Send a notification when the short window of the picnic delivery is known
+alias: system_notifications_picnic_today
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: sensor.picnic_delivery
+    attribute: delivery
+  - platform: time
+    at: "19:00:00"
+
+variables:
+  days_left: "{{ as_timestamp(state_attr('sensor.picnic_delivery', 'delivery').window_start) | timestamp_custom('%d') | int - as_timestamp(now()) | timestamp_custom('%d') | int }}"
+  day_name: >-
+      {% if days_left == 0 %} vandaag
+      {% elif days_left == 1 %} morgen
+      {% endif %}
+
+condition:
+  - condition: state
+    entity_id: sensor.picnic_delivery
+    state: 'order_announced'
+  - "{{ days_left < 2 }}"
+  - "{{ as_timestamp(state_attr('sensor.picnic_delivery', 'delivery').window_start) > as_timestamp(now()) }}"
+
+action:
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+      message: > 
+        Picnic bezorgt {{ day_name }} tussen {{ as_timestamp(state_attr('sensor.picnic_delivery', 'delivery').window_start) | timestamp_custom('%H:%M') }} en {{ as_timestamp(state_attr('sensor.picnic_delivery', 'delivery').window_end) | timestamp_custom('%H:%M') }}!

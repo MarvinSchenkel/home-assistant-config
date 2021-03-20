@@ -2,15 +2,15 @@
 
 scenes:
   entities:  
-    - entity: script.scene_living_room_candle
-      icon: mdi:candle
+    # - entity: script.scene_living_room_candle
+    #   icon: mdi:candle
+    #   icon_color: '#ffffff'
+    #   background: 'linear-gradient( 135deg, #FEB692 10%, #EA5455 100%)'
+    - entity: scene.livingroom_normal
+      icon: fas:couch
       icon_color: '#ffffff'
       background: 'linear-gradient( 135deg, #FEB692 10%, #EA5455 100%)'
-    - entity: script.scene_living_room_normal
-      icon: mdi:sofa
-      icon_color: '#ffffff'
-      background: 'linear-gradient( 135deg, #FEB692 10%, #EA5455 100%)'
-    - entity: script.scene_living_room_movie
+    - entity: scene.livingroom_movie
       icon: fas:film
       icon_color: '#ffffff'
       background: 'linear-gradient( 135deg, #FEB692 10%, #EA5455 100%)'

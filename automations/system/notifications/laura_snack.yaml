@@ -1,0 +1,24 @@
+---
+description: Send a notification when it's Laura's snack time
+alias: system_notifications_laura_snack
+mode: single
+
+trigger:
+  - platform: time
+    at: 
+      - "10:30:00"
+      - "15:00:00"
+      - "19:30:00"
+
+variables:
+  message: >-
+    {{ ["TUSSENDOORTJE!", "Het is snack tijd", "VRETEE!!", "Snack oclock!", "Snack oclock!",
+        "Snack oclock!", "Snackie Snack", "Koekjeee","Piep eten", "Vetjes kweken","Hapjee"] | random }}
+
+action:
+  - service: script.send_notification
+    data:
+      receivers:
+        - "laura"
+      message: "{{ message }}"
+        

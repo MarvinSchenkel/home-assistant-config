@@ -17,7 +17,7 @@ persons:
         icon: fas:puzzle-piece
         path: 'dwains-dashboard/addons/persons/maps/page.yaml'
         data:
-          map_tracker: 'person.marvin'
+          map_tracker: 'device_tracker.ms_iphonexs'
   - name: Laura
     track: sensor.laura_status
     #picture_path: 'laura'
@@ -29,4 +29,4 @@ persons:
         icon: fas:puzzle-piece
         path: 'dwains-dashboard/addons/persons/maps/page.yaml'
         data:
-          map_tracker: 'person.laura'
+          map_tracker: 'device_tracker.la_la'

@@ -1,0 +1,55 @@
+---
+alias: areas_bedroom_small_blinds
+description: >-
+  Automate blinds in the small bedroom
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      # There is no sensor in the small bedroom, so I use the sensor in the living room which is a pretty good approach
+      # to measure when it is getting dark
+      - variable.livingroom_darklight
+  - platform: time
+    at:
+      - "08:00:00"
+      - "10:00:00"
+      - "20:00:00"
+
+action:
+  choose:
+    - conditions:
+        - condition: time
+          before: "20:00:00"
+        - condition: state
+          entity_id: variable.livingroom_darklight
+          state: 'light'        
+        - condition: or
+          conditions:            
+            - condition: and
+              conditions:
+                - condition: time
+                  after: "08:00:00"
+                - condition: state
+                  entity_id: binary_sensor.workday
+                  state: "on"
+            - condition: and
+              conditions:
+                - condition: time
+                  after: "10:00:00"
+                - condition: state
+                  entity_id: binary_sensor.workday
+                  state: "off"
+      sequence:
+        - service: cover.open_cover
+          target:
+            area_id: small_bedroom
+  default:
+    - service: cover.close_cover
+      target:
+        area_id: small_bedroom

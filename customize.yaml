@@ -1,8 +1,0 @@
-sensor.rmn_gft:
-  friendly_name: het GFT
-sensor.rmn_papier:
-  friendly_name: het papier
-sensor.rmn_pmd:
-  friendly_name: het PMD
-sensor.rmn_restafval:
-  friendly_name: de grijze container
