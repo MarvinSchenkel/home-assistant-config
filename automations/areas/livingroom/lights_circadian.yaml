@@ -8,9 +8,6 @@ trigger:
     event: start
   - platform: event
     event_type: automation_reloaded
-  - platform: state
-    entity_id: group.living_room_lights
-    to: 'on'
   - platform: time_pattern
     minutes: "/5"
 
@@ -21,21 +18,19 @@ condition:
   - condition: state
     entity_id: input_select.livingroom_current_scene
     state: 'normal'
-  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
 
 action:
-- service: script.sunlight
-  data:
-    entities: 
-      - light.dinner
-    max_brightness: 65
-- service: script.sunlight
-  data:
-    entities: 
-      - light.fibaro_livingroom
-    max_brightness: 70
-- service: script.sunlight
-  data:
-    entities: 
-      - light.kitchen
+  - service: script.sunlight
+    data:
+      entities: 
+        - light.dinner
+      max_brightness: 80
+  - service: script.sunlight
+    data:
+      entities: 
+        - light.fibaro_livingroom
+      max_brightness: 70
+  - service: script.sunlight
+    data:
+      entities: 
+        - light.kitchen

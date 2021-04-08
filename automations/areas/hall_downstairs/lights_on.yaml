@@ -25,4 +25,3 @@ action:
       entities:
         - light.fibaro_hall_downstairs
       turn_on: true
-      max_brightness: 95

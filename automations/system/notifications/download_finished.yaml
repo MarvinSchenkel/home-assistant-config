@@ -11,4 +11,4 @@ action:
     data:
       receivers:
         - "marvin"
-      message: "{{ trigger.data.download_name }} is klaar met downloaden!"
+      message: "{{ trigger.json.download_name }} is klaar met downloaden!"

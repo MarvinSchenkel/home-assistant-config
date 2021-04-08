@@ -14,7 +14,7 @@ trigger:
       seconds: 60
   - platform: numeric_state
     entity_id: sensor.pir_kitchen_luminance
-    above: 95
+    above: 50
 
 condition:
   condition: or
@@ -22,7 +22,7 @@ condition:
     - '{{ states("sensor.pir_kitchen_luminance") | int > 20 and is_state("light.fibaro_kitchen", "off") }}'
     - condition: numeric_state
       entity_id: sensor.pir_kitchen_luminance
-      above: 95
+      above: 50
 
 action:
   service: variable.set_variable

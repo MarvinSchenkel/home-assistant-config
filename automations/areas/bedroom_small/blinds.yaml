@@ -48,8 +48,8 @@ action:
       sequence:
         - service: cover.open_cover
           target:
-            area_id: small_bedroom
+            entity_id: cover.small_bedroom
   default:
     - service: cover.close_cover
       target:
-        area_id: small_bedroom
+        entity_id: cover.small_bedroom

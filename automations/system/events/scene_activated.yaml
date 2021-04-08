@@ -11,9 +11,9 @@ trigger:
       service: turn_on
 
 variables:
-  scene_room: "{{ trigger.event.data.service_data.entity_id[0].replace('scene.', '').split('_')[0] }}"
-  scene_name: "{{ trigger.event.data.service_data.entity_id[0].replace('scene.', '').split('_')[1] }}"
-
+  scene_id: "{{ trigger.event.data.service_data.entity_id if trigger.event.data.service_data.entity_id is string else trigger.event.data.service_data.entity_id[0] }}"
+  scene_room: "{{ scene_id.replace('scene.', '').split('_')[0] }}"
+  scene_name: "{{ scene_id.replace('scene.', '').split('_')[1] }}"
 action:
   # TODO: Handle multiple rooms
   - service: input_select.select_option

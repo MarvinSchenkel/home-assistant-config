@@ -4,12 +4,9 @@ description: Turns the frontdoor light on/off based on sunset and sunrise
 mode: single
 
 trigger:
-  - platform: sun
-    event: sunset
-    offset: "-00:45:00"
-  - platform: sun
-    event: sunrise
-    offset: "00:15:00"
+  - platform: state
+    entity_id:
+      - variable.livingroom_darklight
   - platform: homeassistant
     event: start
   - platform: event
@@ -18,9 +15,9 @@ trigger:
 action:
   - choose:
       conditions:
-        - condition: time
-          before: '00:00:00'
-          after: '16:00:00'
+        - condition: state
+          entity_id: variable.livingroom_darklight
+          state: 'dark'
       sequence:
         - service: switch.turn_on
           data:

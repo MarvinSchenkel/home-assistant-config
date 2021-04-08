@@ -12,7 +12,6 @@ trigger:
     entity_id: 
       - input_boolean.setting_manual_lights
       - variable.livingroom_darklight
-      - sensor.num_people_at_home
       - sensor.marvin_status
       - sensor.laura_status
   - platform: state

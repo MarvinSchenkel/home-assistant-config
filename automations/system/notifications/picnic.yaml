@@ -8,7 +8,7 @@ trigger:
     entity_id: sensor.picnic_delivery
     attribute: delivery
   - platform: time
-    at: "19:00:00"
+    at: "18:00:00"
 
 variables:
   days_left: "{{ as_timestamp(state_attr('sensor.picnic_delivery', 'delivery').window_start) | timestamp_custom('%d') | int - as_timestamp(now()) | timestamp_custom('%d') | int }}"

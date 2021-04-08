@@ -5,7 +5,7 @@ mode: single
 trigger:
   - platform: time
     at:
-      - "23:00:00"
+      - "22:59:00"
       - "07:30:00"
 action:
   - choose:

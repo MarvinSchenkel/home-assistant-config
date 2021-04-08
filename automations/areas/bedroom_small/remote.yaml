@@ -6,15 +6,8 @@ description: >
 alias: areas_small_bedroom_remote
 
 use_blueprint:
-  path: EPMatt/ikea_e1743.yaml
+  path: seblu/zha-ikea-open-close-switch-for-covers-e-g-kadrilj-fyrtur.yaml
   input:
-    integration: "ZHA"
-    remote: "bd698269e9130efc3e47768709de27b0"
-    action_up_short:
-      - service: cover.open_cover
-        target:
-          area_id: small_bedroom
-    action_down_short:
-      - service: close.open_cover
-        target:
-          area_id: small_bedroom
+    remote: bd698269e9130efc3e47768709de27b0
+    cover: 
+      entity_id: cover.small_bedroom

@@ -2,6 +2,8 @@
 alias: areas_bathroom_lights_off
 description: Turns the bathroom lights off when not motion has been detected for a while
 mode: single
+id: 05991f47-2076-4c9b-b0e9-21746dd85fa1
+
 trigger:
   - platform: homeassistant
     event: start
@@ -12,6 +14,7 @@ trigger:
     to: 'off'
     for:
       seconds: 120
+
 condition:
   - condition: state
     entity_id: light.fibaro_bathroom
@@ -24,6 +27,7 @@ condition:
     state: 'off'
     for:
       seconds: 120
+
 action:
   service: light.turn_off
   data:
