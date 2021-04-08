@@ -1,7 +1,7 @@
 """
 Sensor component for waste pickup dates from dutch and belgium waste collectors
 Original Author: Pippijn Stortelder
-Current Version: 4.7.15 20210223 - Pippijn Stortelder
+Current Version: 4.7.18 20210326 - Pippijn Stortelder
 20210112 - Updated date format for RD4
 20210114 - Fix error made in commit 9d720ec
 20210120 - Enabled textile for RecycleApp
@@ -11,6 +11,10 @@ Current Version: 4.7.15 20210223 - Pippijn Stortelder
 20210219 - Changed GFT mapping for RecycleApp
 20210220 - Fix wrong RecycleApp streetId
 20210223 - Added 'ordures ménagères' mapping for RecycleApp
+20210302 - Updated RecycleApp x-secret
+20210304 - Added version to manifest
+20210326 - Added option to set update interval
+20210326 - Minor fix
 
 Example config:
 Configuration.yaml:
@@ -79,6 +83,7 @@ CONF_TRANSLATE_DAYS = 'dutch'
 CONF_DAY_OF_WEEK = 'dayofweek'
 CONF_ALWAYS_SHOW_DAY = 'alwaysshowday'
 CONF_PRINT_AVAILABLE_WASTE_TYPES = 'printwastetypes'
+CONF_UPDATE_INTERVAL = 'updateinterval'
 
 ATTR_WASTE_COLLECTOR = 'Wastecollector'
 ATTR_HIDDEN = 'Hidden'
@@ -223,6 +228,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_DAY_OF_WEEK, default=True): cv.boolean,
     vol.Optional(CONF_ALWAYS_SHOW_DAY, default=False): cv.boolean,
     vol.Optional(CONF_PRINT_AVAILABLE_WASTE_TYPES, default=False): cv.boolean,
+    vol.Optional(CONF_UPDATE_INTERVAL, default=0): cv.positive_int,
 })
 
 
@@ -247,6 +253,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     day_of_week = config.get(CONF_DAY_OF_WEEK)
     always_show_day = config.get(CONF_ALWAYS_SHOW_DAY)
     print_waste_type = config.get(CONF_PRINT_AVAILABLE_WASTE_TYPES)
+    update_interval = config.get(CONF_UPDATE_INTERVAL)
 
     if date_object == True:
         date_only = 1
@@ -279,7 +286,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                 "invalid_config")
         return
 
-    data = WasteData(hass, waste_collector, city_name, postcode, street_name, street_number, suffix, address_id, print_waste_type)
+    data = WasteData(hass, waste_collector, city_name, postcode, street_name, street_number, suffix, address_id, print_waste_type, update_interval)
 
     entities = []
 
@@ -377,7 +384,7 @@ class WasteCollection(object):
 
 class WasteData(object):
 
-    def __init__(self, hass, waste_collector, city_name, postcode, street_name, street_number, suffix, address_id, print_waste_type):
+    def __init__(self, hass, waste_collector, city_name, postcode, street_name, street_number, suffix, address_id, print_waste_type, update_interval):
         self.hass = hass
         self.waste_collector = waste_collector
         self.city_name = city_name
@@ -388,6 +395,7 @@ class WasteData(object):
         self.address_id = address_id
         self.print_waste_type = print_waste_type
         self.collector = None
+        self.update_interval = update_interval
         self.__select_collector()
 
     def __select_collector(self):
@@ -425,7 +433,10 @@ class WasteData(object):
 
     async def async_update(self, *_):
         await self.collector.update()
-        await self.schedule_update(SCHEDULE_UPDATE_INTERVAL)
+        if self.update_interval is not 0:
+            await self.schedule_update(timedelta(hours=self.update_interval))
+        else:
+            await self.schedule_update(SCHEDULE_UPDATE_INTERVAL)
         if self.print_waste_type:
             persistent_notification.create(
                 self.hass,
@@ -649,7 +660,7 @@ class CirculusBerkelCollector(WasteCollector):
             r = await self.hass.async_add_executor_job(self.__get_data)
             response = r.json()
 
-            if not response['customData']['response']['garbage']:
+            if not 'customData' in response or not response['customData']['response']['garbage']:
                 _LOGGER.error('No Waste data found!')
                 return
 
@@ -1053,14 +1064,16 @@ class RecycleApp(WasteCollector):
         'gemengde': WASTE_TYPE_PLASTIC,
         'snoeihout': WASTE_TYPE_BRANCHES,
         'zachte plastics': WASTE_TYPE_SOFT_PLASTIC,
-        'roze zak': WASTE_TYPE_SOFT_PLASTIC
+        'roze zak': WASTE_TYPE_SOFT_PLASTIC,
+        'déchets organiques': WASTE_TYPE_GREEN,
+        'omb': WASTE_TYPE_GREY,
     }
 
     def __init__(self, hass, waste_collector, postcode, street_name, street_number, suffix):
         super(RecycleApp, self).__init__(hass, waste_collector, postcode, street_number, suffix)
         self.street_name = street_name
         self.main_url = 'https://recycleapp.be/api/app/v1/'
-        self.xsecret = '8a9pIQlfYpgmJZD15KdK70MCTR2xyD0EAvOmi9HCBfiBUY4n34ytxQmqo3AP2OET6tssYy6R4Be6N2M2GtiX3AcbiNxR8G7pOalN45dXPZ4emKE2c1nimx9B1YFciutJwFZHYHI2Qpzo0E0GCDHkg5'
+        self.xsecret = 'Crgja3EGWe8jdapyr4EEoMBgZACYYjRRcRpaMQrLDW9HJBvmgkfGQyYqLgeXPavAGvnJqkV87PBB2b8zx43q46sUgzqio4yRZbABhtKeagkVKypTEDjKfPgGycjLyJTtLHYpzwJgp4YmmCuJZN9ZmJY8CGEoFs8MKfdJpU9RjkEVfngmmk2LYD4QzFegLNKUbcCeAdEW'
         self.xconsumer = 'recycleapp.be'
         self.accessToken = ''
         self.postcode_id = ''

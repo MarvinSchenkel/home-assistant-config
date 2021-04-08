@@ -107,11 +107,15 @@ class DwainsDashboard {
 
   frontend_stuff(){
     let lovelace = this.lovelace_load;
-    if(lovelace.config.dwains_dashboard) {
-      this.custom_header(lovelace.config.dwains_dashboard);
-      this.set_theme(lovelace.config.dwains_dashboard);
+    if(lovelace){
+      if(lovelace.config){
+        if(lovelace.config.dwains_dashboard) {
+          this.custom_header(lovelace.config.dwains_dashboard);
+          this.set_theme(lovelace.config.dwains_dashboard);
 
-      //console.log(lovelace.config.dwains_dashboard);
+          //console.log(lovelace.config.dwains_dashboard);
+        }
+      }
     }
   }
 
@@ -187,7 +191,7 @@ class DwainsDashboard {
         } else {
           console.log('sun.sun not available!');
         }
-        const themes = {themes: JSON.parse(config.themes.replaceAll("placeholder_primary_color", config.primary_color))}
+        const themes = {themes: JSON.parse(config.themes.replace(/placeholder_primary_color/g, config.primary_color))}
         let theme = "dwains-theme-light";
 
         switch(config.theme) {
@@ -269,7 +273,7 @@ class DwainsDashboard {
       let popupData;
 
       if(popupData = ll.config.dwains_dashboard[domain+'_popup']){
-        cardData = JSON.parse(JSON.stringify(popupData.card).replaceAll("domain.placeholder", ev.detail.entityId));
+        cardData = JSON.parse(JSON.stringify(popupData.card).replace(/domain.placeholder/g, ev.detail.entityId));
         cardTitle = hass().states[ev.detail.entityId].attributes.friendly_name;
         customCard = true;
       }
