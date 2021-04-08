@@ -58,6 +58,7 @@ rooms:
     temperature: sensor.pir_bedroom_temperature
     motion: binary_sensor.presence_bedroom
     media_player: media_player.bedroom
+    cover: cover.small_bedroom
     more_entities:
       entities:
         - entity: sensor.pir_bedroom_battery_level

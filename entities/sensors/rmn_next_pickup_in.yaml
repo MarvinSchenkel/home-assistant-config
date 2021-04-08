@@ -4,10 +4,10 @@ sensors:
     value_template: >-
       {% 
         set sensors = [ 
-          state_attr('sensor.rmn_papier', 'Days-until') | int,
-          state_attr('sensor.rmn_gft', 'Days-until') | int,
-          state_attr('sensor.rmn_pmd', 'Days-until') | int,
-          state_attr('sensor.rmn_restafval', 'Days-until') | int,
+          state_attr('sensor.rmn_papier', 'Days-until') if state_attr('sensor.rmn_papier', 'Days-until') > 0 else 99 | int,
+          state_attr('sensor.rmn_gft', 'Days-until') if state_attr('sensor.rmn_gft', 'Days-until') > 0 else 99 | int,
+          state_attr('sensor.rmn_pmd', 'Days-until') if state_attr('sensor.rmn_pmd', 'Days-until') > 0 else 99 | int,
+          state_attr('sensor.rmn_restafval', 'Days-until') if state_attr('sensor.rmn_restafval', 'Days-until') > 0 else 99 | int,
         ]
       %}
       {{ sensors|min }}

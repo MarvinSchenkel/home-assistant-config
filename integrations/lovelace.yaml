@@ -1,0 +1,13 @@
+lovelace:
+  mode: yaml
+  resources:
+    - url: /hacsfiles/banner-card/banner-card.js
+      type: module
+  
+  dashboards:
+    lovelace-tablet:
+      mode: yaml
+      filename: dashboards/tablet.yaml
+      title: Tablet
+      icon: mdi:tools
+      show_in_sidebar: true
