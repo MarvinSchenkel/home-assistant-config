@@ -1,0 +1,7 @@
+---
+platform: mqtt
+name: itho_time
+state_topic: "ITHO/Fan/Timer"
+icon: mdi:av-timer
+value_template: "{{ value }}"
+unit_of_measurement: "s"

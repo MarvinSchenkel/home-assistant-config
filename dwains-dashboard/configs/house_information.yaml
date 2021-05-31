@@ -2,6 +2,6 @@
 
 house_information:
   favorites:
-    - entity: binary_sensor.pir_hallway
-      icon_on: mdi:bell
-      icon_off: mdi:bell-outline
+    - entity: fan.itho
+      icon_on: mdi:fan
+      icon_off: mdi:fan-off

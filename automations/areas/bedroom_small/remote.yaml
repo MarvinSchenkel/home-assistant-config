@@ -4,6 +4,7 @@ description: >
     - Up: Fully open the blinds
     - Down: Fully close the blinds
 alias: areas_small_bedroom_remote
+id: 71744270-34f7-42b1-959d-b796bc9c9464
 
 use_blueprint:
   path: seblu/zha-ikea-open-close-switch-for-covers-e-g-kadrilj-fyrtur.yaml

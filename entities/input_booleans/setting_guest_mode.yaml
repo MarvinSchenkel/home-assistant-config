@@ -1,0 +1,5 @@
+---
+# This setting is used in automations to disable
+# certain functionality
+name: Guest mode
+icon: mdi:account-plus

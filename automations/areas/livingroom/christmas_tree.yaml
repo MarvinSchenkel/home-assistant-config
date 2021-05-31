@@ -2,6 +2,8 @@
 alias: areas_christmas_tree
 description: Turns the christmas tree lights on when motion has been detected
 mode: queued
+id: 574a675b-2297-4a77-8d0b-2fd69e6f777a
+
 trigger:
   - platform: homeassistant
     event: start
@@ -18,6 +20,7 @@ trigger:
       seconds: 900
   - platform: state
     entity_id: variable.livingroom_darklight
+
 action:
   - choose:
       - conditions:

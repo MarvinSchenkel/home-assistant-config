@@ -2,6 +2,8 @@
 description: Call the scripts to set us to asleep or turn the light on or off (ugly i know)
 alias: presence_laura_asleep
 mode: single
+id: 74e6a9f0-54ad-412c-9d23-1c87a9de1053
+
 trigger: 
   - platform: webhook
     webhook_id: flic_bed_right
@@ -10,6 +12,7 @@ trigger:
     to: 'on'
     for:
       seconds: 60
+
 condition:
   - condition: or
     conditions:
@@ -20,6 +23,7 @@ condition:
           - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
           - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
       - "{{ trigger.platform == 'webhook' }}"
+
 action:
   - service: script.turn_on
     entity_id: script.webhook_marvin_laura_asleep

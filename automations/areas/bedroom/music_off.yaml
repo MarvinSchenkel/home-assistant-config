@@ -2,6 +2,8 @@
 alias: areas_bedroom_music_off
 description: Ungroup and pause the sonos when no motion has been detected for a while or when we go to sleep
 mode: queued
+id: 1623672f-ccf8-481b-8a41-d144f686eaf3
+
 trigger:
   - platform: homeassistant
     event: start
@@ -17,6 +19,7 @@ trigger:
       - sensor.marvin_status
       - sensor.laura_status
     to: 'Slaapt'
+
 condition:
   - condition: and
     conditions:
@@ -35,6 +38,7 @@ condition:
     - condition: state
       entity_id: sensor.laura_status
       state: 'Slaapt'
+
 action:
   - service: sonos.unjoin
     data:

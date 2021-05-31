@@ -1,0 +1,19 @@
+---
+platform: mqtt
+name: itho_speed
+state_topic: "ITHO/Fan/State"
+icon: mdi:fan
+value_template: >-
+  {% if value|float == 0 %}
+    Standby
+  {% elif value|float  == 1 %}
+    Low
+  {% elif value|float  == 2 %}
+    Medium
+  {% elif value|float  == 3 %}
+    High
+  {% elif value|float  == 4 %}
+    Full
+  {% else %}
+    High(Timer)
+  {% endif %}

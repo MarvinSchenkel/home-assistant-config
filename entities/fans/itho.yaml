@@ -1,0 +1,34 @@
+---
+platform: mqtt
+name: "itho"
+command_topic: "ITHO/Fan/cmd" # "ITHO/fan/cmd"
+state_topic: "ITHO/Fan/State" # "ITHO/fan/State"
+state_value_template: "{% if value|float<=1 %}State 1{% endif %}{% if value|float >1 %}State 3{% endif %}"
+payload_off: "State 1"
+payload_on: "State 3"
+preset_modes:
+  - "low"
+  - "medium"
+  - "high"
+preset_mode_command_topic: "ITHO/Fan/cmd" # "ITHO/fan/cmd"
+preset_mode_command_template: >
+  {% if value == 'low' %}
+    State 1
+  {% elif value == 'medium' %}
+    State 2
+  {% elif value == 'high' %}
+    State 3
+  {% else %}
+    State 1
+  {% endif %}
+preset_mode_state_topic: "ITHO/Fan/State"
+preset_mode_value_template: >
+  {% if value == '1' %}
+    low
+  {% elif value == '2' %}
+    medium
+  {% elif value == '3' %}
+    high
+  {% else %}
+    low
+  {% endif %}

@@ -2,6 +2,8 @@
 description: Mark person as away 10 minutes after leaving
 alias: presence_away
 mode: single
+id: 3fb50eae-6c01-4048-81af-429f20854158
+
 trigger:
   - platform: state
     entity_id: input_select.marvin_status_dropdown
@@ -13,6 +15,7 @@ trigger:
     to: 'Net weg'
     for:
       minutes: 10
+
 action:
   - service: input_select.select_option
     data_template:

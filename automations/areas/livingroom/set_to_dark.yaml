@@ -2,6 +2,8 @@
 description: "Set a variable to dark to keep track of whether it is light or dark"
 alias: areas_livingroom_set_to_dark
 mode: queued
+id: ebdb95e1-37e4-4578-b601-630f44599bcd
+
 trigger:
   - platform: homeassistant
     event: start
@@ -9,10 +11,12 @@ trigger:
     event_type: automation_reloaded
   - platform: template
     value_template: '{{ states("sensor.pir_kitchen_luminance") | int  < 15 }}'
+
 condition:
   - '{{ states("sensor.pir_kitchen_luminance") | int  < 15 }}'
+
 action:
-  service: variable.set_variable
-  data:
-    variable: livingroom_darklight
-    value: 'dark'
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.livingroom_darklight
+      option: 'dark'

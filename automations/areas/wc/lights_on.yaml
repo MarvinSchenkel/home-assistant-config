@@ -2,6 +2,8 @@
 alias: areas_wc_lights_on
 description: Turns the wc lights on when motion has been detected
 mode: queued
+id: 85bc93f8-5e09-4a13-8960-0ad9c569e0c7
+
 trigger:
   - platform: homeassistant
     event: start
@@ -9,10 +11,7 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.presence_wc
-  # Also apply circadian values when someone is still asleep and light has been manually turned on
-  - platform: state
-    entity_id: light.fibaro_wc
-    to: 'on'
+    
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -20,14 +19,8 @@ condition:
   - condition: state
     entity_id: binary_sensor.presence_wc
     state: 'on'
-  - condition: or
-    conditions:
-      - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-      - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
-      - "{{ trigger.entity_id == 'light.fibaro_wc' }}"
+
 action:
-  - service: script.sunlight
+  - service: light.turn_on
     data:
-      entities:
-        - light.fibaro_wc
-      turn_on: true
+      entity_id: light.fibaro_wc

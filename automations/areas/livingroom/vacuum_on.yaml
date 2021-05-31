@@ -2,27 +2,63 @@
 description: Turn on our Roborock when we have left our house
 alias: areas_livingroom_vacuum_on
 mode: queued
+id: 11f981e7-b67c-47c3-ba3b-f51ef83a9414
+
 trigger:
   - platform: state
     entity_id: input_select.marvin_status_dropdown
     to: 'Weg'
   - platform: state
     entity_id: input_select.laura_status_dropdown
-    to: 'Weg'
+    to: 'Weg'    
+
 condition:
   condition: and
   conditions:
-    - condition: state
-      entity_id: input_select.marvin_status_dropdown
-      state: 'Weg'
-    - condition: state
-      entity_id: input_select.laura_status_dropdown
-      state: 'Weg'
+    - condition: or
+      conditions:
+        # We are either both gone from home
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: input_select.marvin_status_dropdown
+            state: 'Weg'
+          - condition: state
+            entity_id: input_select.laura_status_dropdown
+            state: 'Weg'
+        # Or Laura is gone and Marvin is working from home
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: sensor.marvin_work_status
+            state: 'Aan het werk'
+          - condition: state
+            entity_id: input_select.marvin_status_dropdown
+            state: 'Thuis'
+          - condition: state
+            entity_id: input_select.laura_status_dropdown
+            state: 'Weg'
+        # Or Marvin is gone and Laura is working from home
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: sensor.laura_work_status
+            state: 'Aan het werk'
+          - condition: state
+            entity_id: input_select.laura_status_dropdown
+            state: 'Thuis'
+          - condition: state
+            entity_id: input_select.marvin_status_dropdown
+            state: 'Weg'
     - condition: state
       entity_id: vacuum.norby
       state: 'docked'
       for:
         hours: 6
+    - condition: time
+      after: "07:30:00"
+      before: "22:00:00"
+
 action:
   - service: vacuum.start
     data:

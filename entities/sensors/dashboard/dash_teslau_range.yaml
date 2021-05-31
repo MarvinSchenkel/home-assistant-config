@@ -1,0 +1,6 @@
+platform: template
+sensors:
+  dash_teslau_range:
+    unit_of_measurement: 'km'
+    value_template: >-
+      {{ states('sensor.teslau_range_sensor') | int }}

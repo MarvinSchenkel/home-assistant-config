@@ -1,0 +1,32 @@
+---
+description: Control the central ventilation based on several triggers
+alias: house_ventilation
+mode: queued
+id: C90E1ED3-EF56-4F15-A5C7-47F1D75B1F85
+
+trigger:
+  - platform: state
+    entity_id: binary_sensor.bathroom_flood
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.bathroom_flood
+    to: 'off'
+    for:
+      minutes: 15
+
+action:
+  choose:
+    - conditions:
+        - condition: state
+          entity_id: binary_sensor.bathroom_flood
+          state: 'on'        
+      sequence:
+        - service: fan.set_preset_mode
+          data:
+            preset_mode: high
+          target:
+            entity_id: fan.itho
+  default:
+    - service: fan.turn_off
+      target:
+        entity_id: fan.itho

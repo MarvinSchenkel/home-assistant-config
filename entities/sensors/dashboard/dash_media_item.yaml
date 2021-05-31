@@ -1,0 +1,8 @@
+platform: template
+sensors:
+  dash_media_item:
+    value_template: >-
+      {% if states('media_player.apple_tv') == 'playing' %} apple_tv
+      {% elif states('media_player.sonos_livingroom') == 'playing' and state_attr('media_player.sonos_livingroom', 'source') != 'TV' %} sonos
+      {% else %} idle
+      {% endif %}

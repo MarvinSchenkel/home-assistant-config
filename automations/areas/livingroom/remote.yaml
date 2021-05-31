@@ -3,6 +3,7 @@ description: >
   Actions configured for my IKEA Remote in the living room:
     - Middle buttion: Toggle normal / movie scene
 alias: areas_livingroom_remote
+id: e9286dec-edd9-435c-9fe1-e67dbe43e8b4
 
 use_blueprint:
   path: wormie_dk/zha-ikea-five-button-remote.yaml

@@ -2,18 +2,22 @@
 description: Mark Laura as just awake based on flic button double click
 alias: presence_laura_just_awake
 mode: single
+id: a8abbc27-211f-4bae-bc44-013d8735e6c9
+
 trigger: 
   - platform: webhook
     webhook_id: laura_awake
   - platform: state
-    entity_id: variable.bedroom_darklight
+    entity_id: input_select.bedroom_darklight
     to: "light"
   - platform: template
     value_template: "{{ states('sensor.date_time') == (as_timestamp(states.sensor.rne_l21_volgende_alarm.state))| timestamp_custom('%Y-%m-%d, %H:%M', True) }}"
+
 condition:
   condition: state
   entity_id: input_select.laura_sleep_status_dropdown
   state: 'Slaapt'
+
 action:
   - choose:
       - conditions:

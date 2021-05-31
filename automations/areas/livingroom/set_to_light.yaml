@@ -2,6 +2,7 @@
 description: "Set a variable to light to keep track of whether it is light or dark"
 alias: areas_livingroom_set_to_light
 mode: queued
+id: c3be50e2-8f7a-4c19-aef6-c61e323a180a
 
 trigger:
   - platform: homeassistant
@@ -9,7 +10,7 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: template
-    value_template: '{{ states("sensor.pir_kitchen_luminance") | int > 20 and is_state("light.fibaro_kitchen", "off") }}'
+    value_template: '{{ states("sensor.pir_kitchen_luminance") | int > 25 and is_state("light.fibaro_kitchen", "off") }}'
     for:
       seconds: 60
   - platform: numeric_state
@@ -19,13 +20,13 @@ trigger:
 condition:
   condition: or
   conditions:
-    - '{{ states("sensor.pir_kitchen_luminance") | int > 20 and is_state("light.fibaro_kitchen", "off") }}'
+    - '{{ states("sensor.pir_kitchen_luminance") | int > 25 and is_state("light.fibaro_kitchen", "off") }}'
     - condition: numeric_state
       entity_id: sensor.pir_kitchen_luminance
       above: 50
 
 action:
-  service: variable.set_variable
-  data:
-    variable: livingroom_darklight
-    value: 'light'
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.livingroom_darklight
+      option: 'light'

@@ -2,9 +2,12 @@
 description: Create a backup of Home assistant every night
 alias: system_backup
 mode: single
+id: 9dc7b1ff-cd5a-4186-baa8-6aa3e788abac
+
 trigger:
   platform: time
   at: '02:00:00'
+
 action:
   - service: hassio.snapshot_full
     data_template:

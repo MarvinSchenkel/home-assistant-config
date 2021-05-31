@@ -2,6 +2,7 @@
 description: "Set a variable to dark to keep track of whether it is light or dark"
 alias: areas_hall_upstairs_set_to_dark
 mode: queued
+id: 96384bb5-d368-486c-b0ce-8be342e477cf
 
 trigger:
   - platform: homeassistant
@@ -17,7 +18,7 @@ condition:
   - '{{ states("sensor.pir_hall_upstairs_luminance") | int < 20 and is_state("light.fibaro_hall_upstairs", "off")  }}'
 
 action:
-  service: variable.set_variable
-  data:
-    variable: hall_upstairs_darklight
-    value: 'dark'
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.hall_upstairs_darklight
+      option: 'dark'

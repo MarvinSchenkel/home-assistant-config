@@ -1,0 +1,11 @@
+---
+platform: template
+sensors:
+  marvin_work_status:
+    value_template: >-
+      {% if states.device_tracker.marvin_work_laptop.state == 'home' %}
+      Aan het werk
+      {% else %}
+      Niet aan het werk
+      {% endif %}
+    friendly_name: 'Marvin werkstatus'

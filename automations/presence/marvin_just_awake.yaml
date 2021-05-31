@@ -2,16 +2,20 @@
 description: Mark Marvin as just awake based on flic button double click
 alias: presence_marvin_just_awake
 mode: single
+id: 0069afb3-adb3-433c-beff-107c17508dbd
+
 trigger: 
   - platform: webhook
     webhook_id: marvin_awake
   - platform: state
-    entity_id: variable.bedroom_darklight
+    entity_id: input_select.bedroom_darklight
     to: "light"
+
 condition:
   condition: state
   entity_id: input_select.marvin_sleep_status_dropdown
   state: 'Slaapt'
+
 action:
   - service: input_select.select_option
     data:

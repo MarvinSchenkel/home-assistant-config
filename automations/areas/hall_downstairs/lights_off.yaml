@@ -2,6 +2,7 @@
 alias: areas_hall_downstairs_lights_off
 description: Turns the hallway lights on when motion has been detected or when we go to sleep
 mode: single
+id: 9912e78c-8eef-4fa4-ad11-dda6f93078b7
 
 trigger:
   - platform: homeassistant

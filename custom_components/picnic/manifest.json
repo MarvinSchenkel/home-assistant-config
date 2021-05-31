@@ -1,8 +1,0 @@
-{
-    "domain": "picnic",
-    "name": "Picnic Sensor",
-    "documentation": "https://github.com/MikeBrink/home-assistant-picnic",
-    "issue_tracker": "https://github.com/MikeBrink/home-assistant-picnic/issues",
-    "codeowners": ["@MikeBrink"],
-    "requirements": ["python-picnic-api==0.2.2"]
-}

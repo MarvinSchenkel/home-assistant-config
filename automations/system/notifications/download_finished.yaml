@@ -1,6 +1,7 @@
 description: Send a notification when a download has finished
 alias: system_notifications_download_finished
 mode: single
+id: 6d0db4cc-8de0-49f0-a06b-413773556ce9
 
 trigger:
   - platform: webhook

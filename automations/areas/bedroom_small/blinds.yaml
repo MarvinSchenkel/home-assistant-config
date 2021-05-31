@@ -4,6 +4,7 @@ description: >-
   Automate blinds in the small bedroom
 mode: single
 max_exceeded: silent
+id: a63e7f88-b3fd-4628-a4d1-327070e0522b
 
 trigger:
   - platform: homeassistant
@@ -14,12 +15,17 @@ trigger:
     entity_id:
       # There is no sensor in the small bedroom, so I use the sensor in the living room which is a pretty good approach
       # to measure when it is getting dark
-      - variable.livingroom_darklight
+      - input_select.livingroom_darklight
   - platform: time
     at:
       - "08:00:00"
       - "10:00:00"
       - "20:00:00"
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_guest_mode
+    state: 'off'
 
 action:
   choose:
@@ -27,7 +33,7 @@ action:
         - condition: time
           before: "20:00:00"
         - condition: state
-          entity_id: variable.livingroom_darklight
+          entity_id: input_select.livingroom_darklight
           state: 'light'        
         - condition: or
           conditions:            

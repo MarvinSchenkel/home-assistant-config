@@ -2,6 +2,8 @@
 description: Mark a person as Just Arrived when he/she gets home
 alias: presence_just_arrived
 mode: queued
+id: e72f181f-3840-472d-9529-db7a65ddd71b
+
 trigger:
   - platform: state
     entity_id: person.marvin
@@ -11,6 +13,7 @@ trigger:
     entity_id: person.laura
     from: 'not_home'
     to: 'home'
+
 action:
   - service: input_select.select_option
     data_template:

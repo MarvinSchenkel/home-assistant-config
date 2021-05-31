@@ -2,6 +2,8 @@
 description: Mark person as just left based on the device tracker
 alias: presence_just_left
 mode: single
+id: 388b4902-87a3-4312-9f98-5a81fd720a9c
+
 trigger:
   - platform: state
     entity_id: person.marvin
@@ -11,6 +13,7 @@ trigger:
     entity_id: person.laura
     from: 'home'
     to: 'not_home'
+
 action:
   - service: input_select.select_option
     data_template:

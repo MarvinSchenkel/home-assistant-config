@@ -1,0 +1,4 @@
+---
+name: Woonkamer aanwezigheid
+linked_battery_sensor: sensor.pir_kitchen_battery_level
+low_battery_threshold: 25

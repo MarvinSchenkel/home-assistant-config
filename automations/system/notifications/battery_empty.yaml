@@ -2,6 +2,8 @@
 description: Send me a notification when a sensor's battery gets low
 alias: system_notificatinos_battery_low
 mode: queued
+id: 10d6cc7f-dabc-452d-976f-fdc683d7bbe7
+
 trigger:
   - platform: numeric_state
     entity_id: 
@@ -12,6 +14,7 @@ trigger:
       - sensor.pir_livingroom_battery_level
       - sensor.pir_wc_battery_level
     below: 1
+
 action:
   - service: script.send_notification
     data:

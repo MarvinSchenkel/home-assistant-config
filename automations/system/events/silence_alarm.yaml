@@ -2,6 +2,7 @@
 description: Silence the alarm when I send the silence event
 alias: system_events_silence_alarm
 mode: single
+id: 24f82d51-a63a-4bd8-9487-e09e1c062a30
 
 trigger:
   platform: event

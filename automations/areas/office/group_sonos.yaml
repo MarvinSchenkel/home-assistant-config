@@ -1,6 +1,8 @@
 ---
 description: Group the Office sonos to the living room when it gets connected
 alias:  areas_office_group_sonos
+id: 2265740c-7078-4d0c-82ca-34e433958380
+
 trigger:
   - platform: state
     entity_id: media_player.office
@@ -10,6 +12,7 @@ trigger:
     entity_id: media_player.office
     from: 'unavailable'
     to: 'idle'
+
 condition:
   condition: and
   conditions:
@@ -17,6 +20,7 @@ condition:
     entity_id: media_player.living_room
     state: 'playing'
   - '{{ states.media_player.living_room.attributes.source != "TV" }}'
+
 action:
   - service: sonos.join
     data:

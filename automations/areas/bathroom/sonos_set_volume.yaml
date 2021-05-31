@@ -2,6 +2,8 @@
 description: Set volume of sonos based on motion or water sensor
 alias: areas_bathroom_sonos_set_volume
 mode: queued
+id: aab41c28-0266-43b7-8e9d-bb74700b1343
+
 trigger:
   - platform: state
     entity_id: 
@@ -13,10 +15,12 @@ trigger:
     event: start
   - platform: event
     event_type: automation_reloaded
+
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
     state: 'on'
+
 action:
   - choose:
     - conditions:
@@ -27,7 +31,7 @@ action:
         - service: media_player.volume_set
           data:
             entity_id: media_player.sonos_bathroom
-            volume_level: 0.45
+            volume_level: 0.35
     - conditions:
         - condition: or
           conditions:

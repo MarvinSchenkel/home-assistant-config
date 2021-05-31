@@ -2,15 +2,18 @@
 alias: areas_bedroom_lights_on
 description: Turns the bedroom lights on when motion has been detected
 mode: queued
+id: fe6038df-f16d-4ec9-8b9f-d5934041cee2
+
 trigger:
   - platform: homeassistant
     event: start
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.presence_bedroom
-  - platform: state
-    entity_id: variable.bedroom_darklight
+    entity_id: 
+      - binary_sensor.presence_bedroom
+      - input_select.bedroom_darklight
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -21,11 +24,12 @@ condition:
   - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
   - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
   - condition: state
-    entity_id: variable.bedroom_darklight
+    entity_id: input_select.bedroom_darklight
     state: 'dark'
   - condition: state
     entity_id: input_boolean.bedroom_automatic_lighting
     state: 'on'
+
 action:
    - service: script.sunlight
      data:

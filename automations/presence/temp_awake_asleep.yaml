@@ -2,6 +2,8 @@
 alias: temp_awake_asleep
 description: Temp
 mode: single
+id: 0da50050-3a95-4728-b4b4-c0b9702e8bd8
+
 trigger:
   - platform: time
     at:

@@ -1,5 +1,9 @@
 ---
 - script.play_random_music_living_room
-- script.scene_living_room_normal
-- script.scene_living_room_movie
-- script.scene_living_room_candle
+- light.fibaro_kitchen
+- light.fibaro_livingroom
+- light.dinner
+- binary_sensor.pir_kitchen
+- scene.livingroom_movie
+- scene.livingroom_normal
+- media_player.sonos_livingroom

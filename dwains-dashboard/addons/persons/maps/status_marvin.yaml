@@ -7,3 +7,6 @@
     - entity: input_select.marvin_status_dropdown
       name: "Locatie status"
       icon: mdi:crosshairs-gps
+    - entity: sensor.marvin_work_status
+      name: "Werk status"
+      icon: mdi:briefcase

@@ -16,7 +16,7 @@ rooms:
         - entity: sensor.pir_kitchen_battery_level
         - entity: sensor.pir_kitchen_luminance
         - entity: binary_sensor.pir_kitchen
-        - entity: variable.livingroom_darklight
+        - entity: input_select.livingroom_darklight
 
   - name: Hal
     icon: mdi:key
@@ -27,7 +27,7 @@ rooms:
       entities:
         - entity: sensor.pir_hall_downstairs_battery_level
         - entity: sensor.pir_hall_downstairs_luminance
-        - entity: variable.hall_downstairs_darklight
+        - entity: input_select.hall_downstairs_darklight
 
   - name: Overloop
     icon: mdi:stairs-up
@@ -38,7 +38,7 @@ rooms:
       entities:
         - entity: sensor.pir_hall_upstairs_battery_level
         - entity: sensor.pir_hall_upstairs_luminance
-        - entity: variable.hall_upstairs_darklight
+        - entity: input_select.hall_upstairs_darklight
 
   - name: Badkamer
     icon: mdi:shower-head
@@ -66,7 +66,7 @@ rooms:
         - entity: binary_sensor.pir_bedroom
         - entity: input_boolean.bedroom_automatic_lighting
         - entity: input_boolean.bedroom_automatic_volume
-        - entity: variable.bedroom_darklight
+        - entity: input_select.bedroom_darklight
 
   - name: WC
     icon: mdi:toilet

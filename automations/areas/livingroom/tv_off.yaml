@@ -2,6 +2,8 @@
 alias: areas_livingroom_tv_off
 description: Automatically turn off the TV to save power
 mode: queued
+id: 62d6decd-ccf6-4379-a3b0-00239e704892
+
 trigger:
   - platform: state
     entity_id: media_player.living_room_tv
@@ -26,6 +28,7 @@ trigger:
   - platform: state
     entity_id: binary_sensor.everyone_left_home
     to: 'on'
+
 action:
   - service: media_player.turn_off
     entity_id: media_player.living_room_tv

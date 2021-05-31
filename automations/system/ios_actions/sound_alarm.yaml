@@ -2,10 +2,13 @@
 description: Sound the alarm based on iOS action
 alias: system_ios_actions_sound_alarm
 mode: single
+id: 1071dfe4-d03a-4ebf-8626-69024ee81c3d
+
 trigger:
   platform: event
   event_type: ios.action_fired
   event_data:
-      actionName: alarm_on
+    actionName: alarm_on
+
 action:
   service: script.scene_alarm_on

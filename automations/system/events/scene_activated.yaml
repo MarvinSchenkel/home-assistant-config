@@ -2,6 +2,7 @@
 description: Keep track of the currently activated scene
 alias: system_events_scene_activated
 mode: queued
+id: f6759b16-37b1-4190-bec1-51f7f4bd3128
 
 trigger:
   - platform: event
@@ -14,6 +15,7 @@ variables:
   scene_id: "{{ trigger.event.data.service_data.entity_id if trigger.event.data.service_data.entity_id is string else trigger.event.data.service_data.entity_id[0] }}"
   scene_room: "{{ scene_id.replace('scene.', '').split('_')[0] }}"
   scene_name: "{{ scene_id.replace('scene.', '').split('_')[1] }}"
+
 action:
   # TODO: Handle multiple rooms
   - service: input_select.select_option

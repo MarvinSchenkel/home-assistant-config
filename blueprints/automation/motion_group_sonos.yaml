@@ -47,6 +47,9 @@ trigger:
 - platform: state
   entity_id: !input presence_entity
   to: 'on'
+- platform: state
+  entity_id: !input sonos_source
+  to: 'playing'
 - platform: homeassistant
   event: start
 - platform: event

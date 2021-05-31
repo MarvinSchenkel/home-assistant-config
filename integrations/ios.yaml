@@ -16,3 +16,18 @@ ios:
             authenticationRequired: true
             destructive: false
             behavior: 'default'
+      - name: YesNo
+        identifier: 'yesno'
+        actions:
+          - identifier: 'YES'
+            title: 'Yep!'
+            activationMode: 'background'
+            authenticationRequired: true
+            destructive: true
+            behavior: 'default'
+          - identifier: 'NO'
+            title: 'Nee'
+            activationMode: 'background'
+            authenticationRequired: true
+            destructive: false
+            behavior: 'default'

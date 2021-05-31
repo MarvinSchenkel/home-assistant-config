@@ -2,11 +2,14 @@
 alias: 'system_set_theme'
 description: 'Automatically switch theme to dark so Dwains theme looks nice on mobile'
 initial_state: 'true'
+id: 02129438-fe1c-4e8e-91e4-4a960ce6603e
+
 trigger:
   - platform: homeassistant
     event: start
   - platform: state
     entity_id: sun.sun
+
 action:
   - service: frontend.set_theme
     data:

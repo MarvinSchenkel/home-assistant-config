@@ -2,6 +2,8 @@
 alias: areas_bedroom_lights_off
 description: Turns the bedroom lights off when not motion has been detected for a while or when we go to sleep
 mode: single
+id: d75f8367-50e7-4959-b41c-d27d73a35471
+
 trigger:
   - platform: homeassistant
     event: start
@@ -17,6 +19,7 @@ trigger:
       - sensor.marvin_status
       - sensor.laura_status
     to: 'Slaapt'
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -37,6 +40,7 @@ condition:
       - condition: state
         entity_id: sensor.laura_status
         state: 'Slaapt'
+
 action:
   - service: light.turn_off
     data:

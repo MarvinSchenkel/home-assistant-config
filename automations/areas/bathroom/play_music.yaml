@@ -2,6 +2,8 @@
 alias: areas_bathroom_play_music
 description: Play music automatically in the bathroom based on several scenarios
 mode: single
+id: fea11cbd-7687-4212-b771-668f5ee5e860
+
 trigger:
   - platform: homeassistant
     event: start
@@ -17,6 +19,7 @@ trigger:
   - platform: state
     entity_id: sensor.laura_status
     to: 'Net wakker'
+
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
@@ -56,6 +59,7 @@ condition:
           - condition: state
             entity_id: binary_sensor.bathroom_flood
             state: 'on'
+
 action:
   - choose:
       # Play normal music when showering

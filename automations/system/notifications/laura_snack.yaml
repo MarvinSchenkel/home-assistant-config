@@ -2,6 +2,7 @@
 description: Send a notification when it's Laura's snack time
 alias: system_notifications_laura_snack
 mode: single
+id: 24bd0625-4372-40ec-97ba-e9bf96e08ab0
 
 trigger:
   - platform: time

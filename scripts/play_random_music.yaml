@@ -1,4 +1,11 @@
 alias: 'script_play_random_music'
+
+variables:
+  normal: ["Ambient / Relax", "A.M.R Radio", "Chill House 2021", "Deep", "Trance", "Progressive", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Coffee Club", "Chill Beats Music \U0001F497 groove, relax, study"]
+  chill: ["Ambient / Relax", "A.M.R Radio", "Chill step", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Lounge - Soft House", "The Wind Down", "Chill Beats Music \U0001F497 groove, relax, study", "Chill Tracks"]
+  morning: ["Meditative Guitar", "Ambient Relaxation", "Spa Treatment"]
+  trance_deep: ["Deep", "Trance", "Progressive"]
+
 sequence:
   - service: media_player.shuffle_set
     data:      
@@ -13,7 +20,7 @@ sequence:
         - service: media_player.select_source
           data_template:
             entity_id: '{{ sonos_entity }}'
-            source: '{{ ["Ambient / Relax", "Deep", "Trance", "Progressive", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Coffee Club", "Chill Beats Music \U0001F497 groove, relax, study"] | random }}'
+            source: '{{ normal | random }}'
     - conditions:
         - condition: template
           value_template: '{{ genre == "chill" }}'
@@ -21,7 +28,15 @@ sequence:
         - service: media_player.select_source
           data_template:
             entity_id: '{{ sonos_entity }}'
-            source: '{{ ["Ambient / Relax", "Chill step", "Chill Lounge", "Chillout Lounge", "Lounge - Soft House", "Lounge - Soft House", "The Wind Down", "Chill Beats Music \U0001F497 groove, relax, study", "Chill Tracks"] | random }}'  
+            source: '{{ chill | random }}'
+    - conditions:
+        - condition: template
+          value_template: '{{ genre == "trance_deep" }}'
+      sequence:
+        - service: media_player.select_source
+          data_template:
+            entity_id: '{{ sonos_entity }}'
+            source: '{{ trance_deep | random }}'
     - conditions:
         - condition: template
           value_template: '{{ genre == "morning" }}'
@@ -29,5 +44,5 @@ sequence:
         - service: media_player.select_source
           data_template:
             entity_id: '{{ sonos_entity }}'
-            source: '{{ ["Meditative Guitar", "Ambient Relaxation", "Spa Treatment"] | random }}'
+            source: '{{ morning | random }}'
       

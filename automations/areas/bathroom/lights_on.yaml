@@ -2,6 +2,8 @@
 alias: areas_bathroom_lights_on
 description: Turns the bathroom lights on when motion has been detected
 mode: queued
+id: 9617f5b7-0733-4877-82ea-1ab8bc5332b0
+
 trigger:
   - platform: homeassistant
     event: start
@@ -9,6 +11,7 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.presence_bathroom
+
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
@@ -18,11 +21,8 @@ condition:
     state: 'off'
   - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
   - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+
 action:
-  - service: script.sunlight
+  - service: light.turn_on
     data:
-      entities:
-        - light.fibaro_bathroom
-      turn_on: true
-      min_brightness: 70
-      turn_on_transition: 1
+      entity_id: light.fibaro_bathroom

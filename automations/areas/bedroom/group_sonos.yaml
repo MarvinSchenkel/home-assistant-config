@@ -1,6 +1,7 @@
 ---
 description: Group sonos to the living room when there is music playing and motion is detected
 alias:  areas_bedroom_group_sonos
+id: f26765fd-b30d-4385-ae68-ed7724a0b76e
 
 use_blueprint:
   path: motion_group_sonos.yaml

@@ -2,6 +2,8 @@
 description: Trigger the alarm whenever motion has been detected when the alarm is armed
 alias: house_trigger_alarm
 mode: single
+id: 1ee4decf-868d-4611-96f4-194dabcd7761
+
 trigger:
   - platform: state
     entity_id: binary_sensor.pir_bedroom
@@ -9,11 +11,13 @@ trigger:
   - platform: state
     entity_id: binary_sensor.pir_hallway
     to: 'on'
+
 condition:
   - condition: state
     entity_id: alarm_control_panel.alarm
     state: armed_away
   - "{{ not is_state('vacuum.xiaomi_vacuum_cleaner', 'cleaning') }}"
+
 action:
   service: notify.mobile_app_marvins_iphone
   data:

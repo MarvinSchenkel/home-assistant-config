@@ -1,0 +1,11 @@
+---
+platform: template
+sensors:
+  laura_work_status:
+    value_template: >-
+      {% if states.device_tracker.laura_work_laptop.state == 'home' %}
+      Aan het werk
+      {% else %}
+      Niet aan het werk
+      {% endif %}
+    friendly_name: 'Laura werkstatus'

@@ -1,0 +1,58 @@
+title: Marvin & Laura
+views:
+    # View tab title.
+  - title: Home
+    background: "#F1F0EA"
+    cards:
+      - type: custom:banner-card
+        background: "#E58F65"
+        color: "#F1F0EA"
+        heading: "\U0001F6CB Woonkamer"
+        link: /lovelace/living_room
+        entities:
+          - light.fibaro_kitchen
+          - light.dinner
+          - light.fibaro_livingroom
+          - entity: sensor.pir_kitchen_temperature
+            name: Temperatuur
+          - entity: sensor.pir_kitchen_luminance
+            name: Helderheid
+          - entity: binary_sensor.presence_livingroom
+            when: "on"
+            name: Aanwezigheid
+            map_state:
+              "on": "mdi:bell-ring"
+          - entity: media_player.sonos_livingroom
+            when: playing
+          - entity: media_player.apple_tv
+            name: Sonos
+            when: playing
+
+      - type: custom:banner-card
+        background: "#89DAFF"
+        color: "#2F3234"
+        heading: "\U0001F6BF Badkamer"
+        entities:
+          - light.fibaro_bathroom
+          - entity: sensor.pir_bathroom_temperature
+            name: Temperatuur
+          - entity: binary_sensor.presence_livingroom
+            when: "on"
+            name: Aanwezigheid
+            map_state:
+              "on": "mdi:bell-ring"
+          - entity: binary_sensor.bathroom_flood
+            when: "on"
+            name: Douche
+            map_state:
+              "on": "mdi:shower-head"            
+          - entity: media_player.sonos_bathroom
+            when: playing
+
+      - type: custom:banner-card
+        background: "#79897C"
+        color: "#2F3234"
+        heading: "\U0001F511 Hal & WC"
+        entities:
+          - light.fibaro_hall_downstairs
+

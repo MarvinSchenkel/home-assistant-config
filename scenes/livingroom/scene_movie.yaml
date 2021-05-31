@@ -1,7 +1,5 @@
 ---
 name: livingroom_movie
 entities:
-  light.livingroom:
-    state: 'off'
-  light.kitchen:
+  group.living_room_lights:
     state: 'off'

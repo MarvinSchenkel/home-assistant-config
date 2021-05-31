@@ -1,0 +1,981 @@
+kiosk_mode:
+  hide_header: true
+
+views:
+  - title: Tablet  
+    panel: true
+    theme: neon
+    cards:
+      - type: picture-elements        
+        image: local/box.png
+        card_mod:
+          style: |
+            ha-card {
+            --ha-card-border-radius: 0px;
+            background: transparent;}
+        elements:
+          # Background
+          - type: 'custom:button-card'
+            styles:
+              card:
+                - background-color: '#2c2d43'
+                - border-radius: 10px
+                - height: 1028px
+                - width: 770px
+                - opacity: 40%
+            style:
+              top: 32px
+              left: 32px
+              transform: 'translate(0%, 0%)'
+          #######################
+          ## TIME
+          #######################
+          - type: 'custom:button-card'
+            show_icon: false
+            show_state: true
+            show_name: false
+            entity: sensor.time
+            styles:
+              card:
+                - background-color: transparent
+                - height: 200px
+                - width: 300px
+              state:
+                - font-size: 60px
+                - color: var(--secondary-text-color)
+                - font-weight: lighter
+            style:
+              top: 110px
+              left: 150px
+          
+          #######################
+          ## WEATHER
+          #######################
+          - type: 'custom:simple-weather-card'
+            tap_action:
+              action: navigate
+              navigation_path: '#p2'
+            card_mod:
+              style: |
+                ha-card {
+                  --ha-card-background: transparent; 
+                  font-weight: normal !important;
+                  font-size: 12px;
+                  width: 300px
+                } 
+                .weather__info__item {
+                  display: none !important; 
+                }
+            entity: weather.buienradar
+            name: Weer
+            backdrop:
+              day: transparent
+              night: transparent
+            style:
+              top: 70px
+              left: 770px
+          
+          #######################
+          ## MEDIA PLAYER TOP
+          #######################
+          - type: conditional
+            conditions:
+              - entity: media_player.sonos_livingroom
+                state_not: idle
+            elements:
+              - type: 'custom:mini-media-player'
+                entity: media_player.sonos_livingroom
+                card_mod:
+                  style: |
+                    ha-card {
+                    --ha-card-background: transparent;
+                    width: 340px;
+                    height: 100px; }                       
+                hide:
+                  power: true
+                  name: true
+                  source: true
+                  volume: false
+                  controls: false
+                  progress: true
+                  icon: true
+                artwork: none
+                info: scroll
+                style:
+                  top: 115px
+                  left: 415px
+          
+          #######################
+          ## HOME
+          #######################
+          - type: 'custom:button-card'
+            show_icon: true
+            style:
+              top: 270px
+              left: 150px
+              width: 150px
+            entity_picture: /local/home.png
+            show_entity_picture: true
+            tap_action:
+              action: navigate
+              navigation_path: '#p1'
+            entity: alarm_control_panel.alarm
+            name: Home
+            show_label: true
+            styles:
+              custom_fields:
+                graph:
+                  - position: absolute
+                  - left: 0px
+                  - top: 143px
+                topleft:
+                  - position: absolute
+                  - left: 15px
+                  - top: 10px
+                topright:
+                  - position: absolute
+                  - left: 115px
+                  - top: 10px
+              grid:
+                - grid-template-areas: '"i" "n" "l"'
+                - grid-template-columns: 1fr
+                - grid-template-rows: 1fr min-content min-content
+              card:
+                - border-radius: 10px
+                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - height: 220px
+                - width: 150px
+              icon:
+                - width: 50px
+              img_cell:
+                - padding-top: 30px
+              name:
+                - color: var(--secondary-text-color)
+                - justify-self: center
+              label:
+                - font-size: 12px
+                - justify-self: center
+                - padding-bottom: 70px
+            state:
+              - value: disarmed
+                label: Ontgrendeld
+              - value: armed_away
+                label: Alarm !
+                entity_picture: /local/home_alarm.png
+              - value: partially_armed
+                label: Thuis alarm !
+                entity_picture: /local/home_alarm.png
+            custom_fields:
+              graph:
+                card:
+                  type: 'custom:mini-graph-card'
+                  card_mod:
+                    style: |
+                      ha-card {
+                        --ha-card-background: transparent; 
+                        color: var(--secondary-text-color);
+                        width: 150px;
+                        border-radius: 0px;
+                      }
+                  entities:
+                    - entity: sensor.pir_kitchen_temperature
+                  show:
+                    icon: false
+                    name: false
+                    points: false
+                  font_size: 40
+                  color_thresholds:
+                    - value: 19
+                      color: '#b0abf4'
+                    - value: 21
+                      color: '#c696eb'
+                    - value: 23
+                      color: '#cd79b3'
+              # topright:
+              #   card:
+              #     type: 'custom:button-card'
+              #     entity: switch.away_aktiverad
+              #     show_state: false
+              #     show_name: false
+              #     icon: 'mdi:shield-outline'
+              #     styles:
+              #       icon:
+              #         - width: 20px
+              # topleft:
+              #   card:
+              #     type: 'custom:button-card'
+              #     entity: switch.home_aktiverad
+              #     show_state: false
+              #     show_name: false
+              #     icon: 'ios:house'
+              #     styles:
+              #       card:
+              #         - transition: all 2s ease-out
+              #       icon:
+              #         - width: 20px
+
+          #######################
+          ## SETTINGS
+          #######################
+          - type: 'custom:button-card'
+            show_icon: true
+            entity_picture: /local/settings.png
+            show_entity_picture: true
+            entity: sensor.marvin_status
+            show_state: true
+            state_display: "&nbsp;"
+            style:
+              top: 270px
+              left: 329px
+              width: 150px
+            tap_action:
+              action: navigate
+              navigation_path: '#p3'
+            name: Instellingen
+            styles:
+              custom_fields:
+                graph:
+                  - position: absolute
+                  - left: 0px
+                  - top: 143px
+              grid:
+                - grid-template-areas: '"i" "n" "s"'
+                - grid-template-columns: 1fr
+                - grid-template-rows: 1fr min-content min-content
+              card:
+                - border-radius: 10px
+                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - height: 220px
+                - width: 150px
+              img_cell:
+                - padding-top: 30px
+              icon:
+                - width: 50px
+              name:
+                - color: var(--secondary-text-color)
+              state:
+                - padding-bottom: 70px
+                - font-size: 12px
+            custom_fields:
+              graph:
+                card:
+                  type: 'custom:mini-graph-card'
+                  card_mod:
+                    style: |
+                      ha-card {
+                      --ha-card-background: transparent; 
+                      color: var(--secondary-text-color);
+                      width: 150px;
+                      border-radius: 0px;
+                      }
+                  entities:
+                    - entity: sensor.motion_sensor_luminans
+                  show:
+                    icon: false
+                    name: false
+                    points: false
+                  font_size: 40
+                  color_thresholds:
+                    - value: 10
+                      color: '#9f882b'
+                    - value: 20
+                      color: '#f6d44c'
+                    - value: 30
+                      color: '#ffcc00'
+            
+
+          #######################
+          ## MARVIN
+          #######################
+          - type: 'custom:button-card'
+            show_icon: true
+            entity_picture: /local/marvin
+            show_entity_picture: true
+            # tap_action:
+            #   action: navigate
+            #   navigation_path: '#p3'
+            entity: sensor.marvin_status
+            show_state: true
+            name: Marvin
+            show_name: true
+            styles:
+              custom_fields:
+                graph:
+                  - position: absolute
+                  - left: 0px
+                  - top: 143px
+                topleft:
+                  - position: absolute
+                  - left: 15px
+                  - top: 15px
+                topright:
+                  - position: absolute
+                  - left: 85px
+                  - top: 10px
+                  - width: 50px
+              grid:
+                - grid-template-areas: '"i" "n" "s"'
+                - grid-template-columns: 1fr
+                - grid-template-rows: 1fr min-content min-content
+              card:
+                - border-radius: 10px
+                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - height: 220px
+                - width: 150px
+              img_cell:
+                - padding-top: 30px
+              icon:
+                - width: 50px
+              name:
+                - color: var(--secondary-text-color)
+              state:
+                - font-size: 12px
+                - padding-bottom: 70px
+              entity_picture:
+                - border-radius: 10px
+            state:
+              - value: "Slaapt"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+              - value: "Net weg"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+              - value: "Weg"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+              - value: "Lang weg"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+            custom_fields:
+              graph:
+                card:
+                  type: 'custom:mini-graph-card'
+                  card_mod:
+                    style: |
+                      ha-card {
+                      --ha-card-background: transparent; 
+                      color: var(--secondary-text-color);
+                      width: 150px;
+                      border-radius: 0px;
+                      }
+                  entities:
+                    - entity: sensor.google_fit_steps
+                  show:
+                    icon: false
+                    name: false
+                    points: false
+                  font_size: 40
+                  color_thresholds:
+                    - value: 100
+                      color: '#afbfdf'
+                    - value: 1000
+                      color: '#8cadea'
+                    - value: 5000
+                      color: '#454ab0'
+              topright:
+                card:
+                  type: 'custom:button-card'
+                  entity: sensor.marvins_iphone_battery_level_3
+                  tap_action:
+                    action: none
+                  show_state: true
+                  show_name: false
+                  styles:
+                    grid:
+                      - grid-template-areas: '"i s s"'
+                      - grid-template-columns: 1fr
+                      - grid-template-rows: 1fr min-content min-content
+                    icon:
+                      - width: 20px
+                    state:
+                      - font-size: 10px
+              topleft:
+                card:
+                  type: 'custom:button-card'
+                  entity: sensor.google_fit_distance
+                  tap_action:
+                    action: none
+                  show_state: true
+                  show_icon: false
+                  show_name: false
+                  styles:
+                    icon:
+                      - width: 20px
+                    state:
+                      - font-size: 10px
+            style:
+              top: 270px
+              left: 508px
+
+          #######################
+          ## LAURA
+          #######################
+          - type: 'custom:button-card'
+            show_icon: true
+            entity_picture: /local/laura
+            show_entity_picture: true
+            # tap_action:
+            #   action: navigate
+            #   navigation_path: '#p4'
+            entity: sensor.laura_status
+            show_state: true
+            name: Laura
+            show_name: true
+            styles:
+              custom_fields:
+                graph:
+                  - position: absolute
+                  - left: 0px
+                  - top: 143px
+                topleft:
+                  - position: absolute
+                  - left: 15px
+                  - top: 15px
+                topright:
+                  - position: absolute
+                  - left: 85px
+                  - top: 10px
+                  - width: 50px
+              grid:
+                - grid-template-areas: '"i" "n" "s"'
+                - grid-template-columns: 1fr
+                - grid-template-rows: 1fr min-content min-content
+              card:
+                - border-radius: 10px
+                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - height: 220px
+                - width: 150px
+              img_cell:
+                - padding-top: 30px
+              icon:
+                - width: 50px
+              name:
+                - color: var(--secondary-text-color)
+              state:
+                - font-size: 12px
+                - padding-bottom: 70px              
+              entity_picture:
+                - border-radius: 10px
+            state:
+              - value: "Slaapt"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+              - value: "Net weg"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+              - value: "Weg"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+              - value: "Lang weg"
+                styles:
+                  icon:
+                    - filter: grayscale(100%)
+            custom_fields:
+              graph:
+                card:
+                  type: 'custom:mini-graph-card'
+                  card_mod:
+                    style: |
+                      ha-card {
+                      --ha-card-background: transparent; 
+                      color: var(--secondary-text-color);
+                      width: 150px;
+                      border-radius: 0px;
+                      }
+                  entities:
+                    - entity: sensor.malins_iphone_steps
+                  show:
+                    icon: false
+                    name: false
+                    points: false
+                  font_size: 40
+                  color_thresholds:
+                    - value: 100
+                      color: '#afbfdf'
+                    - value: 1000
+                      color: '#8cadea'
+                    - value: 5000
+                      color: '#454ab0'
+              topright:
+                card:
+                  type: 'custom:button-card'
+                  entity: sensor.rne_l21_batterijniveau
+                  tap_action:
+                    action: none
+                  show_state: true
+                  show_name: false
+                  styles:
+                    grid:
+                      - grid-template-areas: '"i s s"'
+                      - grid-template-columns: 1fr
+                      - grid-template-rows: 1fr min-content min-content
+                    icon:
+                      - width: 20px
+                    state:
+                      - font-size: 10px
+              topleft:
+                card:
+                  type: 'custom:button-card'
+                  entity: sensor.malins_iphone_distance
+                  tap_action:
+                    action: none
+                  show_state: true
+                  show_icon: false
+                  show_name: false
+                  styles:
+                    icon:
+                      - width: 20px
+                    state:
+                      - font-size: 10px
+            style:
+              top: 270px
+              left: 687px
+          
+          #######################
+          ## MIDDLE SWIPE BAR
+          #######################
+          - type: 'custom:swipe-card'
+            start_card: 1
+            reset_after: 20
+            style:
+              top: 780px
+              left: 418px
+              width: 770px
+            cards:
+              #######################
+              ## HOME
+              #######################
+              - type: picture-elements
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: transparent;
+                    }
+                image: local/box.png
+                elements:
+                  - type: 'custom:button-card'
+                    show_icon: false
+                    show_state: true
+                    show_name: true
+                    tap_action:
+                      action: none
+                    name: Home
+                    styles:
+                      card:
+                        - background-color: transparent
+                      name:
+                        - font-size: 40px
+                        - color: var(--secondary-text-color
+                        - font-weight: lighter
+                    style:
+                      top: 20px
+                      left: 45px
+                      transform: 'translate(0%, 0%)'
+                  - type: 'custom:circle-sensor-card'
+                    entity: sensor.dash_teslau_range
+                    stroke_width: 10
+                    max: 500
+                    name: Teslau
+                    gradient: true
+                    fill: '#3a3c55'
+                    font_style:
+                      color: 'rgba(255, 255, 255, 0.4)'
+                      font-size: 16px
+                    stroke_color: '#b0abf4'
+                    style:
+                      top: 180px
+                      left: 110px
+                      width: 150px
+
+                  - type: 'custom:button-card'
+                    entity: fan.itho
+                    style:
+                      top: 185px
+                      left: 300px
+                    icon: mdi:fan
+                    show_state: false
+                    show_icon: true
+                    name: Ventilatie
+                    state:
+                      - value: 'on'
+                        styles:
+                          icon:
+                            - animation: rotating 2.5s linear infinite
+                    tap_action:
+                      action: toggle
+                    styles:
+                      card:
+                        - background-color: transparent
+                    
+
+              #######################
+              ## Woonkamer
+              #######################
+              - type: picture-elements
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: transparent;
+                    }
+                image: local/box.png
+                elements:
+                  - type: 'custom:button-card'
+                    show_icon: false
+                    show_state: true
+                    show_name: true
+                    tap_action:
+                      action: none
+                    name: Woonkamer
+                    styles:
+                      card:
+                        - background-color: transparent
+                      name:
+                        - font-size: 40px
+                        - color: var(--secondary-text-color)
+                        - font-weight: lighter
+                    style:
+                      top: 20px
+                      left: 45px
+                      transform: 'translate(0%, 0%)'
+                  
+                  - type: 'custom:light-popup-card'
+                    card_mod:
+                      style: |
+                        ha-card {
+                        }
+                        h4 {
+                        font-size: 12px; 
+                        color: var(--primary-text-color); }
+                    entity: light.dinner
+                    displayType: slider
+                    hideState: true
+                    hideIcon: true
+                    sliderColor: var(--accent-color)
+                    brightnessHeight: 130px
+                    brightnessWidth: 40px
+                    fullscreen: true
+                    sliderThumbColor: var(--accent-color)
+                    sliderTrackColor: '#3a3c55'
+                    style:
+                      top: 190px
+                      left: 65px
+                      height: 400px
+                  # - type: 'custom:hui-element'
+                  #   card_type: entities
+                  #   card_mod:
+                  #     style: |
+                  #       ha-card {
+                  #         --ha-card-background: transparent; 
+                  #         font-size: 12px;
+                  #         width: 355px;
+                  #         padding-top: 40px;
+                  #       }
+                  #   entities:
+                  #     - entity: light.dinner
+                  #       name: Eettafel
+                  #       type: custom:slider-entity-row
+                  #       icon: 'ios:lightbulb'
+                  #     - entity: light.fibaro_livingroom
+                  #       name: Woonkamer
+                  #       type: custom:slider-entity-row
+                  #       icon: 'ios:lightbulb'
+                  #     - entity: light.fibaro_kitchen
+                  #       name: Keuken
+                  #       type: custom:slider-entity-row
+                  #       icon: 'ios:lightbulb'
+                  #   style:
+                  #     top: 170px
+                  #     left: 228px
+                  #     width: 400px
+          #######################
+          ## BOTTOM BAR
+          #######################
+          - type: 'custom:state-switch'
+            entity: hash
+            default: p1
+            style:
+              top: 840px
+              left: 425px
+              width: 770px
+              height: 270px
+            states:
+              p1:
+                type: picture-elements
+                image: local/box.png
+                card_mod:
+                  style: |
+                    ha-card {
+                    --ha-card-background: transparent; }
+                elements:
+                  - type: 'custom:button-card'
+                    show_icon: false
+                    show_state: true
+                    show_name: true
+                    tap_action:
+                      action: none
+                    name: Kalender
+                    styles:
+                      card:
+                        - background-color: transparent
+                      name:
+                        - font-size: 40px
+                        - color: var(--secondary-text-color
+                        - font-weight: lighter
+                    style:
+                      top: 0px
+                      left: 36px
+                      transform: 'translate(0%, 0%)'
+                  - type: 'custom:atomic-calendar-revive'
+                    style:
+                      top: 210px
+                      left: 330px
+                    entities: 
+                      - entity: calendar.afvalkalender_rmn
+                        icon: 'mdi:delete-empty'
+                        #color: '#b0abf4'
+                      - entity: calendar.feestdagen_in_nederland
+                        icon: 'mdi:party-popper'
+                        #color: '#c696eb'
+                    maxDaysToShow: 14
+                    maxEventCount: 4
+                    disableEventLink: true
+                    disableLocationLink: true
+                    showRelativeTime: false
+                    showWeekDay: true
+                    showHiddenText: false
+                    dayWrapperLineColor: transparent
+                    dateSize: 150
+                    sortByStartTime: true
+                    fullDayEventText: Hele dag
+                    noEventsForTodayText: Geen activiteiten vandaag!
+                    noEventsForNextDaysText: Geen activiteiten morgen!
+                    card_mod:
+                      style: |
+                        ha-card {
+                          --ha-card-border-radius: 0px;  
+                          background: transparent; 
+                          width: 600px;
+                          font-size: 12px; }  
+                          .hoursHTML { 
+                          font-weight: bold;
+                          background: #3a3c55;
+                          color: var(--secondary-text-color);
+                          border-radius: 5px;
+                          padding: 5px;
+                        }
+                        .event-left { 
+                          text-transform: lowercase;
+                          text-align: left !important;
+                        }
+
+                  #######################
+                  ## MEDIA PLAYER LARGE
+                  #######################
+                  - type: 'custom:button-card'
+                    show_icon: false
+                    show_state: true
+                    show_name: true
+                    tap_action:
+                      action: none
+                    name: Media
+                    styles:
+                      card:
+                        - background-color: transparent
+                      name:
+                        - font-size: 40px
+                        - color: var(--secondary-text-color
+                        - font-weight: lighter
+                    style:
+                      top: 0px
+                      left: 395px
+                      transform: 'translate(0%, 0%)'
+                  - type: 'custom:state-switch'
+                    entity: sensor.dash_media_item
+                    style:
+                      top: 200px
+                      left: 558px
+                    transition: flip
+                    transition_time: 200
+                    default: idle
+                    states:
+                      sonos:
+                        type: 'custom:mini-media-player'
+                        entity: media_player.sonos_livingroom
+                        tap_action:
+                          action: none
+                        card_mod:
+                          style: |
+                            ha-card {
+                              --ha-card-border-radius: 10px;
+                              width: 335px;
+                              height: 265px; 
+                            }                       
+                        hide:
+                          power: true
+                          name: true
+                          source: true
+                          volume: true
+                          controls: true
+                          info: true
+                          icon: true
+                        artwork: cover-fit  
+                      apple_tv:
+                        type: 'custom:mini-media-player'
+                        entity: media_player.apple_tv
+                        tap_action:
+                          action: none
+                        card_mod:
+                          style: |
+                            ha-card {
+                              --ha-card-border-radius: 10px;
+                              width: 335px;
+                              height: 265px; 
+                            }                       
+                        hide:
+                          power: true
+                          name: true
+                          source: true
+                          volume: true
+                          controls: true
+                          info: true
+                          icon: true
+                        artwork: cover-fit                      
+                      idle:
+                        type: 'custom:sonos-playlist-card'
+                        player: media_player.sonos_livingroom
+                        playlist_type: 'user'
+                        limit: 50
+                        gridWidth: 30
+                        style: |
+                          ha-card {
+                            width: 335px;
+                            height: 265px;
+                            overflow: scroll;                            
+                          }
+
+                          ha-card::-webkit-scrollbar {
+                            display: none;
+                          }
+
+                          div.griditem {
+                            margin-bottom: 0.75em;
+                          }
+
+                          div.griditem > img {
+                            border-radius: 10px;
+                          }
+              
+              p2:
+                type: picture-elements                
+                image: local/box.png
+                card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: transparent; 
+                    }
+                elements:
+                  - type: 'custom:button-card'
+                    style:
+                      top: 30px
+                      left: 185px
+                    show_icon: false
+                    show_state: true
+                    show_name: true
+                    tap_action:
+                      action: none
+                    name: Weer
+                    styles:
+                      card:
+                        - background-color: transparent
+                        - height: 200px
+                        - width: 300px
+                      name:
+                        - font-size: 40px
+                        - justify-self: start
+                        - color: var(--secondary-text-color)
+                        - font-weight: lighter
+                  - type: 'custom:weather-card'
+                    entity: weather.buienradar
+                    style:
+                      top: 200px
+                      left: 375px
+                    number_of_forecasts: '5'
+                    details: false
+                    current: false
+                    card_mod:
+                      style: |
+                        ha-card {
+                          --ha-card-background: transparent;          
+                          width: 700px;
+                          font-size: 12px;
+                        }
+
+              p3:
+                type: picture-elements                
+                image: local/box.png
+                card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: transparent; 
+                    }
+                elements:
+                  - type: 'custom:button-card'
+                    style:
+                      top: 30px
+                      left: 185px
+                    show_icon: false
+                    show_state: true
+                    show_name: true
+                    tap_action:
+                      action: none
+                    name: Instellingen
+                    styles:
+                      card:
+                        - background-color: transparent
+                        - height: 200px
+                        - width: 300px
+                      name:
+                        - font-size: 40px
+                        - justify-self: start
+                        - color: var(--secondary-text-color)
+                        - font-weight: lighter
+                  - type: 'custom:hui-element'
+                    card_type: entities
+                    card_mod:
+                      style: |
+                        ha-card {
+                          --ha-card-background: transparent; 
+                          font-size: 12px;
+                          width: 355px;
+                          padding-top: 40px;
+                        }
+                    entities:
+                      - entity: input_boolean.setting_manual_lights
+                        name: Handmatige verlichting
+                        icon: 'ios:lightbulb'
+                      - entity: switch.adaptive_lighting_dinner
+                        name: Circadian verlichting eettafel
+                        icon: 'ios:sunrise'
+                      - entity: switch.adaptive_lighting_kitchen
+                        name: Circadian verlichting keuken
+                        icon: 'ios:sunrise'
+                      - entity: switch.adaptive_lighting_living_room
+                        name: Circadian verlichting woonkamer
+                        icon: 'ios:sunrise'
+                      - entity: switch.adaptive_lighting_hall_downstairs
+                        name: Circadian verlichting hal beneden
+                        icon: 'ios:sunrise'
+                      # - entity: switch.adaptive_lighting_wc
+                      #   name: Circadian verlichting wc
+                      #   icon: 'ios:sunrise'
+                    style:
+                      top: 170px
+                      left: 228px
+                      width: 400px
