@@ -21,6 +21,7 @@ deps
 image
 tts
 scripts/alarm
+automations/system/notifications/private
 
 # Ignore specific files
 zwcfg_*
@@ -36,3 +37,4 @@ mqtt_dump.txt
 ip_bans.yaml
 secrets.yaml
 known_devices.yaml
+google_calendars.yaml

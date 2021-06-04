@@ -3,7 +3,7 @@ platform: template
 sensors:
   laura_work_status:
     value_template: >-
-      {% if states.device_tracker.laura_work_laptop.state == 'home' %}
+      {% if states.device_tracker.unifi_laura_worklaptop.state == 'home' %}
       Aan het werk
       {% else %}
       Niet aan het werk

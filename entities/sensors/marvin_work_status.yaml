@@ -3,7 +3,7 @@ platform: template
 sensors:
   marvin_work_status:
     value_template: >-
-      {% if states.device_tracker.marvin_work_laptop.state == 'home' %}
+      {% if states.device_tracker.unifi_marvin_worklaptop.state == 'home' %}
       Aan het werk
       {% else %}
       Niet aan het werk
