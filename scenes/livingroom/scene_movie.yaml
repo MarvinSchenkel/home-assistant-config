@@ -1,5 +1,5 @@
 ---
-name: livingroom_movie
+name: livingroom_lights_movie
 entities:
   group.living_room_lights:
-    state: 'off'
+    state: "off"

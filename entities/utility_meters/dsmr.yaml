@@ -1,0 +1,40 @@
+---
+daily_energy_offpeak:
+  source: sensor.energy_consumption_tarif_1
+  cycle: daily
+
+daily_energy_peak:
+  source: sensor.energy_consumption_tarif_2
+  cycle: daily
+
+daily_gas:
+  source: sensor.gas_consumption
+  cycle: daily
+
+monthly_energy_offpeak:
+  source: sensor.energy_consumption_tarif_1
+  cycle: monthly
+
+monthly_energy_peak:
+  source: sensor.energy_consumption_tarif_2
+  cycle: monthly
+
+monthly_gas:
+  source: sensor.gas_consumption
+  cycle: monthly
+
+daily_energy_produced_offpeak:
+  source: sensor.energy_production_tarif_1
+  cycle: daily
+
+daily_energy_produced_peak:
+  source: sensor.energy_production_tarif_2
+  cycle: daily
+
+monthly_energy_produced_offpeak:
+  source: sensor.energy_production_tarif_1
+  cycle: monthly
+
+monthly_energy_produced_peak:
+  source: sensor.energy_production_tarif_2
+  cycle: monthly

@@ -4,7 +4,7 @@ alias: presence_laura_just_awake
 mode: single
 id: a8abbc27-211f-4bae-bc44-013d8735e6c9
 
-trigger: 
+trigger:
   - platform: webhook
     webhook_id: laura_awake
   - platform: state
@@ -16,7 +16,7 @@ trigger:
 condition:
   condition: state
   entity_id: input_select.laura_sleep_status_dropdown
-  state: 'Slaapt'
+  state: "Slaapt"
 
 action:
   - choose:
@@ -29,9 +29,9 @@ action:
           - service: input_select.select_option
             data:
               entity_id: input_select.laura_sleep_status_dropdown
-              option: 'Net wakker'
+              option: "Net wakker"
     default:
       - service: input_select.select_option
         data:
           entity_id: input_select.laura_sleep_status_dropdown
-          option: 'Net wakker'
+          option: "Net wakker"

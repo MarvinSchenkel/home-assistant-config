@@ -4,3 +4,4 @@ lights:
   - light.fibaro_wc
 detect_non_ha_changes: true
 take_over_control: true
+max_brightness: 99

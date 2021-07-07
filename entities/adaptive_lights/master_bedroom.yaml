@@ -1,0 +1,7 @@
+---
+# Define the switch for circadian lighting in the bedroom
+name: master_bedroom
+lights:
+  - light.fibaro_master_bedroom
+detect_non_ha_changes: true
+take_over_control: true

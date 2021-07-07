@@ -41,6 +41,16 @@ lovelace:
       type: module
     - url: /hacsfiles/Homekit-panel-card/homekit-panel-card.js
       type: module
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+    - url: "/local/calendar-card.js?v=31091"
+      type: module
+    - url: "/local/custom_icons.js?v=25052001"
+      type: module
+    - url: /local/font.css
+      type: css
+    - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+      type: module
 
   dashboards:
     lovelace-tablet:

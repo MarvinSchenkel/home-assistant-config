@@ -1,6 +1,7 @@
 sonos:
- media_player:
-   hosts:
-     - !secret sonos_kitchen_host
-     - !secret sonos_livingroom_host
-     - !secret sonos_bathroom_host
+  media_player:
+    hosts:
+      - !secret sonos_kitchen_host
+      - !secret sonos_livingroom_host
+      - !secret sonos_bathroom_host
+      - !secret sonos_master_bedroom_host

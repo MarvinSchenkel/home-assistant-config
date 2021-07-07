@@ -22,6 +22,7 @@ image
 tts
 scripts/alarm
 automations/system/notifications/private
+www/fonts
 
 # Ignore specific files
 zwcfg_*

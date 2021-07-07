@@ -7,15 +7,7 @@ id: 96522435-829f-419b-b3c0-adfafb88b209
 trigger:
   - platform: state
     entity_id: vacuum.norby
-    to: 'cleaning'
-
-condition:
-  - condition: state
-    entity_id: input_select.marvin_status_dropdown
-    state: 'Weg'
-  - condition: state
-    entity_id: input_select.laura_status_dropdown
-    state: 'Weg'
+    to: "cleaning"
 
 action:
   - service: script.send_notification

@@ -7,19 +7,33 @@ id: C90E1ED3-EF56-4F15-A5C7-47F1D75B1F85
 trigger:
   - platform: state
     entity_id: binary_sensor.bathroom_flood
-    to: 'on'
+    to: "on"
   - platform: state
     entity_id: binary_sensor.bathroom_flood
-    to: 'off'
+    to: "off"
     for:
       minutes: 15
+  - platform: numeric_state
+    entity_id:
+      - sensor.pir_bathroom_humidity
+    above: 82
+  - platform: numeric_state
+    entity_id:
+      - sensor.pir_bathroom_humidity
+    below: 72
 
 action:
   choose:
     - conditions:
-        - condition: state
-          entity_id: binary_sensor.bathroom_flood
-          state: 'on'        
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: binary_sensor.bathroom_flood
+              state: "on"
+            - condition: numeric_state
+              entity_id:
+                - sensor.pir_bathroom_humidity
+              above: 82
       sequence:
         - service: fan.set_preset_mode
           data:
