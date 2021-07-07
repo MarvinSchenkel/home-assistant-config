@@ -2,8 +2,8 @@ platform: template
 sensors:
   rmn_next_pickup_in:
     value_template: >-
-      {% 
-        set sensors = [ 
+      {%
+        set sensors = [
           state_attr('sensor.rmn_papier', 'Days-until') if state_attr('sensor.rmn_papier', 'Days-until') > 0 else 99 | int,
           state_attr('sensor.rmn_gft', 'Days-until') if state_attr('sensor.rmn_gft', 'Days-until') > 0 else 99 | int,
           state_attr('sensor.rmn_pmd', 'Days-until') if state_attr('sensor.rmn_pmd', 'Days-until') > 0 else 99 | int,

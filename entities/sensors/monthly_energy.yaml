@@ -1,0 +1,7 @@
+---
+platform: template
+sensors:
+  monthly_energy:
+    friendly_name: Monthly Energy
+    unit_of_measurement: kWh
+    value_template: "{{ states('sensor.monthly_energy_offpeak')|float + states('sensor.monthly_energy_peak')|float }}"
