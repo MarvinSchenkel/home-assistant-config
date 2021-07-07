@@ -1,0 +1,7 @@
+---
+name: Tuindeur huidige Luxaflex scene
+options:
+  - open
+  - halfopen
+  - halfclosed
+  - closed

@@ -1,0 +1,85 @@
+---
+alias: areas_master_bedroom_blinds
+description: >
+  Control the blinds in the master bedroom (which are facing south) by using 
+   - Sun elevation
+   - At 19:00
+   - The solar panels (indicating a hot day)
+   - Whenever we wake up
+mode: queued
+max_exceeded: silent
+id: aa45eaa1-b64b-4319-acf5-1d3ac0ea1d1a
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      # Include auto-shut blinds on hot days
+      - binary_sensor.sun_should_close_south_blinds
+      # Whenever we wake up or go to sleep
+      - input_select.laura_sleep_status_dropdown
+      - input_select.marvin_sleep_status_dropdown
+  # Sun
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 3.75
+  - platform: time
+    at: "19:00:00"
+
+condition:
+  - condition: state
+    entity_id:
+      - input_boolean.setting_manual_blinds
+    state: "off"
+
+action:
+  - choose:
+      # Fully closed
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - sensor.marvin_status
+                state:
+                  - "Slaapt"
+                  - "Net wakker"
+              - condition: state
+                entity_id:
+                  - sensor.laura_status
+                state:
+                  - "Slaapt"
+                  - "Net wakker"
+              - condition: state
+                entity_id:
+                  - binary_sensor.sun_should_close_south_blinds
+                state: "on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.slaapkamer_dicht
+
+      # Half closed
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id:
+                  - sensor.sun_elevation
+                below: 3.75
+              - condition: time
+                after: "19:00:00"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.slaapkamer_half_dicht
+
+    # Half open
+    default:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.slaapkamer_half_open

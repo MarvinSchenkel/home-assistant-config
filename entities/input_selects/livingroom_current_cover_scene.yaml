@@ -1,0 +1,7 @@
+---
+name: Woonkamer huidige Luxaflex scene
+options:
+  - open
+  - halfopen
+  - halfclosed
+  - closed

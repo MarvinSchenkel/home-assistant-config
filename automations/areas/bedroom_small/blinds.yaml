@@ -16,16 +16,28 @@ trigger:
       # There is no sensor in the small bedroom, so I use the sensor in the living room which is a pretty good approach
       # to measure when it is getting dark
       - input_select.livingroom_darklight
+      # Include auto-shut blinds on hot days
+      - binary_sensor.sun_should_close_south_blinds
   - platform: time
     at:
       - "08:00:00"
       - "10:00:00"
-      - "20:00:00"
+      - "19:00:00"
+  # There is a weird bug in the ZHA communication where HA thinks the blinds are closing, but nothing is really happening.
+  # The state then pops back to 'closed', so using this a trigger to retry the automation.
+  - platform: state
+    entity_id: cover.small_bedroom
+    from: opening
+    to: closed
+  - platform: state
+    entity_id: cover.small_bedroom
+    from: closing
+    to: open
 
 condition:
   - condition: state
     entity_id: input_boolean.setting_guest_mode
-    state: 'off'
+    state: "off"
 
 action:
   choose:
@@ -34,9 +46,10 @@ action:
           before: "20:00:00"
         - condition: state
           entity_id: input_select.livingroom_darklight
-          state: 'light'        
+          state: "light"
         - condition: or
-          conditions:            
+          conditions:
+            # Open: Workdays at 8am
             - condition: and
               conditions:
                 - condition: time
@@ -44,6 +57,7 @@ action:
                 - condition: state
                   entity_id: binary_sensor.workday
                   state: "on"
+            # Open: Weekend days and holidays at 10
             - condition: and
               conditions:
                 - condition: time
@@ -51,6 +65,10 @@ action:
                 - condition: state
                   entity_id: binary_sensor.workday
                   state: "off"
+        - condition: state
+          entity_id:
+            - binary_sensor.sun_should_close_south_blinds
+          state: "off"
       sequence:
         - service: cover.open_cover
           target:

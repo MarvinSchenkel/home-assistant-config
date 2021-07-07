@@ -1,0 +1,130 @@
+---
+alias: areas_livingroom_blinds
+description: >
+  Control the blinds in the living room (which are facing south) by using 
+   - Sun elevation and azimuth
+   - The solar panels (indicating a hot day)
+   - Whenever we wake up
+   - Fibaro switch on the wall
+   - Whether we are watching TV
+mode: queued
+max_exceeded: silent
+id: b23cec14-e16c-4bee-b5db-8fc0e71a4136
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      # Include auto-shut blinds on hot days
+      - binary_sensor.sun_should_close_south_blinds
+  - platform: state
+    entity_id:
+      # Whether we just woke up / gone to sleep
+      - input_select.laura_sleep_status_dropdown
+      - input_select.marvin_sleep_status_dropdown
+    to:
+      - "Slaapt"
+      - "Wakker"
+  # Sun
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 3.75
+  # Open garden door when we want to go outside using Fibaro Switch
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: e4215541d29b80289c09ff2dc404fe26
+      label: "Scene 001"
+  # Sync blinds 10m after finish wathing TV
+  - platform: state
+    entity_id: media_player.apple_tv
+    to:
+      - idle
+      - paused
+    for:
+      minutes: 10
+
+condition:
+  - condition: state
+    entity_id:
+      - input_boolean.setting_manual_blinds
+    state: "off"
+
+action:
+  - choose:
+      # Open/Close garden door when switch is pressed
+      - conditions:
+          - "{{ trigger.platform == 'event' and trigger.event.data.device_id == 'e4215541d29b80289c09ff2dc404fe26' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id:
+                      - input_select.gardendoor_current_cover_scene
+                    state: "halfopen"
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id:
+                        - scene.gardendoor_cover_closed
+            default:
+              - service: scene.turn_on
+                target:
+                  entity_id:
+                    - scene.gardendoor_cover_halfopen
+
+      # Fully closed
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - sensor.laura_status
+                  - sensor.marvin_status
+                state:
+                  - "Slaapt"
+              - condition: state
+                entity_id:
+                  - binary_sensor.sun_should_close_south_blinds
+                state: "on"
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id:
+                      - media_player.apple_tv
+                    state: "playing"
+                  - condition: state
+                    entity_id:
+                      - input_select.livingroom_current_cover_scene
+                    state: "closed"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.livingroom_cover_closed
+                - scene.gardendoor_cover_closed
+
+      # Half closed
+      - conditions:
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_elevation
+            below: 3.75
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.livingroom_cover_halfclosed
+                - scene.gardendoor_cover_halfclosed
+
+    # Half open
+    default:
+      - service: scene.turn_on
+        target:
+          entity_id:
+            - scene.livingroom_cover_halfopen
+            - scene.gardendoor_cover_halfopen

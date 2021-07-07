@@ -1,0 +1,65 @@
+---
+alias: areas_kitchen_blinds
+description: >
+  Control the blinds in the kitchen by using 
+   - Sun elevation
+   - Whenever we wake up
+mode: single
+max_exceeded: silent
+id: 38622ce4-5865-45c4-8cb8-7b3b54801280
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      # Whether we just woke up / gone to sleep
+      - input_select.laura_sleep_status_dropdown
+      - input_select.marvin_sleep_status_dropdown
+  # Sun
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 3.75
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_manual_blinds
+    state: "off"
+
+action:
+  - choose:
+      # Fully closed
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - sensor.laura_status
+                  - sensor.marvin_status
+                state:
+                  - "Slaapt"
+                  - "Net wakker"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.keuken_dicht
+
+      # Half closed
+      - conditions:
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_elevation
+            below: 3.75
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.keuken_half_dicht
+
+    # Half open
+    default:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.keuken_half_open

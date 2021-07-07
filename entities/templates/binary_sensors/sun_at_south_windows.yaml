@@ -1,0 +1,16 @@
+---
+# A binary sensor indicating whether the sun is shining directly
+# at our windows on the south side of the house. This input is used
+# for automating our blinds
+binary_sensor:
+  name: sun_at_south_windows
+  state: >
+    {%-
+      if states("sensor.sun_azimuth") | int >= 86
+      and states("sensor.sun_azimuth") | int <= 260
+      and states("sensor.sun_elevation") | int >= 25
+    -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

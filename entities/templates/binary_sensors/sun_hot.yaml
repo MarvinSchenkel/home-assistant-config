@@ -1,0 +1,13 @@
+---
+# A binary sensor based on our solar panels indicating
+# whether the sun is intensly shining. Using this in
+# combination with the sun_at_south_windows to control
+# the blinds
+binary_sensor:
+  name: sun_hot
+  state: >
+    {%- if states("sensor.solaredge_ac_power_output") | int > 1400 -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

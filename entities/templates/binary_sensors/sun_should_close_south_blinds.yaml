@@ -1,0 +1,41 @@
+---
+# A binary sensor bases on the sun intensity and angle of the sun,
+# indicating whether the blinds on the south side of the house should
+# be closed. Using a separate template sensor for this, since duration
+# based triggers (e.g. for: minutes: 10) interfere with other conditions
+# in automations.
+trigger:
+  - platform: state
+    entity_id: binary_sensor.sun_at_south_windows
+  - platform: state
+    entity_id:
+      - binary_sensor.sun_hot
+    to: "on"
+    for:
+      minutes: 5
+  - platform: state
+    entity_id:
+      - binary_sensor.sun_hot
+    to: "off"
+    for:
+      minutes: 10
+  - platform: numeric_state
+    entity_id: sensor.current_temperature
+    above: 20
+
+binary_sensor:
+  - name: sun_should_close_south_blinds
+    state: >
+      {% set hot_last_change = as_timestamp(states.binary_sensor['sun_hot'].last_changed) %}
+      {% set hot_change_in_mins = ((as_timestamp(now()) - hot_last_change)) / 60 %}
+
+      {%- 
+        if is_state('binary_sensor.sun_at_south_windows', 'on') 
+        and is_state('binary_sensor.sun_hot', 'on')
+        and hot_change_in_mins > 5
+        and states('sensor.current_temperature') | float > 20.0
+      -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}
