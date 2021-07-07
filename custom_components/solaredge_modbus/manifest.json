@@ -1,0 +1,13 @@
+{
+    "domain": "solaredge_modbus",
+    "name": "SolarEdge Modbus",
+    "version": "0.1.1",
+    "documentation":"https://github.com/erikarenhill/solaredge-modbus-hass",
+    "dependencies": [],
+    "codeowners": [],
+    "requirements": [
+        "pyModbusTCP >= 0.1.8",
+        "pymodbus"
+        ]
+    }
+    
