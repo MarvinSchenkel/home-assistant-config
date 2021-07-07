@@ -15,15 +15,16 @@ trigger:
 condition:
   - condition: state
     entity_id: binary_sensor.presence_hall_downstairs
-    state: 'on'
+    state: "on"
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - condition: state
     entity_id: input_select.hall_downstairs_darklight
-    state: 'dark'
+    state: "dark"
 
 action:
   - service: light.turn_on
     data:
       entity_id: light.fibaro_hall_downstairs
+      transition: 2

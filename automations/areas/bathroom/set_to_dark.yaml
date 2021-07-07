@@ -10,15 +10,15 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: template
-    value_template: '{{ states("sensor.pir_bathroom_luminance") | int < 20 and is_state("light.fibaro_bathroom", "off")  }}'
+    value_template: '{{ states("sensor.pir_bathroom_luminance") | int < 15 and is_state("light.fibaro_bathroom", "off")  }}'
     for:
       seconds: 60
 
 condition:
-  - '{{ states("sensor.pir_bathroom_luminance") | int < 20 and is_state("light.fibaro_bathroom", "off")  }}'
+  - '{{ states("sensor.pir_bathroom_luminance") | int < 15 and is_state("light.fibaro_bathroom", "off")  }}'
 
 action:
   - service: input_select.select_option
     data:
       entity_id: input_select.bathroom_darklight
-      option: 'dark'
+      option: "dark"

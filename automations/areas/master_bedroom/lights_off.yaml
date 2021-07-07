@@ -1,8 +1,8 @@
 ---
-alias: areas_hall_upstairs_lights_off
-description: Turns the hallway lights on when motion has been detected or when we go to sleep
+alias: areas_master_bedroom_lights_off
+description: Turns the bedroom lights off when not motion has been detected for a while or when we go to sleep
 mode: single
-id: ef5b211f-421c-4374-a2d2-dfe08bed9460
+id: d75f8367-50e7-4959-b41c-d27d73a35471
 
 trigger:
   - platform: homeassistant
@@ -10,10 +10,10 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.presence_hall_upstairs
+    entity_id: binary_sensor.presence_master_bedroom
     to: "off"
     for:
-      seconds: 120
+      seconds: 60
   - platform: state
     entity_id:
       - sensor.marvin_status
@@ -22,18 +22,15 @@ trigger:
 
 condition:
   - condition: state
-    entity_id: light.fibaro_hall_upstairs
-    state: "on"
-  - condition: state
     entity_id: input_boolean.setting_manual_lights
     state: "off"
   - condition: or
     conditions:
       - condition: state
-        entity_id: binary_sensor.presence_hall_upstairs
+        entity_id: binary_sensor.presence_master_bedroom
         state: "off"
         for:
-          seconds: 120
+          seconds: 60
       - condition: state
         entity_id: sensor.marvin_status
         state: "Slaapt"
@@ -44,5 +41,6 @@ condition:
 action:
   - service: light.turn_off
     data:
-      entity_id: light.fibaro_hall_upstairs
+      entity_id:
+        - light.fibaro_master_bedroom
       transition: 5

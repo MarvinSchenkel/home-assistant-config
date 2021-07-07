@@ -1,0 +1,35 @@
+---
+alias: areas_master_bedroom_lights_on
+description: Turns the bedroom lights on when motion has been detected
+mode: queued
+id: fe6038df-f16d-4ec9-8b9f-d5934041cee2
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_master_bedroom
+      - input_select.master_bedroom_darklight
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+  - condition: state
+    entity_id: binary_sensor.presence_master_bedroom
+    state: "on"
+  - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+  - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+  - condition: state
+    entity_id: input_select.master_bedroom_darklight
+    state: "dark"
+
+action:
+  - service: light.turn_on
+    target:
+      entity_id: light.fibaro_master_bedroom
+    data:
+      transition: 3

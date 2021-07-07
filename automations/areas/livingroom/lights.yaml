@@ -10,41 +10,46 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: 
+    entity_id:
       - input_boolean.setting_manual_lights
       - input_select.livingroom_darklight
       - sensor.marvin_status
       - sensor.laura_status
   - platform: state
     entity_id: binary_sensor.everyone_in_bed
-    to: 'on'
+    to: "on"
     for:
       seconds: 30
 
-condition:  
+condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - "{{ not is_state('media_player.apple_tv', 'playing') }}"
-  
+
 action:
   - choose:
       - conditions:
           - condition: state
             entity_id: binary_sensor.everyone_in_bed
-            state: 'off'
+            state: "off"
           - condition: state
             entity_id: input_select.livingroom_darklight
-            state: 'dark'
+            state: "dark"
           - condition: numeric_state
             entity_id: sensor.num_people_at_home
             above: 0
-          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id:
+                  - sensor.marvin_status
+                  - sensor.laura_status
+                state: "Slaapt"
         sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.livingroom_normal
+              entity_id: scene.livingroom_lights_normal
             data:
               transition: 4
     default:

@@ -5,9 +5,14 @@ mode: single
 id: a2c1f562-ff56-43e8-a2bc-9fcaaaf490ed
 
 trigger:
-  - platform: state
+  - platform: numeric_state
     entity_id:
-      - input_select.livingroom_darklight
+      - sensor.sun_elevation
+    below: 0
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 0
   - platform: homeassistant
     event: start
   - platform: event
@@ -16,9 +21,10 @@ trigger:
 action:
   - choose:
       conditions:
-        - condition: state
-          entity_id: input_select.livingroom_darklight
-          state: 'dark'
+        - condition: numeric_state
+          entity_id:
+            - sensor.sun_elevation
+          below: 0
       sequence:
         - service: switch.turn_on
           data:

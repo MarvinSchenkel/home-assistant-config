@@ -11,43 +11,44 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.presence_hall_downstairs
-    to: 'off'
-    for: 
+    to: "off"
+    for:
       seconds: 80
   - platform: state
     entity_id:
       - sensor.marvin_status
       - sensor.laura_status
-    to: 'Slaapt'
+    to: "Slaapt"
   - platform: state
     entity_id: input_select.livingroom_current_scene
-    to: 'movie'
+    to: "movie"
 
 condition:
   - condition: state
     entity_id: light.fibaro_hall_downstairs
-    state: 'on'
+    state: "on"
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - condition: or
     conditions:
       - condition: state
         entity_id: binary_sensor.presence_hall_downstairs
-        state: 'off'
+        state: "off"
         for:
           seconds: 80
       - condition: state
         entity_id: sensor.marvin_status
-        state: 'Slaapt'
+        state: "Slaapt"
       - condition: state
         entity_id: sensor.laura_status
-        state: 'Slaapt'
+        state: "Slaapt"
       - condition: state
         entity_id: input_select.livingroom_current_scene
-        state: 'movie'
+        state: "movie"
 
 action:
   - service: light.turn_off
     data:
       entity_id: light.fibaro_hall_downstairs
+      transition: 5

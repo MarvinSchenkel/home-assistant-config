@@ -11,16 +11,17 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.presence_wc
-    
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - condition: state
     entity_id: binary_sensor.presence_wc
-    state: 'on'
+    state: "on"
 
 action:
   - service: light.turn_on
     data:
       entity_id: light.fibaro_wc
+      transition: 2

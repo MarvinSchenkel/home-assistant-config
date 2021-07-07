@@ -15,14 +15,18 @@ trigger:
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
-    state: 'on'
+    state: "on"
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
   - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+  - condition: state
+    entity_id: input_select.bathroom_darklight
+    state: "dark"
 
 action:
   - service: light.turn_on
     data:
       entity_id: light.fibaro_bathroom
+      transition: 2

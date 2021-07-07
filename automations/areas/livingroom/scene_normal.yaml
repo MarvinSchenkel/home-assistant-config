@@ -7,38 +7,38 @@ id: 2604063a-45d9-449f-b063-0b32a7e0c0d3
 trigger:
   - platform: state
     entity_id: media_player.apple_tv
-    to: 'paused'
+    to: "paused"
     for:
       seconds: 10
   - platform: state
     entity_id: media_player.apple_tv
-    to: 'idle'
+    to: "idle"
     for:
       seconds: 10
 
-condition:  
+condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - condition: state
     entity_id: input_select.livingroom_darklight
-    state: 'dark'
+    state: "dark"
   - condition: or
     conditions:
       - condition: state
         entity_id: media_player.apple_tv
-        state: 'paused'
+        state: "paused"
         for:
           seconds: 10
       - condition: state
         entity_id: media_player.apple_tv
-        state: 'idle'
+        state: "idle"
         for:
           seconds: 10
 
 action:
   - service: scene.turn_on
     target:
-      entity_id: scene.livingroom_normal
+      entity_id: scene.livingroom_lights_normal
     data:
       transition: 4

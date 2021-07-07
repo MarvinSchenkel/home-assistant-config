@@ -11,20 +11,20 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.presence_bathroom
-    to: 'off'
+    to: "off"
     for:
       seconds: 120
 
 condition:
   - condition: state
     entity_id: light.fibaro_bathroom
-    state: 'on'
+    state: "on"
   - condition: state
     entity_id: input_boolean.setting_manual_lights
-    state: 'off'
+    state: "off"
   - condition: state
     entity_id: binary_sensor.presence_bathroom
-    state: 'off'
+    state: "off"
     for:
       seconds: 120
 
@@ -32,3 +32,4 @@ action:
   service: light.turn_off
   data:
     entity_id: light.fibaro_bathroom
+    transition: 5
