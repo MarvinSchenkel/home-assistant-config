@@ -1,0 +1,46 @@
+---
+alias: areas_master_bedroom_music_off
+description: Ungroup and pause the sonos when no motion has been detected for a while or when we go to sleep
+mode: queued
+id: 1623672f-ccf8-481b-8a41-d144f686eaf3
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.presence_master_bedroom
+    to: "off"
+    for:
+      seconds: 60
+  - platform: state
+    entity_id:
+      - sensor.marvin_status
+      - sensor.laura_status
+    to: "Slaapt"
+
+condition:
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.presence_master_bedroom
+        state: "off"
+        for:
+          seconds: 60
+      - condition: state
+        entity_id: sensor.marvin_status
+        state: "Slaapt"
+      - condition: state
+        entity_id: sensor.laura_status
+        state: "Slaapt"
+
+action:
+  - service: sonos.unjoin
+    data:
+      entity_id: media_player.sonos_master_bedroom
+  - delay:
+      seconds: 1
+  - service: media_player.media_pause
+    data:
+      entity_id: media_player.sonos_master_bedroom

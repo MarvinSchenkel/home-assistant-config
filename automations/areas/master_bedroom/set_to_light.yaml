@@ -1,6 +1,6 @@
 ---
 description: "Set a variable to light to keep track of whether it is light or dark"
-alias: areas_bedroom_set_to_light
+alias: areas_master_bedroom_set_to_light
 mode: queued
 id: f4fe810d-01bb-4683-a2dc-d2797c4ee069
 
@@ -10,15 +10,15 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: template
-    value_template: '{{ states("sensor.pir_bedroom_luminance") | int > 30 and is_state("light.bedside_left", "off") }}'
+    value_template: '{{ states("sensor.pir_master_bedroom_luminance") | int > 30 and is_state("light.fibaro_master_bedroom", "off") }}'
     for:
       seconds: 60
 
 condition:
-  - '{{ states("sensor.pir_bedroom_luminance") | int > 30 and is_state("light.bedside_left", "off") }}'
+  - '{{ states("sensor.pir_master_bedroom_luminance") | int > 30 and is_state("light.fibaro_master_bedroom", "off") }}'
 
 action:
   - service: input_select.select_option
     data:
-      entity_id: input_select.bedroom_darklight
-      option: 'light'
+      entity_id: input_select.master_bedroom_darklight
+      option: "light"

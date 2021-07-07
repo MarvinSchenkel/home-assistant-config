@@ -1,16 +1,15 @@
 ---
 description: Group sonos to the living room when there is music playing and motion is detected
-alias:  areas_bedroom_group_sonos
+alias: areas_master_bedroom_group_sonos
 id: f26765fd-b30d-4385-ae68-ed7724a0b76e
 
 use_blueprint:
   path: motion_group_sonos.yaml
   input:
-    presence_entity: binary_sensor.presence_bedroom
-    sonos_source: media_player.living_room
-    sonos_target: media_player.bedroom
+    presence_entity: binary_sensor.presence_master_bedroom
+    sonos_source: media_player.sonos_livingroom
+    sonos_target: media_player.sonos_master_bedroom
     no_presence_wait: 75
     custom_conditions:
       - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
       - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
-      - '{{ states("media_player.bedroom_tv") != "playing" }}'
