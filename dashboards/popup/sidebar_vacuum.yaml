@@ -1,0 +1,112 @@
+action: fire-dom-event
+browser_mod:
+  command: popup
+  title: Norby
+  style:
+    .: |
+      :host .content {
+        width: calc(385px + 300px + 300px);
+        max-width: 90vw;
+      }
+    layout-card$grid-layout:
+      $: |
+        hui-vertical-stack-card {
+          border-radius: 0;
+          animation: hui-vertical-stack-card 1s forwards;
+        }
+        @keyframes hui-vertical-stack-card {
+          0%, 100% {
+              border-right: 1.5px solid rgba(0, 0, 0, 0.2);
+          }
+        }
+        /* phone */
+        @media screen and (max-width: 800px) {
+          hui-vertical-stack-card {
+              border-bottom: 1.5px solid rgba(0, 0, 0, 0.2);
+              padding-right: 0;
+              animation: none;
+          }
+        }
+      $hui-vertical-stack-card:
+        $hui-horizontal-stack-card$: |
+          #root {
+            justify-content: space-evenly !important;
+          }
+        $: |
+          hui-horizontal-stack-card {
+            padding: 0em 2em 2em 2em !important;
+          }
+  card:
+    type: custom:layout-card
+    layout_type: custom:grid-layout
+    layout:
+      grid-template-columns: 385px repeat(2, 300px)
+      grid-template-rows: 1fr
+      grid-template-areas: |
+        "info map map"
+      mediaquery:
+        #phone
+        "(max-width: 800px)":
+          grid-template-columns: 1fr
+          grid-template-rows: repeat(2, 1fr)
+          grid-template-areas: |
+            "info"
+            "map"
+    cards:
+      #################################################
+      #                                               #
+      #                 INSTÄLLNINGAR                 #
+      #                                               #
+      #################################################
+
+      - type: vertical-stack
+        cards:
+          - type: entities
+            view_layout:
+              grid-area: info
+            title: Instellingen
+            entities:
+              - entity: vacuum.norby
+                name: Norby
+                icon: custom:roborock-vacuum
+
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                icon: mdi:play-pause
+                triggers_update: ["vacuum.norby"]
+                tap_action:
+                  action: call-service
+                  service: >
+                    [[[
+                      if (states['vacuum.norby'].state === 'docked' ||
+                        states['vacuum.norby'].state === 'paused')
+                        return 'vacuum.start';
+                      else return 'vacuum.pause';
+                    ]]]
+                  service_data:
+                    entity_id: vacuum.norby
+                styles:
+                  icon:
+                    - width: 1.8em
+                  card:
+                    - width: 6em
+                template: icon_only
+
+              - type: custom:button-card
+                icon: mdi:flash
+                tap_action:
+                  action: call-service
+                  service: vacuum.return_to_base
+                  service_data:
+                    entity_id: vacuum.norby
+                template: icon_only
+
+              - type: custom:button-card
+                icon: mdi:map-marker-question
+                tap_action:
+                  action: call-service
+                  service: vacuum.locate
+                  service_data:
+                    entity_id: vacuum.norby
+                template: icon_only

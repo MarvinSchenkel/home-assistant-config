@@ -1,0 +1,45 @@
+type: "custom:button-card"
+show_icon: true
+entity_picture: /local/marvin
+show_entity_picture: true
+entity: sensor.marvin_status
+show_state: true
+name: Marvin
+show_name: true
+styles:
+  grid:
+    - grid-template-areas: '"i" "n" "s"'
+    - grid-template-columns: 1fr
+    - grid-template-rows: 1fr min-content min-content
+  card:
+    - background: transparent
+    - height: 30vw
+    - width: 15vw
+    - left: 5vw
+  entity_picture:
+    - border-radius: 50%
+    - height: 12vw
+    - width: 12vw
+    - border: 0.5vw solid var(--background-color-2)
+  name:
+    - color: var(--secondary-text-color)
+    - font-size: 4.5vw
+  state:
+    - font-size: 3.5vw
+state:
+  - value: "Slaapt"
+    styles:
+      icon:
+        - filter: grayscale(100%)
+  - value: "Net weg"
+    styles:
+      icon:
+        - filter: grayscale(100%)
+  - value: "Weg"
+    styles:
+      icon:
+        - filter: grayscale(100%)
+  - value: "Lang weg"
+    styles:
+      icon:
+        - filter: grayscale(100%)

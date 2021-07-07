@@ -9,7 +9,7 @@ rooms:
     media_player: group.living_room_speakers
     vacuum:
       entity: vacuum.norby
-      advanced_view: 'true'
+      advanced_view: "true"
     more_entities:
       entities:
         - entity: input_select.livingroom_current_scene
@@ -54,19 +54,17 @@ rooms:
 
   - name: Slaapkamer
     icon: fas:bed
-    light: group.bedroom_lights
-    temperature: sensor.pir_bedroom_temperature
-    motion: binary_sensor.presence_bedroom
-    media_player: media_player.bedroom
-    cover: cover.small_bedroom
+    light: group.master_bedroom_lights
+    temperature: sensor.pir_master_bedroom_temperature
+    motion: binary_sensor.presence_master_bedroom
+    media_player: media_player.sonos_master_bedroom
+    cover: cover.master_bedroom
     more_entities:
       entities:
-        - entity: sensor.pir_bedroom_battery_level
-        - entity: sensor.pir_bedroom_luminance
-        - entity: binary_sensor.pir_bedroom
-        - entity: input_boolean.bedroom_automatic_lighting
-        - entity: input_boolean.bedroom_automatic_volume
-        - entity: input_select.bedroom_darklight
+        - entity: sensor.pir_master_bedroom_battery_level
+        - entity: sensor.pir_master_bedroom_luminance
+        - entity: binary_sensor.pir_master_bedroom
+        - entity: input_select.master_bedroom_darklight
 
   - name: WC
     icon: mdi:toilet
