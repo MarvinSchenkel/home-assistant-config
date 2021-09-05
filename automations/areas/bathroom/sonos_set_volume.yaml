@@ -6,7 +6,7 @@ id: aab41c28-0266-43b7-8e9d-bb74700b1343
 
 trigger:
   - platform: state
-    entity_id: 
+    entity_id:
       - binary_sensor.presence_bathroom
       - binary_sensor.bathroom_flood
       - sensor.marvin_status
@@ -19,33 +19,35 @@ trigger:
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
-    state: 'on'
+    state: "on"
 
 action:
   - choose:
-    - conditions:
-        - condition: state
-          entity_id: binary_sensor.bathroom_flood
-          state: 'on'
-      sequence:
-        - service: media_player.volume_set
-          data:
-            entity_id: media_player.sonos_bathroom
-            volume_level: 0.35
-    - conditions:
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: sensor.marvin_status
-              state: 'Net wakker'
-            - condition: state
-              entity_id: sensor.laura_status
-              state: 'Net wakker'
-      sequence:
-        - service: media_player.volume_set
-          data:
-            entity_id: media_player.sonos_bathroom
-            volume_level: 0.06
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: sensor.marvin_status
+                state: "Net wakker"
+              - condition: state
+                entity_id: sensor.laura_status
+                state: "Net wakker"
+        sequence:
+          - service: media_player.volume_set
+            data:
+              entity_id: media_player.sonos_bathroom
+              volume_level: 0.06
+
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.bathroom_flood
+            state: "on"
+        sequence:
+          - service: media_player.volume_set
+            data:
+              entity_id: media_player.sonos_bathroom
+              volume_level: 0.35
+
     default:
       - service: media_player.volume_set
         data:

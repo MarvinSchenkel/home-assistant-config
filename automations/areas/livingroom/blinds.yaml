@@ -32,13 +32,25 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 3.75
+    below: 2.0
   # Open garden door when we want to go outside using Fibaro Switch
   - platform: event
     event_type: zwave_js_value_notification
     event_data:
       device_id: e4215541d29b80289c09ff2dc404fe26
       label: "Scene 001"
+    id: "garden_door_switch"
+  # Open garden door when we open the door and the blinds are closed
+  - platform: state
+    entity_id:
+      - binary_sensor.garden_door_open
+    to: "on"
+    id: "garden_door_open"
+  # Trigger automation when door is closed, so garden door blinds revert to original state
+  - platform: state
+    entity_id:
+      - binary_sensor.garden_door_open
+    to: "off"
   # Sync blinds 10m after finish wathing TV
   - platform: state
     entity_id: media_player.apple_tv
@@ -58,7 +70,8 @@ action:
   - choose:
       # Open/Close garden door when switch is pressed
       - conditions:
-          - "{{ trigger.platform == 'event' and trigger.event.data.device_id == 'e4215541d29b80289c09ff2dc404fe26' }}"
+          - condition: trigger
+            id: "garden_door_switch"
         sequence:
           - choose:
               - conditions:
@@ -76,6 +89,17 @@ action:
                 target:
                   entity_id:
                     - scene.gardendoor_cover_halfopen
+
+      # Open garden door blinds when door is open
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.garden_door_open
+            state: "on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.gardendoor_cover_halfopen
 
       # Fully closed
       - conditions:
@@ -113,7 +137,7 @@ action:
           - condition: numeric_state
             entity_id:
               - sensor.sun_elevation
-            below: 3.75
+            below: 2.0
         sequence:
           - service: scene.turn_on
             target:

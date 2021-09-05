@@ -1,0 +1,3 @@
+---
+sensor.front_door_electric_consumed_kwh:
+  friendly_name: Lamp voordeur verbruik

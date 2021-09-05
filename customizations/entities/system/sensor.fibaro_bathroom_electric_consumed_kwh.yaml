@@ -1,0 +1,3 @@
+---
+sensor.fibaro_bathroom_electric_consumed_kwh:
+  friendly_name: Lamp badkamer verbruik

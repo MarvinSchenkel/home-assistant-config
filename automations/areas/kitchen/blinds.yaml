@@ -22,7 +22,11 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 3.75
+    below: 2.0
+  # Close the kitchen blinds at 20:30, even if the sun has not set yet
+  - platform: time
+    at: "20:30:00"
+    id: "time_close_kitchen"
 
 condition:
   - condition: state
@@ -49,10 +53,14 @@ action:
 
       # Half closed
       - conditions:
-          - condition: numeric_state
-            entity_id:
-              - sensor.sun_elevation
-            below: 3.75
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id:
+                  - sensor.sun_elevation
+                below: 2.0
+              - condition: time
+                after: "20:30:00"
         sequence:
           - service: scene.turn_on
             target:

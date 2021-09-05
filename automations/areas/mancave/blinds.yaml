@@ -1,0 +1,62 @@
+---
+alias: areas_mancave_blinds
+description: >
+  Control the blinds in the mancave (which are facing south) by using 
+   - Sun elevation
+   - The solar panels (indicating a hot day)
+mode: queued
+max_exceeded: silent
+id: c5bc22e2-4499-4fb6-9ff1-1985efa93118
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      # Include auto-shut blinds on hot days
+      - binary_sensor.sun_should_close_south_blinds
+  # Sun
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 2.0
+
+condition:
+  - condition: state
+    entity_id:
+      - input_boolean.setting_manual_blinds
+    state: "off"
+
+action:
+  - choose:
+      # Fully closed
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_should_close_south_blinds
+            state: "on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.mancave_cover_closed
+
+      # Half closed
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id:
+                  - sensor.sun_elevation
+                below: 2.0
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.mancave_cover_halfclosed
+
+    # Half open
+    default:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.mancave_cover_halfopen

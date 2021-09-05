@@ -22,11 +22,17 @@ trigger:
       # Whenever we wake up or go to sleep
       - input_select.laura_sleep_status_dropdown
       - input_select.marvin_sleep_status_dropdown
+  - platform: state
+    id: "asleep"
+    entity_id:
+      - input_select.laura_sleep_status_dropdown
+      - input_select.marvin_sleep_status_dropdown
+    to: "Slaapt"
   # Sun
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 3.75
+    below: 2.0
   - platform: time
     at: "19:00:00"
 
@@ -35,10 +41,15 @@ condition:
     entity_id:
       - input_boolean.setting_manual_blinds
     state: "off"
+  - condition: or
+    conditions:
+      - "{{ not is_state('input_select.bedroom_current_cover_scene', 'ventilating') }}"
+      - condition: trigger
+        id: "asleep"
 
 action:
   - choose:
-      # Fully closed
+      # Ventilating at night
       - conditions:
           - condition: or
             conditions:
@@ -54,14 +65,21 @@ action:
                 state:
                   - "Slaapt"
                   - "Net wakker"
-              - condition: state
-                entity_id:
-                  - binary_sensor.sun_should_close_south_blinds
-                state: "on"
         sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.slaapkamer_dicht
+              entity_id: scene.bedroom_cover_ventilatingnight
+
+      # Fully closed
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_should_close_south_blinds
+            state: "on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.bedroom_cover_closed
 
       # Half closed
       - conditions:
@@ -70,16 +88,16 @@ action:
               - condition: numeric_state
                 entity_id:
                   - sensor.sun_elevation
-                below: 3.75
+                below: 2.0
               - condition: time
                 after: "19:00:00"
         sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.slaapkamer_half_dicht
+              entity_id: scene.bedroom_cover_halfclosed
 
     # Half open
     default:
       - service: scene.turn_on
         target:
-          entity_id: scene.slaapkamer_half_open
+          entity_id: scene.bedroom_cover_halfopen

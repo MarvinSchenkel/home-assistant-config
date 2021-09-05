@@ -3,3 +3,8 @@ platform: plex_recently_added
 token: !secret plex_token
 host: !secret plex_host
 port: !secret plex_port
+exclude_keywords:
+  - Game of Thrones
+section_types:
+  - show
+  - movie

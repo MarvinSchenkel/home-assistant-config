@@ -27,20 +27,11 @@ action:
 
         - choose:
             - conditions:
-                - "{{ scene_category == 'cover' and scene_room == 'livingroom' }}"
+                - "{{ scene_category == 'cover' }}"
               sequence:
                 - service: input_select.select_option
                   target:
-                    entity_id: input_select.livingroom_current_cover_scene
-                  data:
-                    option: "{{ scene_name }}"
-
-            - conditions:
-                - "{{ scene_category == 'cover' and scene_room == 'gardendoor' }}"
-              sequence:
-                - service: input_select.select_option
-                  target:
-                    entity_id: input_select.gardendoor_current_cover_scene
+                    entity_id: "input_select.{{ scene_room }}_current_cover_scene"
                   data:
                     option: "{{ scene_name }}"
 

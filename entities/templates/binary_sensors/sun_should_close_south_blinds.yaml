@@ -21,7 +21,14 @@ trigger:
       minutes: 10
   - platform: numeric_state
     entity_id: sensor.current_temperature
-    above: 20
+    above: 19
+  - platform: numeric_state
+    entity_id: sensor.current_temperature
+    above: 16
+  - platform: state
+    entity_id:
+      - weather.buienradar
+    to: "sunny"
 
 binary_sensor:
   - name: sun_should_close_south_blinds
@@ -33,7 +40,13 @@ binary_sensor:
         if is_state('binary_sensor.sun_at_south_windows', 'on') 
         and is_state('binary_sensor.sun_hot', 'on')
         and hot_change_in_mins > 5
-        and states('sensor.current_temperature') | float > 20.0
+        and (
+          (states('sensor.current_temperature') | float > 19.0)
+          or (
+            states('sensor.current_temperature') | float > 16.0
+            and is_state('weather.buienradar', 'sunny')
+          )
+        )
       -%}
         on
       {%- else -%}

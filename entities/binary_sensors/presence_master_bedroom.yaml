@@ -1,10 +1,12 @@
 ---
 # Determine presence in the bedroom based on
 # - PIR Motion sensor
+# - Door sensor
 # - Bed sensor TODO
 platform: template
 sensors:
   presence_master_bedroom:
     friendly_name: "Slaapkamer aanwezigheid"
     value_template: >
-      {{ is_state("binary_sensor.pir_master_bedroom", "on") }}
+      {{ is_state("binary_sensor.pir_master_bedroom", "on")
+         or is_state("binary_sensor.presence_master_bedroom_door", "on") }}

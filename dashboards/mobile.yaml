@@ -80,51 +80,28 @@ views:
         title: Woonkamer
         view_layout:
           grid-area: woonkamer
-        columns: 1
+        columns: 2
         cards:
-          - type: custom:swipe-card
-            start_card: 1
-            #   parameters:
-            #     roundLengths: true
-            #     effect: coverflow
-            #     speed: 650
-            #     spaceBetween: 20
-            #     threshold: 7
-            #     coverflowEffect:
-            #       rotate: 80
-            #       depth: 300
-            cards:
-              - type: grid
-                columns: 2
-                cards:
-                  - type: custom:button-card
-                    entity: light.dinner
-                    name: Eettafel
-                    template:
-                      - light
-                      - icon_shade
+          - type: custom:button-card
+            entity: light.dinner
+            name: Eettafel
+            template:
+              - light
+              - icon_shade
 
-                  - type: custom:button-card
-                    entity: light.fibaro_livingroom
-                    name: Woonkamer
-                    template:
-                      - light
-                      - icon_spot
+          - type: custom:button-card
+            entity: light.fibaro_livingroom
+            name: Woonkamer
+            template:
+              - light
+              - icon_spot
 
-                  - type: custom:button-card
-                    entity: light.fibaro_kitchen
-                    name: Keuken
-                    template:
-                      - light
-                      - icon_spot
-
-                  - type: custom:button-card
-                    entity: fan.itho
-                    name: Ventilatie
-                    template:
-                      - base
-                      - icon_fan
-                      - loader
+          - type: custom:button-card
+            entity: light.fibaro_kitchen
+            name: Keuken
+            template:
+              - light
+              - icon_spot
 
             # - type: grid
             #   columns: 2
@@ -164,6 +141,7 @@ views:
             #           - scene.keuken_dicht
             #       template:
             #         - shade
+
       #################################################
       #                                               #
       #                    Slaapkamer                 #
@@ -184,13 +162,23 @@ views:
               - icon_spot
           - type: custom:button-card
             icon: mdi:blinds-open
-            entity: cover.master_bedroom
+            entity: input_select.bedroom_current_cover_scene
             name: Luxaflex
             variables:
               shade_scenes:
-                - scene.slaapkamer_half_open
-                - scene.slaapkamer_half_dicht
-                - scene.slaapkamer_dicht
+                - scene.bedroom_cover_halfopen
+                - scene.bedroom_cover_halfclosed
+                - scene.bedroom_cover_closed
+                - scene.bedroom_cover_ventilating
+                - scene.bedroom_cover_ventilatingnight
+            state_display: >
+              [[[ 
+                if (entity.state == "halfopen") return "Half Open";
+                if (entity.state == "halfclosed") return "Half Dicht";
+                if (entity.state == "closed") return "Dicht";
+                if (entity.state == "ventilating") return "Ventileren";
+                if (entity.state == "ventilatingnight") return "Ventileren Nacht";
+              ]]]
             template:
               - shade
 
@@ -336,6 +324,15 @@ views:
             hold_action:
               action: none
             template: person
+
+          - type: custom:button-card
+            entity: fan.itho
+            name: Ventilatie
+            template:
+              - base
+              - icon_fan
+              - loader
+
       #################################################
       #                                               #
       #                    FOOTER                     #

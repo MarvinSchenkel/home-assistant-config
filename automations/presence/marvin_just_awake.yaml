@@ -1,5 +1,8 @@
 ---
-description: Mark Marvin as just awake based on flic button double click
+description: >
+  Mark Marvin as just awake based on
+  - Ikea button
+  - Curtains being open
 alias: presence_marvin_just_awake
 mode: single
 id: 0069afb3-adb3-433c-beff-107c17508dbd
@@ -7,9 +10,11 @@ id: 0069afb3-adb3-433c-beff-107c17508dbd
 trigger: 
   - platform: webhook
     webhook_id: marvin_awake
-  - platform: state
-    entity_id: input_select.bedroom_darklight
-    to: "light"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "17083e33c8be814f6656f6d43be15909"
+      command: "move_with_on_off"
 
 condition:
   condition: state

@@ -40,7 +40,7 @@ action:
     data:
       entity_id: media_player.sonos_master_bedroom
   - delay:
-      seconds: 1
+      seconds: 2
   - service: media_player.media_pause
     data:
       entity_id: media_player.sonos_master_bedroom

@@ -65,6 +65,10 @@ browser_mod:
             icon: mdi:briefcase
             style: *style
 
+      - type: entities
+        entities:
+          - entity: input_select.laura_sleep_status_dropdown
+
       - type: map
         entities:
           - device_tracker.huawei_mate_10_lite_ef165

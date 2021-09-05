@@ -29,4 +29,3 @@ action:
   - service: light.turn_on
     data:
       entity_id: light.fibaro_hall_upstairs
-      transition: 2

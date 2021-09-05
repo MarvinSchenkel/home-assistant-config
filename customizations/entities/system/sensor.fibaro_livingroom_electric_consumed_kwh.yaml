@@ -1,0 +1,3 @@
+---
+sensor.fibaro_livingroom_electric_consumed_kwh:
+  friendly_name: Lamp woonkamer verbruik

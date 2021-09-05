@@ -1,0 +1,3 @@
+---
+sensor.fibaro_hall_downstairs_electric_consumed_kwh:
+  friendly_name: Lamp hal verbruik

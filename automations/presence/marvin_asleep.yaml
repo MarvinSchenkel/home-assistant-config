@@ -1,33 +1,27 @@
 ---
-description: Call the scripts to set us to asleep or turn the light on or off (ugly i know)
+description: Set Marvin to 'asleep' using the bedsensor or the ikea button
 alias: presence_marvin_asleep
 mode: single
 id: 1da4e30e-26fe-416a-ba06-aee16ec18ff3
 
-trigger: 
-  - platform: webhook
-    webhook_id: flic_bed_left
+trigger:
   - platform: state
     entity_id: binary_sensor.everyone_in_bed
-    to: 'on'
+    to: "on"
     for:
       seconds: 60
-
-condition:
-  - condition: or
-    conditions:
-      - condition: and
-        conditions:      
-          - condition: time
-            after: "20:00:00"
-          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
-      - "{{ trigger.platform == 'webhook' }}"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "17083e33c8be814f6656f6d43be15909"
+      command: "on"
 
 action:
-  - service: script.turn_on
-    entity_id: script.webhook_marvin_laura_asleep
-  - service: script.turn_on
-    entity_id: script.webhook_flic_left_on
-  - service: script.turn_on
-    entity_id: script.webhook_flic_left_off
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.marvin_sleep_status_dropdown
+      option: "Slaapt"
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.laura_sleep_status_dropdown
+      option: "Slaapt"

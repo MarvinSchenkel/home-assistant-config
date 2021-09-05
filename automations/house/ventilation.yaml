@@ -16,11 +16,11 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.pir_bathroom_humidity
-    above: 82
+    above: 85
   - platform: numeric_state
     entity_id:
       - sensor.pir_bathroom_humidity
-    below: 72
+    below: 75
 
 action:
   choose:
@@ -33,7 +33,7 @@ action:
             - condition: numeric_state
               entity_id:
                 - sensor.pir_bathroom_humidity
-              above: 82
+              above: 85
       sequence:
         - service: fan.set_preset_mode
           data:

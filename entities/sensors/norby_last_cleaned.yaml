@@ -1,0 +1,9 @@
+---
+platform: sql
+scan_interval: 60
+db_url: !secret record_db_url
+queries:
+  - name: norby_last_cleaned
+    query: "SELECT * FROM states WHERE entity_id='vacuum.norby' AND state='cleaning' ORDER BY last_changed DESC LIMIT 1;"
+    column: "last_changed"
+    #value_template: "{{ as_timestamp(value + 'Z') | timestamp_custom('%a %b %-d %-I:%M%p') }}"

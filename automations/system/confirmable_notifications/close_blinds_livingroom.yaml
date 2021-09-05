@@ -1,0 +1,27 @@
+---
+alias: system_confirmable_notifications_close_blinds_livingroom
+description: Ask to close the blinds when watching a movie
+mode: single
+id: 9f858a28-2613-4966-af14-74394f090a03
+
+trigger:
+  - platform: state
+    entity_id: media_player.apple_tv
+    to: "playing"
+    for:
+      seconds: 10
+
+condition:
+  - condition: state
+    entity_id: sensor.marvin_status
+    state:
+      - "Thuis"
+      - "Net thuis"
+  - condition: state
+    entity_id:
+      - binary_sensor.sun_at_south_windows
+    state: "on"
+  - "{{ not is_state('input_select.livingroom_current_cover_scene', 'closed') }}"
+
+action:
+  - service: script.cn_close_blinds_movie

@@ -1,0 +1,9 @@
+---
+name: Slaapkamer huidige Luxaflex scene
+options:
+  - open
+  - halfopen
+  - halfclosed
+  - closed
+  - ventilating
+  - ventilatingnight

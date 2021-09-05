@@ -8,7 +8,7 @@ binary_sensor:
     {%-
       if states("sensor.sun_azimuth") | int >= 86
       and states("sensor.sun_azimuth") | int <= 260
-      and states("sensor.sun_elevation") | int >= 25
+      and states("sensor.sun_elevation") | int >= 20
     -%}
       on
     {%- else -%}

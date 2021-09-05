@@ -20,12 +20,25 @@ trigger:
     to: "on"
     for:
       seconds: 30
+  - platform: state
+    entity_id: media_player.apple_tv
+    to:
+      - "paused"
+      - "idle"
+    for:
+      seconds: 10
+    id: "apple_tv_off"
+  - platform: state
+    entity_id: media_player.apple_tv
+    to: "playing"
+    for:
+      seconds: 10
+    id: "apple_tv_on"
 
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
     state: "off"
-  - "{{ not is_state('media_player.apple_tv', 'playing') }}"
 
 action:
   - choose:
@@ -46,14 +59,46 @@ action:
                   - sensor.marvin_status
                   - sensor.laura_status
                 state: "Slaapt"
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - media_player.apple_tv
+                state:
+                  - "paused"
+                  - "idle"
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id:
+                      - media_player.apple_tv
+                    state: "playing"
+                  - condition: state
+                    entity_id:
+                      - media_player.apple_tv
+                    attribute: "app_name"
+                    state:
+                      - "YouTube"
         sequence:
           - service: scene.turn_on
             target:
               entity_id: scene.livingroom_lights_normal
             data:
               transition: 4
+
+      - conditions:
+          - condition: trigger
+            id: "apple_tv_on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.livingroom_lights_movie
+            data:
+              transition: 4
+
     default:
       - service: light.turn_off
-        entity_id: group.living_room_lights
-        data:
-          transition: 5
+        entity_id:
+          - light.fibaro_kitchen
+          - light.fibaro_livingroom
+          - light.dinner

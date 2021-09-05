@@ -1,0 +1,7 @@
+---
+name: Mancave huidige Luxaflex scene
+options:
+  - open
+  - halfopen
+  - halfclosed
+  - closed

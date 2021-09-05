@@ -2,6 +2,6 @@
 name: dinner
 lights:
   - light.dinner
-detect_non_ha_changes: true
+#detect_non_ha_changes: true
 take_over_control: true
 max_brightness: 70
