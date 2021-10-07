@@ -12,14 +12,14 @@ trigger:
   - platform: state
     entity_id:
       - input_boolean.setting_manual_lights
-      - input_select.livingroom_darklight
-      - sensor.marvin_status
-      - sensor.laura_status
+      - binary_sensor.livingroom_is_dark
   - platform: state
-    entity_id: binary_sensor.everyone_in_bed
+    entity_id:
+      - binary_sensor.everybody_asleep
+      - binary_sensor.someone_just_awake
+      - binary_sensor.someone_just_home
+    from: "off"
     to: "on"
-    for:
-      seconds: 30
   - platform: state
     entity_id: media_player.apple_tv
     to:
@@ -44,21 +44,21 @@ action:
   - choose:
       - conditions:
           - condition: state
-            entity_id: binary_sensor.everyone_in_bed
-            state: "off"
-          - condition: state
-            entity_id: input_select.livingroom_darklight
-            state: "dark"
+            entity_id: binary_sensor.livingroom_is_dark
+            state: "on"
           - condition: numeric_state
             entity_id: sensor.num_people_at_home
             above: 0
-          - condition: not
+          - condition: or
             conditions:
               - condition: state
                 entity_id:
-                  - sensor.marvin_status
-                  - sensor.laura_status
-                state: "Slaapt"
+                  - binary_sensor.someone_just_awake
+                state: "on"
+              - condition: state
+                entity_id:
+                  - binary_sensor.someone_awake
+                state: "on"
           - condition: or
             conditions:
               - condition: state
@@ -67,6 +67,7 @@ action:
                 state:
                   - "paused"
                   - "idle"
+                  - "unknown"
               - condition: and
                 conditions:
                   - condition: state
@@ -79,6 +80,7 @@ action:
                     attribute: "app_name"
                     state:
                       - "YouTube"
+                      - "CanalDigitaal"
         sequence:
           - service: scene.turn_on
             target:

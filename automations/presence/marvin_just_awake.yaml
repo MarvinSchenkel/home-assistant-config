@@ -1,28 +1,28 @@
 ---
 description: >
   Mark Marvin as just awake based on
-  - Ikea button
+  - Aqara button
   - Curtains being open
 alias: presence_marvin_just_awake
 mode: single
 id: 0069afb3-adb3-433c-beff-107c17508dbd
 
-trigger: 
+trigger:
   - platform: webhook
     webhook_id: marvin_awake
   - platform: event
     event_type: "zha_event"
     event_data:
-      device_id: "17083e33c8be814f6656f6d43be15909"
-      command: "move_with_on_off"
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
+      command: "hold"
 
 condition:
   condition: state
   entity_id: input_select.marvin_sleep_status_dropdown
-  state: 'Slaapt'
+  state: "Slaapt"
 
 action:
   - service: input_select.select_option
     data:
       entity_id: input_select.marvin_sleep_status_dropdown
-      option: 'Net wakker'
+      option: "Net wakker"

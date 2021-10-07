@@ -31,7 +31,7 @@ condition:
             entity_id: binary_sensor.workday
             state: "on"
           - condition: time
-            after: "16:30:00"
+            after: "16:00:00"
 
 action:
   - service: script.cn_play_music

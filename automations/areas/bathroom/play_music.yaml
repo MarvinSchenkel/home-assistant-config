@@ -10,45 +10,42 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.presence_bathroom    
+    entity_id: binary_sensor.presence_bathroom
   - platform: state
     entity_id: binary_sensor.bathroom_flood
   - platform: state
-    entity_id: sensor.marvin_status
-    to: 'Net wakker'
-  - platform: state
-    entity_id: sensor.laura_status
-    to: 'Net wakker'
+    entity_id: binary_sensor.someone_awake
+    to: "on"
 
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
-    state: 'on'
+    state: "on"
   # There is no music playing already
   - condition: or
     conditions:
       - condition: state
         entity_id: media_player.sonos_bathroom
-        state: 'paused'
+        state: "paused"
       - condition: state
         entity_id: media_player.sonos_bathroom
-        state: 'idle'  
+        state: "idle"
   - condition: or
     conditions:
       # Morning routine during weekdays
       - condition: and
         conditions:
-        - condition: or
-          conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: sensor.marvin_status
+                state: "Net wakker"
+              - condition: state
+                entity_id: sensor.laura_status
+                state: "Net wakker"
           - condition: state
-            entity_id: sensor.marvin_status
-            state: 'Net wakker'
-          - condition: state
-            entity_id: sensor.laura_status
-            state: 'Net wakker'
-        - condition: state
-          entity_id: binary_sensor.workday
-          state: 'on'
+            entity_id: binary_sensor.workday
+            state: "on"
       # Shower is on and when no music is playing already
       - condition: and
         conditions:
@@ -58,7 +55,7 @@ condition:
             before: "22:00:00"
           - condition: state
             entity_id: binary_sensor.bathroom_flood
-            state: 'on'
+            state: "on"
 
 action:
   - choose:
@@ -70,15 +67,15 @@ action:
             before: "22:00:00"
           - condition: state
             entity_id: binary_sensor.bathroom_flood
-            state: 'on'
+            state: "on"
         sequence:
           - service: script.play_random_music
             data:
               sonos_entity: media_player.sonos_bathroom
-              genre: 'normal'
+              genre: "normal"
     # Else, play a chill morning music list
     default:
       - service: script.play_random_music
         data:
           sonos_entity: media_player.sonos_bathroom
-          genre: 'morning'
+          genre: "morning"

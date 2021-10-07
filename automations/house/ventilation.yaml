@@ -21,9 +21,23 @@ trigger:
     entity_id:
       - sensor.pir_bathroom_humidity
     below: 75
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 67eb822e4407671200f5bbd6f9ca00c2
+      value: 14
+    id: "bathroom_double_click"
 
 action:
   choose:
+    # Toggle fan on bathroom scene double click activations
+    - conditions:
+        - condition: trigger
+          id: "bathroom_double_click"
+      sequence:
+        - service: fan.toggle
+          entity_id: fan.itho
+
     - conditions:
         - condition: or
           conditions:
@@ -40,6 +54,7 @@ action:
             preset_mode: high
           target:
             entity_id: fan.itho
+
   default:
     - service: fan.turn_off
       target:

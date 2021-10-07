@@ -16,13 +16,22 @@ trigger:
   - platform: state
     entity_id:
       # Whether we just woke up / gone to sleep
-      - input_select.laura_sleep_status_dropdown
-      - input_select.marvin_sleep_status_dropdown
+      - binary_sensor.everybody_asleep
+      - binary_sensor.someone_awake
+    from: "off"
+    to: "on"
+  - platform: state
+    entity_id:
+      - input_boolean.setting_manual_blinds
   # Sun
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 2.0
+    below: 1.0
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 1.0
   # Close the kitchen blinds at 20:30, even if the sun has not set yet
   - platform: time
     at: "20:30:00"
@@ -40,16 +49,13 @@ action:
           - condition: or
             conditions:
               - condition: state
-                entity_id:
-                  - sensor.laura_status
-                  - sensor.marvin_status
+                entity_id: binary_sensor.everybody_asleep
                 state:
-                  - "Slaapt"
-                  - "Net wakker"
+                  - "on"
         sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.keuken_dicht
+              entity_id: scene.kitchen_cover_closed
 
       # Half closed
       - conditions:
@@ -58,16 +64,16 @@ action:
               - condition: numeric_state
                 entity_id:
                   - sensor.sun_elevation
-                below: 2.0
+                below: 1.0
               - condition: time
                 after: "20:30:00"
         sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.keuken_half_dicht
+              entity_id: scene.kitchen_cover_halfclosed
 
     # Half open
     default:
       - service: scene.turn_on
         target:
-          entity_id: scene.keuken_half_open
+          entity_id: scene.kitchen_cover_halfopen

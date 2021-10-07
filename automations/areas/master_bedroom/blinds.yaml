@@ -3,7 +3,7 @@ alias: areas_master_bedroom_blinds
 description: >
   Control the blinds in the master bedroom (which are facing south) by using 
    - Sun elevation
-   - At 19:00
+   - At 19:00 and 21:15
    - The solar panels (indicating a hot day)
    - Whenever we wake up
 mode: queued
@@ -22,6 +22,7 @@ trigger:
       # Whenever we wake up or go to sleep
       - input_select.laura_sleep_status_dropdown
       - input_select.marvin_sleep_status_dropdown
+      - input_boolean.setting_manual_blinds
   - platform: state
     id: "asleep"
     entity_id:
@@ -32,9 +33,28 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 2.0
+    below: 1.0
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 1.0
   - platform: time
-    at: "19:00:00"
+    at:
+      - "19:00:00"
+      - "21:15:00"
+  # Buttons for ventilating
+  - platform: event
+    id: "button_marvin_double"
+    event_type: "zha_event"
+    event_data:
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
+      command: "double"
+  - platform: event
+    id: "button_laura_double"
+    event_type: "zha_event"
+    event_data:
+      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      command: "double"
 
 condition:
   - condition: state
@@ -49,6 +69,19 @@ condition:
 
 action:
   - choose:
+      # Ventilating when desired
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: "button_marvin_double"
+              - condition: trigger
+                id: "button_laura_double"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.bedroom_cover_ventilating
+
       # Ventilating at night
       - conditions:
           - condition: or
@@ -65,6 +98,8 @@ action:
                 state:
                   - "Slaapt"
                   - "Net wakker"
+              - condition: time
+                after: "21:15:00"
         sequence:
           - service: scene.turn_on
             target:
@@ -88,9 +123,10 @@ action:
               - condition: numeric_state
                 entity_id:
                   - sensor.sun_elevation
-                below: 2.0
+                below: 1.0
               - condition: time
                 after: "19:00:00"
+                before: "21:15:00"
         sequence:
           - service: scene.turn_on
             target:

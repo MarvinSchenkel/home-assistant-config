@@ -1,0 +1,48 @@
+---
+alias: areas_hall_downstairs_lights
+description: Turns the hallway lights on when motion has been detected
+mode: queued
+id: 797b07af-7b1f-4c4f-bd8f-be9708c64e63
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.presence_hall_downstairs
+    to: "on"
+  - platform: state
+    entity_id: binary_sensor.presence_hall_downstairs
+    to: "off"
+    for:
+      seconds: 80
+  - platform: state
+    entity_id: input_select.livingroom_current_scene
+    to: "movie"
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.presence_hall_downstairs
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.hall_is_dark
+            state: "on"
+
+        sequence:
+          - service: light.turn_on
+            data:
+              entity_id: light.fibaro_hall_downstairs
+
+    default:
+      - service: light.turn_off
+        data:
+          entity_id: light.fibaro_hall_downstairs
+          transition: 5

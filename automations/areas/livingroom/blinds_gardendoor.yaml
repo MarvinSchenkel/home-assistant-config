@@ -1,0 +1,159 @@
+---
+alias: areas_livingroom_blinds_gardendoor
+description: >
+  Control the blinds in the living room (which are facing south) by using 
+   - Sun elevation and azimuth
+   - The solar panels (indicating a hot day)
+   - Whenever we wake up
+   - Fibaro switch on the wall
+   - Whether we are watching TV
+mode: queued
+max_exceeded: silent
+id: 3290a52e-cd7b-435b-8d43-7295bd0de3f3
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      # Include auto-shut blinds on hot days
+      - binary_sensor.sun_should_close_south_blinds
+      - input_boolean.setting_manual_blinds
+    from:
+      - "off"
+      - "on"
+    to:
+      - "off"
+      - "on"
+  - platform: state
+    entity_id:
+      # Whether we just woke up / gone to sleep
+      - binary_sensor.everybody_asleep
+      - binary_sensor.someone_awake
+    from: "off"
+    to: "on"
+  # Sun
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 1.0
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 1.0
+  # Open garden door when we want to go outside using Fibaro Switch
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: e4215541d29b80289c09ff2dc404fe26
+      label: "Scene 001"
+    id: "garden_door_switch"
+  # Open garden door when we open the door and the blinds are closed
+  - platform: state
+    entity_id:
+      - binary_sensor.garden_door_open
+    to: "on"
+    id: "garden_door_open"
+  # Trigger automation when door is closed, so garden door blinds revert to original state
+  - platform: state
+    entity_id:
+      - binary_sensor.garden_door_open
+    to: "off"
+  # Sync blinds 10m after finish wathing TV
+  - platform: state
+    entity_id: media_player.apple_tv
+    to:
+      - idle
+      - paused
+    for:
+      minutes: 10
+
+condition:
+  - condition: state
+    entity_id:
+      - input_boolean.setting_manual_blinds
+    state: "off"
+
+action:
+  - choose:
+      # Open/Close garden door when switch is pressed
+      - conditions:
+          - condition: trigger
+            id: "garden_door_switch"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id:
+                      - input_select.gardendoor_current_cover_scene
+                    state: "halfopen"
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id:
+                        - scene.gardendoor_cover_closed
+            default:
+              - service: scene.turn_on
+                target:
+                  entity_id:
+                    - scene.gardendoor_cover_halfopen
+
+      # Open garden door blinds when door is open
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.garden_door_open
+            state: "on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.gardendoor_cover_halfopen
+
+      # Fully closed
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: binary_sensor.everybody_asleep
+                state:
+                  - "on"
+              - condition: state
+                entity_id:
+                  - binary_sensor.sun_should_close_south_blinds
+                state: "on"
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id:
+                      - media_player.apple_tv
+                    state: "playing"
+                  - condition: state
+                    entity_id:
+                      - input_select.gardendoor_current_cover_scene
+                    state: "closed"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.gardendoor_cover_closed
+
+      # Half closed
+      - conditions:
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_elevation
+            below: 1.0
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.gardendoor_cover_halfclosed
+
+    # Half open
+    default:
+      - service: scene.turn_on
+        target:
+          entity_id:
+            - scene.gardendoor_cover_halfopen

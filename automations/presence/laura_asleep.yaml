@@ -5,15 +5,17 @@ mode: single
 id: 74e6a9f0-54ad-412c-9d23-1c87a9de1053
 
 trigger:
-  - platform: state
-    entity_id: binary_sensor.everyone_in_bed
-    to: "on"
-    for:
-      seconds: 60
+  # Laura remote
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      command: "single"
+  # Marvin remote
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
       command: "single"
 
 action:

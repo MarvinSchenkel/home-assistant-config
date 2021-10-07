@@ -5,16 +5,11 @@ mode: single
 id: 1da4e30e-26fe-416a-ba06-aee16ec18ff3
 
 trigger:
-  - platform: state
-    entity_id: binary_sensor.everyone_in_bed
-    to: "on"
-    for:
-      seconds: 60
   - platform: event
     event_type: "zha_event"
     event_data:
-      device_id: "17083e33c8be814f6656f6d43be15909"
-      command: "on"
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
+      command: "single"
 
 action:
   - service: input_select.select_option

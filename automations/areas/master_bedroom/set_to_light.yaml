@@ -10,12 +10,12 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: template
-    value_template: '{{ states("sensor.pir_master_bedroom_luminance") | int > 30 and is_state("light.fibaro_master_bedroom", "off") }}'
+    value_template: '{{ states("sensor.pir_master_bedroom_luminance") | int > 30 and is_state("light.master_bedroom_ceiling", "off") }}'
     for:
       seconds: 60
 
 condition:
-  - '{{ states("sensor.pir_master_bedroom_luminance") | int > 30 and is_state("light.fibaro_master_bedroom", "off") }}'
+  - '{{ states("sensor.pir_master_bedroom_luminance") | int > 30 and is_state("light.master_bedroom_ceiling", "off") }}'
 
 action:
   - service: input_select.select_option

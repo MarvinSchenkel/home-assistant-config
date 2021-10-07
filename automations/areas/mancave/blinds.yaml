@@ -17,11 +17,13 @@ trigger:
     entity_id:
       # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
+      - media_player.mancave_tv
+      - input_boolean.setting_manual_blinds
   # Sun
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 2.0
+    below: 1.0
 
 condition:
   - condition: state
@@ -33,10 +35,16 @@ action:
   - choose:
       # Fully closed
       - conditions:
-          - condition: state
-            entity_id:
-              - binary_sensor.sun_should_close_south_blinds
-            state: "on"
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - binary_sensor.sun_should_close_south_blinds
+                state: "on"
+              - condition: state
+                entity_id:
+                  - media_player.mancave_tv
+                state: "on"
         sequence:
           - service: scene.turn_on
             target:
@@ -49,7 +57,7 @@ action:
               - condition: numeric_state
                 entity_id:
                   - sensor.sun_elevation
-                below: 2.0
+                below: 1.0
         sequence:
           - service: scene.turn_on
             target:
