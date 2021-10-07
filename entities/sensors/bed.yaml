@@ -2,6 +2,6 @@
 # Pressure sensor built using load cells and a Wemos D1 mini:
 # https://everythingsmarthome.co.uk/howto/building-a-bed-occupancy-sensor-for-home-assistant/
 platform: mqtt
-name: "Bed"
+name: "bed_marvin"
 state_topic: "home/bedroom/bed"
 unit_of_measurement: "kg"

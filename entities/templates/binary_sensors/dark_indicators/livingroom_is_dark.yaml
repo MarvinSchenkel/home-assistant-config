@@ -1,0 +1,15 @@
+# A binary indicator tracking whether it is light or dark in the room
+binary_sensor:
+  - name: livingroom_is_dark
+    state: >
+      {%-
+        if (
+          states("sensor.pir_kitchen_luminance") | int > 18
+          and is_state("light.fibaro_kitchen", "off")
+        )
+        or states("sensor.pir_kitchen_luminance") | int > 50
+      -%}
+        off
+      {%- else -%}
+        on
+      {%- endif -%}

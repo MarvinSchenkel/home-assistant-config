@@ -1,0 +1,19 @@
+---
+# A binary sensor based on presence
+# indicating whether someone just got home
+binary_sensor:
+  name: someone_just_home
+  state: >
+    {% set noOfPeople = 0 %}
+    {% set homeValues = ["Net thuis"] %}
+    {% if states("input_select.marvin_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {% if states("input_select.laura_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {%- if noOfPeople | int > 0 -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

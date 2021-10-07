@@ -1,5 +1,0 @@
----
-# This boolean is used to keep track of whether the bedroom
-# should enable automatic volume control of Sonos
-name: bedroom_automatic_volume
-initial: true

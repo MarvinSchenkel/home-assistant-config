@@ -43,32 +43,31 @@ views:
             "sidebar  footer      footer    ."
             "sidebar  .           .         ."
     cards:
+      - type: custom:button-card #extra_styles fix
       #################################################
       #                                               #
       #                    SIDEBAR                    #
       #                                               #
       #################################################
-      # - type: custom:vertical-stack-in-card
-      #   view_layout:
-      #     grid-area: sidebar
-      #   mode: vertical
-      #   cards:
-      - type: markdown
-        view_layout:
-          grid-area: sidebar
-        content: |
-          {% set attributes = states.sensor.template_sidebar.attributes | default %}
-          {% for template in attributes %}
-          {{ state_attr('sensor.template_sidebar', template) }}
-          {% endfor %}
-
-      - type: grid
+      - type: vertical-stack
         view_layout:
           grid-area: sidebar
         cards:
-          - type: button
-            icon: mdi:robot-vacuum
-            tap_action: !include popup/sidebar_vacuum.yaml
+          - type: custom:button-card
+            entity: sensor.template_sidebar
+            template: sidebar_template
+
+          - type: grid
+            cards:
+              - type: button
+                icon: mdi:robot-vacuum
+                tap_action: !include popup/sidebar_vacuum.yaml
+
+              - type: button
+                icon: mdi:information-outline
+                tap_action: !include popup/sidebar_information.yaml
+                hold_action:
+                  action: none
 
       #################################################
       #                                               #
@@ -80,68 +79,88 @@ views:
         title: Woonkamer
         view_layout:
           grid-area: woonkamer
-        columns: 2
+        columns: 1
         cards:
-          - type: custom:button-card
-            entity: light.dinner
-            name: Eettafel
-            template:
-              - light
-              - icon_shade
+          - type: custom:swipe-card
+            start_card: 1
+            parameters:
+              roundLengths: true
+              effect: coverflow
+              speed: 650
+              spaceBetween: 20
+              threshold: 7
+              coverflowEffect:
+                rotate: 80
+                depth: 300
+            cards:
+              - type: grid
+                columns: 2
+                cards:
+                  - type: custom:button-card
+                    icon: mdi:blinds-open
+                    entity: input_select.gardendoor_current_cover_scene
+                    name: Tuindeur
+                    variables:
+                      shade_scenes:
+                        - scene.gardendoor_cover_halfopen
+                        - scene.gardendoor_cover_halfclosed
+                        - scene.gardendoor_cover_open
+                        - scene.gardendoor_cover_closed
+                    template:
+                      - shade
+                      - icon_luxaflex
 
-          - type: custom:button-card
-            entity: light.fibaro_livingroom
-            name: Woonkamer
-            template:
-              - light
-              - icon_spot
+                  - type: custom:button-card
+                    icon: mdi:blinds-open
+                    entity: input_select.livingroom_current_cover_scene
+                    name: Woonkamer
+                    variables:
+                      shade_scenes:
+                        - scene.livingroom_cover_halfopen
+                        - scene.livingroom_cover_halfclosed
+                        - scene.livingroom_cover_open
+                        - scene.livingroom_cover_closed
+                    template:
+                      - shade
+                      - icon_luxaflex
 
-          - type: custom:button-card
-            entity: light.fibaro_kitchen
-            name: Keuken
-            template:
-              - light
-              - icon_spot
+                  - type: custom:button-card
+                    icon: mdi:blinds-open
+                    entity: input_select.kitchen_current_cover_scene
+                    name: Keuken
+                    variables:
+                      shade_scenes:
+                        - scene.kitchen_cover_halfopen
+                        - scene.kitchen_cover_halfclosed
+                        - scene.kitchen_cover_open
+                        - scene.kitchen_cover_closed
+                    template:
+                      - shade
+                      - icon_luxaflex
 
-            # - type: grid
-            #   columns: 2
-            #   cards:
-            #     - type: custom:button-card
-            #       icon: mdi:blinds-open
-            #       entity: cover.kitchen
-            #       name: Luxaflex Keuken
-            #       variables:
-            #         shade_scenes:
-            #           - scene.keuken_half_open
-            #           - scene.keuken_half_dicht
-            #           - scene.keuken_dicht
-            #       template:
-            #         - shade
+              - type: grid
+                columns: 2
+                cards:
+                  - type: custom:button-card
+                    entity: light.dinner
+                    name: Eettafel
+                    template:
+                      - light
+                      - icon_shade
 
-            #     - type: custom:button-card
-            #       icon: mdi:blinds-open
-            #       entity: cover.kitchen
-            #       name: Luxaflex Keuken
-            #       variables:
-            #         shade_scenes:
-            #           - scene.keuken_half_open
-            #           - scene.keuken_half_dicht
-            #           - scene.keuken_dicht
-            #       template:
-            #         - shade
+                  - type: custom:button-card
+                    entity: light.fibaro_livingroom
+                    name: Woonkamer
+                    template:
+                      - light
+                      - icon_spot
 
-            #     - type: custom:button-card
-            #       icon: mdi:blinds-open
-            #       entity: cover.kitchen
-            #       name: Luxaflex Keuken
-            #       variables:
-            #         shade_scenes:
-            #           - scene.keuken_half_open
-            #           - scene.keuken_half_dicht
-            #           - scene.keuken_dicht
-            #       template:
-            #         - shade
-
+                  - type: custom:button-card
+                    entity: light.fibaro_kitchen
+                    name: Keuken
+                    template:
+                      - light
+                      - icon_spot
       #################################################
       #                                               #
       #                    Slaapkamer                 #
@@ -155,7 +174,7 @@ views:
         columns: 2
         cards:
           - type: custom:button-card
-            entity: light.fibaro_master_bedroom
+            entity: light.master_bedroom_ceiling
             name: Plafond
             template:
               - light
@@ -171,16 +190,23 @@ views:
                 - scene.bedroom_cover_closed
                 - scene.bedroom_cover_ventilating
                 - scene.bedroom_cover_ventilatingnight
-            state_display: >
-              [[[ 
-                if (entity.state == "halfopen") return "Half Open";
-                if (entity.state == "halfclosed") return "Half Dicht";
-                if (entity.state == "closed") return "Dicht";
-                if (entity.state == "ventilating") return "Ventileren";
-                if (entity.state == "ventilatingnight") return "Ventileren Nacht";
-              ]]]
             template:
               - shade
+              - icon_luxaflex
+
+          - type: custom:button-card
+            entity: light.master_bedroom_left
+            name: Links
+            template:
+              - light
+              - icon_shade
+
+          - type: custom:button-card
+            entity: light.master_bedroom_right
+            name: Rechts
+            template:
+              - light
+              - icon_shade
 
       #################################################
       #                                               #
@@ -194,11 +220,13 @@ views:
           grid-area: badkamer
         columns: 2
         cards:
-          - type: markdown
-            view_layout:
-              grid-area: footer
-            content: >
-              Test
+          - type: custom:button-card
+            entity: sensor.pir_bathroom_humidity
+            name: Vochtigheid
+            variables:
+              decimals: 0
+            template:
+              - info_small
 
       #################################################
       #                                               #
@@ -224,7 +252,7 @@ views:
                 rotate: 80
                 depth: 300
             cards:
-              - type: vertical-stack
+              - type: horizontal-stack
                 cards:
                   - type: conditional
                     conditions:
@@ -292,8 +320,24 @@ views:
         columns: 2
         cards:
           - type: custom:button-card
+            entity: sensor.daily_energy
+            name: Verbruikt
+            variables:
+              decimals: 1
+            template:
+              - info_small
+          - type: custom:button-card
+            entity: sensor.daily_gas
+            name: Verbruikt
+            variables:
+              decimals: 2
+            template:
+              - info_small
+          - type: custom:button-card
             entity: sensor.solaredge_energy_today_kwh
-            name: Vandaag
+            name: Opgewekt
+            variables:
+              turn_on: "on"
             template:
               - info
 

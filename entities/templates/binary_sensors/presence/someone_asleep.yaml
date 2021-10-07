@@ -1,0 +1,11 @@
+---
+# A binary sensor based on presence
+# indicating whether someone is asleep
+binary_sensor:
+  name: someone_asleep
+  state: >
+    {%- if states("sensor.num_people_at_home_asleep") | int > 0 -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

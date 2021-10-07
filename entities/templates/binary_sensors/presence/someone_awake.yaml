@@ -1,0 +1,22 @@
+---
+# A binary sensor based on presence
+# indicating whether someone is awake
+binary_sensor:
+  name: someone_awake
+  state: >
+    {% set noOfPeople = 0 %}
+    {% set awakeValues = ["Wakker"] %}
+    {% set homeValues = ["Thuis", "Net thuis"] %}
+    {% if states("input_select.marvin_sleep_status_dropdown") in awakeValues
+       and states("input_select.marvin_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {% if states("input_select.laura_sleep_status_dropdown") in awakeValues
+       and states("input_select.laura_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {%- if noOfPeople | int > 0 -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

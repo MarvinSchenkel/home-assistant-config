@@ -1,0 +1,10 @@
+---
+# A binary sensor based on bed sensor indicating whether someone is in bed
+binary_sensor:
+  name: someone_in_bed
+  state: >
+    {% if states("sensor.bed_marvin") | float > 15.0 %}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

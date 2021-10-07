@@ -9,7 +9,7 @@ fields:
   message:
     description: The message that needs to be sent to the receivers
   title:
-    description: Title of the message 
+    description: Title of the message
   receivers:
     description: List of people that need to receive the notification
   type:
@@ -17,19 +17,20 @@ fields:
 
 variables:
   type: "{{ type | default('normal') }}"
-  home_status: ['Thuis', 'Net Thuis']
-  away_status: ['Weg', 'Net weg', 'Lang weg']
+  home_status: ["Thuis", "Net Thuis"]
+  away_status: ["Weg", "Net weg", "Lang weg"]
   laura_state: "{{ states('input_select.laura_status_dropdown') }}"
   marvin_state: "{{ states('input_select.marvin_status_dropdown') }}"
 
 sequence:
   - repeat:
-      count: "{{ receivers | length }}" 
+      count: "{{ receivers | length }}"
       sequence:
         - variables:
             receiver: "{{ receivers[repeat.index-1] }}"
             name: "{{ receiver[0] | upper }}{{ receiver[1:] }}"
             title: "{{ title | default('Hey') }} {{ name }}!"
+            
         # First check if we need to play the notifcation on our TV
         - choose:
             - conditions:
@@ -60,7 +61,7 @@ sequence:
         - choose:
             - conditions: "{{ receiver == 'laura' and (type == 'normal' or (type == 'away_only' and laura_state in away_status )) }}"
               sequence:
-                - service: notify.mobile_app_rne_l21
+                - service: notify.mobile_app_iphone_van_l_a
                   data:
                     message: "{{ message }}"
                     title: "{{ title }}"

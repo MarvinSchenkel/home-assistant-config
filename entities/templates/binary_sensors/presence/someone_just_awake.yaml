@@ -1,0 +1,19 @@
+---
+# A binary sensor based on presence
+# indicating whether someone is just awake
+binary_sensor:
+  name: someone_just_awake
+  state: >
+    {% set noOfPeople = 0 %}
+    {% set awakeValues = ["Net wakker"] %}
+    {% if states("input_select.marvin_sleep_status_dropdown") in awakeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {% if states("input_select.laura_sleep_status_dropdown") in awakeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {%- if noOfPeople | int > 0 -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

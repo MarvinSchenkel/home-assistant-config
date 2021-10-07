@@ -25,6 +25,8 @@ lovelace:
       type: module
     - url: /hacsfiles/button-card/button-card.js
       type: module
+    - url: /hacsfiles/bar-card/bar-card.js
+      type: module
     - url: /hacsfiles/simple-weather-card/simple-weather-card-bundle.js?v=0.8.2
       type: module
     - url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js

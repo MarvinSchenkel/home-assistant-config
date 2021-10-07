@@ -1,0 +1,19 @@
+---
+# Keep track of how many people are asleep
+# so we know when everyone has gone to bed
+sensor:
+  name: num_people_at_home_asleep
+  unit_of_measurement: "people"
+  state: >-
+    {% set noOfPeople = 0 %}
+    {% set sleepValues = ["Slaapt"] %}
+    {% set homeValues = ["Thuis", "Net thuis"] %}
+    {% if states("input_select.marvin_sleep_status_dropdown") in sleepValues
+       and states("input_select.marvin_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {% if states("input_select.laura_sleep_status_dropdown") in sleepValues
+       and states("input_select.laura_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {{ noOfPeople }}

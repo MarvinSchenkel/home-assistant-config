@@ -75,19 +75,19 @@ base:
       - padding: 10%
       - --mdc-ripple-color: >
           [[[
-            return (variables.state === 'on' || variables.state === 'Thuis' || variables.state === 'Net thuis' || variables.state === 'halfopen' || variables.state === 'ventilating') ?
+            return (variables.state === 'on' || variables.state === 'Thuis' || variables.state === 'Net thuis' || variables.state === 'halfopen' || variables.state === 'ventilating' || variables.state === 'open') ?
               'rgb(0, 0, 0)' :
               'rgba(255, 255, 255, 0.3)';
           ]]]
       - color: >
           [[[
-            return (variables.state === 'on' || variables.state === 'Thuis' || variables.state === 'Net thuis' || variables.state === 'halfopen' || variables.state === 'ventilating') ?
+            return (variables.state === 'on' || variables.state === 'Thuis' || variables.state === 'Net thuis' || variables.state === 'halfopen' || variables.state === 'ventilating' || variables.state === 'open') ?
               'rgba(0, 0, 0, 0.6)' :
               'rgba(255, 255, 255, 0.3)';
           ]]]
       - background-color: >
           [[[
-            return (variables.state === 'on' || variables.state === 'Thuis' || variables.state === 'Net thuis' || variables.state === 'halfopen' || variables.state === 'ventilating') ?
+            return (variables.state === 'on' || variables.state === 'Thuis' || variables.state === 'Net thuis' || variables.state === 'halfopen' || variables.state === 'ventilating' || variables.state === 'open') ?
               'rgba(255, 255, 255, 0.8)' :
               'rgba(115, 115, 115, 0.2)';
           ]]]
@@ -125,6 +125,89 @@ base:
       }
       100% {
         transform: scale(1);
+      }
+    }
+
+#################################################
+#                                               #
+#                    SIDEBAR                    #
+#                                               #
+#################################################
+
+sidebar_template:
+  show_state: false
+  show_icon: false
+  tap_action:
+    action: none
+  name: |
+    [[[
+      if (entity) {
+        let attributes = '';
+        for (const [key, value] of Object.entries(entity.attributes)) {
+          value != false ? attributes += `<p>${value}</p>` : null;
+        }
+        return attributes;
+      }
+    ]]]
+  extra_styles: |
+    #card {
+      padding: 0;
+    }
+    #container {
+      display: flex !important;
+    }
+    #name {
+      padding: 1.8vw 2.5vw 0 var(--custom-layout-card-padding);
+      white-space: normal;
+      text-align: left;
+    }
+    .time {
+      font-size: var(--sidebar-time-font-size);
+      font-weight: 200;
+      line-height: var(--sidebar-time-line-height);
+      letter-spacing: -0.05vw;
+      margin-left: -0.3vw;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .time-colon {
+      position: relative;
+      top: -.09em;
+    }
+    p {
+      font-family: SF Display;
+      font-size: var(--sidebar-font-size);
+      line-height: var(--sidebar-line-height);
+      font-weight: 300;
+      letter-spacing: 0.06vw;
+      color: #6a7377;
+    }
+
+    p > b {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    /* portrait */
+    @media screen and (max-width: 1200px) {
+      .time {
+        font-size: calc(var(--sidebar-time-font-size) * 1.4 );
+        line-height: calc(var(--sidebar-time-line-height) * 1.4 );
+      }
+      p {
+        font-size: calc(var(--sidebar-font-size) * 1.4 );
+        line-height: calc(var(--sidebar-line-height) * 1.4 );
+      }
+    }
+    /* phone */
+    @media screen and (max-width: 800px) {
+      .time {
+        font-size: calc(var(--sidebar-time-font-size) * 2.6 );
+      }
+      p {
+        font-size: calc(var(--sidebar-font-size) * 2.6 );
+        line-height: calc(var(--sidebar-line-height) * 2.6 );
+        letter-spacing: 0.16vw;
+      }
+      #name {
+        padding: 0 0 0 1vw;
       }
     }
 
@@ -182,19 +265,19 @@ info:
       - padding: 10%
       - --mdc-ripple-color: >
           [[[
-            return (variables.state === 'on' || variables.state === 'home') ?
+            return (variables.state === 'on' || variables.state === 'home' || variables.turn_on === 'on') ?
               'rgb(0, 0, 0)' :
               'rgba(255, 255, 255, 0.3)';
           ]]]
       - color: >
           [[[
-            return (variables.state === 'on' || variables.state === 'home') ?
+            return (variables.state === 'on' || variables.state === 'home' || variables.turn_on === 'on') ?
               'rgba(0, 0, 0, 0.6)' :
               'rgba(255, 255, 255, 0.3)';
           ]]]
       - background-color: >
           [[[
-            return (variables.state === 'on' || variables.state === 'home') ?
+            return (variables.state === 'on' || variables.state === 'home' || variables.turn_on === 'on') ?
               'rgba(255, 255, 255, 0.8)' :
               'rgba(115, 115, 115, 0.2)';
           ]]]
@@ -204,11 +287,11 @@ info:
       letter-spacing: 0.05vw;
     }
     #info {
-      font-size: 3.2vw;
+      font-size: 2.7vw;
       letter-spacing: 0.05vw;
     }
     #uom {
-      font-size: 1.6vw;
+      font-size: 1.3vw;
     }
     /* portrait */
     @media screen and (max-width: 1200px) {
@@ -236,6 +319,13 @@ info:
         letter-spacing: 0.12vw;
       }
     }
+
+info_small:
+  template:
+    - info
+  custom_fields:
+    info: >
+      [[[ return Math.round(variables.state * Math.pow(10, variables.decimals)) / Math.pow(10, variables.decimals) ]]]
 
 #################################################
 #                                               #
@@ -327,6 +417,15 @@ loader:
 shade:
   template:
     - base
+  state_display: >
+    [[[ 
+      if (entity.state == "halfopen") return "Half Open";
+      if (entity.state == "halfclosed") return "Half Dicht";
+      if (entity.state == "closed") return "Dicht";
+      if (entity.state == "ventilating") return "Ventileren";
+      if (entity.state == "open") return "Open";
+      if (entity.state == "ventilatingnight") return "Ventileren Nacht";
+    ]]]
   tap_action:
     action: fire-dom-event
     browser_mod:
@@ -373,58 +472,58 @@ light:
             sliderColor: "#c7c7c7"
             sliderTrackColor: rgba(25, 25, 25, 0.9)
             displayType: slider
-          # - type: custom:hui-element
-          #   card_type: horizontal-stack
-          #   style: >
-          #     #root {
-          #       justify-content: center;
-          #       margin-top: 2em;
-          #     }
-          #   cards:
-          #     - type: custom:button-card
-          #       styles:
-          #         card:
-          #           - background: "#d8d9e1"
-          #       tap_action:
-          #         action: call-service
-          #         service: light.turn_on
-          #         service_data:
-          #           entity_id: >
-          #             [[[ return entity.entity_id ]]]
-          #           color_temp: 153
-          #       template: color_light
-          #     - type: custom:button-card
-          #       styles:
-          #         card:
-          #           - background: "#d5b08d"
-          #       tap_action:
-          #         action: call-service
-          #         service: light.turn_on
-          #         service_data:
-          #           entity_id: >
-          #             [[[ return entity.entity_id ]]]
-          #           color_temp: 326
-          #       template: color_light
-          # - type: custom:hui-element
-          #   card_type: horizontal-stack
-          #   style: >
-          #     #root {
-          #       justify-content: center;
-          #       margin-bottom: 1em;
-          #     }
-          #   cards:
-          #     - type: custom:button-card
-          #       styles:
-          #         card:
-          #           - background: "#ce944b"
-          #       tap_action:
-          #         action: call-service
-          #         service: light.turn_on
-          #         service_data:
-          #           entity_id: >
-          #             [[[ return entity.entity_id ]]]
-          #           color_temp: 500
-          #       template: color_light
+          - type: custom:hui-element
+            card_type: horizontal-stack
+            style: >
+              #root {
+                justify-content: center;
+                margin-top: 2em;
+              }
+            cards:
+              - type: custom:button-card
+                styles:
+                  card:
+                    - background: "#d8d9e1"
+                tap_action:
+                  action: call-service
+                  service: light.turn_on
+                  service_data:
+                    entity_id: >
+                      [[[ return entity.entity_id ]]]
+                    color_temp: 153
+                template: color_light
+              - type: custom:button-card
+                styles:
+                  card:
+                    - background: "#d5b08d"
+                tap_action:
+                  action: call-service
+                  service: light.turn_on
+                  service_data:
+                    entity_id: >
+                      [[[ return entity.entity_id ]]]
+                    color_temp: 326
+                template: color_light
+          - type: custom:hui-element
+            card_type: horizontal-stack
+            style: >
+              #root {
+                justify-content: center;
+                margin-bottom: 1em;
+              }
+            cards:
+              - type: custom:button-card
+                styles:
+                  card:
+                    - background: "#ce944b"
+                tap_action:
+                  action: call-service
+                  service: light.turn_on
+                  service_data:
+                    entity_id: >
+                      [[[ return entity.entity_id ]]]
+                    color_temp: 500
+                template: color_light
           #     - type: custom:button-card
           #       styles:
           #         card:
@@ -664,6 +763,7 @@ conditional_media:
       - padding: 5%
       - border-radius: calc(var(--custom-button-card-border-radius) / 2)
       - backdrop-filter: blur(0) #fix chrome bug
+      - -webkit-clip-path: inset(0) #fix safari bug
     custom_fields:
       blur:
         - z-index: 2
@@ -943,6 +1043,18 @@ icon_plex:
         <path d="M7.7.3h34.6c4.1 0 7.4 3.3 7.4 7.4v34.6c0 4.1-3.3 7.4-7.4 7.4H7.7c-4.1 0-7.4-3.3-7.4-7.4V7.7C.3 3.6 3.6.3 7.7.3z" fill="#282a2d"/>
         <path d="M25,7.1H14.6L25,25L14.6,42.9H25L35.4,25L25,7.1z" fill="#e5a00d"/>
       </svg>
+
+icon_luxaflex:
+  custom_fields:
+    icon: >
+      [[[
+        const shade_color = (entity === undefined || ['halfclosed', 'closed', 'ventilatingnight'].includes(entity.state)) ? 'var(--state-icon-color)' : 'var(--state-icon-active-color)';
+        return `
+          <svg viewBox="0 0 40 40">
+            <path d="M3 2h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1v7a1 1 0 0 1-1 1h-6v2.17c1.17.41 2 1.52 2 2.83a3 3 0 0 1-3 3a3 3 0 0 1-3-3c0-1.31.83-2.42 2-2.83V14H5a1 1 0 0 1-1-1V6H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1m9 16a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1z" fill="${shade_color}" />
+          </svg>  
+        `;
+      ]]]
 
 icon_apple_tv:
   custom_fields:

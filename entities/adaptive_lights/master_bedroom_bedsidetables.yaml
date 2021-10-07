@@ -1,8 +1,8 @@
 ---
 # Define the switch for circadian lighting in the bedroom
-name: master_bedroom
+name: master_bedroom_bedsidetables
 lights:
-  - light.master_bedroom_ceiling
+  - light.master_bedroom_bedsidetables
 max_brightness: 70
 detect_non_ha_changes: true
 take_over_control: true
