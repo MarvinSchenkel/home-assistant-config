@@ -12,6 +12,7 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.presence_master_bedroom
+      - binary_sensor.someone_asleep
     to: "on"
   - platform: state
     entity_id: binary_sensor.presence_master_bedroom
@@ -20,12 +21,7 @@ trigger:
       seconds: 60
   - platform: state
     entity_id:
-      - sensor.marvin_status
-      - sensor.laura_status
-    to: "Slaapt"
-  - platform: state
-    entity_id:
-      - input_select.master_bedroom_darklight
+      - binary_sensor.master_bedroom_is_dark
   - platform: state
     entity_id:
       - binary_sensor.someone_in_bed
@@ -47,8 +43,10 @@ condition:
 action:
   - choose:
       - conditions:
-          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+          - condition: state
+            entity_id:
+              - binary_sensor.someone_asleep
+            state: "off"
           - condition: state
             entity_id: binary_sensor.master_bedroom_is_dark
             state: "on"
@@ -58,32 +56,37 @@ action:
 
         sequence:
           - choose:
-              - conditions:
+              - alias: "Start dimming the light when somone gets in bed, ready to go to sleep"
+                conditions:
                   - condition: state
                     entity_id:
                       - binary_sensor.someone_in_bed
                     state: "on"
                     for:
                       seconds: 15
+                  - condition: time
+                    after: "21:30:00"
                 sequence:
                   - service: light.turn_on
                     data:
                       entity_id: light.master_bedroom_bedsidetables
-                      transition: 1
+                      transition: 3
                       brightness_pct: 15
                   - service: light.turn_off
                     data:
                       entity_id: light.master_bedroom_ceiling
-                      transition: 1
+                      transition: 3
 
             default:
-              - service: light.turn_on
+              - alias: "Just turn on the lights"
+                service: light.turn_on
                 data:
                   entity_id: light.master_bedroom_lights
                   transition: 1
 
     default:
-      - service: light.turn_off
+      - alias: "Turn off the lights otherwise"
+        service: light.turn_off
         data:
           entity_id: light.master_bedroom_lights
           transition: 5

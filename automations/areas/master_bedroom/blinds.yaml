@@ -69,8 +69,8 @@ condition:
 
 action:
   - choose:
-      # Ventilating when desired
-      - conditions:
+      - alias: "Ventilating when desired so we can cool down our bedroom on hot days after opening the windows."
+        conditions:
           - condition: or
             conditions:
               - condition: trigger
@@ -82,22 +82,18 @@ action:
             target:
               entity_id: scene.bedroom_cover_ventilating
 
-      # Ventilating at night
-      - conditions:
+      - alias: "This nearly closes our blinds but leaves a small gap at the top for fresh air"
+        conditions:
           - condition: or
             conditions:
               - condition: state
                 entity_id:
-                  - sensor.marvin_status
-                state:
-                  - "Slaapt"
-                  - "Net wakker"
+                  - binary_sensor.someone_just_awake
+                state: "on"
               - condition: state
                 entity_id:
-                  - sensor.laura_status
-                state:
-                  - "Slaapt"
-                  - "Net wakker"
+                  - binary_sensor.someone_asleep
+                state: "on"
               - condition: time
                 after: "21:15:00"
         sequence:
@@ -105,8 +101,8 @@ action:
             target:
               entity_id: scene.bedroom_cover_ventilatingnight
 
-      # Fully closed
-      - conditions:
+      - alias: "This fully closes the blinds on hot days"
+        conditions:
           - condition: state
             entity_id:
               - binary_sensor.sun_should_close_south_blinds
@@ -116,8 +112,8 @@ action:
             target:
               entity_id: scene.bedroom_cover_closed
 
-      # Half closed
-      - conditions:
+      - alias: "This closes the blinds half way when it gets dark"
+        conditions:
           - condition: or
             conditions:
               - condition: numeric_state
@@ -132,8 +128,8 @@ action:
             target:
               entity_id: scene.bedroom_cover_halfclosed
 
-    # Half open
     default:
-      - service: scene.turn_on
+      - alias: "Otherwise, open the blinds"
+        service: scene.turn_on
         target:
           entity_id: scene.bedroom_cover_halfopen

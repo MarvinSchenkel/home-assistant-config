@@ -16,9 +16,7 @@ trigger:
       seconds: 60
   - platform: state
     entity_id:
-      - sensor.marvin_status
-      - sensor.laura_status
-    to: "Slaapt"
+      - binary_sensor.someone_asleep
 
 condition:
   - condition: or
@@ -29,11 +27,8 @@ condition:
         for:
           seconds: 60
       - condition: state
-        entity_id: sensor.marvin_status
-        state: "Slaapt"
-      - condition: state
-        entity_id: sensor.laura_status
-        state: "Slaapt"
+        entity_id: binary_sensor.someone_asleep
+        state: "on"
 
 action:
   - service: sonos.unjoin
