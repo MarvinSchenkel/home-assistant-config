@@ -11,7 +11,7 @@ trigger:
 condition:
   - condition: state
     entity_id: sensor.rmn_next_pickup_in
-    state: '1'
+    state: "1"
 
 action:
   - service: script.send_notification
@@ -19,4 +19,9 @@ action:
       receivers:
         - "marvin"
         - "laura"
+        - "intercom"
       message: "Morgen wordt {{ states('sensor.rmn_next_garbage_pickup') }} opgehaald!"
+      intercom_devices:
+        - media_player.sonos_livingroom
+        - media_player.sonos_bathroom
+        - media_player.sonos_master_bedroom

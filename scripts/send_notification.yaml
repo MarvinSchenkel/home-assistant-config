@@ -14,6 +14,8 @@ fields:
     description: List of people that need to receive the notification
   type:
     description: Type of the notification, default 'normal'
+  intercom_devices:
+    description: List of sonos devices to broadcast the message to (only used when one of the receivers is 'intercom')
 
 variables:
   type: "{{ type | default('normal') }}"
@@ -30,7 +32,7 @@ sequence:
             receiver: "{{ receivers[repeat.index-1] }}"
             name: "{{ receiver[0] | upper }}{{ receiver[1:] }}"
             title: "{{ title | default('Hey') }} {{ name }}!"
-            
+
         # First check if we need to play the notifcation on our TV
         - choose:
             - conditions:
@@ -47,8 +49,61 @@ sequence:
                       duration: 7
                       position: top-right
 
-        # Then check if we need to play it as an alert throughout the house (urgent messages only)
-        # TODO
+        # Check if we need to notify the mancave TV
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id:
+                    - media_player.mancave_tv
+                  state: "on"
+                - "{{ receiver == 'marvin' }}"
+                - "{{ marvin_state in home_status }}"
+              sequence:
+                - service: notify.mancave_tv
+                  data:
+                    message: "{{ message }}"
+                    title: "{{ title }}"
+
+        # Then check if we need to play it as an alert on our Sonos devices
+        - choose:
+            - conditions:
+                - "{{ receiver == 'intercom' }}"
+                - condition: state
+                  entity_id:
+                    - binary_sensor.someone_asleep
+                  state: "off"
+              sequence:
+                - repeat:
+                    count: "{{ intercom_devices | length }}"
+                    sequence:
+                      - variables:
+                          sonos_entity: "{{ intercom_devices[repeat.index-1] }}"
+                      - service: sonos.snapshot
+                        data:
+                          entity_id: "{{ sonos_entity }}"
+                      - service: sonos.unjoin
+                        data:
+                          entity_id: "{{ sonos_entity }}"
+                      - service: media_player.volume_set
+                        data:
+                          entity_id: "{{ sonos_entity }}"
+                          volume_level: 0.20
+                      - service: media_player.play_media
+                        data:
+                          entity_id: "{{ sonos_entity }}"
+                          media_content_id: !secret notification_sound_url
+                          media_content_type: music
+                      - delay:
+                          seconds: 1
+                      - service: tts.google_cloud_say
+                        data:
+                          entity_id: "{{ sonos_entity }}"
+                          message: "{{ message }}"
+                      - delay:
+                          seconds: 5
+                      - service: sonos.restore
+                        data:
+                          entity_id: "{{ sonos_entity }}"
 
         # Send mobile notifications
         - choose:

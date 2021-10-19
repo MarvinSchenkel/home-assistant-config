@@ -9,15 +9,13 @@ trigger:
     entity_id:
       - sensor.picnic_last_order_eta_start
       - sensor.picnic_last_order_eta_end
-  - platform: time
-    at: "18:00:00"
 
 variables:
   days_left: "{{ as_timestamp(states('sensor.picnic_last_order_eta_start')) | timestamp_custom('%d') | int - as_timestamp(now()) | timestamp_custom('%d') | int }}"
   day_name: >-
-      {% if days_left == 0 %} vandaag
-      {% elif days_left == 1 %} morgen
-      {% endif %}
+    {% if days_left == 0 %} vandaag
+    {% elif days_left == 1 %} morgen
+    {% endif %}
 
 condition:
   - "{{ days_left < 2 }}"
@@ -29,5 +27,10 @@ action:
       receivers:
         - "marvin"
         - "laura"
-      message: > 
+        - "intercom"
+      intercom_devices:
+        - media_player.sonos_livingroom
+        - media_player.sonos_bathroom
+        - media_player.sonos_master_bedroom
+      message: >
         Picnic bezorgt {{ day_name }} tussen {{ as_timestamp(states('sensor.picnic_last_order_eta_start')) | timestamp_custom('%H:%M') }} en {{ as_timestamp(states('sensor.picnic_last_order_eta_end')) | timestamp_custom('%H:%M') }}!
