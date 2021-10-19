@@ -29,6 +29,7 @@ action:
         - service: switch.turn_on
           data:
             entity_id: switch.fibaro_frontdoor
+
     default:
       - service: switch.turn_off
         data:

@@ -13,13 +13,10 @@ action:
     - conditions:
         - condition: state
           entity_id: light.fibaro_livingroom
-          state: 'on'
+          state: "on"
       sequence:
         - service: light.turn_on
           entity_id: light.dinner
   default:
     - service: light.turn_off
       entity_id: light.dinner
-
-
-  

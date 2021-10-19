@@ -6,17 +6,47 @@ id: 1da4e30e-26fe-416a-ba06-aee16ec18ff3
 
 trigger:
   - platform: event
+    id: "button"
     event_type: "zha_event"
     event_data:
       device_id: "2a93e9d147b93ca0ec5992d48dde3129"
       command: "single"
+  - platform: state
+    id: "bed_sensor"
+    entity_id:
+      - binary_sensor.someone_in_bed
+    to: "on"
+    for:
+      seconds: 15
 
 action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.marvin_sleep_status_dropdown
-      option: "Slaapt"
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.laura_sleep_status_dropdown
-      option: "Slaapt"
+  - choose:
+      - alias: "Set me to 'asleep' when I get into bed and Laura is already sleeping"
+        conditions:
+          - condition: trigger
+            id: "bed_sensor"
+          - condition: state
+            entity_id:
+              - input_select.laura_sleep_status_dropdown
+            state: "Slaapt"
+        sequence:
+          - service: input_select.select_option
+            data:
+              entity_id: input_select.marvin_sleep_status_dropdown
+              option: "Slaapt"
+
+      - alias: "Set us both to asleep when I press the bedside button"
+        conditions:
+          - condition: trigger
+            id: "button"
+        sequence:
+          - service: input_select.select_option
+            data:
+              entity_id: input_select.marvin_sleep_status_dropdown
+              option: "Slaapt"
+          - service: input_select.select_option
+            data:
+              entity_id: input_select.laura_sleep_status_dropdown
+              option: "Slaapt"
+
+    default: []

@@ -7,7 +7,7 @@ id: a433a38f-f990-48d4-b910-b1ffa543c4e5
 trigger:
   - platform: state
     entity_id: binary_sensor.everyone_left_home
-    to: 'on'
+    to: "on"
 
 action:
   - service: media_player.media_pause

@@ -1,33 +1,36 @@
 ---
 description: >
-  Actions configured for my IKEA Remote in the living room:
-    - Middle buttion: Toggle normal / movie scene
+  Actions configured for my hue dimmer switch
 alias: areas_livingroom_remote
 id: e9286dec-edd9-435c-9fe1-e67dbe43e8b4
 
-use_blueprint:
-  path: wormie_dk/zha-ikea-five-button-remote.yaml
-  input:
-    remote: d1b641827c2d934e455536d561d12866
-    button_on_off:
-      # Switch from scene 'normal' to 'movie' or 'any scene' to 'normal'
-      - choose:
-          - conditions:
-              - condition: state
-                entity_id: input_select.livingroom_current_scene
-                state: 'normal'
-            sequence:
-              - service: scene.turn_on
-                target:
-                  entity_id: scene.livingroom_movie
-                data:
-                  transition: 4
-        default:
+trigger:
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "dd93f7c049eb8e103af97459fb7aae53"
+      command: "on_press"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "dd93f7c049eb8e103af97459fb7aae53"
+      command: "off_press"
+
+action:
+  # Switch from scene 'normal' to 'movie' or 'any scene' to 'normal'
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.livingroom_current_scene
+            state: "normal"
+        sequence:
           - service: scene.turn_on
-            entity_id: scene.livingroom_normal
+            target:
+              entity_id: scene.livingroom_lights_movie
             data:
-              transition: 2
-    button_brightness_up_short: ~ 
-    button_brightness_down_short: ~
-    button_left_short: ~
-    button_right_short: ~      
+              transition: 4
+    default:
+      - service: scene.turn_on
+        entity_id: scene.livingroom_lights_normal
+        data:
+          transition: 2

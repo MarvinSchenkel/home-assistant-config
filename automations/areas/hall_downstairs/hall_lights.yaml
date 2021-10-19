@@ -20,29 +20,44 @@ trigger:
   - platform: state
     entity_id: input_select.livingroom_current_scene
     to: "movie"
+    id: "movie"
 
 condition:
   - condition: state
+    alias: "Check if we can automate the lights"
     entity_id: input_boolean.setting_manual_lights
     state: "off"
 
 action:
   - choose:
       - conditions:
+          - condition: trigger
+            alias: "Check if we started watching a movie"
+            id: "movie"
+
+        sequence:
+          - &lights_turn_off
+            service: light.turn_off
+            alias: "Turn the hall lights off"
+            data:
+              entity_id: light.fibaro_hall_downstairs
+              transition: 5
+
+      - conditions:
           - condition: state
+            alias: "Presence is detected"
             entity_id: binary_sensor.presence_hall_downstairs
             state: "on"
           - condition: state
+            alias: "It is dark in the hall"
             entity_id: binary_sensor.hall_is_dark
             state: "on"
 
         sequence:
           - service: light.turn_on
+            alias: "Turn the hall lights on"
             data:
               entity_id: light.fibaro_hall_downstairs
 
     default:
-      - service: light.turn_off
-        data:
-          entity_id: light.fibaro_hall_downstairs
-          transition: 5
+      - *lights_turn_off

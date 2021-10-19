@@ -29,18 +29,16 @@ action:
       - conditions:
           - condition: state
             entity_id: binary_sensor.presence_wc
-            state: "off"
-            for:
-              seconds: 80
+            state: "on"
 
         sequence:
-          - service: light.turn_off
+          - service: light.turn_on
             data:
               entity_id: light.fibaro_wc
-              transition: 5
+              transition: 2
 
     default:
-      - service: light.turn_on
+      - service: light.turn_off
         data:
           entity_id: light.fibaro_wc
-          transition: 2
+          transition: 5

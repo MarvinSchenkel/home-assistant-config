@@ -16,7 +16,7 @@ trigger:
     entity_id: binary_sensor.pir_third_floor_stairs
     to: "off"
     for:
-      seconds: 120
+      seconds: 90
 
 condition:
   - condition: state

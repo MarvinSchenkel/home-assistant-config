@@ -11,11 +11,17 @@ trigger:
     event: start
   - platform: event
     event_type: automation_reloaded
+  # Sun
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 1.0
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 1.0
   - platform: state
     entity_id:
-      # There is no sensor in the small bedroom, so I use the sensor in the living room which is a pretty good approach
-      # to measure when it is getting dark
-      - input_select.livingroom_darklight
       # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
   - platform: time
@@ -44,21 +50,22 @@ action:
     - conditions:
         - condition: time
           before: "19:00:00"
-        - condition: state
-          entity_id: input_select.livingroom_darklight
-          state: "light"
+        - condition: numeric_state
+          entity_id:
+            - sensor.sun_elevation
+          above: 1.0
         - condition: or
           conditions:
-            # Open: Workdays at 8am
-            - condition: and
+            - alias: "Open: Workdays at 8am"
+              condition: and
               conditions:
                 - condition: time
                   after: "08:00:00"
                 - condition: state
                   entity_id: binary_sensor.workday
-                  state: "on"
-            # Open: Weekend days and holidays at 10
-            - condition: and
+                  state: "on"            
+            - alias: "Open: Weekend days and holidays at 10"
+              condition: and
               conditions:
                 - condition: time
                   after: "10:00:00"

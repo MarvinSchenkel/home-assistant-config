@@ -90,12 +90,14 @@ action:
                       - input_select.gardendoor_current_cover_scene
                     state: "halfopen"
                 sequence:
-                  - service: scene.turn_on
+                  - &cover_closed
+                    service: scene.turn_on
                     target:
                       entity_id:
                         - scene.gardendoor_cover_closed
             default:
-              - service: scene.turn_on
+              - &cover_half_open
+                service: scene.turn_on
                 target:
                   entity_id:
                     - scene.gardendoor_cover_halfopen
@@ -106,10 +108,7 @@ action:
             entity_id: binary_sensor.garden_door_open
             state: "on"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id:
-                - scene.gardendoor_cover_halfopen
+          - *cover_half_open
 
       # Fully closed
       - conditions:
@@ -134,10 +133,7 @@ action:
                       - input_select.gardendoor_current_cover_scene
                     state: "closed"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id:
-                - scene.gardendoor_cover_closed
+          - *cover_closed
 
       # Half closed
       - conditions:
@@ -153,7 +149,4 @@ action:
 
     # Half open
     default:
-      - service: scene.turn_on
-        target:
-          entity_id:
-            - scene.gardendoor_cover_halfopen
+      - *cover_half_open

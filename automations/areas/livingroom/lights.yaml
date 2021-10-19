@@ -18,22 +18,23 @@ trigger:
       - binary_sensor.everybody_asleep
       - binary_sensor.someone_just_awake
       - binary_sensor.someone_just_home
+      - binary_sensor.everyone_left_home
     from: "off"
     to: "on"
-  - platform: state
-    entity_id: media_player.apple_tv
-    to:
-      - "paused"
-      - "idle"
-    for:
-      seconds: 10
-    id: "apple_tv_off"
-  - platform: state
-    entity_id: media_player.apple_tv
-    to: "playing"
-    for:
-      seconds: 10
-    id: "apple_tv_on"
+  # - platform: state
+  #   entity_id: media_player.apple_tv
+  #   to:
+  #     - "paused"
+  #     - "idle"
+  #   for:
+  #     seconds: 10
+  #   id: "apple_tv_off"
+  # - platform: state
+  #   entity_id: media_player.apple_tv
+  #   to: "playing"
+  #   for:
+  #     seconds: 10
+  #   id: "apple_tv_on"
 
 condition:
   - condition: state
@@ -59,28 +60,29 @@ action:
                 entity_id:
                   - binary_sensor.someone_awake
                 state: "on"
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id:
-                  - media_player.apple_tv
-                state:
-                  - "paused"
-                  - "idle"
-                  - "unknown"
-              - condition: and
-                conditions:
-                  - condition: state
-                    entity_id:
-                      - media_player.apple_tv
-                    state: "playing"
-                  - condition: state
-                    entity_id:
-                      - media_player.apple_tv
-                    attribute: "app_name"
-                    state:
-                      - "YouTube"
-                      - "CanalDigitaal"
+          # - condition: or
+          #   conditions:
+          #     - condition: state
+          #       entity_id:
+          #         - media_player.apple_tv
+          #       state:
+          #         - "paused"
+          #         - "idle"
+          #         - "unknown"
+          #         - "off"
+          #     - condition: and
+          #       conditions:
+          #         - condition: state
+          #           entity_id:
+          #             - media_player.apple_tv
+          #           state: "playing"
+          #         - condition: state
+          #           entity_id:
+          #             - media_player.apple_tv
+          #           attribute: "app_name"
+          #           state:
+          #             - "YouTube"
+          #             - "CanalDigitaal"
         sequence:
           - service: scene.turn_on
             target:
