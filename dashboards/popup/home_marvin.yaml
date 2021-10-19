@@ -68,6 +68,7 @@ browser_mod:
       - type: entities
         entities:
           - entity: input_select.marvin_sleep_status_dropdown
+          - entity: input_select.marvin_status_dropdown
 
       - type: map
         entities:
