@@ -4,5 +4,4 @@ lights:
   - light.fibaro_hall_upstairs
 detect_non_ha_changes: true
 take_over_control: true
-min_brightness: 17
-max_brightness: 55
+min_brightness: 40

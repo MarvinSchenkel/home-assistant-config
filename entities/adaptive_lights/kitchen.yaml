@@ -4,3 +4,4 @@ lights:
   - light.fibaro_kitchen
 detect_non_ha_changes: true
 take_over_control: true
+min_brightness: 25
