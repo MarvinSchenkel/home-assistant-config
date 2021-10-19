@@ -23,22 +23,21 @@ condition:
 
 action:
   - choose:
-      - conditions:
+      - alias: "Lower volume in the morning"
+        conditions:
           - condition: or
             conditions:
               - condition: state
-                entity_id: sensor.marvin_status
-                state: "Net wakker"
-              - condition: state
-                entity_id: sensor.laura_status
-                state: "Net wakker"
+                entity_id: binary_sensor.someone_just_awake
+                state: "on"
         sequence:
           - service: media_player.volume_set
             data:
               entity_id: media_player.sonos_bathroom
               volume_level: 0.06
 
-      - conditions:
+      - alias: "Set volume higher when showering"
+        conditions:
           - condition: state
             entity_id: binary_sensor.bathroom_flood
             state: "on"
@@ -46,10 +45,11 @@ action:
           - service: media_player.volume_set
             data:
               entity_id: media_player.sonos_bathroom
-              volume_level: 0.35
+              volume_level: 0.40
 
     default:
-      - service: media_player.volume_set
+      - alias: "Otherwise set default volume"
+        service: media_player.volume_set
         data:
           entity_id: media_player.sonos_bathroom
           volume_level: 0.20

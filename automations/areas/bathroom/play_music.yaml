@@ -14,15 +14,15 @@ trigger:
   - platform: state
     entity_id: binary_sensor.bathroom_flood
   - platform: state
-    entity_id: binary_sensor.someone_awake
+    entity_id: binary_sensor.someone_just_awake
     to: "on"
 
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
     state: "on"
-  # There is no music playing already
   - condition: or
+    alias: "There is no music playing already"
     conditions:
       - condition: state
         entity_id: media_player.sonos_bathroom
@@ -30,39 +30,46 @@ condition:
       - condition: state
         entity_id: media_player.sonos_bathroom
         state: "idle"
-  - condition: or
-    conditions:
-      # Morning routine during weekdays
-      - condition: and
+
+action:
+  - choose:
+      - alias: "Play morning music when we have just woken up"
         conditions:
           - condition: or
             conditions:
               - condition: state
-                entity_id: sensor.marvin_status
-                state: "Net wakker"
-              - condition: state
-                entity_id: sensor.laura_status
-                state: "Net wakker"
+                entity_id: binary_sensor.someone_just_awake
+                state: "on"
           - condition: state
             entity_id: binary_sensor.workday
             state: "on"
-      # Shower is on and when no music is playing already
-      - condition: and
+        sequence:
+          - service: script.play_random_music
+            data:
+              sonos_entity: media_player.sonos_bathroom
+              genre: "morning"
+
+      - alias: "Play normal music when showering before 20:00"
         conditions:
-          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+          - condition: state
+            entity_id: binary_sensor.someone_asleep
+            state: "off"
           - condition: time
-            before: "22:00:00"
+            before: "20:00:00"
           - condition: state
             entity_id: binary_sensor.bathroom_flood
             state: "on"
+        sequence:
+          - service: script.play_random_music
+            data:
+              sonos_entity: media_player.sonos_bathroom
+              genre: "normal"
 
-action:
-  - choose:
-      # Play normal music when showering
-      - conditions:
-          - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-          - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+      - alias: "Play chill music when showering before 22:00"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.someone_asleep
+            state: "off"
           - condition: time
             before: "22:00:00"
           - condition: state
@@ -72,10 +79,7 @@ action:
           - service: script.play_random_music
             data:
               sonos_entity: media_player.sonos_bathroom
-              genre: "normal"
-    # Else, play a chill morning music list
-    default:
-      - service: script.play_random_music
-        data:
-          sonos_entity: media_player.sonos_bathroom
-          genre: "morning"
+              genre: "chill"
+
+    # Otherwise, do not play music
+    default: []

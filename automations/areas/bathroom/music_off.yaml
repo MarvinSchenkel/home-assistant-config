@@ -11,16 +11,16 @@ trigger:
     event_type: automation_reloaded
   - platform: state
     entity_id: binary_sensor.presence_bathroom
-    to: 'off'
+    to: "off"
     for:
       seconds: 75
 
 condition:
   - condition: state
     entity_id: binary_sensor.presence_bathroom
-    state: 'off'
+    state: "off"
     for:
-      seconds: 75 
+      seconds: 75
   # Only disable if it is playing by its own, since the blueprint takes care of grouped sonos
   - "{{ state_attr('media_player.sonos_bathroom', 'sonos_group') | length == 1 }}"
 
