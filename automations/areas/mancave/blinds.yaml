@@ -19,6 +19,7 @@ trigger:
       - binary_sensor.sun_should_close_south_blinds
       - media_player.mancave_tv
       - input_boolean.setting_manual_blinds
+      - sensor.marvin_work_status
   # Sun
   - platform: numeric_state
     entity_id:
@@ -33,7 +34,7 @@ condition:
 
 action:
   - choose:
-      # Fully closed
+      # TV is on or sun is hot -> Fully closed
       - conditions:
           - condition: or
             conditions:
@@ -50,7 +51,7 @@ action:
             target:
               entity_id: scene.mancave_cover_closed
 
-      # Half closed
+      # Sun is nearly down or I am working -> Half closed
       - conditions:
           - condition: or
             conditions:
@@ -58,12 +59,17 @@ action:
                 entity_id:
                   - sensor.sun_elevation
                 below: 1.0
+              - condition: state
+                entity_id:
+                  - sensor.marvin_work_status
+                state: "Aan het werk"
+
         sequence:
           - service: scene.turn_on
             target:
               entity_id: scene.mancave_cover_halfclosed
 
-    # Half open
+    # Otherwise -> Half open
     default:
       - service: scene.turn_on
         target:

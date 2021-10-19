@@ -1,0 +1,45 @@
+---
+alias: areas_mancave_lights
+description: Turns the mancave lights on when motion has been detected
+mode: queued
+id: e4c284f9-2cd3-40d1-adac-e20a66eb12b9
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id: binary_sensor.presence_mancave
+    to: "on"
+  - platform: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      seconds: 120
+  - platform: state
+    entity_id:
+      - binary_sensor.mancave_is_dark
+
+condition: []
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.presence_mancave
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.mancave_is_dark
+            state: "on"
+
+        sequence:
+          - service: light.turn_on
+            data:
+              entity_id: light.mancave
+
+    default:
+      - service: light.turn_off
+        data:
+          entity_id: light.mancave
+          transition: 5
