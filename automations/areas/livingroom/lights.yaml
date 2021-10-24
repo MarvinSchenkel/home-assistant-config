@@ -15,12 +15,32 @@ trigger:
       - binary_sensor.livingroom_is_dark
   - platform: state
     entity_id:
-      - binary_sensor.everybody_asleep
       - binary_sensor.someone_just_awake
       - binary_sensor.someone_just_home
       - binary_sensor.everyone_left_home
     from: "off"
     to: "on"
+  - platform: state
+    entity_id:
+      - binary_sensor.everybody_asleep
+    from: "off"
+    to: "on"
+    id: "everyone_asleep"
+  - platform: state
+    entity_id:
+      - light.fibaro_livingroom
+      - light.fibaro_kitchen
+      - light.dinner
+    id: "lights"
+    to: "on"
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: scene
+      service: turn_on
+      service_data:
+        entity_id: scene.livingroom_lights_normal
+    id: "scene_normal"
   # - platform: state
   #   entity_id: media_player.apple_tv
   #   to:
@@ -43,6 +63,64 @@ condition:
 
 action:
   - choose:
+      - alias: "Set lights as manually controlled when someone changes them"
+        conditions:
+          - alias: "Lights have changed"
+            condition: trigger
+            id: "lights"
+          - alias: "It was changed by a user"
+            condition: template
+            value_template: "{{ trigger.to_state.context.user_id != None }}"
+
+        sequence:
+          - alias: "Set lights downstairs as manually controlled"
+            service: adaptive_lighting.set_manual_control
+            data:
+              entity_id:
+                - switch.adaptive_lighting_kitchen
+                - switch.adaptive_lighting_dinner
+                - switch.adaptive_lighting_living_room
+
+      - alias: "Turn the light off when we go to sleep, even if it is manually controlled"
+        conditions:
+          - alias: "Everyone has gone to sleep"
+            condition: trigger
+            id: "everyone_asleep"
+
+        sequence:
+          - &turn_off
+            alias: "Turn the lights off"
+            service: light.turn_off
+            data:
+              entity_id: light.livingroom
+              transition: 5
+
+      - alias: "Reset manual control when the normal scene is activated"
+        conditions:
+          - alias: "Scene normal is activated"
+            condition: trigger
+            id: "scene_normal"
+
+        sequence:
+          - alias: "Set lights downstairs as not-manually controlled"
+            service: adaptive_lighting.set_manual_control
+            data:
+              entity_id:
+                - switch.adaptive_lighting_kitchen
+                - switch.adaptive_lighting_dinner
+                - switch.adaptive_lighting_living_room
+              manual_control: false
+
+      - alias: "Stop automating the lights if any of the lights are manually controlled"
+        conditions:
+          - condition: or
+            conditions:
+              - "{{ state_attr('switch.adaptive_lighting_dinner', 'manual_control') | length > 0 }}"
+              - "{{ state_attr('switch.adaptive_lighting_kitchen', 'manual_control') | length > 0 }}"
+              - "{{ state_attr('switch.adaptive_lighting_living_room', 'manual_control') | length > 0 }}"
+
+        sequence: []
+
       - conditions:
           - condition: state
             entity_id: binary_sensor.livingroom_is_dark
@@ -101,8 +179,4 @@ action:
               transition: 4
 
     default:
-      - service: light.turn_off
-        entity_id:
-          - light.fibaro_kitchen
-          - light.fibaro_livingroom
-          - light.dinner
+      - *turn_off

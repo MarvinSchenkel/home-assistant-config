@@ -1,6 +1,21 @@
 ---
 alias: areas_master_bedroom_lights
-description: Controls the lights in the master bedroom
+description: >-
+  Controls the lights in the master bedroom.
+
+  - By default, the lights adjust to the sun by using the adaptive_lighting component
+  and turn on/off based on presence in the bedroom, only if it's dark.
+
+  - When I get in bed after 9:30pm, the ceiling light turns off and the bedside table lights
+    dim, setting a nice scene for going to sleep.
+
+  - Whenever we go to sleep, the lights stay off
+
+  - We can still turn the bedside table lights on/off, even when we're in sleep mode
+
+  - Manual control is used to disable automation when we override the default behaviour
+    This is automatically reset by the adapative_lights component when the light turns off
+
 mode: queued
 id: e1d01b47-8989-4d64-b7c1-c1f069f622f5
 
@@ -12,8 +27,12 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.presence_master_bedroom
+    to: "on"
+  - platform: state
+    entity_id:
       - binary_sensor.someone_asleep
     to: "on"
+    id: "someone_asleep"
   - platform: state
     entity_id: binary_sensor.presence_master_bedroom
     to: "off"
@@ -34,6 +53,33 @@ trigger:
     to: "off"
     for:
       seconds: 20
+  - platform: event
+    id: "button_marvin_single"
+    event_type: "zha_event"
+    event_data:
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
+      command: "single"
+  - platform: state
+    entity_id:
+      - light.master_bedroom_left
+    id: "master_bedroom_left"
+    to: "on"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      command: "single"
+    id: "button_laura_single"
+  - platform: state
+    entity_id:
+      - light.master_bedroom_right
+    id: "master_bedroom_right"
+    to: "on"
+  - platform: state
+    entity_id:
+      - light.master_bedroom_ceiling
+    id: "master_bedroom_ceiling"
+    to: "on"
 
 condition:
   - condition: state
@@ -42,7 +88,119 @@ condition:
 
 action:
   - choose:
-      - conditions:
+      - alias: "When I click the button when I am already sleeping"
+        conditions:
+          - condition: trigger
+            id: "button_marvin_single"
+          - condition: state
+            entity_id:
+              - input_select.marvin_sleep_status_dropdown
+            state: "Slaapt"
+            for:
+              seconds: 2
+
+        sequence:
+          - &bedside_left_manual
+            alias: "Set bedside left as manually controlled"
+            service: adaptive_lighting.set_manual_control
+            data:
+              entity_id: switch.adaptive_lighting_master_bedroom_bedsidetables
+              lights:
+                - light.master_bedroom_left
+          - alias: "Toggle the light"
+            service: light.toggle
+            data:
+              entity_id: light.master_bedroom_left
+              transition: 2
+
+      - alias: "Set master_bedroom_left as manually controlled when changed by someone manually"
+        conditions:
+          - alias: "Bedside left has changed"
+            condition: trigger
+            id: "master_bedroom_left"
+          - &changed_by_user
+            alias: "It was changed by a user"
+            condition: template
+            value_template: "{{ trigger.to_state.context.user_id != None }}"
+
+        sequence:
+          - *bedside_left_manual
+
+      - alias: "When Laura clicks the button when she is already sleeping"
+        conditions:
+          - condition: trigger
+            id: "button_laura_single"
+          - condition: state
+            entity_id:
+              - input_select.laura_sleep_status_dropdown
+            state: "Slaapt"
+            for:
+              seconds: 2
+
+        sequence:
+          - &bedside_right_manual
+            alias: "Set bedside right as manually controlled"
+            service: adaptive_lighting.set_manual_control
+            data:
+              entity_id: switch.adaptive_lighting_master_bedroom_bedsidetables
+              lights:
+                - light.master_bedroom_right
+          - alias: "Toggle the light"
+            service: light.toggle
+            data:
+              entity_id: light.master_bedroom_right
+              transition: 2
+
+      - alias: "Set master_bedroom_right as manually controlled when changed by someone manually"
+        conditions:
+          - alias: "Bedside right has changed"
+            condition: trigger
+            id: "master_bedroom_right"
+          - *changed_by_user
+
+        sequence:
+          - *bedside_right_manual
+
+      - alias: "Set ceiling light to manually controlled if changed by a user"
+        conditions:
+          - alias: "Ceiling light has changed"
+            condition: trigger
+            id: "master_bedroom_ceiling"
+          - *changed_by_user
+
+        sequence:
+          alias: "Set ceiling light as manually controlled"
+          service: adaptive_lighting.set_manual_control
+          data:
+            entity_id: switch.adaptive_lighting_master_bedroom
+            lights:
+              - light.master_bedroom_ceiling
+
+      - alias: "Turn the light off when we go to sleep, even if it is manually controlled"
+        conditions:
+          - alias: "Someone goes to sleep"
+            condition: trigger
+            id: "someone_asleep"
+
+        sequence:
+          - &turn_off
+            alias: "Turn the lights off"
+            service: light.turn_off
+            data:
+              entity_id: light.master_bedroom_lights
+              transition: 5
+
+      - alias: "Stop automating lights when some of the lights are manually controlled"
+        conditions:
+          - condition: or
+            conditions:
+              - "{{ state_attr('switch.adaptive_lighting_master_bedroom_bedsidetables', 'manual_control') | length > 0 }}"
+              - "{{ state_attr('switch.adaptive_lighting_master_bedroom', 'manual_control') | length > 0 }}"
+
+        sequence: []
+
+      - alias: "Check if we need to automate the lights based on sleep status, presence and luminance"
+        conditions:
           - condition: state
             entity_id:
               - binary_sensor.someone_asleep
@@ -67,26 +225,19 @@ action:
                   - condition: time
                     after: "21:30:00"
                 sequence:
-                  - service: light.turn_on
+                  - service: scene.turn_on
+                    target:
+                      entity_id: scene.masterbedroom_lights_bedtime
                     data:
-                      entity_id: light.master_bedroom_bedsidetables
-                      transition: 3
-                      brightness_pct: 15
-                  - service: light.turn_off
-                    data:
-                      entity_id: light.master_bedroom_ceiling
                       transition: 3
 
             default:
               - alias: "Just turn on the lights"
-                service: light.turn_on
+                service: scene.turn_on
+                target:
+                  entity_id: scene.masterbedroom_lights_normal
                 data:
-                  entity_id: light.master_bedroom_lights
                   transition: 1
 
     default:
-      - alias: "Turn off the lights otherwise"
-        service: light.turn_off
-        data:
-          entity_id: light.master_bedroom_lights
-          transition: 5
+      - *turn_off
