@@ -1,7 +1,0 @@
-# https://dwainscheeren.github.io/lovelace-dwains-theme/configuration/house_information.html
-
-house_information:
-  favorites:
-    - entity: fan.itho
-      icon_on: mdi:fan
-      icon_off: mdi:fan-off

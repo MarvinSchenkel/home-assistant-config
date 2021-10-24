@@ -135,10 +135,7 @@ browser_mod:
             height: 2em
             decimal: 0
             unit_of_measurement: "%"
-            positions: &bar_card_positions
-              icon: outside
-              indicator: "off"
-              name: outside
+            positions: *bar_card_positions
             severity:
               - color: "#6d2525"
                 from: 0
