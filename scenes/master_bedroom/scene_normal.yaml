@@ -1,9 +1,9 @@
 ---
 # Normal scene is managed by circadian lighting
 # So no need to specify brightness and mireds settings
-name: livingroom_lights_normal
-id: 67d3c099-22bf-46be-88d3-0028b7b1dba5
+name: masterbedroom_lights_normal
+id: 0154e258-70c6-48f4-9ceb-ef77a26b0c70
 icon: mdi:lightbulb
 entities:
-  group.living_room_lights:
+  light.master_bedroom_lights:
     state: "on"

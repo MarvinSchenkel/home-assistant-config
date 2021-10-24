@@ -1,5 +1,7 @@
 ---
 name: livingroom_lights_movie
+id: a8c77dcb-abb9-4f3a-b3b3-2ee47c2be7b1
+icon: mdi:lightbulb
 entities:
   group.living_room_lights:
     state: "off"
