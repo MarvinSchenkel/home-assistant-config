@@ -7,7 +7,9 @@
 ![GitHub Forks][forks-shield]
 
 Hey there 👋!
-This is my personal home assistant configuration. My modular setup is based on Frenck's configuration found [here](https://github.com/frenck/home-assistant-config). Feel free to have a look at my automations and draw some inspiration from them. Happy home automating :house:! 
+This is my personal home assistant configuration. My modular setup is based on Frenck's configuration found [here](https://github.com/frenck/home-assistant-config). The aim of my setup is to automate as many things as possible, reducing the need for a mobile app to control my house. However, it does include a beautiful dashboard / mobile app (inspired by [Mattias](https://github.com/matt8707/hass-config)) for those few cases where I want to take control. 
+
+Feel free to have a look at my automations and draw some inspiration from them. Happy home automating :house:! 
 
 ## Features
 Some of the highlights of my setup include:
