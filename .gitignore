@@ -8,8 +8,8 @@ home-assistant.log*
 ._*
 __pycache__
 *.sqlite
-*.png
-*.jpg
+www/*.png
+www/*.jpg
 
 # Ignore folders
 .storage
@@ -24,6 +24,7 @@ tts
 scripts/alarm
 automations/system/notifications/private
 www/fonts
+www/upcoming-media-card-images
 
 # Ignore specific files
 zwcfg_*
