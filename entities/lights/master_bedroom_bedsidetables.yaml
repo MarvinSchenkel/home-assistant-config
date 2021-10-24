@@ -1,0 +1,7 @@
+---
+platform: group
+name: master_bedroom_bedsidetables
+unique_id: 4ad18c1c-fba9-448b-aa8f-367f6dc02b6b
+entities:
+  - light.master_bedroom_left
+  - light.master_bedroom_right

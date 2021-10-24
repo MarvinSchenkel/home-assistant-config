@@ -1,0 +1,8 @@
+---
+platform: group
+name: master_bedroom_lights
+unique_id: 12f0ac87-000d-46fc-995a-919a2d32eaa0
+entities:
+  - light.master_bedroom_left
+  - light.master_bedroom_right
+  - light.master_bedroom_ceiling

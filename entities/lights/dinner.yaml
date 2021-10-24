@@ -1,0 +1,7 @@
+---
+platform: group
+name: dinner
+unique_id: 6f6f11da-8eba-4333-ba10-a46f7b8be5f4
+entities:
+  - light.dinner_wall
+  - light.dinner_door

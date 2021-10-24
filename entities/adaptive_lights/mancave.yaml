@@ -1,0 +1,6 @@
+---
+name: mancave
+lights:
+  - light.mancave
+detect_non_ha_changes: true
+take_over_control: true
