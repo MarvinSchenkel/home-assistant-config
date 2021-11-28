@@ -1,11 +1,15 @@
 # A binary indicator tracking whether it is light or dark in the room
 binary_sensor:
   - name: master_bedroom_is_dark
+    unique_id: c0548756-835b-4719-8539-4fbab21209bb
     state: >
       {%-
         if (
           states("sensor.pir_master_bedroom_luminance") | int > 30
           and is_state("light.master_bedroom_ceiling", "off")
+        )
+        or (
+          states("sensor.pir_master_bedroom_luminance") | int > 60
         )
       -%}
         off

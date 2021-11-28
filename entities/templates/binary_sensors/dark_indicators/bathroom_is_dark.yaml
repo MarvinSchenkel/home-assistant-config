@@ -1,6 +1,7 @@
 # A binary indicator tracking whether it is light or dark in the room
 binary_sensor:
   - name: bathroom_is_dark
+    unique_id: 1cf2b12e-9202-410e-bcc9-9ff2cf812f5a
     state: >
       {%-
         if states("sensor.pir_bathroom_luminance") | int > 20

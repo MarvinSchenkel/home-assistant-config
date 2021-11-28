@@ -1,5 +1,0 @@
-living_room_lights:
-  entities:
-    - light.fibaro_kitchen
-    - light.dinner
-    - light.fibaro_livingroom

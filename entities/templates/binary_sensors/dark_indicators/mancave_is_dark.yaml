@@ -1,6 +1,7 @@
 # A binary indicator tracking whether it is light or dark in the room
 binary_sensor:
   - name: mancave_is_dark
+    unique_id: bbdb9631-14dd-4337-8c15-42db62fc50f2
     state: >
       {%-
         if (

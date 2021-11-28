@@ -2,7 +2,8 @@
 # A binary sensor based on presence
 # indicating whether someone just got home
 binary_sensor:
-  name: someone_just_home
+  name: house_mode_someone_just_home
+  unique_id: ea97e092-6aa6-40a9-8875-58c3e7b74fc2
   state: >
     {% set noOfPeople = 0 %}
     {% set homeValues = ["Net thuis"] %}

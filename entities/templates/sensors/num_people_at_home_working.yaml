@@ -1,0 +1,19 @@
+---
+# Keep track of how many people are working at home
+# so we know when everyone at home is working
+sensor:
+  name: num_people_at_home_working
+  unit_of_measurement: "people"
+  state: >-
+    {% set noOfPeople = 0 %}
+    {% set workValues = ["Aan het werk"] %}
+    {% set homeValues = ["Thuis", "Net thuis"] %}
+    {% if states("sensor.marvin_work_status") in workValues
+       and states("input_select.marvin_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {% if states("sensor.laura_work_status") in workValues
+       and states("input_select.laura_status_dropdown") in homeValues %}
+    {% set noOfPeople = noOfPeople + 1 %}
+    {% endif %}
+    {{ noOfPeople }}

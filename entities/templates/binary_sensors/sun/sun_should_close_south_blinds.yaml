@@ -32,6 +32,7 @@ trigger:
 
 binary_sensor:
   - name: sun_should_close_south_blinds
+    unique_id: af5c4e63-42db-4f2b-a774-6ba8a149bb27
     state: >
       {% set hot_last_change = as_timestamp(states.binary_sensor['sun_hot'].last_changed) %}
       {% set hot_change_in_mins = ((as_timestamp(now()) - hot_last_change)) / 60 %}

@@ -1,0 +1,16 @@
+---
+# A binary sensor based on presence
+# indicating whether everyone home is also working
+# we can use this to for example start the vacuum or turn off the lights in the living room
+binary_sensor:
+  name: house_mode_everyone_at_home_working
+  unique_id: 54f78e3c-1ee2-4f04-be37-682a318ad1c4
+  state: >
+    {%-
+      if states("sensor.num_people_at_home_working") | int == states("sensor.num_people_at_home") | int 
+      and states("sensor.num_people_at_home") | int > 0
+    -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

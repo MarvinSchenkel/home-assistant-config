@@ -1,3 +1,0 @@
-master_bedroom_lights:
-  entities:
-    - light.fibaro_master_bedroom

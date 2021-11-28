@@ -2,7 +2,8 @@
 # A binary sensor based on presence
 # indicating whether someone is just awake
 binary_sensor:
-  name: someone_just_awake
+  name: house_mode_someone_just_awake
+  unique_id: 86bcb5cc-6667-4f9f-be9e-6eaca471c524
   state: >
     {% set noOfPeople = 0 %}
     {% set awakeValues = ["Net wakker"] %}

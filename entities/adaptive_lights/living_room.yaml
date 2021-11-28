@@ -1,8 +1,0 @@
----
-name: living_room
-lights:
-  - light.fibaro_livingroom
-detect_non_ha_changes: true
-take_over_control: true
-max_brightness: 70
-min_brightness: 25

@@ -4,3 +4,4 @@ name: livingroom
 entities:
   - light.fibaro_livingroom
   - light.dinner
+  - light.corner_couch

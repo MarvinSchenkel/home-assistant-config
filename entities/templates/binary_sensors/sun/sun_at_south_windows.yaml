@@ -4,11 +4,12 @@
 # for automating our blinds
 binary_sensor:
   name: sun_at_south_windows
+  unique_id: c06b4166-47ef-4f27-9c0d-8a30f10c2b80
   state: >
     {%-
       if states("sensor.sun_azimuth") | int >= 86
       and states("sensor.sun_azimuth") | int <= 260
-      and states("sensor.sun_elevation") | int >= 20
+      and states("sensor.sun_elevation") | int >= 1
     -%}
       on
     {%- else -%}

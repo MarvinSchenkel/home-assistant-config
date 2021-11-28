@@ -1,7 +1,0 @@
----
-name: hall_downstairs
-lights:
-  - light.fibaro_hall_downstairs
-detect_non_ha_changes: true
-take_over_control: true
-min_brightness: 40
