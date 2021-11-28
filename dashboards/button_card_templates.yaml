@@ -822,6 +822,24 @@ conditional_media:
                 '#9da0a2' : 
                 'rgba(255, 255, 255, 0.8)';
             ]]]
+  extra_styles: |
+    #name, #state {
+      font-size: 1.2vw;
+      letter-spacing: 0.05vw;
+    }
+sonos_media:
+  template:
+    - conditional_media
+  name: >
+    [[[
+      if (entity.attributes.media_title === 'Nothing playing' || entity.attributes.media_title === 'No title' && variables.state === 'paused') {
+        return 'Niks aan het afspelen';
+      }
+      return entity.attributes.media_artist
+    ]]]
+  styles:
+    name:
+      - font-weight: 150
 
 #################################################
 #                                               #
@@ -1053,6 +1071,18 @@ icon_luxaflex:
           <svg viewBox="0 0 40 40">
             <path d="M3 2h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1v7a1 1 0 0 1-1 1h-6v2.17c1.17.41 2 1.52 2 2.83a3 3 0 0 1-3 3a3 3 0 0 1-3-3c0-1.31.83-2.42 2-2.83V14H5a1 1 0 0 1-1-1V6H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1m9 16a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1z" fill="${shade_color}" />
           </svg>  
+        `;
+      ]]]
+
+icon_showerhead:
+  custom_fields:
+    icon: >
+      [[[
+        const icon_color = (entity === undefined || entity.state == 'off') ? 'var(--state-icon-color)' : 'var(--state-icon-active-color)';
+        return `
+          <svg viewBox="0 0 40 40">
+            <path d="M20,20A1,1 0 0,1 21,21A1,1 0 0,1 20,22A1,1 0 0,1 19,21A1,1 0 0,1 20,20M16,20A1,1 0 0,1 17,21A1,1 0 0,1 16,22A1,1 0 0,1 15,21A1,1 0 0,1 16,20M12,20A1,1 0 0,1 13,21A1,1 0 0,1 12,22A1,1 0 0,1 11,21A1,1 0 0,1 12,20M8,20A1,1 0 0,1 9,21A1,1 0 0,1 8,22A1,1 0 0,1 7,21A1,1 0 0,1 8,20M4,20A1,1 0 0,1 5,21A1,1 0 0,1 4,22A1,1 0 0,1 3,21A1,1 0 0,1 4,20M6,17A1,1 0 0,1 7,18A1,1 0 0,1 6,19H6A1,1 0 0,1 5,18A1,1 0 0,1 6,17H6M10,17A1,1 0 0,1 11,18A1,1 0 0,1 10,19A1,1 0 0,1 9,18A1,1 0 0,1 10,17M14,17A1,1 0 0,1 15,18A1,1 0 0,1 14,19A1,1 0 0,1 13,18A1,1 0 0,1 14,17M18,17A1,1 0 0,1 19,18A1,1 0 0,1 18,19A1,1 0 0,1 17,18A1,1 0 0,1 18,17M8,14A1,1 0 0,1 9,15A1,1 0 0,1 8,16A1,1 0 0,1 7,15A1,1 0 0,1 8,14M12,14A1,1 0 0,1 13,15A1,1 0 0,1 12,16A1,1 0 0,1 11,15A1,1 0 0,1 12,14M16,14A1,1 0 0,1 17,15A1,1 0 0,1 16,16A1,1 0 0,1 15,15A1,1 0 0,1 16,14M19,12H5V10H19V12M17.92,9H6.08C6.5,6.5 8.5,4.5 11,4.08V2H13V4.08C15.5,4.5 17.5,6.5 17.92,9Z"fill="${icon_color}"  />
+          </svg>
         `;
       ]]]
 

@@ -1,7 +1,7 @@
 action: fire-dom-event
 browser_mod:
   command: popup
-  title: Informatie
+  title: Debug
   style:
     .: |
       :host .content {
@@ -43,27 +43,27 @@ browser_mod:
       grid-template-columns: repeat(3, 1fr)
       grid-template-rows: 1fr
       grid-template-areas: |
-        "woonkamer slaapkamer instellingen"
+        "huismodi lightbeweging overig"
       mediaquery:
         #phone
         "(max-width: 800px)":
           grid-template-columns: 1fr
           grid-template-rows: repeat(3, 1fr)
           grid-template-areas: |
-            "woonkamer"
-            "slaapkamer"
-            "instellingen"
+            "huismodi"
+            "lightbeweging"
+            "overig"
     cards:
       #################################################
       #                                               #
-      #                Woonkamer                      #
+      #                huismodi                      #
       #                                               #
       #################################################
 
       - type: entities
         view_layout:
-          grid-area: woonkamer
-        title: Woonkamer
+          grid-area: huismodi
+        title: Huismodi
         show_header_toggle: false
         card_mod:
           class: header
@@ -72,106 +72,69 @@ browser_mod:
               margin: 0px !important;
             }
         entities:
-          - entity: input_boolean.livingroom_manual_control
+          - entity: binary_sensor.house_mode_someone_just_awake
+          - entity: binary_sensor.house_mode_someone_awake
+          - entity: binary_sensor.house_mode_someone_asleep
+          - entity: binary_sensor.house_mode_everyone_asleep
+          - entity: binary_sensor.house_mode_someone_just_home
+          - entity: binary_sensor.house_mode_everyone_at_home_working
 
+      #################################################
+      #                                               #
+      #                lightbeweging                  #
+      #                                               #
+      #################################################
+      - type: entities
+        view_layout:
+          grid-area: lightbeweging
+        title: Beweging en licht
+        show_header_toggle: false
+        card_mod:
+          class: header
+          style: |
+            ha-card {
+              margin: 0px !important;
+            }
+        entities:
           - entity: binary_sensor.pir_kitchen
+          - entity: binary_sensor.pir_hall_downstairs
+          - entity: binary_sensor.pir_wc
+          - entity: binary_sensor.pir_hall_upstairs
+          - entity: binary_sensor.pir_master_bedroom
+          - entity: binary_sensor.pir_bathroom
+          - entity: binary_sensor.pir_third_floor_stairs
+          - entity: binary_sensor.pir_mancave
 
-          - entity: sensor.pir_kitchen_luminance
+          - entity: binary_sensor.livingroom_is_dark
+          - entity: binary_sensor.hall_is_dark
+          - entity: binary_sensor.hall_upstairs_is_dark
+          - entity: binary_sensor.master_bedroom_is_dark
+          - entity: binary_sensor.bathroom_is_dark
+          - entity: binary_sensor.mancave_is_dark
+
+      #################################################
+      #                                               #
+      #                overig                      #
+      #                                               #
+      #################################################
+      - type: entities
+        view_layout:
+          grid-area: overig
+        title: Overig
+        show_header_toggle: false
+        card_mod:
+          class: header
+          style: |
+            ha-card {
+              margin: 0px !important;
+            }
+        entities:
+          - entity: binary_sensor.sun_at_south_windows
+          - entity: binary_sensor.sun_hot
+          - entity: binary_sensor.sun_should_close_south_blinds
 
           - entity: sensor.pir_kitchen_temperature
-
-          - type: custom:bar-card
-            width: 55%
-            height: 2em
-            decimal: 0
-            unit_of_measurement: "%"
-            positions: &bar_card_positions
-              icon: outside
-              indicator: "off"
-              name: outside
-            severity:
-              - color: "#6d2525"
-                from: 0
-                to: 89
-              - color: "#303435"
-                from: 90
-                to: 100
-            entity_row: true
-            entities:
-              - entity: sensor.pir_kitchen_battery_level
-                icon: mdi:battery
-
-          - entity: sensor.gardendoor_cover_state
-            name: Tuindeur
-            icon: "mdi:blinds"
-
-          - entity: sensor.livingroom_cover_state
-            name: Woonkamer
-            icon: "mdi:blinds"
-
-      #################################################
-      #                                               #
-      #                Slaapkamer                      #
-      #                                               #
-      #################################################
-      - type: entities
-        view_layout:
-          grid-area: slaapkamer
-        title: Slaapkamer
-        show_header_toggle: false
-        card_mod:
-          class: header
-          style: |
-            ha-card {
-              margin: 0px !important;
-            }
-        entities:
-          - entity: input_boolean.masterbedroom_manual_control
-
-          - entity: binary_sensor.pir_master_bedroom
-
-          - entity: sensor.pir_master_bedroom_luminance
-
           - entity: sensor.pir_master_bedroom_temperature
-
-          - type: custom:bar-card
-            width: 55%
-            height: 2em
-            decimal: 0
-            unit_of_measurement: "%"
-            positions: *bar_card_positions
-            severity:
-              - color: "#6d2525"
-                from: 0
-                to: 89
-              - color: "#303435"
-                from: 90
-                to: 100
-            entity_row: true
-            entities:
-              - entity: sensor.pir_master_bedroom_battery_level
-                icon: mdi:battery
-
-          - entity: sensor.master_bedroom_cover_state
-            name: Slaapkamer
-            icon: "mdi:blinds"
-
-      #################################################
-      #                                               #
-      #                Instellingen                      #
-      #                                               #
-      #################################################
-      - type: entities
-        view_layout:
-          grid-area: instellingen
-        title: Instellingen
-        show_header_toggle: false
-        card_mod:
-          class: header
-          style: |
-            ha-card {
-              margin: 0px !important;
-            }
-        entities:
-          - entity: input_boolean.setting_manual_blinds
-          - entity: input_boolean.setting_manual_lights
+          - entity: sensor.pir_hall_downstairs_temperature
+          - entity: sensor.pir_hall_upstairs_temperature
+          - entity: sensor.pir_bathroom_temperature

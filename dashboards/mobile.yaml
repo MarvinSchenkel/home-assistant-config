@@ -69,6 +69,12 @@ views:
                 hold_action:
                   action: none
 
+              - type: button
+                icon: mdi:bug
+                tap_action: !include popup/sidebar_debug.yaml
+                hold_action:
+                  action: none
+
       #################################################
       #                                               #
       #                  LIVING ROOM                  #
@@ -137,6 +143,19 @@ views:
                     template:
                       - shade
                       - icon_luxaflex
+
+                  - type: custom:button-card
+                    icon: mdi:lightbulb
+                    entity: input_select.livingroom_current_scene
+                    name: Verlichting
+                    variables:
+                      shade_scenes:
+                        - scene.livingroom_lights_normal
+                        - scene.livingroom_lights_evening
+                        - scene.livingroom_lights_movie
+                    template:
+                      - shade
+                      - icon_spot
 
               - type: grid
                 columns: 2
@@ -221,6 +240,13 @@ views:
         columns: 2
         cards:
           - type: custom:button-card
+            entity: binary_sensor.bathroom_flood
+            name: Douche
+            template:
+              - base
+              - icon_showerhead
+
+          - type: custom:button-card
             entity: sensor.pir_bathroom_humidity
             name: Vochtigheid
             variables:
@@ -287,7 +313,7 @@ views:
                       type: custom:button-card
                       entity: media_player.sonos_livingroom
                       template:
-                        - conditional_media
+                        - sonos_media
                         - icon_sonos
 
               - type: grid

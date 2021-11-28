@@ -60,10 +60,13 @@ browser_mod:
             icon: custom:iphone-modern
             style: *style
 
-          - entity: device_tracker.unifi_marvin_worklaptop
+          - entity: sensor.marvin_work_status
             name: Aan het werk?
             icon: mdi:briefcase
-            style: *style
+            style: |
+              state-badge {
+                color: {{ '#3182b7' if is_state(config.entity, 'Aan het werk') else '#3c3f3f' }};
+              }
 
       - type: entities
         entities:
