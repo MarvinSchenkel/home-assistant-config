@@ -37,7 +37,13 @@ TODO: Convice the wife we actually need a wall-mounted tablet.
 TODO
 
 ## My setup
-TODO
+### Infrastructure
+| Product | Description |
+| -- | -- |
+| Intel NUC i7 kit NUC10i7FNH | I am running HassOS on an Intel NUC using Proxmox |
+| Raspberry Pi 3B+ and Aeotec Z-Wave stick | This is my Z-Wave component that runs Zwave-JS and connects to Home Assistant using websockets |
+| Sonoff Zigbee Bridge | I flashed the Zigbee bridge with [Tasmota](https://www.digiblur.com/2020/07/how-to-use-sonoff-zigbee-bridge-with.html) and use it as a Zigbee bridge. |
+| Ubiquity Unifi | I used several Unifi products (router, switches and AP's) to built my home network. I [configured several VLANs](https://www.youtube.com/watch?v=vz3u6E3Fxi8) to separate our private devices from IoT devices for security purposes |
 
 [commits-shield]: https://img.shields.io/github/commit-activity/y/MarvinSchenkel/home-assistant-config.svg
 [commits]: https://github.com/MarvinSchenkel/home-assistant-config/commits/master
