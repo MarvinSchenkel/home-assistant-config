@@ -1,5 +1,5 @@
 ---
-name: masterbedroom_lights_bedtime
+name: masterbedroom_lights_dim
 id: 0a9fe673-0b57-4918-b8b1-8182d041ef39
 icon: mdi:lightbulb
 entities:

@@ -1,9 +1,14 @@
 ---
-# Normal scene is managed by circadian lighting
-# So no need to specify brightness and mireds settings
+# Normal scene for when it gets dark
 name: livingroom_lights_normal
 id: 67d3c099-22bf-46be-88d3-0028b7b1dba5
 icon: mdi:lightbulb
 entities:
-  group.living_room_lights:
+  light.livingroom:
     state: "on"
+    brightness_pct: 70
+    color_mode: color_temp
+    color_temp: 375
+  light.kitchen:
+    state: "on"
+    brightness_pct: 80

@@ -1,0 +1,8 @@
+---
+name: hallupstairs_lights_normal
+id: c999b7ee-770d-4d46-aa16-80cb64c76690
+icon: mdi:lightbulb
+entities:
+  light.fibaro_hall_upstairs:
+    state: "on"
+    brightness_pct: 70

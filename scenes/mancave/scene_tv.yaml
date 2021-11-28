@@ -1,0 +1,8 @@
+---
+name: mancave_lights_tv
+id: 6648589d-4e5f-48b5-b6f0-530f368b75a4
+icon: mdi:lightbulb
+entities:
+  light.mancave:
+    state: "on"
+    brightness_pct: 25

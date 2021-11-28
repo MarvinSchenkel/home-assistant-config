@@ -1,0 +1,8 @@
+---
+name: halldownstairs_lights_bright
+id: 3b1d0024-ddfe-42c6-a02a-f6662d849439
+icon: mdi:lightbulb
+entities:
+  light.fibaro_hall_downstairs:
+    state: "on"
+    brightness_pct: 100

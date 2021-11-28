@@ -1,0 +1,10 @@
+---
+name: masterbedroom_lights_evening
+id: 217a9bde-c4b2-47c2-9ff3-c0cee252ef15
+icon: mdi:lightbulb
+entities:
+  light.master_bedroom_lights:
+    state: "on"
+    brightness_pct: 50
+    color_mode: color_temp
+    color_temp: 375
