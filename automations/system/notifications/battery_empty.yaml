@@ -20,6 +20,7 @@ trigger:
       - sensor.luxaflex_garden_door_battery_level
       - sensor.flood_sensor_battery_level
       - sensor.small_bedroom_battery_level
+      - sensor.mancave_door_battery_level
     below: 1
     id: "battery_dead"
   - platform: numeric_state
@@ -37,6 +38,7 @@ trigger:
       - sensor.luxaflex_garden_door_battery_level
       - sensor.flood_sensor_battery_level
       - sensor.small_bedroom_battery_level
+      - sensor.mancave_door_battery_level
     below: 20
     above: 0
     id: "battery_low"

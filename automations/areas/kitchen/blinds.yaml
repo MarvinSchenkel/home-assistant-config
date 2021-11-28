@@ -16,8 +16,8 @@ trigger:
   - platform: state
     entity_id:
       # Whether we just woke up / gone to sleep
-      - binary_sensor.everybody_asleep
-      - binary_sensor.someone_awake
+      - binary_sensor.house_mode_everyone_asleep
+      - binary_sensor.house_mode_someone_awake
     from: "off"
     to: "on"
   - platform: state
@@ -44,18 +44,20 @@ condition:
 
 action:
   - choose:
+      # Disable fully closed since the wife wants some decoration in the
+      # window sill.
       # Fully closed
-      - conditions:
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id: binary_sensor.everybody_asleep
-                state:
-                  - "on"
-        sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.kitchen_cover_closed
+      # - conditions:
+      #     - condition: or
+      #       conditions:
+      #         - condition: state
+      #           entity_id: binary_sensor.house_mode_everyone_asleep
+      #           state:
+      #             - "on"
+      #   sequence:
+      #     - service: scene.turn_on
+      #       target:
+      #         entity_id: scene.kitchen_cover_closed
 
       # Half closed
       - conditions:

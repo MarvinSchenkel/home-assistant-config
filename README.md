@@ -27,7 +27,7 @@ Some of the highlights of my setup include:
 
   This setup is inspired by [Phil Hawthorne's excellent blog](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). I use these different states to trigger various automations, for example [start a morning playlist](./automations/areas/bathroom/play_music.yaml) whenever we have just woken up.
 - 📢 **Notification system**: I use a [custom script](./scripts/send_notification.yaml) that determines whether to send us a push notification, a pop-up on the TV, an announcement on our speakers or a combination of the three.
-- 💡 **Advanced lighting**: My lights automatically adjust to the sun's state by using the [adaptive_lighting](https://github.com/basnijholt/adaptive-lighting) component. I combine this with advanced presence detection and manual override logic to be able to flexibly control our lights when we want to, but automate them in any other case.
+- 💡 **Advanced lighting**: My lights automatically adjust to the sun's state by using different scenes. I combine this with advanced presence detection and manual override logic to be able to flexibly control our lights when we want to, but automate them in any other case.
 - 📟 **Dashboard**: My dashboard is based on the awesome work of [Mattias](https://github.com/matt8707/hass-config). He built an amazing responsive dashboard that I customized and use as my mobile app. Here's a preview:
 
 ![screenshot](https://raw.githubusercontent.com/MarvinSchenkel/home-assistant-config/master/www/img/dashboard.png)

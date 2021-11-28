@@ -29,15 +29,15 @@ trigger:
   - platform: state
     entity_id:
       # Whether we just woke up / gone to sleep
-      - binary_sensor.everybody_asleep
-      - binary_sensor.someone_awake
+      - binary_sensor.house_mode_everyone_asleep
+      - binary_sensor.house_mode_someone_awake
     from: "off"
     to: "on"
   # Sun
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 1.0
+    below: -1.0
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
@@ -64,7 +64,7 @@ action:
           - condition: or
             conditions:
               - condition: state
-                entity_id: binary_sensor.everybody_asleep
+                entity_id: binary_sensor.house_mode_everyone_asleep
                 state:
                   - "on"
               - condition: state

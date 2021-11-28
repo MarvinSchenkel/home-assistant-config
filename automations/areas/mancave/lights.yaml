@@ -20,26 +20,87 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.mancave_is_dark
+  - platform: state
+    entity_id:
+      - media_player.mancave_tv
+    to: "off"
+    id: "tv_off"
+  - platform: state
+    entity_id:
+      - media_player.mancave_tv
+    to: "on"
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: scene
+      service: turn_on
+      service_data:
+        entity_id: scene.mancave_lights_normal
+    id: "scene_normal"
 
 condition: []
 
 action:
   - choose:
+      - alias: "Disable manual control when normal scene is activated"
+        conditions:
+          - condition: trigger
+            id: "scene_normal"
+        sequence:
+          - service: adaptive_lighting.set_manual_control
+            data:
+              entity_id:
+                - switch.adaptive_lighting_mancave
+              manual_control: false
+
+      - alias: "Stop automating the lights if any of the lights are manually controlled"
+        conditions:
+          - "{{ state_attr('switch.adaptive_lighting_mancave', 'manual_control') | length > 0 }}"
+          - condition: not
+            conditions:
+              - condition: trigger
+                id: "tv_off"
+        sequence: []
+
       - conditions:
-          - condition: state
+          - &presence
+            alias: "Check if someone is in the mancave"
+            condition: state
             entity_id: binary_sensor.presence_mancave
             state: "on"
-          - condition: state
+          - &is_dark
+            alias: "Check if it's dark enough to turn on the light"
+            condition: state
             entity_id: binary_sensor.mancave_is_dark
+            state: "on"
+          - alias: "Activate TV scene of TV is on"
+            condition: state
+            entity_id:
+              - media_player.mancave_tv
             state: "on"
 
         sequence:
-          - service: light.turn_on
+          - alias: "Turn on TV scene"
+            service: scene.turn_on
+            target:
+              entity_id: scene.mancave_lights_tv
             data:
-              entity_id: light.mancave
+              transition: 5
+
+      - conditions:
+          - *presence
+          - *is_dark
+        sequence:
+          - alias: "Turn on normal scene"
+            service: scene.turn_on
+            target:
+              entity_id: scene.mancave_lights_normal
+            data:
+              transition: 1
 
     default:
-      - service: light.turn_off
+      - alias: "Turn lights off"
+        service: light.turn_off
         data:
           entity_id: light.mancave
           transition: 5

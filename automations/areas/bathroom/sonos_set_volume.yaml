@@ -28,7 +28,7 @@ action:
           - condition: or
             conditions:
               - condition: state
-                entity_id: binary_sensor.someone_just_awake
+                entity_id: binary_sensor.house_mode_someone_just_awake
                 state: "on"
         sequence:
           - service: media_player.volume_set

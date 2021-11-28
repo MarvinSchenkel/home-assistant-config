@@ -7,19 +7,41 @@ id: 74e6a9f0-54ad-412c-9d23-1c87a9de1053
 trigger:
   # Laura remote
   - platform: event
+    id: "button_laura"
     event_type: "zha_event"
     event_data:
       device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
       command: "single"
   # Marvin remote
   - platform: event
+    id: "button_marvin"
     event_type: "zha_event"
     event_data:
       device_id: "2a93e9d147b93ca0ec5992d48dde3129"
       command: "single"
 
 action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.laura_sleep_status_dropdown
-      option: "Slaapt"
+  - choose:
+      - alias: "Set Laura 'asleep' when I get press my button because she always forgets"
+        conditions:
+          - condition: trigger
+            id: "button_marvin"
+          - condition: state
+            entity_id:
+              - input_select.laura_status_dropdown
+            state: "Thuis"
+
+        sequence:
+          - &laura_asleep
+            service: input_select.select_option
+            data:
+              entity_id: input_select.laura_sleep_status_dropdown
+              option: "Slaapt"
+
+      - alias: "Set Laura to asleep when she actually does press her button"
+        conditions:
+          - condition: trigger
+            id: "button_laura"
+
+        sequence:
+          - *laura_asleep

@@ -88,11 +88,11 @@ action:
             conditions:
               - condition: state
                 entity_id:
-                  - binary_sensor.someone_just_awake
+                  - binary_sensor.house_mode_someone_just_awake
                 state: "on"
               - condition: state
                 entity_id:
-                  - binary_sensor.someone_asleep
+                  - binary_sensor.house_mode_someone_asleep
                 state: "on"
               - condition: time
                 after: "21:15:00"

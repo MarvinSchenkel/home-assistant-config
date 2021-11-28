@@ -19,7 +19,7 @@ trigger:
       seconds: 120
   - platform: state
     entity_id:
-      - binary_sensor.someone_asleep
+      - binary_sensor.house_mode_someone_asleep
     to: "on"
 
 condition:
@@ -30,20 +30,59 @@ condition:
 action:
   - choose:
       - conditions:
-          - condition: state
+          - &presence
+            condition: state
             entity_id: binary_sensor.presence_hall_upstairs
             state: "on"
-          - condition: state
+          - &dark
+            condition: state
             entity_id: binary_sensor.hall_upstairs_is_dark
             state: "on"
-          - condition: state
-            entity_id: binary_sensor.someone_asleep
+          - &someone_not_asleep
+            condition: state
+            entity_id: binary_sensor.house_mode_someone_asleep
             state: "off"
+          - condition: numeric_state
+            alias: "If the sun has set a fair bit"
+            entity_id:
+              - sensor.sun_elevation
+            below: -3
+          - condition: time
+            alias: "And it is after 7pm"
+            after: "19:00:00"
 
         sequence:
-          - service: light.turn_on
+          - service: scene.turn_on
+            alias: "Turn the hall lights to dim scene"
             data:
-              entity_id: light.fibaro_hall_upstairs
+              entity_id: scene.hallupstairs_lights_dim
+
+      - conditions:
+          - *presence
+          - *dark
+          - *someone_not_asleep
+          - condition: state
+            alias: "If it is dark in the living room, meaning lights are on there"
+            entity_id:
+              - binary_sensor.livingroom_is_dark
+            state: "on"
+
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to normal scene"
+            data:
+              entity_id: scene.hallupstairs_lights_normal
+
+      - conditions:
+          - *presence
+          - *dark
+          - *someone_not_asleep
+
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to bright scene"
+            data:
+              entity_id: scene.hallupstairs_lights_bright
 
     default:
       - service: light.turn_off

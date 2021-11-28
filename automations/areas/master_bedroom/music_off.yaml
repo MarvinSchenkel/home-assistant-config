@@ -16,7 +16,7 @@ trigger:
       seconds: 60
   - platform: state
     entity_id:
-      - binary_sensor.someone_asleep
+      - binary_sensor.house_mode_someone_asleep
 
 condition:
   - condition: or
@@ -27,7 +27,7 @@ condition:
         for:
           seconds: 60
       - condition: state
-        entity_id: binary_sensor.someone_asleep
+        entity_id: binary_sensor.house_mode_someone_asleep
         state: "on"
 
 action:

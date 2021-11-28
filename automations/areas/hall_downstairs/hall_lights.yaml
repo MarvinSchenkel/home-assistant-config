@@ -44,20 +44,55 @@ action:
               transition: 5
 
       - conditions:
-          - condition: state
+          - &presence
+            condition: state
             alias: "Presence is detected"
             entity_id: binary_sensor.presence_hall_downstairs
             state: "on"
-          - condition: state
+          - &dark
+            condition: state
             alias: "It is dark in the hall"
             entity_id: binary_sensor.hall_is_dark
             state: "on"
+          - condition: numeric_state
+            alias: "If the sun has set a fair bit"
+            entity_id:
+              - sensor.sun_elevation
+            below: -3
+          - condition: time
+            alias: "And it is after 7pm"
+            after: "19:00:00"
 
         sequence:
-          - service: light.turn_on
-            alias: "Turn the hall lights on"
+          - service: scene.turn_on
+            alias: "Turn the hall lights to dim scene"
             data:
-              entity_id: light.fibaro_hall_downstairs
+              entity_id: scene.halldownstairs_lights_dim
+
+      - conditions:
+          - *presence
+          - *dark
+          - condition: state
+            alias: "If it is dark in the living room, meaning lights are on there"
+            entity_id:
+              - binary_sensor.livingroom_is_dark
+            state: "on"
+
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to normal scene"
+            data:
+              entity_id: scene.halldownstairs_lights_normal
+
+      - conditions:
+          - *presence
+          - *dark
+
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to bright scene"
+            data:
+              entity_id: scene.halldownstairs_lights_bright
 
     default:
       - *lights_turn_off

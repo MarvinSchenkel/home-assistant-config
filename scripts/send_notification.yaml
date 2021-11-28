@@ -70,7 +70,7 @@ sequence:
                 - "{{ receiver == 'intercom' }}"
                 - condition: state
                   entity_id:
-                    - binary_sensor.someone_asleep
+                    - binary_sensor.house_mode_someone_asleep
                   state: "off"
               sequence:
                 - repeat:

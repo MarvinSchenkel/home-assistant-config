@@ -1,12 +1,12 @@
 ---
-description: Set Marvin to 'asleep' using the bedsensor or the ikea button
+description: Set Marvin to 'asleep' using the bedsensor or the bedside button
 alias: presence_marvin_asleep
 mode: single
 id: 1da4e30e-26fe-416a-ba06-aee16ec18ff3
 
 trigger:
   - platform: event
-    id: "button"
+    id: "button_marvin"
     event_type: "zha_event"
     event_data:
       device_id: "2a93e9d147b93ca0ec5992d48dde3129"
@@ -18,6 +18,13 @@ trigger:
     to: "on"
     for:
       seconds: 15
+  # Laura remote
+  - platform: event
+    id: "button_laura"
+    event_type: "zha_event"
+    event_data:
+      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      command: "single"
 
 action:
   - choose:
@@ -30,20 +37,31 @@ action:
               - input_select.laura_sleep_status_dropdown
             state: "Slaapt"
         sequence:
-          - service: input_select.select_option
+          - &marvin_asleep
+            service: input_select.select_option
             data:
               entity_id: input_select.marvin_sleep_status_dropdown
               option: "Slaapt"
 
+      - alias: "Set me to asleep when Laura goes to sleep and I am already in bed"
+        conditions:
+          - condition: trigger
+            id: "button_laura"
+          - condition: state
+            entity_id:
+              - binary_sensor.someone_in_bed
+            state: "on"
+            for:
+              seconds: 15
+        sequence:
+          - *marvin_asleep
+
       - alias: "Set us both to asleep when I press the bedside button"
         conditions:
           - condition: trigger
-            id: "button"
+            id: "button_marvin"
         sequence:
-          - service: input_select.select_option
-            data:
-              entity_id: input_select.marvin_sleep_status_dropdown
-              option: "Slaapt"
+          - *marvin_asleep
           - service: input_select.select_option
             data:
               entity_id: input_select.laura_sleep_status_dropdown

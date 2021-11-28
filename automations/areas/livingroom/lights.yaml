@@ -3,6 +3,8 @@ alias: areas_livingroom_lights
 description: Turns the livingroom lights on when motion has been detected
 mode: queued
 id: c2c13dd9-a81c-4b44-a20e-990c460f9347
+trace:
+  stored_traces: 25
 
 trigger:
   - platform: homeassistant
@@ -13,16 +15,17 @@ trigger:
     entity_id:
       - input_boolean.setting_manual_lights
       - binary_sensor.livingroom_is_dark
+      - binary_sensor.house_mode_everyone_at_home_working
   - platform: state
     entity_id:
-      - binary_sensor.someone_just_awake
-      - binary_sensor.someone_just_home
+      - binary_sensor.house_mode_someone_just_awake
+      - binary_sensor.house_mode_someone_just_home
       - binary_sensor.everyone_left_home
     from: "off"
     to: "on"
   - platform: state
     entity_id:
-      - binary_sensor.everybody_asleep
+      - binary_sensor.house_mode_everyone_asleep
     from: "off"
     to: "on"
     id: "everyone_asleep"
@@ -32,29 +35,23 @@ trigger:
       - light.fibaro_kitchen
       - light.dinner
     id: "lights"
-    to: "on"
-  - platform: event
-    event_type: call_service
-    event_data:
-      domain: scene
-      service: turn_on
-      service_data:
-        entity_id: scene.livingroom_lights_normal
-    id: "scene_normal"
-  # - platform: state
-  #   entity_id: media_player.apple_tv
-  #   to:
-  #     - "paused"
-  #     - "idle"
-  #   for:
-  #     seconds: 10
-  #   id: "apple_tv_off"
-  # - platform: state
-  #   entity_id: media_player.apple_tv
-  #   to: "playing"
-  #   for:
-  #     seconds: 10
-  #   id: "apple_tv_on"
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: -3
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 1
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 1
+  - platform: time
+    at: "05:00:00"
+    id: "reset"
+  - platform: time
+    at: "19:00:00"
 
 condition:
   - condition: state
@@ -63,9 +60,22 @@ condition:
 
 action:
   - choose:
+      - alias: "Reset manual control at the start of the day"
+        conditions:
+          - condition: trigger
+            id: "reset"
+
+        sequence:
+          - &manual_control_off
+            alias: "Turn manual control off"
+            service: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.livingroom_manual_control
+
       - alias: "Set lights as manually controlled when someone changes them"
         conditions:
-          - alias: "Lights have changed"
+          - &lights_changed
+            alias: "Lights have changed"
             condition: trigger
             id: "lights"
           - alias: "It was changed by a user"
@@ -74,12 +84,9 @@ action:
 
         sequence:
           - alias: "Set lights downstairs as manually controlled"
-            service: adaptive_lighting.set_manual_control
-            data:
-              entity_id:
-                - switch.adaptive_lighting_kitchen
-                - switch.adaptive_lighting_dinner
-                - switch.adaptive_lighting_living_room
+            service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.livingroom_manual_control
 
       - alias: "Turn the light off when we go to sleep, even if it is manually controlled"
         conditions:
@@ -91,33 +98,38 @@ action:
           - &turn_off
             alias: "Turn the lights off"
             service: light.turn_off
+            target:
+              entity_id:
+                - light.livingroom
+                - light.kitchen
             data:
-              entity_id: light.livingroom
               transition: 5
+          - *manual_control_off
 
-      - alias: "Reset manual control when the normal scene is activated"
+      - alias: "Turn the light off when everyone is working from home on a dark day until sunset"
         conditions:
-          - alias: "Scene normal is activated"
-            condition: trigger
-            id: "scene_normal"
+          - alias: "Everyone at home is working from home"
+            condition: state
+            entity_id:
+              - binary_sensor.house_mode_everyone_at_home_working
+            state: "on"
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_elevation
+            above: 1.0
 
         sequence:
-          - alias: "Set lights downstairs as not-manually controlled"
-            service: adaptive_lighting.set_manual_control
-            data:
-              entity_id:
-                - switch.adaptive_lighting_kitchen
-                - switch.adaptive_lighting_dinner
-                - switch.adaptive_lighting_living_room
-              manual_control: false
+          - *turn_off
 
-      - alias: "Stop automating the lights if any of the lights are manually controlled"
+      - alias: "Stop automating the lights if any of the lights are manually controlled or if this automation is triggered by lights changed due to transition"
         conditions:
           - condition: or
             conditions:
-              - "{{ state_attr('switch.adaptive_lighting_dinner', 'manual_control') | length > 0 }}"
-              - "{{ state_attr('switch.adaptive_lighting_kitchen', 'manual_control') | length > 0 }}"
-              - "{{ state_attr('switch.adaptive_lighting_living_room', 'manual_control') | length > 0 }}"
+              - condition: state
+                entity_id:
+                  - input_boolean.livingroom_manual_control
+                state: "on"
+              - *lights_changed
 
         sequence: []
 
@@ -132,51 +144,36 @@ action:
             conditions:
               - condition: state
                 entity_id:
-                  - binary_sensor.someone_just_awake
+                  - binary_sensor.house_mode_someone_just_awake
                 state: "on"
               - condition: state
                 entity_id:
-                  - binary_sensor.someone_awake
+                  - binary_sensor.house_mode_someone_awake
                 state: "on"
-          # - condition: or
-          #   conditions:
-          #     - condition: state
-          #       entity_id:
-          #         - media_player.apple_tv
-          #       state:
-          #         - "paused"
-          #         - "idle"
-          #         - "unknown"
-          #         - "off"
-          #     - condition: and
-          #       conditions:
-          #         - condition: state
-          #           entity_id:
-          #             - media_player.apple_tv
-          #           state: "playing"
-          #         - condition: state
-          #           entity_id:
-          #             - media_player.apple_tv
-          #           attribute: "app_name"
-          #           state:
-          #             - "YouTube"
-          #             - "CanalDigitaal"
-        sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.livingroom_lights_normal
-            data:
-              transition: 4
 
-      - conditions:
-          - condition: trigger
-            id: "apple_tv_on"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.livingroom_lights_movie
-            data:
-              transition: 4
+          - choose:
+              - conditions:
+                  - condition: numeric_state
+                    entity_id:
+                      - sensor.sun_elevation
+                    below: -3
+                  - condition: time
+                    after: "19:00:00"
+
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id: scene.livingroom_lights_evening
+                    data:
+                      transition: 4
+
+            default:
+              - service: scene.turn_on
+                target:
+                  entity_id: scene.livingroom_lights_normal
+                data:
+                  transition: 4
 
     default:
       - *turn_off

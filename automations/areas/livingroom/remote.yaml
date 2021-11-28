@@ -20,9 +20,11 @@ action:
   # Switch from scene 'normal' to 'movie' or 'any scene' to 'normal'
   - choose:
       - conditions:
-          - condition: state
-            entity_id: input_select.livingroom_current_scene
-            state: "normal"
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: input_select.livingroom_current_scene
+                state: "movie"
         sequence:
           - service: scene.turn_on
             target:
@@ -30,7 +32,5 @@ action:
             data:
               transition: 4
     default:
-      - service: scene.turn_on
-        entity_id: scene.livingroom_lights_normal
-        data:
-          transition: 2
+      - service: automation.trigger
+        entity_id: automation.areas_livingroom_lights

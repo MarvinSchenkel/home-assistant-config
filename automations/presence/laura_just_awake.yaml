@@ -7,9 +7,6 @@ id: a8abbc27-211f-4bae-bc44-013d8735e6c9
 trigger:
   - platform: webhook
     webhook_id: laura_awake
-  - platform: template
-    value_template: "{{ states('sensor.date_time') == (as_timestamp(states.sensor.rne_l21_volgende_alarm.state))| timestamp_custom('%Y-%m-%d, %H:%M', True) }}"
-    id: "phone_alarm"
   - platform: event
     event_type: "zha_event"
     event_data:
@@ -22,20 +19,7 @@ condition:
   state: "Slaapt"
 
 action:
-  - choose:
-      - conditions:
-          - condition: trigger
-            id: "phone_alarm"
-        sequence:
-          # Give her 5 more minutes after her alarm before the lights burn her eyes
-          - delay:
-              minutes: 5
-          - service: input_select.select_option
-            data:
-              entity_id: input_select.laura_sleep_status_dropdown
-              option: "Net wakker"
-    default:
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.laura_sleep_status_dropdown
-          option: "Net wakker"
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.laura_sleep_status_dropdown
+      option: "Net wakker"

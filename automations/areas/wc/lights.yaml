@@ -35,6 +35,7 @@ action:
           - service: light.turn_on
             data:
               entity_id: light.fibaro_wc
+              brightness_pct: 99
               transition: 2
 
     default:

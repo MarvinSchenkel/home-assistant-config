@@ -1,2 +1,4 @@
 browser_mod:
   prefix: "browser_"
+  disable:
+    - all

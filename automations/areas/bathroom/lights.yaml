@@ -20,8 +20,8 @@ trigger:
       seconds: 120
   - platform: state
     entity_id:
-      - binary_sensor.everybody_asleep
-      - binary_sensor.someone_just_awake
+      - binary_sensor.house_mode_everyone_asleep
+      - binary_sensor.house_mode_someone_just_awake
     to: "on"
 
 condition:
@@ -39,11 +39,11 @@ action:
             conditions:
               - condition: state
                 entity_id:
-                  - binary_sensor.someone_just_awake
+                  - binary_sensor.house_mode_someone_just_awake
                 state: "on"
               - condition: state
                 entity_id:
-                  - binary_sensor.someone_awake
+                  - binary_sensor.house_mode_someone_awake
                 state: "on"
           - condition: state
             entity_id: binary_sensor.bathroom_is_dark

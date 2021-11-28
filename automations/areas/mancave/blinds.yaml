@@ -17,6 +17,7 @@ trigger:
     entity_id:
       # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
+      - binary_sensor.sun_at_south_windows
       - media_player.mancave_tv
       - input_boolean.setting_manual_blinds
       - sensor.marvin_work_status
@@ -24,7 +25,11 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 1.0
+    below: 12.0
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_azimuth
+    above: 200
 
 condition:
   - condition: state
@@ -50,6 +55,30 @@ action:
           - service: scene.turn_on
             target:
               entity_id: scene.mancave_cover_closed
+
+      # Sun is shining at my screen when I am working
+      - conditions:
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_elevation
+            below: 12.0
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_azimuth
+            above: 200
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_at_south_windows
+            state: "on"
+          - condition: state
+            entity_id:
+              - sensor.marvin_work_status
+            state: "Aan het werk"
+
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: scene.mancave_cover_tophalfopen
 
       # Sun is nearly down or I am working -> Half closed
       - conditions:

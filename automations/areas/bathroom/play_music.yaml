@@ -14,7 +14,7 @@ trigger:
   - platform: state
     entity_id: binary_sensor.bathroom_flood
   - platform: state
-    entity_id: binary_sensor.someone_just_awake
+    entity_id: binary_sensor.house_mode_someone_just_awake
     to: "on"
 
 condition:
@@ -38,7 +38,7 @@ action:
           - condition: or
             conditions:
               - condition: state
-                entity_id: binary_sensor.someone_just_awake
+                entity_id: binary_sensor.house_mode_someone_just_awake
                 state: "on"
           - condition: state
             entity_id: binary_sensor.workday
@@ -52,7 +52,7 @@ action:
       - alias: "Play normal music when showering before 20:00"
         conditions:
           - condition: state
-            entity_id: binary_sensor.someone_asleep
+            entity_id: binary_sensor.house_mode_someone_asleep
             state: "off"
           - condition: time
             before: "20:00:00"
@@ -68,7 +68,7 @@ action:
       - alias: "Play chill music when showering before 22:00"
         conditions:
           - condition: state
-            entity_id: binary_sensor.someone_asleep
+            entity_id: binary_sensor.house_mode_someone_asleep
             state: "off"
           - condition: time
             before: "22:00:00"
