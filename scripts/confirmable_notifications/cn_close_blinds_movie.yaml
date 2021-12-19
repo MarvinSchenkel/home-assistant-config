@@ -1,31 +1,46 @@
 ---
 alias: cn_close_blinds_movie
 mode: restart
-
-sequence:
-  - alias: "Send notification"
-    domain: mobile_app
-    type: notify
-    device_id: 914d8850a885f5d60733df0615d6386d
+use_blueprint:
+  path: homeassistant/confirmable_notification.yaml
+  input:
+    notify_device: 914d8850a885f5d60733df0615d6386d
     title: "Luxaflex"
     message: "Wil je dat ik de Luxaflex dicht doe in de woonkamer?"
-    data:
-      actions:
-        - action: "YES"
-          title: "Yep!"
-        - action: "NO"
-          title: "Nee"
+    confirm_text: "Yep!"
+    confirm-action:
+      - service: scene.turn_on
+        target:
+          entity_id:
+            - scene.livingroom_cover_closed
+            - scene.gardendoor_cover_closed
+    dismiss_text: "Nee"
+    dismiss_action: []
 
-  - alias: "Awaiting response"
-    wait_for_trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
+# sequence:
+#   - alias: "Send notification"
+#     domain: mobile_app
+#     type: notify
+#     device_id: 914d8850a885f5d60733df0615d6386d
+#     title: "Luxaflex"
+#     message: "Wil je dat ik de Luxaflex dicht doe in de woonkamer?"
+#     data:
+#       actions:
+#         - action: "YES"
+#           title: "Yep!"
+#         - action: "NO"
+#           title: "Nee"
 
-  - choose:
-      - conditions: "{{ wait.trigger.event.data.action == 'YES' }}"
-        sequence:
-          - service: scene.turn_on
-            target:
-              entity_id:
-                - scene.livingroom_cover_closed
-                - scene.gardendoor_cover_closed
+#   - alias: "Awaiting response"
+#     wait_for_trigger:
+#       - platform: event
+#         event_type: mobile_app_notification_action
+
+#   - choose:
+#       - conditions: "{{ wait.trigger.event.data.action == 'YES' }}"
+#         sequence:
+#           - service: scene.turn_on
+#             target:
+#               entity_id:
+#                 - scene.livingroom_cover_closed
+#                 - scene.gardendoor_cover_closed

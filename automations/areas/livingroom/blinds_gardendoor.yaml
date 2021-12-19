@@ -66,6 +66,7 @@ trigger:
     entity_id: media_player.apple_tv
     to:
       - idle
+      - standby
       - paused
     for:
       minutes: 10

@@ -1,9 +1,10 @@
 ---
-- script.play_random_music_living_room
 - light.fibaro_kitchen
 - light.fibaro_livingroom
 - light.dinner
+- light.corner_couch
 - binary_sensor.pir_kitchen
-- scene.livingroom_movie
-- scene.livingroom_normal
-- media_player.sonos_livingroom
+- scene.livingroom_lights_movie
+- scene.livingroom_lights_evening
+- scene.livingroom_lights_normal
+- camera.g4_doorbell

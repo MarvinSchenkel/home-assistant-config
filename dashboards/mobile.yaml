@@ -5,6 +5,7 @@ kiosk_mode:
 
 views:
   - type: custom:grid-layout
+    theme: tablet
     path: 0
     layout:
       #default
@@ -30,18 +31,27 @@ views:
             ".  media       energie   ."
             ".  footer      footer    ."
             ".  .           .         ."
-        #portrait
-        "(max-width: 1200px)":
-          grid-gap: var(--custom-layout-card-padding)
-          grid-template-columns: repeat(3, 1fr) 0
-          grid-template-rows: 0 repeat(3, fit-content(100%)) 0fr
-          grid-template-areas: |
-            "sidebar  .           .         ."
-            "sidebar  woonkamer   badkamer  ."
-            "sidebar  slaapkamer  energie   ."
-            "sidebar  media       thuis     ."
-            "sidebar  footer      footer    ."
-            "sidebar  .           .         ."
+        #nest hub
+        # "(max-width: 1024px)":
+        #   grid-gap: var(--custom-layout-card-padding)
+        #   grid-template-columns: repeat(3, 1fr) 0
+        #   grid-template-rows: 0 repeat(2, fit-content(100%))
+        #   grid-template-areas: |
+        #     "sidebar  .          .        ."
+        #     "sidebar  woonkamer  energie  ."
+        #     "sidebar  media      thuis    ."
+        # #portrait
+        # "(max-width: 1200px)":
+        #   grid-gap: var(--custom-layout-card-padding)
+        #   grid-template-columns: repeat(3, 1fr) 0
+        #   grid-template-rows: 0 repeat(3, fit-content(100%)) 0fr
+        #   grid-template-areas: |
+        #     "sidebar  .           .         ."
+        #     "sidebar  woonkamer   badkamer  ."
+        #     "sidebar  slaapkamer  energie   ."
+        #     "sidebar  media       thuis     ."
+        #     "sidebar  footer      footer    ."
+        #     "sidebar  .           .         ."
     cards:
       - type: custom:button-card #extra_styles fix
       #################################################
@@ -402,6 +412,14 @@ views:
               - base
               - icon_fan
               - loader
+
+          - type: custom:button-card
+            entity: switch.doorbell_chime
+            name: Deurbel
+            hold_action:
+              action: none
+            template:
+              - base
 
       #################################################
       #                                               #

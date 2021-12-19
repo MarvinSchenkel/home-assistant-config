@@ -21,6 +21,7 @@ trigger:
       - sensor.flood_sensor_battery_level
       - sensor.small_bedroom_battery_level
       - sensor.mancave_door_battery_level
+      - sensor.gardendoor_sensor_battery_level
     below: 1
     id: "battery_dead"
   - platform: numeric_state
@@ -39,6 +40,7 @@ trigger:
       - sensor.flood_sensor_battery_level
       - sensor.small_bedroom_battery_level
       - sensor.mancave_door_battery_level
+      - sensor.gardendoor_sensor_battery_level
     below: 20
     above: 0
     id: "battery_low"

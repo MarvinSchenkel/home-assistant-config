@@ -61,7 +61,7 @@ action:
           - condition: numeric_state
             entity_id:
               - sensor.sun_elevation
-            below: 12.0
+            below: 15.0
           - condition: numeric_state
             entity_id:
               - sensor.sun_azimuth
@@ -74,6 +74,9 @@ action:
             entity_id:
               - sensor.marvin_work_status
             state: "Aan het werk"
+          - condition: numeric_state
+            entity_id: sensor.buienradar_irradiance
+            above: 150
 
         sequence:
           - service: scene.turn_on

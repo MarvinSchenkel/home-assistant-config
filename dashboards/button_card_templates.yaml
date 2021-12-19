@@ -827,6 +827,20 @@ conditional_media:
       font-size: 1.2vw;
       letter-spacing: 0.05vw;
     }
+    /* portrait */
+    @media screen and (max-width: 1200px) {
+      #name, #state {
+        font-size: 2vw;
+        letter-spacing: 0.05vw;
+      }
+    }
+    /* phone */
+    @media screen and (max-width: 800px) {
+      #name, #state {
+        font-size: 2.7vw;
+        letter-spacing: 0.12vw;
+      }
+    }
 sonos_media:
   template:
     - conditional_media

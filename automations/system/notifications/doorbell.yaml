@@ -1,0 +1,23 @@
+---
+description: Automatically send notification when doorbell is pressed
+alias: system_notifications_doorbell
+id: cb689da9-474a-48af-b945-e68e48fa6eeb
+
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.doorbell_g4_doorbell
+    to: "on"
+
+action:
+  - service: camera.snapshot
+    data:
+      filename: !secret doorbell_snapshot_local_url
+    target:
+      entity_id: camera.g4_doorbell
+
+  - service: notify.mobile_app_marvins_iphone
+    data:
+      message: "De bel gaat!"
+      data:
+        image: !secret doorbell_snapshot_url

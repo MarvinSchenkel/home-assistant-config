@@ -112,6 +112,8 @@ browser_mod:
           - entity: binary_sensor.bathroom_is_dark
           - entity: binary_sensor.mancave_is_dark
 
+          - entity: input_boolean.bathroom_manual_control
+
       #################################################
       #                                               #
       #                overig                      #

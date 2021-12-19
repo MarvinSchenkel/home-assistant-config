@@ -1,0 +1,18 @@
+# Doorbell Chime
+platform: template
+switches:
+  doorbell_chime:
+    friendly_name: Doorbell Chime
+    icon_template: hass:bell-ring
+    unique_id: 1b807403-3922-4488-aacb-c04d975154e4
+    value_template: "{{ is_state_attr('camera.g4_doorbell', 'chime_enabled', true) }}"
+    turn_on:
+      service: unifiprotect.set_doorbell_chime_duration
+      data:
+        entity_id: camera.g4_doorbell
+        chime_duration: 300
+    turn_off:
+      service: unifiprotect.set_doorbell_chime_duration
+      data:
+        entity_id: camera.g4_doorbell
+        chime_duration: 0

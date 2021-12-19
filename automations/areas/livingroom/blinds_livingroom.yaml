@@ -48,6 +48,7 @@ trigger:
     to:
       - idle
       - paused
+      - standby
     for:
       minutes: 10
 
