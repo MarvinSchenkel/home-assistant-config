@@ -1,6 +1,6 @@
 import {
   LitElement, html
-} from 'https://unpkg.com/@polymer/lit-element@^0.5.2/lit-element.js?module';
+} from 'https://unpkg.com/@polymer/lit-element@0.5.2/lit-element.js?module';
 
 class CircleSensorCard extends LitElement {
   static get properties() {
@@ -13,6 +13,12 @@ class CircleSensorCard extends LitElement {
   }
 
   _render({ state, dashArray, config }) {
+    var stateval;
+    if (state === undefined) {
+      stateval = 0;
+    } else {
+            stateval = state.state;
+    }
     return html`
       <style>
           :host {
@@ -21,7 +27,10 @@ class CircleSensorCard extends LitElement {
 
           .container {
             position: relative;
-            height: 100%;
+            height: ${config.style.height || '100%'};
+            width: ${config.style.width};
+            top: ${config.style.top};
+            left: ${config.style.left};
             display: flex;
             flex-direction: column;
           }
@@ -62,6 +71,11 @@ class CircleSensorCard extends LitElement {
       </style>
       <div class="container" id="container" on-click="${() => this._click()}">
         <svg viewbox="0 0 200 200" id="svg">
+          <circle id="circlestrokebg" cx="50%" cy="50%" r="45%"
+            fill$="${config.fill || 'rgba(255, 255, 255, .75)'}"
+            stroke$="${config.stroke_bg_color || '#999999'}"
+            stroke-width$="${config.stroke_bg_width}"
+            transform="rotate(-90 100 100)"/>
           <circle id="circle" cx="50%" cy="50%" r="45%"
             fill$="${config.fill || 'rgba(255, 255, 255, .75)'}"
             stroke$="${config.stroke_color || '#03a9f4'}"
@@ -73,7 +87,7 @@ class CircleSensorCard extends LitElement {
           ${config.name != null ? html`<span id="name">${config.name}</span>` : ''}
           <span id="label" class$="${!!config.name ? 'bold' : ''}">
             <span class="text">
-              ${config.attribute ? state.attributes[config.attribute] : state.state}
+              ${config.attribute ? state.attributes[config.attribute] : stateval}
             </span>
             <span class="unit">
               ${config.show_max

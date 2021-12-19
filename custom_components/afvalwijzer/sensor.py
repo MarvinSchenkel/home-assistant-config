@@ -4,25 +4,24 @@ Sensor component Afvalwijzer
 Author: Bram van Dartel - xirixiz
 """
 
-from datetime import date, datetime, timedelta
 from functools import partial
 
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
+import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 from requests.exceptions import HTTPError
+import voluptuous as vol
 
 from .const.const import (
     _LOGGER,
     CONF_DEFAULT_LABEL,
+    CONF_EXCLUDE_LIST,
     CONF_ID,
     CONF_INCLUDE_DATE_TODAY,
     CONF_POSTAL_CODE,
     CONF_PROVIDER,
     CONF_STREET_NUMBER,
-    CONF_EXCLUDE_LIST,
     CONF_SUFFIX,
     MIN_TIME_BETWEEN_UPDATES,
     PARALLEL_UPDATES,
@@ -138,7 +137,7 @@ class AfvalwijzerData(object):
             self.waste_data_with_today = afvalwijzer.waste_data_with_today
         except ValueError as err:
             _LOGGER.error("Check waste_data_provider %s", err.args)
-            self.waste_data_with_today = self._default_label
+            self.waste_data_with_today = default_label
             raise
 
         # waste data provider update - without today
@@ -146,7 +145,7 @@ class AfvalwijzerData(object):
             self.waste_data_without_today = afvalwijzer.waste_data_without_today
         except ValueError as err:
             _LOGGER.error("Check waste_data_provider %s", err.args)
-            self.waste_data_without_today = self._default_label
+            self.waste_data_without_today = default_label
             raise
 
         # waste data custom update
@@ -154,5 +153,5 @@ class AfvalwijzerData(object):
             self.waste_data_custom = afvalwijzer.waste_data_custom
         except ValueError as err:
             _LOGGER.error("Check waste_data_custom %s", err.args)
-            self.waste_data_custom = self._default_label
+            self.waste_data_custom = default_label
             raise
