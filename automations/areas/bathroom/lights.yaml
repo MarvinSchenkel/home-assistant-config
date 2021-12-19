@@ -23,6 +23,21 @@ trigger:
       - binary_sensor.house_mode_everyone_asleep
       - binary_sensor.house_mode_someone_just_awake
     to: "on"
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 67eb822e4407671200f5bbd6f9ca00c2
+      label: "Scene ID"
+      value: 16
+    id: "bathroom_switch"
+  - platform: time
+    at: "05:00:00"
+    id: "reset"
+  - platform: state
+    entity_id:
+      - light.fibaro_bathroom
+    to: "off"
+    id: "light_off"
 
 condition:
   - condition: state
@@ -31,7 +46,48 @@ condition:
 
 action:
   - choose:
-      - conditions:
+      - alias: "Reset manual control at the start of the day"
+        conditions:
+          - condition: trigger
+            id: "reset"
+
+        sequence:
+          - &manual_control_off
+            alias: "Turn manual control off"
+            service: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.bathroom_manual_control
+
+      - alias: "Set manual control when switch is pressed"
+        conditions:
+          - condition: trigger
+            id: "bathroom_switch"
+
+        sequence:
+          - alias: "Turn manual control on"
+            service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.bathroom_manual_control
+
+      - alias: "Turn manual control off when light turns off"
+        conditions:
+          - condition: trigger
+            id: "light_off"
+
+        sequence:
+          - *manual_control_off
+
+      - alias: "Stop automating lights when manual control is on"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.bathroom_manual_control
+            state: "on"
+
+        sequence: []
+
+      - alias: "Turn lights on when presence is detected and we're not asleep"
+        conditions:
           - condition: state
             entity_id: binary_sensor.presence_bathroom
             state: "on"
