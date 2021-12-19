@@ -1,0 +1,99 @@
+---
+alias: house_downstairs_doorbell_message
+description: Sets a custom doorbell message based on person detection
+mode: queued
+id: e18ffbe8-61c7-4a7c-a698-7b9beeb6ec12
+
+trigger:
+  - platform: state
+    entity_id: sensor.double_take_marvin
+    id: "marvin"
+  - platform: state
+    entity_id: sensor.double_take_laura
+    id: "laura"
+  - platform: state
+    entity_id:
+      - binary_sensor.g4_doorbell_person_motion
+
+variables:
+  min_confidence: 85
+
+action:
+  - alias: "Check who is in front of the door"
+    choose:
+      - conditions:
+          - condition: trigger
+            id: "laura"
+          - "{{ trigger.to_state.attributes.match.confidence > 90 }}"
+        sequence:
+          - service: unifiprotect.set_doorbell_lcd_message
+            data:
+              entity_id: camera.g4_doorbell
+              message: "HALLO LIEVE LAURA!"
+              duration: 2
+          - &delay
+            alias: "Delay after someone is detected"
+            delay:
+              seconds: 20
+
+      - conditions:
+          - condition: trigger
+            id: "marvin"
+          - "{{ trigger.to_state.attributes.match.confidence > 90 }}"
+        sequence:
+          - service: unifiprotect.set_doorbell_lcd_message
+            data:
+              entity_id: camera.g4_doorbell
+              message: "HEY MARVIN!"
+              duration: 2
+          - *delay
+
+    default:
+      - alias: "Display greeting based on the time of day"
+        choose:
+          - conditions:
+              - condition: time
+                after: "18:00:00"
+            sequence:
+              - service: unifiprotect.set_doorbell_lcd_message
+                data:
+                  entity_id: camera.g4_doorbell
+                  message: "GOEDENAVOND!"
+                  duration: 2
+
+          - conditions:
+              - condition: time
+                after: "12:00:00"
+            sequence:
+              - service: unifiprotect.set_doorbell_lcd_message
+                data:
+                  entity_id: camera.g4_doorbell
+                  message: "GOEDEMIDDAG!"
+                  duration: 2
+
+          - conditions:
+              - condition: time
+                after: "06:00:00"
+            sequence:
+              - service: unifiprotect.set_doorbell_lcd_message
+                data:
+                  entity_id: camera.g4_doorbell
+                  message: "GOEDEMORGEN!"
+                  duration: 2
+
+          - conditions:
+              - condition: time
+                after: "00:00:00"
+            sequence:
+              - service: unifiprotect.set_doorbell_lcd_message
+                data:
+                  entity_id: camera.g4_doorbell
+                  message: "GOEDENACHT!"
+                  duration: 2
+
+        default:
+          - service: unifiprotect.set_doorbell_lcd_message
+            data:
+              entity_id: camera.g4_doorbell
+              message: "WELKOM!"
+              duration: 2

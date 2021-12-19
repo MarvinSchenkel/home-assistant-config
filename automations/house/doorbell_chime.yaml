@@ -1,0 +1,33 @@
+---
+description: Control the doorbell chime status
+alias: house_doorbell_chime
+id: b5bf8e66-aa47-4dcd-b827-f4f4391ec840
+
+trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: state
+    entity_id:
+      - binary_sensor.house_mode_someone_asleep
+
+action:
+  - alias: "Disable the doorbell when someone is sleeping"
+    choose:
+      - conditions:
+          - alias: "When someone is asleep"
+            condition: state
+            entity_id: binary_sensor.house_mode_someone_asleep
+            state: "on"
+        sequence:
+          - alias: "Turn the doorbell off"
+            service: switch.turn_off
+            target:
+              entity_id: switch.doorbell_chime
+
+    default:
+      - alias: "Turn the doorbell on"
+        service: switch.turn_on
+        target:
+          entity_id: switch.doorbell_chime
