@@ -1,5 +1,0 @@
----
-alarm_control_panel:
-  - platform: manual
-    name: alarm
-    code: !secret alarm_control_panel_code
