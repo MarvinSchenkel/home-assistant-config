@@ -1,0 +1,8 @@
+---
+name: smallbedroom_cover_closed
+id: 766e9a54-3fe7-46ec-b319-eea36be3a03a
+icon: mdi:blinds
+entities:
+  cover.small_bedroom:
+    state: closed
+    current_position: 0

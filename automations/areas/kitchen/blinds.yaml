@@ -26,16 +26,29 @@ trigger:
   # Sun
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    below: 1.0
+      - sensor.sun_adjusted_elevation
+    below: 0
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    above: 1.0
+      - sensor.sun_adjusted_elevation
+    above: 0
   # Close the kitchen blinds at 20:30, even if the sun has not set yet
   - platform: time
     at: "20:30:00"
     id: "time_close_kitchen"
+  # Hue Remote events
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "dd93f7c049eb8e103af97459fb7aae53"
+      command: "down_press"
+    id: "hue_dimmer_down_press"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "dd93f7c049eb8e103af97459fb7aae53"
+      command: "up_press"
+    id: "hue_dimmer_up_press"
 
 condition:
   - condition: state
@@ -44,20 +57,24 @@ condition:
 
 action:
   - choose:
-      # Disable fully closed since the wife wants some decoration in the
-      # window sill.
-      # Fully closed
-      # - conditions:
-      #     - condition: or
-      #       conditions:
-      #         - condition: state
-      #           entity_id: binary_sensor.house_mode_everyone_asleep
-      #           state:
-      #             - "on"
-      #   sequence:
-      #     - service: scene.turn_on
-      #       target:
-      #         entity_id: scene.kitchen_cover_closed
+      # Hue events
+      - conditions:
+          - condition: trigger
+            id: "hue_dimmer_down_press"
+        sequence:
+          - &halfclosed
+            service: scene.turn_on
+            target:
+              entity_id: scene.kitchen_cover_halfclosed
+
+      - conditions:
+          - condition: trigger
+            id: "hue_dimmer_up_press"
+        sequence:
+          - &halfopen
+            service: scene.turn_on
+            target:
+              entity_id: scene.kitchen_cover_halfopen
 
       # Half closed
       - conditions:
@@ -65,17 +82,17 @@ action:
             conditions:
               - condition: numeric_state
                 entity_id:
-                  - sensor.sun_elevation
-                below: 1.0
+                  - sensor.sun_adjusted_elevation
+                below: 0
               - condition: time
                 after: "20:30:00"
+              - condition: state
+                entity_id: binary_sensor.house_mode_everyone_asleep
+                state:
+                  - "on"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.kitchen_cover_halfclosed
+          - *halfclosed
 
     # Half open
     default:
-      - service: scene.turn_on
-        target:
-          entity_id: scene.kitchen_cover_halfopen
+      - *halfopen

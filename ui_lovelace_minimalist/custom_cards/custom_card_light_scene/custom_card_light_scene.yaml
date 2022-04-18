@@ -1,0 +1,26 @@
+custom_light_scene:
+  template:
+    - "chips"
+  styles:
+    card:
+      - background: "[[[ return variables.ulm_card_light_color; ]]]"
+    label:
+      - color: "[[[ return variables.ulm_chip_font_color; ]]]"
+  tap_action:
+    action: call-service
+    service: scene.turn_on
+    service_data:
+      entity_id: >
+        [[[ return entity.entity_id ]]]
+  label: |
+    [[[
+      var icon = "❔";
+      var label = "";
+      if (variables.ulm_chip_icon){
+        var icon = variables.ulm_chip_icon;
+      }
+      if (variables.ulm_chip_icon_label){
+        label = variables.ulm_chip_icon_label;
+      }
+      return icon + "\n" + label;
+    ]]]

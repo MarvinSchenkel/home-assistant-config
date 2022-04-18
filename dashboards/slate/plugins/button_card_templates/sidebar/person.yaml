@@ -1,0 +1,58 @@
+person:
+  template:
+    - circle
+  variables:
+    state: >
+      [[[ return entity === undefined || entity.state; ]]]
+    timeout: >
+      [[[ return entity === undefined || Date.now() - Date.parse(entity.last_changed); ]]]
+    light_color: >
+      [[[ return entity === undefined ? 'var(--state-icon-color)' : 'var(--button-card-light-color-no-temperature)'; ]]]
+
+  show_state: true
+  show_name: false
+  show_icon: false
+  triggers_update: sensor.time
+  styles:
+    custom_fields:
+      icon:
+        - clip-path: circle(45%)
+        - pointer-events: none
+        - display: flex
+    state:
+      - color: rgba(255, 255, 255, 0.8)
+    card:
+      - font-family: Sf Display
+    grid:
+      - grid-template-areas: |
+          "icon  icon"
+          "icon  icon"
+          "s     s"
+      - grid-template-columns: repeat(2, 1fr)
+      - grid-template-rows: auto repeat(2, min-content)
+      - gap: 2%
+      - align-items: start
+  state:
+    - value: "Slaapt"
+      styles:
+        icon:
+          - filter: grayscale(100%)
+          - border: "0.2vw dashed rgba(255, 255, 255, 0.8)"
+    - value: "Net weg"
+      styles:
+        icon:
+          - filter: grayscale(100%)
+          - border: "0.2vw dashed rgba(255, 255, 255, 0.8)"
+    - value: "Weg"
+      styles:
+        icon:
+          - filter: grayscale(100%)
+          - border: "0.2vw dashed rgba(255, 255, 255, 0.8)"
+    - value: "Lang weg"
+      styles:
+        icon:
+          - filter: grayscale(100%)
+          - border: "0.2vw dashed rgba(255, 255, 255, 0.8)"
+  custom_fields:
+    icon: >
+      [[[ return entity === undefined || `<img src="${states[entity.entity_id].attributes.entity_picture}" width="100%">`; ]]]

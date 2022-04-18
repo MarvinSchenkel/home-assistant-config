@@ -2,11 +2,11 @@ kiosk_mode:
   hide_header: true
 
 views:
-  - title: Tablet  
+  - title: Tablet
     panel: true
     theme: neon
     cards:
-      - type: picture-elements        
+      - type: picture-elements
         image: local/box.png
         card_mod:
           style: |
@@ -15,10 +15,10 @@ views:
             background: transparent;}
         elements:
           # Background
-          - type: 'custom:button-card'
+          - type: "custom:button-card"
             styles:
               card:
-                - background-color: '#2c2d43'
+                - background-color: "#2c2d43"
                 - border-radius: 10px
                 - height: 1028px
                 - width: 770px
@@ -26,11 +26,11 @@ views:
             style:
               top: 32px
               left: 32px
-              transform: 'translate(0%, 0%)'
+              transform: "translate(0%, 0%)"
           #######################
           ## TIME
           #######################
-          - type: 'custom:button-card'
+          - type: "custom:button-card"
             show_icon: false
             show_state: true
             show_name: false
@@ -47,14 +47,14 @@ views:
             style:
               top: 110px
               left: 150px
-          
+
           #######################
           ## WEATHER
           #######################
-          - type: 'custom:simple-weather-card'
+          - type: "custom:simple-weather-card"
             tap_action:
               action: navigate
-              navigation_path: '#p2'
+              navigation_path: "#p2"
             card_mod:
               style: |
                 ha-card {
@@ -74,7 +74,7 @@ views:
             style:
               top: 70px
               left: 770px
-          
+
           #######################
           ## MEDIA PLAYER TOP
           #######################
@@ -83,14 +83,14 @@ views:
               - entity: media_player.sonos_livingroom
                 state_not: idle
             elements:
-              - type: 'custom:mini-media-player'
+              - type: "custom:mini-media-player"
                 entity: media_player.sonos_livingroom
                 card_mod:
                   style: |
                     ha-card {
                     --ha-card-background: transparent;
                     width: 340px;
-                    height: 100px; }                       
+                    height: 100px; }
                 hide:
                   power: true
                   name: true
@@ -104,11 +104,11 @@ views:
                 style:
                   top: 115px
                   left: 415px
-          
+
           #######################
           ## HOME
           #######################
-          - type: 'custom:button-card'
+          - type: "custom:button-card"
             show_icon: true
             style:
               top: 270px
@@ -118,7 +118,7 @@ views:
             show_entity_picture: true
             tap_action:
               action: navigate
-              navigation_path: '#p1'
+              navigation_path: "#p1"
             entity: alarm_control_panel.alarm
             name: Home
             show_label: true
@@ -142,7 +142,7 @@ views:
                 - grid-template-rows: 1fr min-content min-content
               card:
                 - border-radius: 10px
-                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - box-shadow: "5px 5px 20px rgba(0, 0, 0, 0.2)"
                 - height: 220px
                 - width: 150px
               icon:
@@ -168,7 +168,7 @@ views:
             custom_fields:
               graph:
                 card:
-                  type: 'custom:mini-graph-card'
+                  type: "custom:mini-graph-card"
                   card_mod:
                     style: |
                       ha-card {
@@ -186,11 +186,11 @@ views:
                   font_size: 40
                   color_thresholds:
                     - value: 19
-                      color: '#b0abf4'
+                      color: "#b0abf4"
                     - value: 21
-                      color: '#c696eb'
+                      color: "#c696eb"
                     - value: 23
-                      color: '#cd79b3'
+                      color: "#cd79b3"
               # topright:
               #   card:
               #     type: 'custom:button-card'
@@ -217,7 +217,7 @@ views:
           #######################
           ## SETTINGS
           #######################
-          - type: 'custom:button-card'
+          - type: "custom:button-card"
             show_icon: true
             entity_picture: /local/settings.png
             show_entity_picture: true
@@ -230,7 +230,7 @@ views:
               width: 150px
             tap_action:
               action: navigate
-              navigation_path: '#p3'
+              navigation_path: "#p3"
             name: Instellingen
             styles:
               custom_fields:
@@ -244,7 +244,7 @@ views:
                 - grid-template-rows: 1fr min-content min-content
               card:
                 - border-radius: 10px
-                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - box-shadow: "5px 5px 20px rgba(0, 0, 0, 0.2)"
                 - height: 220px
                 - width: 150px
               img_cell:
@@ -259,7 +259,7 @@ views:
             custom_fields:
               graph:
                 card:
-                  type: 'custom:mini-graph-card'
+                  type: "custom:mini-graph-card"
                   card_mod:
                     style: |
                       ha-card {
@@ -277,17 +277,16 @@ views:
                   font_size: 40
                   color_thresholds:
                     - value: 10
-                      color: '#9f882b'
+                      color: "#9f882b"
                     - value: 20
-                      color: '#f6d44c'
+                      color: "#f6d44c"
                     - value: 30
-                      color: '#ffcc00'
-            
+                      color: "#ffcc00"
 
           #######################
           ## MARVIN
           #######################
-          - type: 'custom:button-card'
+          - type: "custom:button-card"
             show_icon: true
             entity_picture: /local/marvin
             show_entity_picture: true
@@ -319,7 +318,7 @@ views:
                 - grid-template-rows: 1fr min-content min-content
               card:
                 - border-radius: 10px
-                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - box-shadow: "5px 5px 20px rgba(0, 0, 0, 0.2)"
                 - height: 220px
                 - width: 150px
               img_cell:
@@ -353,7 +352,7 @@ views:
             custom_fields:
               graph:
                 card:
-                  type: 'custom:mini-graph-card'
+                  type: "custom:mini-graph-card"
                   card_mod:
                     style: |
                       ha-card {
@@ -371,14 +370,14 @@ views:
                   font_size: 40
                   color_thresholds:
                     - value: 100
-                      color: '#afbfdf'
+                      color: "#afbfdf"
                     - value: 1000
-                      color: '#8cadea'
+                      color: "#8cadea"
                     - value: 5000
-                      color: '#454ab0'
+                      color: "#454ab0"
               topright:
                 card:
-                  type: 'custom:button-card'
+                  type: "custom:button-card"
                   entity: sensor.marvins_iphone_battery_level_3
                   tap_action:
                     action: none
@@ -395,7 +394,7 @@ views:
                       - font-size: 10px
               topleft:
                 card:
-                  type: 'custom:button-card'
+                  type: "custom:button-card"
                   entity: sensor.google_fit_distance
                   tap_action:
                     action: none
@@ -414,7 +413,7 @@ views:
           #######################
           ## LAURA
           #######################
-          - type: 'custom:button-card'
+          - type: "custom:button-card"
             show_icon: true
             entity_picture: /local/laura
             show_entity_picture: true
@@ -446,7 +445,7 @@ views:
                 - grid-template-rows: 1fr min-content min-content
               card:
                 - border-radius: 10px
-                - box-shadow: '5px 5px 20px rgba(0, 0, 0, 0.2)'
+                - box-shadow: "5px 5px 20px rgba(0, 0, 0, 0.2)"
                 - height: 220px
                 - width: 150px
               img_cell:
@@ -457,7 +456,7 @@ views:
                 - color: var(--secondary-text-color)
               state:
                 - font-size: 12px
-                - padding-bottom: 70px              
+                - padding-bottom: 70px
               entity_picture:
                 - border-radius: 10px
             state:
@@ -480,7 +479,7 @@ views:
             custom_fields:
               graph:
                 card:
-                  type: 'custom:mini-graph-card'
+                  type: "custom:mini-graph-card"
                   card_mod:
                     style: |
                       ha-card {
@@ -498,14 +497,14 @@ views:
                   font_size: 40
                   color_thresholds:
                     - value: 100
-                      color: '#afbfdf'
+                      color: "#afbfdf"
                     - value: 1000
-                      color: '#8cadea'
+                      color: "#8cadea"
                     - value: 5000
-                      color: '#454ab0'
+                      color: "#454ab0"
               topright:
                 card:
-                  type: 'custom:button-card'
+                  type: "custom:button-card"
                   entity: sensor.rne_l21_batterijniveau
                   tap_action:
                     action: none
@@ -522,7 +521,7 @@ views:
                       - font-size: 10px
               topleft:
                 card:
-                  type: 'custom:button-card'
+                  type: "custom:button-card"
                   entity: sensor.malins_iphone_distance
                   tap_action:
                     action: none
@@ -537,11 +536,11 @@ views:
             style:
               top: 270px
               left: 687px
-          
+
           #######################
           ## MIDDLE SWIPE BAR
           #######################
-          - type: 'custom:swipe-card'
+          - type: "custom:swipe-card"
             start_card: 1
             reset_after: 20
             style:
@@ -560,7 +559,7 @@ views:
                     }
                 image: local/box.png
                 elements:
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     show_icon: false
                     show_state: true
                     show_name: true
@@ -577,24 +576,24 @@ views:
                     style:
                       top: 20px
                       left: 45px
-                      transform: 'translate(0%, 0%)'
-                  - type: 'custom:circle-sensor-card'
+                      transform: "translate(0%, 0%)"
+                  - type: "custom:circle-sensor-card"
                     entity: sensor.dash_teslau_range
                     stroke_width: 10
                     max: 500
                     name: Teslau
                     gradient: true
-                    fill: '#3a3c55'
+                    fill: "#3a3c55"
                     font_style:
-                      color: 'rgba(255, 255, 255, 0.4)'
+                      color: "rgba(255, 255, 255, 0.4)"
                       font-size: 16px
-                    stroke_color: '#b0abf4'
+                    stroke_color: "#b0abf4"
                     style:
                       top: 180px
                       left: 110px
                       width: 150px
 
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     entity: fan.itho
                     style:
                       top: 185px
@@ -604,7 +603,7 @@ views:
                     show_icon: true
                     name: Ventilatie
                     state:
-                      - value: 'on'
+                      - value: "on"
                         styles:
                           icon:
                             - animation: rotating 2.5s linear infinite
@@ -613,7 +612,6 @@ views:
                     styles:
                       card:
                         - background-color: transparent
-                    
 
               #######################
               ## Woonkamer
@@ -626,7 +624,7 @@ views:
                     }
                 image: local/box.png
                 elements:
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     show_icon: false
                     show_state: true
                     show_name: true
@@ -643,9 +641,9 @@ views:
                     style:
                       top: 20px
                       left: 45px
-                      transform: 'translate(0%, 0%)'
-                  
-                  - type: 'custom:light-popup-card'
+                      transform: "translate(0%, 0%)"
+
+                  - type: "custom:light-popup-card"
                     card_mod:
                       style: |
                         ha-card {
@@ -662,7 +660,7 @@ views:
                     brightnessWidth: 40px
                     fullscreen: true
                     sliderThumbColor: var(--accent-color)
-                    sliderTrackColor: '#3a3c55'
+                    sliderTrackColor: "#3a3c55"
                     style:
                       top: 190px
                       left: 65px
@@ -672,7 +670,7 @@ views:
                   #   card_mod:
                   #     style: |
                   #       ha-card {
-                  #         --ha-card-background: transparent; 
+                  #         --ha-card-background: transparent;
                   #         font-size: 12px;
                   #         width: 355px;
                   #         padding-top: 40px;
@@ -697,7 +695,7 @@ views:
           #######################
           ## BOTTOM BAR
           #######################
-          - type: 'custom:state-switch'
+          - type: "custom:state-switch"
             entity: hash
             default: p1
             style:
@@ -714,7 +712,7 @@ views:
                     ha-card {
                     --ha-card-background: transparent; }
                 elements:
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     show_icon: false
                     show_state: true
                     show_name: true
@@ -731,17 +729,17 @@ views:
                     style:
                       top: 0px
                       left: 36px
-                      transform: 'translate(0%, 0%)'
-                  - type: 'custom:atomic-calendar-revive'
+                      transform: "translate(0%, 0%)"
+                  - type: "custom:atomic-calendar-revive"
                     style:
                       top: 210px
                       left: 330px
-                    entities: 
+                    entities:
                       - entity: calendar.afvalkalender_rmn
-                        icon: 'mdi:delete-empty'
+                        icon: "mdi:delete-empty"
                         #color: '#b0abf4'
                       - entity: calendar.feestdagen_in_nederland
-                        icon: 'mdi:party-popper'
+                        icon: "mdi:party-popper"
                         #color: '#c696eb'
                     maxDaysToShow: 14
                     maxEventCount: 4
@@ -778,7 +776,7 @@ views:
                   #######################
                   ## MEDIA PLAYER LARGE
                   #######################
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     show_icon: false
                     show_state: true
                     show_name: true
@@ -795,8 +793,8 @@ views:
                     style:
                       top: 0px
                       left: 395px
-                      transform: 'translate(0%, 0%)'
-                  - type: 'custom:state-switch'
+                      transform: "translate(0%, 0%)"
+                  - type: "custom:state-switch"
                     entity: sensor.dash_media_item
                     style:
                       top: 200px
@@ -806,7 +804,7 @@ views:
                     default: idle
                     states:
                       sonos:
-                        type: 'custom:mini-media-player'
+                        type: "custom:mini-media-player"
                         entity: media_player.sonos_livingroom
                         tap_action:
                           action: none
@@ -816,7 +814,7 @@ views:
                               --ha-card-border-radius: 10px;
                               width: 335px;
                               height: 265px; 
-                            }                       
+                            }
                         hide:
                           power: true
                           name: true
@@ -825,9 +823,9 @@ views:
                           controls: true
                           info: true
                           icon: true
-                        artwork: cover-fit  
+                        artwork: cover-fit
                       apple_tv:
-                        type: 'custom:mini-media-player'
+                        type: "custom:mini-media-player"
                         entity: media_player.apple_tv
                         tap_action:
                           action: none
@@ -837,7 +835,7 @@ views:
                               --ha-card-border-radius: 10px;
                               width: 335px;
                               height: 265px; 
-                            }                       
+                            }
                         hide:
                           power: true
                           name: true
@@ -846,11 +844,11 @@ views:
                           controls: true
                           info: true
                           icon: true
-                        artwork: cover-fit                      
+                        artwork: cover-fit
                       idle:
-                        type: 'custom:sonos-playlist-card'
+                        type: "custom:sonos-playlist-card"
                         player: media_player.sonos_livingroom
-                        playlist_type: 'user'
+                        playlist_type: "user"
                         limit: 50
                         gridWidth: 30
                         style: |
@@ -865,15 +863,15 @@ views:
                           }
 
                           div.griditem {
-                            margin-bottom: 0.75em;
+                            margin-bottom: 0;
                           }
 
                           div.griditem > img {
                             border-radius: 10px;
                           }
-              
+
               p2:
-                type: picture-elements                
+                type: picture-elements
                 image: local/box.png
                 card_mod:
                   style: |
@@ -881,7 +879,7 @@ views:
                       --ha-card-background: transparent; 
                     }
                 elements:
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     style:
                       top: 30px
                       left: 185px
@@ -901,12 +899,12 @@ views:
                         - justify-self: start
                         - color: var(--secondary-text-color)
                         - font-weight: lighter
-                  - type: 'custom:weather-card'
+                  - type: "custom:weather-card"
                     entity: weather.buienradar
                     style:
                       top: 200px
                       left: 375px
-                    number_of_forecasts: '5'
+                    number_of_forecasts: "5"
                     details: false
                     current: false
                     card_mod:
@@ -918,7 +916,7 @@ views:
                         }
 
               p3:
-                type: picture-elements                
+                type: picture-elements
                 image: local/box.png
                 card_mod:
                   style: |
@@ -926,7 +924,7 @@ views:
                       --ha-card-background: transparent; 
                     }
                 elements:
-                  - type: 'custom:button-card'
+                  - type: "custom:button-card"
                     style:
                       top: 30px
                       left: 185px
@@ -946,7 +944,7 @@ views:
                         - justify-self: start
                         - color: var(--secondary-text-color)
                         - font-weight: lighter
-                  - type: 'custom:hui-element'
+                  - type: "custom:hui-element"
                     card_type: entities
                     card_mod:
                       style: |
@@ -959,19 +957,19 @@ views:
                     entities:
                       - entity: input_boolean.setting_manual_lights
                         name: Handmatige verlichting
-                        icon: 'ios:lightbulb'
+                        icon: "ios:lightbulb"
                       - entity: switch.adaptive_lighting_dinner
                         name: Circadian verlichting eettafel
-                        icon: 'ios:sunrise'
+                        icon: "ios:sunrise"
                       - entity: switch.adaptive_lighting_kitchen
                         name: Circadian verlichting keuken
-                        icon: 'ios:sunrise'
+                        icon: "ios:sunrise"
                       - entity: switch.adaptive_lighting_living_room
                         name: Circadian verlichting woonkamer
-                        icon: 'ios:sunrise'
+                        icon: "ios:sunrise"
                       - entity: switch.adaptive_lighting_hall_downstairs
                         name: Circadian verlichting hal beneden
-                        icon: 'ios:sunrise'
+                        icon: "ios:sunrise"
                       # - entity: switch.adaptive_lighting_wc
                       #   name: Circadian verlichting wc
                       #   icon: 'ios:sunrise'

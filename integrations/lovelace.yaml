@@ -53,17 +53,27 @@ lovelace:
       type: css
     - url: /local/community/vertical-stack-in-card/vertical-stack-in-card.js
       type: module
+    - url: /local/community/spotify-card/spotify-card.js
+      type: module
+    - url: /local/community/upcoming-media-card/upcoming-media-card.js
+      type: module
+    - url: /local/community/config-template-card/config-template-card.js
+      type: module
+    - url: /local/community/lovelace-auto-entities/auto-entities.js
+      type: module
+    - url: /local/community/my-cards/my-cards.js
+      type: module
 
   dashboards:
     lovelace-tablet:
       mode: yaml
-      filename: dashboards/tablet.yaml
-      title: Tablet
-      icon: mdi:tools
+      filename: dashboards/slate/slate.yaml
+      title: Slate
+      icon: mdi:view-dashboard
       show_in_sidebar: true
     lovelace-mobile:
       mode: yaml
-      filename: dashboards/mobile.yaml
+      filename: dashboards/tablet/mobile.yaml
       title: Mobile
       icon: mdi:cellphone
       show_in_sidebar: true

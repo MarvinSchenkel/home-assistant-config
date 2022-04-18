@@ -25,18 +25,8 @@ action:
             scene_category: "{{ scene.replace('scene.', '').split('_')[1] }}"
             scene_name: "{{ scene.replace('scene.', '').split('_')[2] }}"
 
-        - choose:
-            - conditions:
-                - "{{ scene_category == 'cover' }}"
-              sequence:
-                - service: input_select.select_option
-                  target:
-                    entity_id: "input_select.{{ scene_room }}_current_cover_scene"
-                  data:
-                    option: "{{ scene_name }}"
-
-          default:
-            - service: input_select.select_option
-              data:
-                entity_id: input_select.livingroom_current_scene
-                option: "{{ scene_name }}"
+        - service: input_select.select_option
+          target:
+            entity_id: "input_select.{{ scene_room }}_current_{{ scene_category }}_scene"
+          data:
+            option: "{{ scene_name }}"

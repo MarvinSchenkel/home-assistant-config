@@ -97,10 +97,12 @@ action:
                 entity_id:
                   - binary_sensor.house_mode_someone_just_awake
                 state: "on"
-              - condition: state
-                entity_id:
-                  - binary_sensor.house_mode_someone_awake
-                state: "on"
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id:
+                      - binary_sensor.house_mode_someone_asleep
+                    state: "on"
           - condition: state
             entity_id: binary_sensor.bathroom_is_dark
             state: "on"

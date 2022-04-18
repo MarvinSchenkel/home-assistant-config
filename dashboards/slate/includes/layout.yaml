@@ -1,0 +1,8 @@
+#default
+grid-gap: var(--custom-layout-card-padding)
+grid-template-columns: repeat(4, 1fr) 0
+grid-template-areas: |
+  "sidebar  main  main  main  ."
+  "sidebar  main  main  main  ."
+  "sidebar  main  main  main  ."
+  "sidebar  main  main  main  ."

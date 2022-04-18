@@ -6,7 +6,7 @@ id: cb689da9-474a-48af-b945-e68e48fa6eeb
 trigger:
   - platform: state
     entity_id:
-      - binary_sensor.doorbell_g4_doorbell
+      - binary_sensor.g4_doorbell_doorbell
     to: "on"
 
 action:
@@ -14,7 +14,7 @@ action:
     data:
       filename: !secret doorbell_snapshot_local_url
     target:
-      entity_id: camera.g4_doorbell
+      entity_id: camera.g4_doorbell_high
 
   - service: notify.mobile_app_marvins_iphone
     data:

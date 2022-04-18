@@ -1,0 +1,8 @@
+button_card_templates: !include_dir_merge_named plugins/button_card_templates
+
+kiosk_mode:
+  hide_header: true
+
+title: Slates
+views: !include_dir_list views/
+theme: slate

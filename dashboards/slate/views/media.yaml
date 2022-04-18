@@ -1,0 +1,215 @@
+# lovelace_gen
+path: Media
+type: custom:grid-layout
+layout: !include ../includes/layout.yaml
+
+cards:
+  - type: custom:button-card #extra_styles fix
+  - !include ../includes/sidebar.yaml
+
+  - type: custom:layout-card
+    view_layout:
+      grid-area: main
+      place-self: center auto
+    layout_type: custom:grid-layout
+    layout:
+      grid-template-columns: 0 3fr 2fr 0
+      grid-gap: var(--custom-layout-card-padding)
+      grid-template-areas: |
+        ". left right ."
+    cards:
+      #############################################
+      #                                           #
+      #          LEFT SIDE                        #
+      #                                           #
+      #############################################
+
+      ## SONOS WHEN APPLE TV IS NOT PLAYING
+      - type: conditional
+        view_layout:
+          grid-area: left
+        conditions:
+          - entity: media_player.apple_tv
+            state_not: playing
+        card:
+          type: "custom:mini-media-player"
+          view_layout:
+            justify-self: center
+          artwork: full-cover
+          entity: media_player.sonos_livingroom
+          hide:
+            power: true
+            progress: false
+            runtime: false
+            volume: true
+          style: |
+            ha-card {
+              border-radius: 1vw !important;
+              overflow: hidden !important;
+              height: 70vh;
+              width: 65vh;
+            }
+            :host #primaryProgress{
+              background: #474A52 !important;
+            }
+
+      ## TV CONTENT WHEN APPLE TV IS PLAYING
+      - type: conditional
+        # view_layout:
+        #   grid-area: left
+        conditions:
+          - entity: media_player.apple_tv
+            state: playing
+        card:
+          type: "custom:mini-media-player"
+          view_layout:
+            grid-area: left
+            justify-self: center
+          artwork: full-cover
+          entity: media_player.apple_tv
+          hide:
+            power: true
+            progress: false
+            runtime: false
+            volume: true
+          style: |
+            ha-card {
+              border-radius: 1vw !important;
+              overflow: hidden !important;
+              height: 70vh;
+              width: 65vh;
+            }
+            :host #primaryProgress{
+              background: #474A52 !important;
+            }
+
+      #############################################
+      #                                           #
+      #          RIGHT SIDE                       #
+      #                                           #
+      #############################################
+
+      ## SONOS PLAYLISTS WHEN APPLE TV IS NOT PLAYING
+      - type: conditional
+        view_layout:
+          grid-area: right
+        conditions:
+          - entity: media_player.apple_tv
+            state_not: playing
+        card:
+          type: "custom:sonos-playlist-card"
+          player: media_player.sonos_livingroom
+          playlist_type: "user"
+          limit: 50
+          gridWidth: 100
+          view_layout:
+            justify-self: center
+          style: |
+            ha-card {
+              width: 50vh;
+              height: 70vh;
+              overflow: scroll;
+              padding: 0 !important;
+              margin: 0;
+              border-radius: 1vw !important;
+            }
+
+            ha-card::-webkit-scrollbar {
+              display: none;
+            }
+
+            div.playlistcontainer {
+              grid-gap: 0.2vh !important;
+              margin: 0 !important;
+            }
+
+            div.griditem {
+              margin-bottom: 0;
+              font-size: 0.9vw;
+              font-weight: 350;
+              align-items: center;
+              display: flex;
+              background-color: rgba(0,0,0, 0.3);
+            }
+
+            span.gridtitle {
+              max-width: 90%;
+              margin-left: 1.5vw;
+            }
+
+            div.griditem > img {
+              width: 10% !important;
+            }
+
+      ## UPCOMING MEDIA WHEN APPLE TV IS PLAYING
+      - type: conditional
+        view_layout:
+          grid-area: right
+          justify-self: center
+        conditions:
+          - entity: media_player.apple_tv
+            state: playing
+        card:
+          type: "custom:upcoming-media-card"
+          entity: sensor.plex_recently_added
+          title: Recently Added Tv
+          image_style: poster
+          clock: 24
+          text_shadows: false
+          max: 9
+          style: |
+            ha-card {
+              background-color: none;
+              border-radius: 1vw !important;
+              overflow: scroll;
+              width: 50vh;
+              height: 70vh;
+              padding: 0 !important;
+              margin: 0 !important;
+            }
+
+            ha-card::-webkit-scrollbar {
+              display: none;
+            }
+
+            ha-card > div {
+              padding: 0 !important;
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              grid-template-rows: repeat(3, 1fr);
+              grid-gap: 0.5vh !important;
+              # width: 100%;
+              height: 100%;
+            }
+
+            .plex_container_poster {
+              outline: 0 !important;
+              width: 100% !important;
+            }
+
+            .plex_svg_poster > rect {
+              fill:none !important;
+            }
+
+            .plex_container_poster {
+              outline: none !important;
+              margin: 0 !important;
+            }
+
+            .plex_poster {
+              margin: 0 !important;
+            }
+
+            .plex_svg_poster{
+              position: absolute !important;
+              bottom:-5%;
+              left:0;
+              width: 100% !important;
+              background-color: rgba(0, 0, 0, 0.4);
+              backdrop-filter: blur(0.4em);
+              -webkit-backdrop-filter: blur(0.4em);
+            }
+
+            .card-header{
+              display: none !important;
+            }

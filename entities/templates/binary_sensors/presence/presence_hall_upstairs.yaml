@@ -1,0 +1,9 @@
+---
+binary_sensor:
+  name: presence_hall_upstairs
+  unique_id: 259bd7b9-4847-45b3-9934-539b405f6223
+  state: >
+    {{  is_state("binary_sensor.pir_hall_upstairs", "on") 
+        or is_state("binary_sensor.presence_bathroom_door", "on")
+        or is_state("binary_sensor.presence_smallbedroom_door", "on") 
+        or is_state("binary_sensor.presence_master_bedroom_door", "on")  }}

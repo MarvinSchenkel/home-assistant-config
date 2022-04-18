@@ -8,7 +8,7 @@ binary_sensor:
           states("sensor.pir_kitchen_luminance") | int > 18
           and is_state("light.fibaro_kitchen", "off")
         )
-        or states("sensor.pir_kitchen_luminance") | int > 45
+        or states("sensor.pir_kitchen_luminance") | int > 35
       -%}
         off
       {%- else -%}

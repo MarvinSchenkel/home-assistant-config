@@ -75,9 +75,30 @@ trigger:
     entity_id:
       - light.master_bedroom_lights
     id: "lights"
-  - platform: time
-    at: "05:00:00"
-    id: "reset"
+  - platform: state
+    entity_id:
+      - light.master_bedroom_lights
+    from: "on"
+    to: "off"
+    id: "all_lights_off"
+  - platform: state
+    entity_id:
+      - switch.nspanel_master_bedroom_relay_1
+    id: "nspanel_left"
+  - platform: state
+    entity_id:
+      - switch.nspanel_master_bedroom_relay_2
+    id: "nspanel_right"
+  - platform: state
+    entity_id:
+      - sensor.zoey_status
+    to: "Slaapt boven"
+    id: "zoey_sleeps_upstairs"
+  - platform: state
+    entity_id:
+      - sensor.zoey_status
+    to: "Wakker"
+    id: "zoey_awake"
 
 condition:
   - condition: state
@@ -92,7 +113,8 @@ action:
             id: "reset"
 
         sequence:
-          - alias: "Turn manual control off"
+          - &manual_control_off
+            alias: "Turn manual control off"
             service: input_boolean.turn_off
             target:
               entity_id: input_boolean.masterbedroom_manual_control
@@ -118,13 +140,17 @@ action:
             service: light.toggle
             data:
               entity_id: light.master_bedroom_left
-              brightness_pct: 15
+              brightness_pct: 3
               transition: 2
 
       - alias: "When Laura clicks the button when she is already sleeping"
         conditions:
-          - condition: trigger
-            id: "button_laura_single"
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: "button_laura_single"
+              - condition: trigger
+                id: "nspanel_left"
           - condition: state
             entity_id:
               - input_select.laura_sleep_status_dropdown
@@ -138,7 +164,7 @@ action:
             service: light.toggle
             data:
               entity_id: light.master_bedroom_right
-              brightness_pct: 15
+              brightness_pct: 3
               transition: 2
 
       - alias: "Set lights as manually controlled when changed by someone manually"
@@ -155,9 +181,14 @@ action:
 
       - alias: "Turn the light off when we go to sleep, even if it is manually controlled"
         conditions:
-          - alias: "Someone goes to sleep"
-            condition: trigger
-            id: "house_mode_someone_asleep"
+          - condition: or
+            conditions:
+              - alias: "Someone goes to sleep"
+                condition: trigger
+                id: "house_mode_someone_asleep"
+              - alias: "Or Zoey goes to sleep"
+                condition: trigger
+                id: "zoey_sleeps_upstairs"
 
         sequence:
           - &turn_off
@@ -166,6 +197,15 @@ action:
             data:
               entity_id: light.master_bedroom_lights
               transition: 5
+
+      - alias: "Turn off manual control when all lights are turned off"
+        conditions:
+          - alias: "All lights are off"
+            condition: trigger
+            id: "all_lights_off"
+
+        sequence:
+          - *manual_control_off
 
       - alias: "Stop automating lights when the lights are manually controlled"
         conditions:
@@ -188,6 +228,12 @@ action:
           - condition: state
             entity_id: binary_sensor.presence_master_bedroom
             state: "on"
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id:
+                  - sensor.zoey_status
+                state: "Slaapt boven"
 
         sequence:
           - choose:
@@ -211,11 +257,12 @@ action:
                         state: "on"
 
                 sequence:
-                  - service: scene.turn_on
+                  - &scene_dim
+                    service: scene.turn_on
                     target:
                       entity_id: scene.masterbedroom_lights_dim
                     data:
-                      transition: 3
+                      transition: 1
 
               - alias: "Use the evening scene when the sun has been down for a bit"
                 conditions:
@@ -231,7 +278,7 @@ action:
                     target:
                       entity_id: scene.masterbedroom_lights_evening
                     data:
-                      transition: 1
+                      transition: 3
 
             default:
               - alias: "Just turn on the lights"

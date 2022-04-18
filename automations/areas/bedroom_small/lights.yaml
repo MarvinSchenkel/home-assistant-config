@@ -1,0 +1,61 @@
+---
+alias: areas_bedroom_small_lights
+description: >-
+  Automate light's brightness in the small bedroom
+mode: single
+max_exceeded: silent
+id: ca30804b-41af-4ca6-8d00-869978d17810
+
+trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: d2facfeac2ccc4f9eb4da6139c01da41
+      value: 16
+    id: "small_bedroom_single_click"
+
+action:
+  choose:
+    - conditions:
+        - condition: state
+          entity_id:
+            - light.fibaro_small_bedroom
+          state: "off"
+
+      sequence:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id:
+                    - binary_sensor.house_mode_everyone_asleep
+                  state: "on"
+
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: light.fibaro_small_bedroom
+                  data:
+                    brightness_pct: 28
+
+            - conditions:
+                - condition: state
+                  entity_id:
+                    - binary_sensor.livingroom_is_dark
+                  state: "on"
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: light.fibaro_small_bedroom
+                  data:
+                    brightness_pct: 70
+
+          default:
+            - service: light.turn_on
+              target:
+                entity_id: light.fibaro_small_bedroom
+              data:
+                brightness_pct: 70
+  default:
+    - service: light.turn_off
+      target:
+        entity_id: light.fibaro_small_bedroom

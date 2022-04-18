@@ -1,0 +1,8 @@
+---
+platform: statistics
+name: sun_max_elevation_48h
+entity_id: sensor.sun_elevation
+state_characteristic: value_max
+sampling_size: 10000
+max_age:
+  hours: 48

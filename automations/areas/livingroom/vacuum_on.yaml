@@ -19,12 +19,21 @@ trigger:
     entity_id:
       - binary_sensor.everyone_left_home
       - binary_sensor.house_mode_everyone_at_home_working
+    from: "off"
+    to: "on"
+    for:
+      minutes: 2
 
 condition:
   - "{{ hours_since_last_clean > 12.0 }}"
   - condition: time
     after: "07:30:00"
     before: "22:00:00"
+  - alias: "Do not automate when a guest is over"
+    condition: state
+    entity_id:
+      - input_boolean.setting_guest_mode
+    state: "off"
 
 action:
   - service: vacuum.start

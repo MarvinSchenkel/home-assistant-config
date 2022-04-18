@@ -65,45 +65,46 @@ sequence:
                     title: "{{ title }}"
 
         # Then check if we need to play it as an alert on our Sonos devices
-        - choose:
-            - conditions:
-                - "{{ receiver == 'intercom' }}"
-                - condition: state
-                  entity_id:
-                    - binary_sensor.house_mode_someone_asleep
-                  state: "off"
-              sequence:
-                - repeat:
-                    count: "{{ intercom_devices | length }}"
-                    sequence:
-                      - variables:
-                          sonos_entity: "{{ intercom_devices[repeat.index-1] }}"
-                      - service: sonos.snapshot
-                        data:
-                          entity_id: "{{ sonos_entity }}"
-                      - service: sonos.unjoin
-                        data:
-                          entity_id: "{{ sonos_entity }}"
-                      - service: media_player.volume_set
-                        data:
-                          entity_id: "{{ sonos_entity }}"
-                          volume_level: 0.20
-                      - service: media_player.play_media
-                        data:
-                          entity_id: "{{ sonos_entity }}"
-                          media_content_id: !secret notification_sound_url
-                          media_content_type: music
-                      - delay:
-                          seconds: 1
-                      - service: tts.google_cloud_say
-                        data:
-                          entity_id: "{{ sonos_entity }}"
-                          message: "{{ message }}"
-                      - delay:
-                          seconds: 5
-                      - service: sonos.restore
-                        data:
-                          entity_id: "{{ sonos_entity }}"
+        # Disabled, since TTS is not good enough
+        # - choose:
+        #     - conditions:
+        #         - "{{ receiver == 'intercom' }}"
+        #         - condition: state
+        #           entity_id:
+        #             - binary_sensor.house_mode_someone_asleep
+        #           state: "off"
+        #       sequence:
+        #         - repeat:
+        #             count: "{{ intercom_devices | length }}"
+        #             sequence:
+        #               - variables:
+        #                   sonos_entity: "{{ intercom_devices[repeat.index-1] }}"
+        #               - service: sonos.snapshot
+        #                 data:
+        #                   entity_id: "{{ sonos_entity }}"
+        #               - service: sonos.unjoin
+        #                 data:
+        #                   entity_id: "{{ sonos_entity }}"
+        #               - service: media_player.volume_set
+        #                 data:
+        #                   entity_id: "{{ sonos_entity }}"
+        #                   volume_level: 0.20
+        #               - service: media_player.play_media
+        #                 data:
+        #                   entity_id: "{{ sonos_entity }}"
+        #                   media_content_id: !secret notification_sound_url
+        #                   media_content_type: music
+        #               - delay:
+        #                   seconds: 1
+        #               - service: tts.google_cloud_say
+        #                 data:
+        #                   entity_id: "{{ sonos_entity }}"
+        #                   message: "{{ message }}"
+        #               - delay:
+        #                   seconds: 5
+        #               - service: sonos.restore
+        #                 data:
+        #                   entity_id: "{{ sonos_entity }}"
 
         # Send mobile notifications
         - choose:

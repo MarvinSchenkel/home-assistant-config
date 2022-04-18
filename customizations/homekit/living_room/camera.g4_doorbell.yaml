@@ -1,3 +1,0 @@
----
-linked_doorbell_sensor: binary_sensor.g4_doorbell_person_motion
-support_audio: True

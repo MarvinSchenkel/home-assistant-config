@@ -24,12 +24,12 @@ action:
       - conditions:
           - condition: trigger
             id: "laura"
-          - "{{ trigger.to_state.attributes.match.confidence > 90 }}"
+          - "{{ trigger.to_state.attributes.match.confidence > 94 }}"
         sequence:
-          - service: unifiprotect.set_doorbell_lcd_message
+          - service: unifiprotect.set_doorbell_message
             data:
-              entity_id: camera.g4_doorbell
-              message: "HALLO LIEVE LAURA!"
+              entity_id: select.g4_doorbell_doorbell_text
+              message: "HALLO LAURA!"
               duration: 2
           - &delay
             alias: "Delay after someone is detected"
@@ -39,25 +39,34 @@ action:
       - conditions:
           - condition: trigger
             id: "marvin"
-          - "{{ trigger.to_state.attributes.match.confidence > 90 }}"
+          - "{{ trigger.to_state.attributes.match.confidence > 94 }}"
         sequence:
-          - service: unifiprotect.set_doorbell_lcd_message
+          - service: unifiprotect.set_doorbell_message
             data:
-              entity_id: camera.g4_doorbell
+              entity_id: select.g4_doorbell_doorbell_text
               message: "HEY MARVIN!"
               duration: 2
           - *delay
 
     default:
-      - alias: "Display greeting based on the time of day"
+      - alias: "Display greeting based on the day or the time of day"
         choose:
+          - conditions:
+              - "{{ now().month == 12 and now().day > 23 }}"
+            sequence:
+              - service: unifiprotect.set_doorbell_message
+                data:
+                  entity_id: select.g4_doorbell_doorbell_text
+                  message: "🎄 FIJNE FEESTDAGEN!"
+                  duration: 2
+
           - conditions:
               - condition: time
                 after: "18:00:00"
             sequence:
-              - service: unifiprotect.set_doorbell_lcd_message
+              - service: unifiprotect.set_doorbell_message
                 data:
-                  entity_id: camera.g4_doorbell
+                  entity_id: select.g4_doorbell_doorbell_text
                   message: "GOEDENAVOND!"
                   duration: 2
 
@@ -65,9 +74,9 @@ action:
               - condition: time
                 after: "12:00:00"
             sequence:
-              - service: unifiprotect.set_doorbell_lcd_message
+              - service: unifiprotect.set_doorbell_message
                 data:
-                  entity_id: camera.g4_doorbell
+                  entity_id: select.g4_doorbell_doorbell_text
                   message: "GOEDEMIDDAG!"
                   duration: 2
 
@@ -75,9 +84,9 @@ action:
               - condition: time
                 after: "06:00:00"
             sequence:
-              - service: unifiprotect.set_doorbell_lcd_message
+              - service: unifiprotect.set_doorbell_message
                 data:
-                  entity_id: camera.g4_doorbell
+                  entity_id: select.g4_doorbell_doorbell_text
                   message: "GOEDEMORGEN!"
                   duration: 2
 
@@ -85,15 +94,15 @@ action:
               - condition: time
                 after: "00:00:00"
             sequence:
-              - service: unifiprotect.set_doorbell_lcd_message
+              - service: unifiprotect.set_doorbell_message
                 data:
-                  entity_id: camera.g4_doorbell
+                  entity_id: select.g4_doorbell_doorbell_text
                   message: "GOEDENACHT!"
                   duration: 2
 
         default:
-          - service: unifiprotect.set_doorbell_lcd_message
+          - service: unifiprotect.set_doorbell_message
             data:
-              entity_id: camera.g4_doorbell
+              entity_id: select.g4_doorbell_doorbell_text
               message: "WELKOM!"
               duration: 2

@@ -10,19 +10,46 @@ id: 0069afb3-adb3-433c-beff-107c17508dbd
 trigger:
   - platform: webhook
     webhook_id: marvin_awake
+    id: "webhook"
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "2a93e9d147b93ca0ec5992d48dde3129"
       command: "hold"
+    id: "button"
 
 condition:
-  condition: state
-  entity_id: input_select.marvin_sleep_status_dropdown
-  state: "Slaapt"
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: input_select.marvin_sleep_status_dropdown
+        state: "Slaapt"
+      - condition: and
+        conditions:
+          - condition: trigger
+            id: "webhook"
+          - condition: time
+            after: "06:00:00"
+            before: "09:00:00"
 
 action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.marvin_sleep_status_dropdown
-      option: "Net wakker"
+  - alias: "Check if it's an alarm that triggered the automation or manual button"
+    choose:
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: "button"
+              - condition: time
+                after: "06:00:00"
+                before: "09:00:00"
+        sequence:
+          - service: input_select.select_option
+            data:
+              entity_id: input_select.marvin_sleep_status_dropdown
+              option: "Net wakker"
+    default:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.marvin_sleep_status_dropdown
+          option: "{{ states('input_select.marvin_sleep_status_dropdown') }}"

@@ -1,0 +1,245 @@
+# lovelace_gen
+path: Home
+type: custom:grid-layout
+layout: !include ../includes/layout.yaml
+
+cards:
+  - type: custom:button-card #extra_styles fix
+  - !include ../includes/sidebar.yaml
+
+  - type: "custom:config-template-card"
+    entities:
+      - light.fibaro_hall_downstairs
+      - light.fibaro_wc
+      - light.fibaro_kitchen
+      - light.fibaro_livingroom
+      - light.dinner
+      - light.corner_couch
+    card:
+      type: picture-elements
+      image: /local/slate/floorplan/nighttime_full.png
+      style: |
+        ha-card:first-child {
+          background: rgba(42, 46, 48, 1);
+          position: absolute;
+          z-index: 0;
+          width: 77vw;
+          left: 21vw;
+        }
+      elements:
+        ######################### Blended image overlays #########################
+        # Day time overlay when sun is up
+        - type: image
+          action: none
+          entity: sun.sun
+          state_image:
+            above_horizon: /local/slate/floorplan/daytime_full.png
+            below_horizon: /local/slate/ui/transparent.png
+          style:
+            height: 100%
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${ states['sensor.sun_light_pct'].state / 100 }"
+            top: 50%
+            width: 100%
+          tap_action:
+            action: none
+          hold_action:
+            action: none
+
+        # Hall
+        - type: image
+          action: none
+          entity: light.fibaro_hall_downstairs
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_hall.png
+          style:
+            filter: >-
+              ${ "hue-rotate(" + (states['light.fibaro_hall_downstairs'].attributes.hs_color
+              ? states['light.fibaro_hall_downstairs'].attributes.hs_color[0] : 0) + "deg)"}
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${states['light.fibaro_hall_downstairs'].state === 'on' ? (states['light.fibaro_hall_downstairs'].attributes.brightness / 255) : '0'}"
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        # WC
+        - type: image
+          action: none
+          entity: light.fibaro_wc
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_wc.png
+          style:
+            filter: >-
+              ${ "hue-rotate(" + (states['light.fibaro_wc'].attributes.hs_color
+              ? states['light.fibaro_wc'].attributes.hs_color[0] : 0) + "deg)"}
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${states['light.fibaro_wc'].state === 'on' ? (states['light.fibaro_wc'].attributes.brightness / 255) : '0'}"
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        # Kitchen
+        - type: image
+          action: none
+          entity: light.fibaro_kitchen
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_kitchen.png
+          style:
+            filter: >-
+              ${ "hue-rotate(" + (states['light.fibaro_kitchen'].attributes.hs_color
+              ? states['light.fibaro_kitchen'].attributes.hs_color[0] : 0) + "deg)"}
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${states['light.fibaro_kitchen'].state === 'on' ? (states['light.fibaro_kitchen'].attributes.brightness / 255) : '0'}"
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        # Dinner
+        - type: image
+          action: none
+          entity: light.dinner
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_dinner.png
+          style:
+            filter: >-
+              ${ "hue-rotate(" + (states['light.dinner'].attributes.hs_color
+              ? states['light.dinner'].attributes.hs_color[0] : 0) + "deg)"}
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${states['light.dinner'].state === 'on' ? (states['light.dinner'].attributes.brightness / 255) : '0'}"
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        # Living
+        - type: image
+          action: none
+          entity: light.fibaro_livingroom
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_living.png
+          style:
+            filter: >-
+              ${ "hue-rotate(" + (states['light.fibaro_livingroom'].attributes.hs_color
+              ? states['light.fibaro_livingroom'].attributes.hs_color[0] : 0) + "deg)"}
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${states['light.fibaro_livingroom'].state === 'on' ? (states['light.fibaro_livingroom'].attributes.brightness / 255) : '0'}"
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        # Corner
+        - type: image
+          action: none
+          entity: light.corner_couch
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_corner.png
+          style:
+            filter: >-
+              ${ "hue-rotate(" + (states['light.corner_couch'].attributes.hs_color
+              ? states['light.corner_couch'].attributes.hs_color[0] : 0) + "deg)"}
+            left: 50%
+            mix-blend-mode: lighten
+            opacity: "${states['light.corner_couch'].state === 'on' ? (states['light.corner_couch'].attributes.brightness / 255) : '0'}"
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        # Fireplace
+        - type: image
+          action: none
+          entity: light.corner_couch
+          hold_action:
+            action: none
+          image: /local/slate/floorplan/nighttime_fireplace.png
+          style:
+            left: 50%
+            mix-blend-mode: lighten
+            top: 50%
+            width: 100%
+            height: 100%
+          tap_action:
+            action: none
+
+        ######################### Light buttons #########################
+        - type: custom:button-card
+          entity: light.dinner
+          icon: mdi:ceiling-light
+          style:
+            left: 52.4%
+            top: 74.7%
+          template:
+            - light_white
+
+        - type: custom:button-card
+          entity: light.corner_couch
+          icon: mdi:light-flood-up
+          style:
+            left: 86.0%
+            top: 82.9%
+          template:
+            - light
+
+        - type: custom:button-card
+          entity: light.livingroom
+          icon: mdi:track-light
+          style:
+            left: 76.9%
+            top: 42.7%
+          styles:
+            card:
+              - transform: "scaleX(-1)"
+          template:
+            - light_white
+
+        - type: custom:button-card
+          entity: light.fibaro_kitchen
+          icon: mdi:track-light
+          style:
+            left: 22.9%
+            top: 71.7%
+          styles:
+            card:
+              - transform: "scaleX(-1)"
+          template:
+            - light_white
+
+        - type: custom:button-card
+          entity: light.fibaro_hall_downstairs
+          icon: mdi:dome-light
+          style:
+            left: 22.9%
+            top: 21.7%
+          template:
+            - light_white
+
+        - type: custom:button-card
+          entity: light.fibaro_wc
+          icon: mdi:lightbulb-outline
+          style:
+            left: 11.9%
+            top: 42.3%
+          template:
+            - light_white

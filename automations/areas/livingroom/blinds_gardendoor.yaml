@@ -32,24 +32,31 @@ trigger:
       # Whether we just woke up / gone to sleep
       - binary_sensor.house_mode_everyone_asleep
       - binary_sensor.house_mode_someone_awake
-    from: "off"
-    to: "on"
+    from:
+      - "off"
+      - "on"
+    to:
+      - "off"
+      - "on"
   # Sun
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    below: -1.0
+      - sensor.sun_adjusted_elevation
+    below: -10
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    above: 1.0
+      - sensor.sun_adjusted_elevation
+    above: 0
   # Open garden door when we want to go outside using Fibaro Switch
-  - platform: event
-    event_type: zwave_js_value_notification
-    event_data:
-      device_id: e4215541d29b80289c09ff2dc404fe26
-      label: "Scene 001"
+  - platform: state
+    entity_id: switch.nspanel_woonkamer_relay_1
     id: "garden_door_switch"
+    from:
+      - "on"
+      - "off"
+    to:
+      - "on"
+      - "off"
   # Open garden door when we open the door and the blinds are closed
   - platform: state
     entity_id:
@@ -69,7 +76,7 @@ trigger:
       - standby
       - paused
     for:
-      minutes: 10
+      minutes: 8
 
 condition:
   - condition: state
@@ -115,10 +122,16 @@ action:
       - conditions:
           - condition: or
             conditions:
-              - condition: state
-                entity_id: binary_sensor.house_mode_everyone_asleep
-                state:
-                  - "on"
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.house_mode_everyone_asleep
+                    state:
+                      - "on"
+                  - condition: state
+                    entity_id: binary_sensor.house_mode_someone_just_awake
+                    state:
+                      - "on"
               - condition: state
                 entity_id:
                   - binary_sensor.sun_should_close_south_blinds
@@ -140,10 +153,11 @@ action:
       - conditions:
           - condition: numeric_state
             entity_id:
-              - sensor.sun_elevation
-            below: 1.0
+              - sensor.sun_adjusted_elevation
+            below: -10
         sequence:
-          - service: scene.turn_on
+          - &cover_halfclosed
+            service: scene.turn_on
             target:
               entity_id:
                 - scene.gardendoor_cover_halfclosed

@@ -1,5 +1,6 @@
 ---
-name: Woonkamer huidige Luxaflex scene
+name: Luxaflex Woonkamer
+icon: mdi:blinds
 options:
   - open
   - halfopen

@@ -1,0 +1,8 @@
+---
+platform: template
+sensors:
+  zoey_status:
+    unique_id: d30a8766-6cbb-4b43-9c3b-e215a3945583
+    value_template: >-
+      {{ states.input_select.zoey_sleep_status_dropdown.state }}
+    friendly_name: "Zoey"

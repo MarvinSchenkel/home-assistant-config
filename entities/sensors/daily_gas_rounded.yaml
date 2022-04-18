@@ -1,0 +1,7 @@
+---
+platform: template
+sensors:
+  daily_gas_rounded:
+    friendly_name: Daily Gas Rounded
+    unit_of_measurement: m³
+    value_template: "{{ states('sensor.daily_gas') |float |round(1) }}"

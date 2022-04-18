@@ -1,0 +1,20 @@
+---
+description: Send a notification when the wasmachine is done
+alias: notification_washingmachine_done
+mode: single
+id: 63b70abc-30bb-4db3-9bb9-eeccb8f2eed4
+
+trigger:
+  - platform: state
+    entity_id: binary_sensor.washing_machine
+    from: "on"
+    to: "off"
+
+action:
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+      message: >
+        De wasmachine is klaar

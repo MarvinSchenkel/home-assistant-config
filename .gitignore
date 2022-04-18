@@ -24,7 +24,9 @@ tts
 scripts/alarm
 automations/system/notifications/private
 www/fonts
+fonts
 www/upcoming-media-card-images
+www/nspanel
 
 # Ignore specific files
 zwcfg_*
@@ -36,6 +38,7 @@ www/marvin
 www/laura
 mqtt_dump.txt
 webostv.conf
+www/*.jfif
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 ip_bans.yaml

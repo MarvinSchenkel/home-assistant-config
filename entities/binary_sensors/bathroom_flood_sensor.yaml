@@ -1,7 +1,0 @@
----
-# Convert the useless integers from the flood sensor to on/off
-platform: template
-sensors:
-  bathroom_flood:
-    value_template: >
-      {{  states("binary_sensor.flood_sensor_water_alarm_water_leak_detected") }}

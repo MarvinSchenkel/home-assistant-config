@@ -10,7 +10,7 @@ variables:
 trigger:
   - platform: state
     entity_id:
-      - binary_sensor.doorbell_g4_doorbell
+      - binary_sensor.g4_doorbell_doorbell
     to: "on"
 
 condition:

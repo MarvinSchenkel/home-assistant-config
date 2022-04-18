@@ -1,0 +1,81 @@
+sidebar_time_and_date:
+  variables:
+    display_date: true
+    # Use 'locale' and 'date_options' to format the date according to your liking
+    # see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
+    locale: "nl-NL"
+    date_options: |
+      { "weekday": "long", "month": "long", "day": "numeric" }
+  show_state: false
+  show_icon: false
+  tap_action:
+    action: none
+  name: >
+    [[[
+      const now = new Date();
+      const hours = ('0'+now.getHours()).slice(-2);
+      const mins = ('0'+now.getMinutes()).slice(-2);
+      const options = JSON.parse(variables.date_options);
+
+      html = `
+        <span class="sidebar-time">
+          ${hours}<span class="sidebar-time-colon">:</span>${mins}
+        </span>
+      `;
+
+      if(variables.display_date) {
+        html += `
+          <span class="sidebar-date">${now.toLocaleDateString(variables.locale, options)}</span>
+        `
+      }
+
+      return html;
+    ]]]
+  extra_styles: |
+    #card {
+      margin: 1.5vw 0 2vw 0;
+    }
+    #container {
+      display: flex !important;
+    }
+    #name {
+      padding: 1.8vw 1vw 0 var(--custom-layout-card-padding);
+      white-space: normal;
+      text-align: left;
+    }
+    .sidebar-time {
+      font-size: var(--sidebar-time-font-size);
+      font-weight: 200;
+      line-height: var(--sidebar-time-line-height);
+      letter-spacing: -0.05vw;
+      color: rgba(255, 255, 255, 0.7);
+      display: block;
+    }
+    .sidebar-time-colon {
+      position: relative;
+      top: -.09em;
+    }
+    .sidebar-date {
+      font-size: 1.3vw;
+      font-weight: 300;
+      letter-spacing: -0.05vw;
+      line-height: var(--sidebar-time-line-height);
+      color: rgba(255, 255, 255, 0.3);
+      margin-left: 0.5vw;
+    }
+    /* portrait */
+    @media screen and (max-width: 1200px) {
+      .sidebar-time {
+        font-size: calc(var(--sidebar-time-font-size) * 1.4 );
+        line-height: calc(var(--sidebar-time-line-height) * 1.4 );
+      }
+    }
+    /* phone */
+    @media screen and (max-width: 800px) {
+      .sidebar-time {
+        font-size: calc(var(--sidebar-time-font-size) * 2.6 );
+      }
+      #name {
+        padding: 0 0 0 1vw;
+      }
+    }

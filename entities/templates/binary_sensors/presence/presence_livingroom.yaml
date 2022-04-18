@@ -1,0 +1,8 @@
+---
+binary_sensor:
+  name: presence_livingroom
+  unique_id: 8a0ae357-2904-4b2c-ab1e-ddbbe35aa90d
+  state: >
+    {{  is_state("binary_sensor.pir_kitchen", "on")  
+        or is_state("media_player.living_room_tv", "playing")
+        or is_state("media_player.sonos_living_room", "playing")  }}

@@ -7,80 +7,26 @@ max_exceeded: silent
 id: a63e7f88-b3fd-4628-a4d1-327070e0522b
 
 trigger:
-  - platform: homeassistant
-    event: start
   - platform: event
-    event_type: automation_reloaded
-  # Sun
-  - platform: numeric_state
-    entity_id:
-      - sensor.sun_elevation
-    below: 1.0
-  - platform: numeric_state
-    entity_id:
-      - sensor.sun_elevation
-    above: 1.0
-  - platform: state
-    entity_id:
-      # Include auto-shut blinds on hot days
-      - binary_sensor.sun_should_close_south_blinds
-  - platform: time
-    at:
-      - "08:00:00"
-      - "10:00:00"
-      - "19:00:00"
-  # There is a weird bug in the ZHA communication where HA thinks the blinds are closing, but nothing is really happening.
-  # The state then pops back to 'closed', so using this a trigger to retry the automation.
-  - platform: state
-    entity_id: cover.small_bedroom
-    from: opening
-    to: closed
-  - platform: state
-    entity_id: cover.small_bedroom
-    from: closing
-    to: open
-
-condition:
-  - condition: state
-    entity_id: input_boolean.setting_guest_mode
-    state: "off"
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: d2facfeac2ccc4f9eb4da6139c01da41
+      value: 14
+    id: "small_bedroom_double_click"
 
 action:
   choose:
     - conditions:
-        - condition: time
-          before: "19:00:00"
-        - condition: numeric_state
-          entity_id:
-            - sensor.sun_elevation
-          above: 1.0
-        - condition: or
-          conditions:
-            - alias: "Open: Workdays at 8am"
-              condition: and
-              conditions:
-                - condition: time
-                  after: "08:00:00"
-                - condition: state
-                  entity_id: binary_sensor.workday
-                  state: "on"            
-            - alias: "Open: Weekend days and holidays at 10"
-              condition: and
-              conditions:
-                - condition: time
-                  after: "10:00:00"
-                - condition: state
-                  entity_id: binary_sensor.workday
-                  state: "off"
         - condition: state
           entity_id:
-            - binary_sensor.sun_should_close_south_blinds
-          state: "off"
+            - input_select.smallbedroom_current_cover_scene
+          state: "closed"
+
       sequence:
-        - service: cover.open_cover
+        - service: scene.turn_on
           target:
-            entity_id: cover.small_bedroom
+            entity_id: scene.smallbedroom_cover_open
   default:
-    - service: cover.close_cover
+    - service: scene.turn_on
       target:
-        entity_id: cover.small_bedroom
+        entity_id: scene.smallbedroom_cover_closed

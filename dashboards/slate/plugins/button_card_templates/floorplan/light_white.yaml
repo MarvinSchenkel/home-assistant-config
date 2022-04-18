@@ -1,0 +1,71 @@
+light_white:
+  template:
+    - icon_main
+    - circle
+  show_state: false
+  show_icon: true
+  show_name: false
+  show_label: false
+  size: 55%
+  color_type: icon
+  color: rgb(255, 159, 0)
+  color_off: rgb(255, 255, 255)
+  tap_action:
+    action: toggle
+    haptic: light
+  styles:
+    card:
+      - width: 3.5vw
+      - height: 3.5vw
+      - left: 0%
+      - borderRadius: 10vw
+      - background-color: >
+          [[[ return (entity.state === 'on' || entity.state === 'home') ? 'rgba(255, 255, 255, 1.0)' : 'rgba(115, 115, 115, 0.6)'; ]]]
+  variables:
+    circle_input: >
+      [[[ return Math.round(entity.attributes.brightness / 2.54); ]]]
+  hold_action: &interaction
+    action: fire-dom-event
+    browser_mod:
+      command: popup
+      style:
+        $: |
+          s.popup-inner{
+            padding: 15px 0 30px 0;
+          }
+          .mdc-dialog .mdc-dialog__container {
+          }
+          .mdc-dialog .mdc-dialog__container .mdc-dialog__surface {
+            border-radius: 2vw;
+          }
+          .mdc-dialog .mdc-dialog__scrim {
+              backdrop-filter: blur(10px);
+          }
+          ha-svg-icon {
+              margin-top:-7px;
+          }
+        .: |
+          :host {
+            --mdc-dialog-scrim-color: rgba(0,0,0,0.5);
+          }
+          mwc-icon-button {
+            color: #FFF;
+          }
+      title: >
+        [[[ return entity.attributes.friendly_name ]]]
+      card:
+        type: entities
+        entities:
+          - type: custom:light-popup-card
+            entity: >
+              [[[ return entity.entity_id ]]]
+            icon: none
+            hideIcon: true
+            fullscreen: false
+            brightnessWidth: 130px
+            brightnessHeight: 360px
+            borderRadius: 1.7em
+            sliderColor: "#c7c7c7"
+            sliderTrackColor: rgba(25, 25, 25, 0.9)
+            displayType: slider
+  double_tap_action: *interaction

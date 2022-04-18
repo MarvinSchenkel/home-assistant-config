@@ -1,0 +1,13 @@
+binary_sensor:
+  name: washing_machine
+  unique_id: f9b0ae40-ba55-4ad3-81cd-130cde78afca
+  delay_off:
+    minutes: 6
+  state: >
+    {%-
+      if states("sensor.wasmachine_electric_consumption_a") | float > 0
+    -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

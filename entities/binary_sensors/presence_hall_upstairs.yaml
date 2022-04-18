@@ -1,6 +1,0 @@
-platform: template
-sensors:
-  presence_hall_upstairs:
-    friendly_name: "Hal boven aanwezigheid"
-    value_template: >
-      {{  states("binary_sensor.pir_hall_upstairs") }}

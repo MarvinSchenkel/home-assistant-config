@@ -1,0 +1,8 @@
+---
+name: smallbedroom_cover_open
+id: 5f316ed5-7857-4ffc-a2c2-97f2fcca485d
+icon: mdi:blinds
+entities:
+  cover.small_bedroom:
+    state: open
+    current_position: 100

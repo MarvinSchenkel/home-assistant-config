@@ -1,0 +1,17 @@
+---
+description: Send a notification when the wasmachine outlet overloads
+alias: notification_washingmachine_overload
+mode: single
+id: c6c62798-8b28-4cf2-95db-0f090a60a1ff
+
+trigger:
+  - platform: state
+    entity_id: sensor.wasmachine_power_management_over_load_status
+
+action:
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+      message: >
+        Wasmachine overload! {{ trigger.to_state.name }}

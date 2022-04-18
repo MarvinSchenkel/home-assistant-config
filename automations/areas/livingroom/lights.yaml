@@ -32,27 +32,42 @@ trigger:
     id: "everyone_asleep"
   - platform: state
     entity_id:
-      - light.fibaro_livingroom
-      - light.fibaro_kitchen
-      - light.dinner
+      - light.livingroom
+      - light.kitchen
     id: "lights"
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    below: -3
+      - sensor.sun_adjusted_elevation
+    below: -5
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
+      - sensor.sun_adjusted_elevation
     below: 1
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
+      - sensor.sun_adjusted_elevation
     above: 1
-  - platform: time
-    at: "05:00:00"
-    id: "reset"
+  - platform: state
+    entity_id:
+      - light.livingroom
+      - light.kitchen
+    from: "off"
+    to: "on"
+    id: "lights_off"
   - platform: time
     at: "19:00:00"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "dd93f7c049eb8e103af97459fb7aae53"
+      command: "on_press"
+    id: "hue_dimmer_on_press"
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "dd93f7c049eb8e103af97459fb7aae53"
+      command: "off_press"
+    id: "hue_dimmer_off_press"
 
 condition:
   - condition: state
@@ -61,10 +76,10 @@ condition:
 
 action:
   - choose:
-      - alias: "Reset manual control at the start of the day"
+      - alias: "Reset manual control when all lights are turned off"
         conditions:
           - condition: trigger
-            id: "reset"
+            id: "lights_off"
 
         sequence:
           - &manual_control_off
@@ -116,7 +131,7 @@ action:
             state: "on"
           - condition: numeric_state
             entity_id:
-              - sensor.sun_elevation
+              - sensor.sun_adjusted_elevation
             above: 1.0
 
         sequence:
@@ -131,46 +146,96 @@ action:
                   - input_boolean.livingroom_manual_control
                 state: "on"
               - *lights_changed
+              - condition: state
+                entity_id:
+                  - input_select.livingroom_current_lights_scene
+                state: "movie"
+          - condition: not
+            conditions:
+              - condition: trigger
+                id:
+                  - "hue_dimmer_on_press"
+                  - "hue_dimmer_off_press"
 
         sequence: []
 
-      - conditions:
-          - condition: state
+      - alias: "Determine if we need to turn on the lights at all"
+        conditions:
+          - alias: "Is it dark?"
+            condition: state
             entity_id: binary_sensor.livingroom_is_dark
             state: "on"
-          - condition: numeric_state
-            entity_id: sensor.num_people_at_home
-            above: 0
           - condition: or
             conditions:
-              - condition: state
+              - alias: "Do we have a guest, e.g. baby sitter?"
+                condition: state
                 entity_id:
-                  - binary_sensor.house_mode_someone_just_awake
+                  - input_boolean.setting_guest_mode
                 state: "on"
-              - condition: state
-                entity_id:
-                  - binary_sensor.house_mode_someone_awake
-                state: "on"
+              - alias: "Or are we home and awake?"
+                condition: and
+                conditions:
+                  - condition: numeric_state
+                    entity_id: sensor.num_people_at_home
+                    above: 0
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id:
+                          - binary_sensor.house_mode_someone_just_awake
+                        state: "on"
+                      - condition: state
+                        entity_id:
+                          - binary_sensor.house_mode_someone_awake
+                        state: "on"
 
         sequence:
           - choose:
-              - conditions:
-                  - condition: numeric_state
-                    entity_id:
-                      - sensor.sun_elevation
-                    below: -3
-                  - condition: time
-                    after: "19:00:00"
+              - alias: "When we press the remote and current scene is either normal or evening"
+                conditions:
+                  - condition: and
+                    conditions:
+                      - condition: trigger
+                        id:
+                          - "hue_dimmer_on_press"
+                          - "hue_dimmer_off_press"
+                      - condition: state
+                        entity_id:
+                          - input_select.livingroom_current_lights_scene
+                        state:
+                          - "normal"
+                          - "evening"
 
                 sequence:
-                  - service: scene.turn_on
+                  - alias: "Then turn on the movie scene"
+                    service: scene.turn_on
+                    target:
+                      entity_id: scene.livingroom_lights_movie
+                    data:
+                      transition: 4
+
+              - alias: "When the sun has been down for a while and it's after 7pm.."
+                conditions:
+                  - condition: and
+                    conditions:
+                      - condition: numeric_state
+                        entity_id:
+                          - sensor.sun_adjusted_elevation
+                        below: -5
+                      - condition: time
+                        after: "19:00:00"
+
+                sequence:
+                  - alias: "Turn on the evening scene"
+                    service: scene.turn_on
                     target:
                       entity_id: scene.livingroom_lights_evening
                     data:
                       transition: 4
 
             default:
-              - service: scene.turn_on
+              - alias: "Turn on the 'normal' light scene"
+                service: scene.turn_on
                 target:
                   entity_id: scene.livingroom_lights_normal
                 data:

@@ -20,6 +20,7 @@ trigger:
       # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
       - input_boolean.setting_manual_blinds
+      - input_boolean.livingroom_cover_manual_control
     from:
       - "off"
       - "on"
@@ -31,17 +32,21 @@ trigger:
       # Whether we just woke up / gone to sleep
       - binary_sensor.house_mode_everyone_asleep
       - binary_sensor.house_mode_someone_awake
-    from: "off"
-    to: "on"
+    from:
+      - "off"
+      - "on"
+    to:
+      - "off"
+      - "on"
   # Sun
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    below: -1.0
+      - sensor.sun_adjusted_elevation
+    below: -10
   - platform: numeric_state
     entity_id:
-      - sensor.sun_elevation
-    above: 1.0
+      - sensor.sun_adjusted_elevation
+    above: 0
   # Sync blinds 10m after finish wathing TV
   - platform: state
     entity_id: media_player.apple_tv
@@ -50,7 +55,19 @@ trigger:
       - paused
       - standby
     for:
-      minutes: 10
+      minutes: 8
+  - platform: state
+    entity_id:
+      - sensor.zoey_status
+    to: "Slaapt beneden"
+    id: "zoey_sleeps_downstairs"
+  - platform: state
+    entity_id:
+      - sensor.zoey_status
+    to:
+      - "Wakker"
+      - "Slaapt boven"
+    id: "zoey_awake"
 
 condition:
   - condition: state
@@ -60,14 +77,55 @@ condition:
 
 action:
   - choose:
+      - alias: "Zoey sleeps downstairs"
+        conditions:
+          - condition: trigger
+            id: "zoey_sleeps_downstairs"
+        sequence:
+          - &cover_closed
+            alias: "Close the blinds"
+            service: scene.turn_on
+            target:
+              entity_id:
+                - scene.livingroom_cover_closed
+
+          - alias: "Set manual control to on, so the blinds stay closed"
+            service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.livingroom_cover_manual_control
+
+      - alias: "Zoey wakes up"
+        conditions:
+          - condition: trigger
+            id: "zoey_awake"
+        sequence:
+          - alias: "Reset manual control to on, so the blinds stay closed"
+            service: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.livingroom_cover_manual_control
+
+      - alias: "Stop automating the blinds when manual control is on"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.livingroom_cover_manual_control
+            state: "on"
+        sequence: []
+
       # Fully closed
       - conditions:
           - condition: or
             conditions:
-              - condition: state
-                entity_id: binary_sensor.house_mode_everyone_asleep
-                state:
-                  - "on"
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.house_mode_everyone_asleep
+                    state:
+                      - "on"
+                  - condition: state
+                    entity_id: binary_sensor.house_mode_someone_just_awake
+                    state:
+                      - "on"
               - condition: state
                 entity_id:
                   - binary_sensor.sun_should_close_south_blinds
@@ -83,17 +141,14 @@ action:
                       - input_select.livingroom_current_cover_scene
                     state: "closed"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id:
-                - scene.livingroom_cover_closed
+          - *cover_closed
 
       # Half closed
       - conditions:
           - condition: numeric_state
             entity_id:
-              - sensor.sun_elevation
-            below: 1.0
+              - sensor.sun_adjusted_elevation
+            below: -10
         sequence:
           - service: scene.turn_on
             target:

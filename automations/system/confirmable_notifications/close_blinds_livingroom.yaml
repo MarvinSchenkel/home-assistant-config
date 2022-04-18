@@ -22,6 +22,14 @@ condition:
       - binary_sensor.sun_at_south_windows
     state: "on"
   - "{{ not is_state('input_select.livingroom_current_cover_scene', 'closed') }}"
+  - condition: numeric_state
+    entity_id:
+      - sensor.buienradar_irradiance
+    above: 200
+  - condition: state
+    entity_id:
+      - sensor.marvin_work_status
+    state: "Niet aan het werk"
 
 action:
   - service: script.cn_close_blinds_movie

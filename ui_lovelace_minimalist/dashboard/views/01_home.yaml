@@ -1,0 +1,107 @@
+title: "Home"
+path: home
+icon: "mdi:home"
+cards:
+  - type: "vertical-stack"
+    cards:
+      - type: horizontal-stack
+        cards:
+          # - type: "custom:button-card"
+          #   template: chip_temperature
+          #   variables:
+          #     ulm_chip_temperature_inside: sensor.pir_kitchen_temperature
+          #     ulm_chip_temperature_outside: sensor.current_temperature
+          #     ulm_chip_temperature_weather: weather.buienradar
+
+          - type: "custom:button-card"
+            template: chip_icon_double_state
+            variables:
+              ulm_chip_icon_double_state_icon: "⚡"
+              ulm_chip_icon_double_state_entity_1: sensor.daily_energy
+              ulm_chip_icon_double_state_entity_2: sensor.solaredge_energy_today_kwh
+              ulm_chip_navigate_path: /energy
+
+          - type: "custom:button-card"
+            template: chip_icon_state
+            variables:
+              ulm_chip_icon_state_icon: "🔥"
+              ulm_chip_icon_state_entity: sensor.daily_gas_rounded
+            tap_action:
+              action: "navigate"
+              navigation_path: /energy
+
+      - type: "custom:button-card"
+        template: card_title
+        name: Home
+
+      - type: "horizontal-stack"
+        cards:
+          - type: "custom:button-card"
+            template: custom_card_imswel_person
+            variables:
+              ulm_card_imswel_person_entity: sensor.marvin_status
+              ulm_card_imswel_person_wifi_tracker: device_tracker.marvins_iphone_2
+              ulm_card_imswel_person_gps_tracker: device_tracker.marvins_iphone_3
+              ulm_card_imswel_person_use_entity_picture: true
+              ulm_card_imswel_person_zones:
+                - zone.home
+              ulm_card_inswel_person_sleep_status_dropdown: input_select.marvin_sleep_status_dropdown
+              ulm_card_inswel_person_home_status_dropdown: input_select.marvin_status_dropdown
+
+          - type: "custom:button-card"
+            template: custom_card_imswel_person
+            variables:
+              ulm_card_imswel_person_entity: sensor.laura_status
+              ulm_card_imswel_person_wifi_tracker: device_tracker.iphone_laura
+              ulm_card_imswel_person_gps_tracker: device_tracker.iphone_van_l_a
+              ulm_card_imswel_person_use_entity_picture: true
+              ulm_card_imswel_person_zones:
+                - zone.home
+              ulm_card_inswel_person_sleep_status_dropdown: input_select.laura_sleep_status_dropdown
+              ulm_card_inswel_person_home_status_dropdown: input_select.laura_status_dropdown
+
+          - type: "custom:button-card"
+            template: custom_card_imswel_person_minimal
+            variables:
+              ulm_card_imswel_person_entity: sensor.zoey_status
+              ulm_card_imswel_person_use_entity_picture: true
+              ulm_card_imswel_person_zones:
+                - zone.home
+              ulm_card_inswel_person_sleep_status_dropdown: input_select.zoey_sleep_status_dropdown
+
+      - type: "horizontal-stack"
+        cards:
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: switch.doorbell_chime
+            name: Deurbel
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: fan.itho
+            name: Ventilatie
+      - type: "horizontal-stack"
+        cards:
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: input_boolean.setting_guest_mode
+            name: Gast mode
+          - type: "custom:button-card"
+            color_type: blank-card
+
+      - type: conditional
+        conditions:
+          - entity: media_player.sonos_livingroom
+            state: "playing"
+        card:
+          type: "custom:button-card"
+          template: card_media_player
+          entity: media_player.sonos_livingroom
+          name: Sonos woonkamer
+          variables:
+            ulm_card_media_player_enable_controls: true
+            ulm_card_media_player_enable_volume_slider: true
+            ulm_card_media_player_enable_art: false
+
+      - type: "custom:button-card"
+        template: "card_vacuum"
+        entity: "vacuum.norby"

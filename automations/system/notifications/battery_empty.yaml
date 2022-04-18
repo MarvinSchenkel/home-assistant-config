@@ -22,8 +22,15 @@ trigger:
       - sensor.small_bedroom_battery_level
       - sensor.mancave_door_battery_level
       - sensor.gardendoor_sensor_battery_level
+      - sensor.front_door_battery_level
+      - sensor.livingroom_door_battery_level
+      - sensor.smallbedroom_door_battery_level
+      - sensor.bathroom_door_battery_level
+      - sensor.wc_door_battery_level
     below: 1
     id: "battery_dead"
+    for:
+      minutes: 30
   - platform: numeric_state
     entity_id:
       - sensor.pir_wc_battery_level
@@ -41,9 +48,16 @@ trigger:
       - sensor.small_bedroom_battery_level
       - sensor.mancave_door_battery_level
       - sensor.gardendoor_sensor_battery_level
+      - sensor.front_door_battery_level
+      - sensor.livingroom_door_battery_level
+      - sensor.smallbedroom_door_battery_level
+      - sensor.bathroom_door_battery_level
+      - sensor.wc_door_battery_level
     below: 20
     above: 0
     id: "battery_low"
+    for:
+      minutes: 30
 
 action:
   - choose:

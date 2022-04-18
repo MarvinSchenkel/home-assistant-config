@@ -1,0 +1,7 @@
+---
+binary_sensor:
+  name: presence_attic
+  unique_id: 18015d0e-4402-48a8-a4c8-69abdcb36e0c
+  state: >
+    {{  is_state("binary_sensor.pir_third_floor_stairs", "on")
+        or is_state("binary_sensor.presence_mancave_door", "on") }}

@@ -1,0 +1,34 @@
+circle:
+  custom_fields:
+    circle: >
+      [[[
+        if (entity.state === 'on') {
+          const input = variables.circle_input;
+          const radius = 23;
+          const circumference = radius * 2 * Math.PI;
+          return `
+            <svg width="100%" viewBox="0 0 50 50">
+              <style>
+                circle {
+                  transform: rotate(-90deg);
+                  transform-origin: 50% 50%;
+                  stroke-dasharray: ${circumference};
+                  stroke-dashoffset: ${circumference - input / 100 * circumference};
+                }
+                tspan {
+                  font-size: 10px;
+                }
+              </style>
+              <circle cx="25" cy="25" r="${radius}" stroke="${variables.circle_color}" stroke-width="2" fill="none" />
+            </svg>
+          `;
+        }
+      ]]]
+  styles:
+    custom_fields:
+      circle:
+        - top: 0%
+        - left: 0%
+        - width: 3.5vw
+        - position: absolute
+        - letter-spacing: 0.03vw

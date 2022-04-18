@@ -1,0 +1,6 @@
+---
+binary_sensor:
+  name: presence_small_bedroom
+  unique_id: fdb00a65-7236-465f-b127-de187a67458a
+  state: >
+    {{  is_state("binary_sensor.pir_smallbedroom", "on") }}

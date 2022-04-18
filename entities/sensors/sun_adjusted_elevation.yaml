@@ -1,0 +1,7 @@
+---
+platform: template
+sensors:
+  sun_adjusted_elevation:
+    unit_of_measurement: "degrees"
+    value_template: >-
+      {{ ((states("sensor.sun_elevation") | float * 100.0) / states("sensor.sun_max_elevation_48h") | float) | round(2) }}

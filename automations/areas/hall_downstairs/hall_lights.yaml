@@ -16,7 +16,7 @@ trigger:
     entity_id: binary_sensor.presence_hall_downstairs
     to: "off"
     for:
-      seconds: 80
+      seconds: 40
   - platform: state
     entity_id: input_select.livingroom_current_scene
     to: "movie"

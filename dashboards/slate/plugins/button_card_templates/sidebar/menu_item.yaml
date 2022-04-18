@@ -1,0 +1,56 @@
+sidebar_menu_item:
+  variables:
+    view: >
+      [[[
+        const url_parts =  window.location.pathname.split('/');
+        return url_parts[url_parts.length - 1]; 
+      ]]]
+  show_state: false
+  show_icon: true
+  size: 35%
+  color: >
+    [[[ return variables.view == variables.navigation_path
+        ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.3)';
+    ]]]
+  tap_action:
+    action: navigate
+    navigation_path: >
+      [[[ return variables.navigation_path; ]]]
+  name: >
+    [[[ return variables.menu_item_name; ]]]
+  styles:
+    grid:
+      - grid-template-areas: |
+          "n  n  n  i"
+      - grid-template-columns: repeat(4, 1fr)
+      - align-items: start
+    name:
+      - justify-self: start
+      - margin-left: 2vw
+      - color: coral;
+    icon:
+      - justify-self: end
+      - margin-right: 2vw
+    card:
+      - font-family: Sf Display
+      - font-size: 1.3vw
+      - font-weight: >
+          [[[ return variables.view == variables.navigation_path
+              ? '500' : '400';
+          ]]]
+      - height: 8vh
+      - border-radius: 2.5vw
+      - -webkit-tap-highlight-color: rgba(0,0,0,0)
+      - transition: none
+      - background-color: >
+          [[[ return variables.view == variables.navigation_path
+              ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0)';
+          ]]]
+      - color: >
+          [[[ return variables.view == variables.navigation_path
+              ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.3)';
+          ]]]
+  extra_styles: |
+    #card {
+      padding: 0;
+    }

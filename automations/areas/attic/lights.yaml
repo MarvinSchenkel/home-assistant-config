@@ -10,10 +10,10 @@ trigger:
   - platform: event
     event_type: automation_reloaded
   - platform: state
-    entity_id: binary_sensor.pir_third_floor_stairs
+    entity_id: binary_sensor.presence_attic
     to: "on"
   - platform: state
-    entity_id: binary_sensor.pir_third_floor_stairs
+    entity_id: binary_sensor.presence_attic
     to: "off"
     for:
       seconds: 90
@@ -27,7 +27,7 @@ action:
   - choose:
       - conditions:
           - condition: state
-            entity_id: binary_sensor.pir_third_floor_stairs
+            entity_id: binary_sensor.presence_attic
             state: "on"
 
         sequence:

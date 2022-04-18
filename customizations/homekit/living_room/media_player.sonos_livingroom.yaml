@@ -1,6 +1,0 @@
----
-name: Sonos
-feature_list:
-  - feature: play_pause
-  - feature: play_stop
-  - feature: toggle_mute

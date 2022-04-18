@@ -1,0 +1,16 @@
+---
+description: Group sonos to the living room when there is music playing and motion is detected
+alias: areas_mancave_group_sonos
+id: d6509520-86fa-46c0-9503-41faea753ddb
+
+use_blueprint:
+  path: motion_group_sonos.yaml
+  input:
+    presence_entity: binary_sensor.presence_mancave
+    sonos_source: media_player.sonos_livingroom
+    sonos_target: media_player.sonos_mancave
+    no_presence_wait: 75
+    custom_conditions:
+      - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
+      - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+      - "{{ not is_state('sensor.marvin_work_status', 'Aan het werk') }}"

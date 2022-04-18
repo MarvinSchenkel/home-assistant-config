@@ -1,6 +1,0 @@
-platform: template
-sensors:
-  presence_wc:
-    friendly_name: "WC aanwezigheid"
-    value_template: >
-      {{  states("binary_sensor.pir_wc")  }}

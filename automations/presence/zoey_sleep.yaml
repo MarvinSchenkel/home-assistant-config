@@ -1,0 +1,31 @@
+---
+description: >
+  Toggle Zoey between asleep / awake when using the NS Panel
+alias: presence_zoey_sleep
+mode: single
+id: 6572e77f-55a9-4e6b-a959-42748ca6e242
+
+trigger:
+  - platform: state
+    entity_id:
+      - switch.nspanel_master_bedroom_relay_2
+    id: "nspanel_right"
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - input_select.zoey_sleep_status_dropdown
+            state: "Slaapt boven"
+        sequence:
+          - service: input_select.select_option
+            entity_id: input_select.zoey_sleep_status_dropdown
+            data:
+              option: "Wakker"
+
+    default:
+      - service: input_select.select_option
+        entity_id: input_select.zoey_sleep_status_dropdown
+        data:
+          option: "Slaapt boven"

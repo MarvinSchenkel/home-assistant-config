@@ -16,7 +16,7 @@ trigger:
     entity_id: binary_sensor.presence_hall_upstairs
     to: "off"
     for:
-      seconds: 120
+      seconds: 60
   - platform: state
     entity_id:
       - binary_sensor.house_mode_someone_asleep

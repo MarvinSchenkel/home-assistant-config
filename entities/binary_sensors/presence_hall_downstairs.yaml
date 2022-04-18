@@ -1,7 +1,0 @@
-platform: template
-sensors:
-  presence_hall_downstairs:
-    friendly_name: "Hal beneden aanwezigheid"
-    value_template: >
-      {{  is_state("binary_sensor.pir_hall_downstairs", "on")
-          or is_state("binary_sensor.presence_front_door", "on") }}

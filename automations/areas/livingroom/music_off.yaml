@@ -9,6 +9,13 @@ trigger:
     entity_id: binary_sensor.everyone_left_home
     to: "on"
 
+condition:
+  - alias: "Do not automate when a guest is over"
+    condition: state
+    entity_id:
+      - input_boolean.setting_guest_mode
+    state: "off"
+
 action:
   - service: media_player.media_pause
     data:

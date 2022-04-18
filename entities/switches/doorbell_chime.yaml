@@ -5,14 +5,16 @@ switches:
     friendly_name: Doorbell Chime
     icon_template: hass:bell-ring
     unique_id: 1b807403-3922-4488-aacb-c04d975154e4
-    value_template: "{{ is_state_attr('camera.g4_doorbell', 'chime_enabled', true) }}"
+    value_template: "{{ is_state('select.g4_doorbell_chime_type', 'Mechanical') }}"
     turn_on:
-      service: unifiprotect.set_doorbell_chime_duration
+      service: select.select_option
+      target:
+        entity_id: select.g4_doorbell_chime_type
       data:
-        entity_id: camera.g4_doorbell
-        chime_duration: 300
+        option: Mechanical
     turn_off:
-      service: unifiprotect.set_doorbell_chime_duration
+      service: select.select_option
+      target:
+        entity_id: select.g4_doorbell_chime_type
       data:
-        entity_id: camera.g4_doorbell
-        chime_duration: 0
+        option: None
