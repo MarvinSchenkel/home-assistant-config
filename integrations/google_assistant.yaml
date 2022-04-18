@@ -1,3 +1,4 @@
+---
 google_assistant:
   project_id: homeassistant-230519
   service_account: !include ../config_files/googleassistant_serviceaccount.json

@@ -69,10 +69,14 @@ action:
             data:
               receivers:
                 - "marvin"
-              message: "De batterij van de sensor {{ trigger.to_state.attributes.friendly_name }} is leeg!"
+              message: >-
+                De batterij van de sensor
+                {{ trigger.to_state.attributes.friendly_name }} is leeg!
     default:
       - service: script.send_notification
         data:
           receivers:
             - "marvin"
-          message: "De batterij van de sensor {{ trigger.to_state.attributes.friendly_name }} is minder dan 20%!"
+          message: >-
+            De batterij van de sensor
+            {{ trigger.to_state.attributes.friendly_name }} is minder dan 20%!

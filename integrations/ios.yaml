@@ -1,33 +1,34 @@
+---
 ios:
   push:
     categories:
       - name: Alarm
-        identifier: 'alarm'
+        identifier: "alarm"
         actions:
-          - identifier: 'SOUND_ALARM'
-            title: 'Alarm aan'
-            activationMode: 'background'
+          - identifier: "SOUND_ALARM"
+            title: "Alarm aan"
+            activationMode: "background"
             authenticationRequired: true
             destructive: true
-            behavior: 'default'
-          - identifier: 'SILENCE_ALARM'
-            title: 'Alarm uit'
-            activationMode: 'background'
+            behavior: "default"
+          - identifier: "SILENCE_ALARM"
+            title: "Alarm uit"
+            activationMode: "background"
             authenticationRequired: true
             destructive: false
-            behavior: 'default'
+            behavior: "default"
       - name: YesNo
-        identifier: 'yesno'
+        identifier: "yesno"
         actions:
-          - identifier: 'YES'
-            title: 'Yep!'
-            activationMode: 'background'
+          - identifier: "YES"
+            title: "Yep!"
+            activationMode: "background"
             authenticationRequired: true
             destructive: true
-            behavior: 'default'
-          - identifier: 'NO'
-            title: 'Nee'
-            activationMode: 'background'
+            behavior: "default"
+          - identifier: "NO"
+            title: "Nee"
+            activationMode: "background"
             authenticationRequired: true
             destructive: false
-            behavior: 'default'
+            behavior: "default"

@@ -8,4 +8,4 @@ sensors:
       {% else %}
       Niet aan het werk
       {% endif %}
-    friendly_name: 'Laura werkstatus'
+    friendly_name: "Laura werkstatus"

@@ -4,4 +4,6 @@ sensors:
   daily_energy_produced:
     friendly_name: Daily Energy Produced
     unit_of_measurement: kWh
-    value_template: "{{ states('sensor.daily_energy_produced_offpeak')|float + states('sensor.daily_energy_produced_peak')|float }}"
+    value_template: >
+      {{ states('sensor.daily_energy_produced_offpeak') | float
+       + states('sensor.daily_energy_produced_peak') | float }}

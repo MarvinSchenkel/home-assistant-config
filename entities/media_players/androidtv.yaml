@@ -3,14 +3,13 @@ platform: androidtv
 name: Living Room TV
 host: !secret android_tv_host
 adbkey: "android/androidtv_adbkey"
-#scan_interval: 1
 apps:
   com.netflix.ninja: "Netflix"
 state_detection_rules:
-  'com.netflix.ninja':
-    - 'media_session_state'
-    - 'playing':
-        'wake_lock_size': 2
-    - 'paused':
-        'wake_lock_size': 1
-    - 'standby'
+  "com.netflix.ninja":
+    - "media_session_state"
+    - "playing":
+        "wake_lock_size": 2
+    - "paused":
+        "wake_lock_size": 1
+    - "standby"

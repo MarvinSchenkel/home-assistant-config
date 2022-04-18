@@ -2,14 +2,20 @@
 ignore: |
   automations.yaml
   blueprints/*/homeassistant/*.yaml
+  blueprints/*/seblu/*.yaml
   custom_components/
+  dashboards/
   esphomeyaml/*/
   esphome/.esphome/
   ip_bans.yaml
   notebooks/
   scenes.yaml
   scripts.yaml
+  known_devices.yaml
   themes/*.yaml
+  themes/*/*.yaml
+  ui_lovelace_minimalist
+  .git
 rules:
   braces:
     level: error

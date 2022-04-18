@@ -7,8 +7,8 @@ description: >-
      - Turn on to bright and cool during the day
      - Turn on less bright and warmer in the evening
 
-  - When I get in bed after 9:30pm, the ceiling light turns off and the bedside table lights
-    dim, setting a nice scene for going to sleep.
+  - When I get in bed after 9:30pm, the ceiling light turns off and the bedside table
+    lights dim, setting a nice scene for going to sleep.
 
   - Whenever we go to sleep, the lights stay off
 
@@ -179,7 +179,8 @@ action:
         sequence:
           - *manual_control
 
-      - alias: "Turn the light off when we go to sleep, even if it is manually controlled"
+      - alias: >
+          Turn the light off when we go to sleep, even if it is manually controlled
         conditions:
           - condition: or
             conditions:
@@ -216,7 +217,9 @@ action:
 
         sequence: []
 
-      - alias: "Check if we need to automate the lights based on sleep status, presence and luminance"
+      - alias: >
+          Check if we need to automate the lights based on sleep status, presence
+          and luminance
         conditions:
           - condition: state
             entity_id:
@@ -237,7 +240,9 @@ action:
 
         sequence:
           - choose:
-              - alias: "Start dimming the light when somone gets in bed, ready to go to sleep, or when we have just woken up"
+              - alias: >
+                  Start dimming the light when somone gets in bed, ready to go to sleep
+                  ,or when we have just woken up
                 conditions:
                   - condition: or
                     conditions:

@@ -1,15 +1,17 @@
 ---
-description: Automatically play some tunes in the house when we wake up on a weekend day or holiday
+description: >
+  Automatically play some tunes in the house when we wake up
+  on a weekend day or holiday
 alias: house_play_music
 id: 32df87f3-7bbb-4c20-b9e8-bf641ad8314c
 
 trigger:
   - platform: state
     entity_id: input_select.laura_sleep_status_dropdown
-    to: 'Net wakker'
+    to: "Net wakker"
   - platform: state
     entity_id: input_select.marvin_sleep_status_dropdown
-    to: 'Net wakker'
+    to: "Net wakker"
 
 condition:
   condition: and
@@ -20,16 +22,16 @@ condition:
       conditions:
         - condition: state
           entity_id: binary_sensor.weekend
-          state: 'on'
+          state: "on"
         - condition: state
           entity_id: binary_sensor.holiday
-          state: 'on'
+          state: "on"
 
 action:
   - service: script.play_random_music
     data:
       sonos_entity: media_player.living_room
-      genre: 'chill'
+      genre: "chill"
   - service: media_player.volume_set
     data:
       entity_id: media_player.living_room

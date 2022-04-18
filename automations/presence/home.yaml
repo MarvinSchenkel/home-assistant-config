@@ -7,22 +7,22 @@ id: c68a2582-bdcc-48e3-a558-2ffdf4586522
 trigger:
   - platform: state
     entity_id: input_select.marvin_status_dropdown
-    to: 'Net thuis'
+    to: "Net thuis"
     for:
       minutes: 15
   - platform: state
     entity_id: input_select.laura_status_dropdown
-    to: 'Net thuis'
+    to: "Net thuis"
     for:
       minutes: 15
   - platform: state
     entity_id: input_select.marvin_status_dropdown
-    from: 'Net weg'
-    to: 'Net thuis'
+    from: "Net weg"
+    to: "Net thuis"
   - platform: state
     entity_id: input_select.laura_status_dropdown
-    from: 'Net weg'
-    to: 'Net thuis'
+    from: "Net weg"
+    to: "Net thuis"
 
 action:
   - service: input_select.select_option

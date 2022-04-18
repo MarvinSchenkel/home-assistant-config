@@ -7,12 +7,12 @@ id: b0a446d1-8dfe-40c0-8ff9-e0df04c469db
 trigger:
   - platform: state
     entity_id: input_select.marvin_status_dropdown
-    to: 'Weg'
+    to: "Weg"
     for:
       hours: 24
   - platform: state
     entity_id: input_select.laura_status_dropdown
-    to: 'Weg'
+    to: "Weg"
     for:
       hours: 24
 

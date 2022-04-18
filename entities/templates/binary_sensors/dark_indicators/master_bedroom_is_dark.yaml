@@ -1,3 +1,4 @@
+---
 # A binary indicator tracking whether it is light or dark in the room
 binary_sensor:
   - name: master_bedroom_is_dark

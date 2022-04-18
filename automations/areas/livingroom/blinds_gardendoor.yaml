@@ -1,7 +1,7 @@
 ---
 alias: areas_livingroom_blinds_gardendoor
 description: >
-  Control the blinds in the living room (which are facing south) by using 
+  Control the blinds in the living room (which are facing south) by using
    - Sun elevation and azimuth
    - The solar panels (indicating a hot day)
    - Whenever we wake up
@@ -63,7 +63,8 @@ trigger:
       - binary_sensor.garden_door_open
     to: "on"
     id: "garden_door_open"
-  # Trigger automation when door is closed, so garden door blinds revert to original state
+  # Trigger automation when door is closed, so garden door blinds revert
+  # to original state
   - platform: state
     entity_id:
       - binary_sensor.garden_door_open

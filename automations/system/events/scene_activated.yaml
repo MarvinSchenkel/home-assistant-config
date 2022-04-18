@@ -12,10 +12,16 @@ trigger:
       service: turn_on
 
 variables:
-  scenes: "{{ [trigger.event.data.service_data.entity_id] if trigger.event.data.service_data.entity_id is string else trigger.event.data.service_data.entity_id }}"
+  scenes: >
+    {{
+      [trigger.event.data.service_data.entity_id]
+      if trigger.event.data.service_data.entity_id is string
+      else trigger.event.data.service_data.entity_id
+    }}
 
 action:
-  # When multiple scenes are activated, the automation is triggered once with a list of entity_ids
+  # When multiple scenes are activated, the automation is triggered once with a list of
+  # entity_ids
   - repeat:
       count: "{{ scenes | length }}"
       sequence:
@@ -27,6 +33,7 @@ action:
 
         - service: input_select.select_option
           target:
-            entity_id: "input_select.{{ scene_room }}_current_{{ scene_category }}_scene"
+            entity_id: >
+              "input_select.{{ scene_room }}_current_{{ scene_category }}_scene"
           data:
             option: "{{ scene_name }}"

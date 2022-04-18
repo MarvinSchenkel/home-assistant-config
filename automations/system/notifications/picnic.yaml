@@ -11,7 +11,15 @@ trigger:
       - sensor.picnic_next_delivery_eta_end
 
 variables:
-  days_left: "{{ as_timestamp(states('sensor.picnic_next_delivery_eta_start')) | timestamp_custom('%d') | int - as_timestamp(now()) | timestamp_custom('%d') | int }}"
+  eta_start: >
+    {{ as_timestamp(states('sensor.picnic_next_delivery_eta_start')) }}
+  eta_end: >
+    {{ as_timestamp(states('sensor.picnic_next_delivery_eta_end')) }}
+  days_left: >
+    {{
+      eta_start
+      | timestamp_custom('%d') | int
+      - as_timestamp(now()) | timestamp_custom('%d') | int }}
   day_name: >-
     {% if days_left == 0 %} vandaag
     {% elif days_left == 1 %} morgen
@@ -19,7 +27,7 @@ variables:
 
 condition:
   - "{{ days_left < 2 }}"
-  - "{{ as_timestamp(states('sensor.picnic_next_delivery_eta_start')) > as_timestamp(now()) }}"
+  - "{{ eta_start > as_timestamp(now()) }}"
 
 action:
   - service: script.send_notification
@@ -32,5 +40,7 @@ action:
         - media_player.sonos_livingroom
         - media_player.sonos_bathroom
         - media_player.sonos_master_bedroom
-      message: >
-        Picnic bezorgt {{ day_name }} tussen {{ as_timestamp(states('sensor.picnic_next_delivery_eta_start')) | timestamp_custom('%H:%M') }} en {{ as_timestamp(states('sensor.picnic_next_delivery_eta_end')) | timestamp_custom('%H:%M') }}!
+      message: >-
+        Picnic bezorgt {{ day_name }} tussen
+        {{ eta_start | timestamp_custom('%H:%M') }}
+        en {{ eta_end | timestamp_custom('%H:%M') }}!

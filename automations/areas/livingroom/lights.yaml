@@ -104,7 +104,8 @@ action:
             target:
               entity_id: input_boolean.livingroom_manual_control
 
-      - alias: "Turn the light off when we go to sleep, even if it is manually controlled"
+      - alias: >
+          Turn the light off when we go to sleep, even if it is manually controlled
         conditions:
           - alias: "Everyone has gone to sleep"
             condition: trigger
@@ -122,7 +123,9 @@ action:
               transition: 5
           - *manual_control_off
 
-      - alias: "Turn the light off when everyone is working from home on a dark day until sunset"
+      - alias: >
+          Turn the light off when everyone is working from home on a dark day until
+          sunset.
         conditions:
           - alias: "Everyone at home is working from home"
             condition: state
@@ -137,7 +140,9 @@ action:
         sequence:
           - *turn_off
 
-      - alias: "Stop automating the lights if any of the lights are manually controlled or if this automation is triggered by lights changed due to transition"
+      - alias: >
+          Stop automating the lights if any of the lights are manually controlled or if
+          this automation is triggered by lights changed due to transition
         conditions:
           - condition: or
             conditions:
@@ -191,7 +196,9 @@ action:
 
         sequence:
           - choose:
-              - alias: "When we press the remote and current scene is either normal or evening"
+              - alias: >
+                  When we press the remote and the  current scene is either normal
+                  or evening
                 conditions:
                   - condition: and
                     conditions:

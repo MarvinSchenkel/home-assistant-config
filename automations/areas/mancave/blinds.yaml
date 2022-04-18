@@ -1,7 +1,7 @@
 ---
 alias: areas_mancave_blinds
 description: >
-  Control the blinds in the mancave (which are facing south) by using 
+  Control the blinds in the mancave (which are facing south) by using
    - Sun elevation
    - The solar panels (indicating a hot day)
 mode: queued

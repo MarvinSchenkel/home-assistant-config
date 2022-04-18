@@ -1,3 +1,4 @@
+---
 # Set some variables for convenience
 substitutions:
   node_name: nspanel-masterbedroom
@@ -9,7 +10,7 @@ external_components:
   - source: github://pr#2956
     components: [nextion]
     refresh: 1h
-    
+
 esphome:
   name: $node_name
   comment: $device_name
@@ -67,7 +68,7 @@ binary_sensor:
       inverted: true
     on_click:
       - switch.toggle: relay_2
-      
+
   # Virtual button to turn on a light scene
   - platform: nextion
     name: $device_name lights_normal
@@ -82,7 +83,7 @@ binary_sensor:
           service: input_boolean.turn_on
           data:
             entity_id: input_boolean.masterbedroom_manual_control
-  
+
   # Virtual button to turn on a light scene
   - platform: nextion
     name: $device_name lights_evening
@@ -97,7 +98,7 @@ binary_sensor:
           service: input_boolean.turn_on
           data:
             entity_id: input_boolean.masterbedroom_manual_control
-  
+
   # Virtual button to turn on a light scene
   - platform: nextion
     name: $device_name lights_dimmed
@@ -112,7 +113,7 @@ binary_sensor:
           service: input_boolean.turn_on
           data:
             entity_id: input_boolean.masterbedroom_manual_control
-  
+
   # Virtual button to control the blinds
   - platform: nextion
     name: $device_name blinds_masterbedroom_open
@@ -123,7 +124,7 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_halfopen
-  
+
   # Virtual button to control the blinds
   - platform: nextion
     name: $device_name blinds_masterbedroom_halfclosed
@@ -134,7 +135,7 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_halfclosed
-  
+
   # Virtual button to control the blinds
   - platform: nextion
     name: $device_name blinds_masterbedroom_closed
@@ -145,7 +146,6 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_closed
-  
 
   # Virtual button to control the blinds
   - platform: nextion
@@ -157,8 +157,8 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_ventilating
-  
-  # Virtual button to control the blinds 
+
+  # Virtual button to control the blinds
   - platform: nextion
     name: $device_name blinds_masterbedroom_ventilatingnight
     page_id: 2
@@ -168,7 +168,7 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_ventilatingnight
-            
+
 sensor:
   # Read wifi status from NS Panel
   - platform: wifi_signal
@@ -196,7 +196,7 @@ sensor:
     pin: 38
     update_interval: 10s
     attenuation: 11db
-    
+
   - platform: homeassistant
     id: current_brightness
     entity_id: sensor.nspanel_bedroom_brightness
@@ -214,16 +214,19 @@ sensor:
             }
 
 text_sensor:
-  # Push value of custom sensor to the infobar. Display currently playing song when music is playing
-  # or other info (like weather) when no music is playing
+  # Push value of custom sensor to the infobar. Display currently playing song
+  # when music is playing or other info (like weather) when no music is playing
   - platform: homeassistant
     id: infobar
     entity_id: sensor.nspanel_bedroom_infobar
     on_value:
       then:
-        - lambda: 'id(disp1).set_component_text_printf("home.infobar", "%s", x.c_str());'
-        - lambda: 'id(disp1).set_component_text_printf("lights.infobar", "%s", x.c_str());'
-        - lambda: 'id(disp1).set_component_text_printf("blinds.infobar", "%s", x.c_str());'
+        - lambda: >-
+            'id(disp1).set_component_text_printf("home.infobar", "%s", x.c_str());'
+        - lambda: >-
+            'id(disp1).set_component_text_printf("lights.infobar", "%s", x.c_str());'
+        - lambda: >-
+            'id(disp1).set_component_text_printf("blinds.infobar", "%s", x.c_str());'
 
 # Define some outputs
 switch:
@@ -239,7 +242,7 @@ switch:
     pin:
       number: 19
 
-   # Pin 4 always needs to be on to power up the display
+  # Pin 4 always needs to be on to power up the display
   - platform: gpio
     id: screen_power
     entity_category: config
@@ -266,7 +269,7 @@ uart:
   tx_pin: 16
   rx_pin: 17
   baud_rate: 115200
-    
+
 # Configure the screen itself
 display:
   - platform: nextion
@@ -276,6 +279,6 @@ display:
     on_setup:
       then:
         - lambda: |-
-            id(disp1).send_command_printf("home.brightness.val=%f", id(current_brightness).state);
+            id(disp1).send_command_printf("home.brightness.val=%f",
+                                          id(current_brightness).state);
             id(disp1).set_backlight_brightness(id(current_brightness).state/100);
-

@@ -1,7 +1,7 @@
 ---
 alias: areas_master_bedroom_blinds
 description: >
-  Control the blinds in the master bedroom (which are facing south) by using 
+  Control the blinds in the master bedroom (which are facing south) by using
    - Sun elevation
    - At 19:00 and 21:15
    - The solar panels (indicating a hot day)
@@ -69,7 +69,9 @@ condition:
 
 action:
   - choose:
-      - alias: "Ventilating when desired so we can cool down our bedroom on hot days after opening the windows."
+      - alias: >
+          Ventilating when desired so we can cool down our bedroom
+          on hot days after opening the windows.
         conditions:
           - condition: or
             conditions:
@@ -82,7 +84,8 @@ action:
             target:
               entity_id: scene.bedroom_cover_ventilating
 
-      - alias: "This nearly closes our blinds but leaves a small gap at the top for fresh air"
+      - alias: >
+          This nearly closes our blinds but leaves a small gap at the top for fresh air
         conditions:
           - condition: or
             conditions:

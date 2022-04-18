@@ -10,5 +10,5 @@ use_blueprint:
   path: seblu/zha-ikea-open-close-switch-for-covers-e-g-kadrilj-fyrtur.yaml
   input:
     remote: bd698269e9130efc3e47768709de27b0
-    cover: 
+    cover:
       entity_id: cover.small_bedroom

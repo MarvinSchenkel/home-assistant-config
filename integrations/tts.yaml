@@ -1,4 +1,5 @@
+---
 tts:
   - platform: google_cloud
     key_file: "config_files/googleassistant_serviceaccount.json"
-    voice: "nl-NL-Wavenet-C" 
+    voice: "nl-NL-Wavenet-C"

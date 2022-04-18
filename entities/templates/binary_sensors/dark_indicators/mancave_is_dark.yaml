@@ -1,3 +1,4 @@
+---
 # A binary indicator tracking whether it is light or dark in the room
 binary_sensor:
   - name: mancave_is_dark
@@ -6,7 +7,7 @@ binary_sensor:
       {%-
         if (
           states("sensor.pir_mancave_luminance") | int > 15
-          and is_state("light.mancave", "off") 
+          and is_state("light.mancave", "off")
         ) or states("sensor.pir_mancave_luminance") | int > 75
       -%}
         off

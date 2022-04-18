@@ -10,5 +10,5 @@ binary_sensor:
   state: >
     {{ is_state("binary_sensor.pir_mancave", "on")
         or is_state("binary_sensor.presence_mancave_door", "on")
-        or is_state("media_player.mancave_tv", "on") 
+        or is_state("media_player.mancave_tv", "on")
         or is_state("sensor.marvin_work_status", "Aan het werk") }}

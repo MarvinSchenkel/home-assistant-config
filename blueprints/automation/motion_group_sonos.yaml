@@ -1,8 +1,10 @@
+---
 blueprint:
   name: Group Sonos on Motion
   description: >
-    Group a Sonos device to a main device when presence (e.g. motion) is detected and the main device is playing music.
-    Can be extended with custom conditions, for example, only group the Sonos when you're not asleep
+    Group a Sonos device to a main device when presence (e.g. motion) is detected and
+    the main device is playing music. Can be extended with custom conditions, for
+    example, only group the Sonos when you're not asleep
   domain: automation
   input:
     presence_entity:
@@ -33,10 +35,13 @@ blueprint:
     custom_conditions:
       name: Custom conditions
       default: []
-      description: "A list of custom condititions that also have to be met before grouping the sonos. Only available via YAML mode"
+      description: >
+        A list of custom condititions that also have to be met before grouping the
+        sonos. Only available via YAML mode
     group_on_tv:
       name: Group on TV
-      description: "Whether to also group the Sonos when the source is playing TV audio"
+      description: >
+        Whether to also group the Sonos when the source is playing TV audio
       default: false
       selector:
         boolean:
@@ -70,14 +75,12 @@ condition:
     state: "playing"
   - condition: or
     conditions:
-      # Do not trigger the 'action' if our target is already playing some music
       - condition: state
         entity_id: !input sonos_target
         state: "paused"
       - condition: state
         entity_id: !input sonos_target
         state: "idle"
-      # However, re-trigger the 'action' if we are already grouped to prevent early ungrouping
       - '{{ sonos_target in state_attr(sonos_source, "sonos_group") }}'
   - '{{ group_on_tv or state_attr(sonos_source, "source")  != "TV" }}'
   - condition: and

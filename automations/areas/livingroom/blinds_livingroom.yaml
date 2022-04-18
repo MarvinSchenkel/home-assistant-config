@@ -1,7 +1,7 @@
 ---
 alias: areas_livingroom_blinds_livingroom
 description: >
-  Control the blinds in the living room (which are facing south) by using 
+  Control the blinds in the living room (which are facing south) by using
    - Sun elevation and azimuth
    - The solar panels (indicating a hot day)
    - Whenever we wake up

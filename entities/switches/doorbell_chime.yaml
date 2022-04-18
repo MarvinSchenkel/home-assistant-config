@@ -1,4 +1,4 @@
-# Doorbell Chime
+---
 platform: template
 switches:
   doorbell_chime:

@@ -55,7 +55,6 @@ action:
 
       - alias: "Stop automating the lights if any of the lights are manually controlled"
         conditions:
-          - "{{ state_attr('switch.adaptive_lighting_mancave', 'manual_control') | length > 0 }}"
           - condition: not
             conditions:
               - condition: trigger

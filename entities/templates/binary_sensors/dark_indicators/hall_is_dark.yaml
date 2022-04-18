@@ -1,3 +1,4 @@
+---
 # A binary indicator tracking whether it is light or dark in the room
 binary_sensor:
   - name: hall_is_dark
@@ -5,7 +6,7 @@ binary_sensor:
     state: >
       {%-
         if states("sensor.pir_hall_downstairs_luminance") | int > 24
-        and is_state("light.fibaro_hall_downstairs", "off") 
+        and is_state("light.fibaro_hall_downstairs", "off")
         and is_state("light.fibaro_wc", "off")
       -%}
         off

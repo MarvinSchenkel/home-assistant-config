@@ -1,6 +1,7 @@
+---
 platform: template
 sensors:
   sun_elevation:
-    unit_of_measurement: 'degrees'
+    unit_of_measurement: "degrees"
     value_template: >-
       {{ state_attr("sun.sun", "elevation") | float }}

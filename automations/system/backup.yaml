@@ -6,7 +6,7 @@ id: 9dc7b1ff-cd5a-4186-baa8-6aa3e788abac
 
 trigger:
   platform: time
-  at: '02:00:00'
+  at: "02:00:00"
 
 action:
   - service: hassio.snapshot_full

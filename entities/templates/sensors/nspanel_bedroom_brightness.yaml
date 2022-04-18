@@ -15,13 +15,13 @@ sensor:
   - name: nspanel_bedroom_brightness
     unique_id: a53a609c-724c-45dd-a004-c4722dad0077
     state: >
-      {%- 
+      {%-
         if is_state("binary_sensor.house_mode_someone_asleep", "on")
         or is_state("binary_sensor.presence_master_bedroom", "off")
       -%}
       {{ 0 | int }}
       {%-
-        elif is_state("binary_sensor.master_bedroom_is_dark","on") 
+        elif is_state("binary_sensor.master_bedroom_is_dark","on")
       -%}
       {{ 50 | int }}
       {%- else -%}

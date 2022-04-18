@@ -1,5 +1,6 @@
 ---
-description: Turn on our Roborock when we have left our house or when we are working from home
+description: >
+  Turn on our Roborock when we have left our house or when we are working from home
 alias: areas_livingroom_vacuum_on
 mode: queued
 id: 11f981e7-b67c-47c3-ba3b-f51ef83a9414
@@ -8,10 +9,10 @@ variables:
   hours_since_last_clean: >
     {{ (
           (
-            as_timestamp(states('sensor.norby_last_cleaned')) - as_timestamp(now()) 
-          ) 
+            as_timestamp(states('sensor.norby_last_cleaned')) - as_timestamp(now())
+          )
           / -3600
-        ) | float 
+        ) | float
     }}
 
 trigger:

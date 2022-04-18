@@ -1,7 +1,7 @@
 ---
 alias: areas_kitchen_blinds
 description: >
-  Control the blinds in the kitchen by using 
+  Control the blinds in the kitchen by using
    - Sun elevation
    - Whenever we wake up
 mode: single

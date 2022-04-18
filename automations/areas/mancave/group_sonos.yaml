@@ -1,5 +1,6 @@
 ---
-description: Group sonos to the living room when there is music playing and motion is detected
+description: >
+  Group sonos to the living room when there is music playing and motion is detected
 alias: areas_mancave_group_sonos
 id: d6509520-86fa-46c0-9503-41faea753ddb
 

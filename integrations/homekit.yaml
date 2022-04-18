@@ -1,7 +1,8 @@
+---
 homekit:
   # The default: "Home Assistant Bridge", I like it to be just "Home Assistant"
   name: Home Assistant
-  
+
   # Filters for entities to be included / excluded from HomeKit.
   filter:
     include_entities: !include_dir_merge_list ../homekit

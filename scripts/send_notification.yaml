@@ -1,3 +1,4 @@
+---
 alias: send_notification
 description: >
   Automatically send a notification to one or more
@@ -15,7 +16,9 @@ fields:
   type:
     description: Type of the notification, default 'normal'
   intercom_devices:
-    description: List of sonos devices to broadcast the message to (only used when one of the receivers is 'intercom')
+    description: >
+      List of sonos devices to broadcast the message to
+      (only used when one of the receivers is 'intercom')
 
 variables:
   type: "{{ type | default('normal') }}"
@@ -38,8 +41,12 @@ sequence:
             - conditions:
                 condition: or
                 conditions:
-                  - "{{ receiver == 'marvin' and marvin_state in home_status and not is_state('media_player.living_room_tv', 'off') }}"
-                  - "{{ receiver == 'laura' and laura_state in home_status and not is_state('media_player.living_room_tv', 'off') }}"
+                  - "{{ receiver == 'marvin'
+                    and marvin_state in home_status
+                    and not is_state('media_player.living_room_tv', 'off') }}"
+                  - "{{ receiver == 'laura'
+                    and laura_state in home_status
+                    and not is_state('media_player.living_room_tv', 'off') }}"
               sequence:
                 - service: notify.woonkamer
                   data:
@@ -108,14 +115,20 @@ sequence:
 
         # Send mobile notifications
         - choose:
-            - conditions: "{{ receiver == 'marvin' and (type == 'normal' or (type == 'away_only' and marvin_state in away_status )) }}"
+            - conditions: "{{ receiver == 'marvin'
+                and (type == 'normal' or
+                (type == 'away_only' and marvin_state in away_status)
+                ) }}"
               sequence:
                 - service: notify.mobile_app_marvins_iphone
                   data:
                     message: "{{ message }}"
                     title: "{{ title }}"
         - choose:
-            - conditions: "{{ receiver == 'laura' and (type == 'normal' or (type == 'away_only' and laura_state in away_status )) }}"
+            - conditions: "{{ receiver == 'laura'
+                and (type == 'normal' or
+                (type == 'away_only' and laura_state in away_status)
+                ) }}"
               sequence:
                 - service: notify.mobile_app_iphone_van_l_a
                   data:

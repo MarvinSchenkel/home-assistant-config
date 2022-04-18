@@ -1,3 +1,4 @@
+---
 webostv:
   host: !secret mancave_tv_ip
   name: Mancave TV

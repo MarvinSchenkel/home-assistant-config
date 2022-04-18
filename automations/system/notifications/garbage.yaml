@@ -1,5 +1,6 @@
 ---
-description: Send a notification when one of our garbage cans is being picked up tomorrow
+description: >
+  Send a notification when one of our garbage cans is being picked up tomorrow
 alias: notification_garbage
 mode: single
 id: 6488cf53-5292-4146-a44b-80ed0cf4ad7e

@@ -4,7 +4,7 @@ sensors:
   marvin_work_status:
     value_template: >-
       {% set hour = as_timestamp(now()) | timestamp_custom("%I") | int  %}
-      {% 
+      {%
         if (states.device_tracker.unifi_marvin_worklaptop.state == 'home'
         or states.device_tracker.lpzwnl000036211.state == 'home')
         and hour > 7

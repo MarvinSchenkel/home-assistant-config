@@ -22,7 +22,8 @@ trigger:
 
 action:
   - choose:
-      - alias: "Set Laura 'asleep' when I get press my button because she always forgets"
+      - alias: >
+          Set Laura 'asleep' when I get press my button because she always forgets
         conditions:
           - condition: trigger
             id: "button_marvin"

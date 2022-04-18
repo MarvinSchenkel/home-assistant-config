@@ -1,47 +1,47 @@
 ---
-  name: Home Assistant CI
-  
-  # yamllint disable-line rule:truthy
-  on:
-    push:
-    pull_request:
-    schedule:
-      - cron: 0 12 * * *
-  
-  jobs:
-    yamllint:
-      name: 🧹 yamllint
-      runs-on: ubuntu-latest
-      steps:
-        - name: ⤵️ Check out configuration from GitHub
-          uses: actions/checkout@v3.0.1
-        - name: 🚀 Run yamllint
-          uses: frenck/action-yamllint@v1.1.2
-  
-    remarklint:
-      runs-on: ubuntu-18.04
-      steps:
-        - name: ⤵️ Check out configuration from GitHub
-          uses: actions/checkout@v3.0.1
-        - name: Running Remark lint
-          uses: "docker://pipelinecomponents/remark-lint:latest"
-          continue-on-error: true
-          with:
-            args: "remark --no-stdout --color --frail --use preset-lint-recommended ."
-  
-    home-assistant:
-      name: "Home Assistant Core ${{ matrix.version }} Configuration Check"
-      needs: [yamllint]
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          version: ["stable", "beta", "dev"]
-      steps:
-        - name: ⤵️ Check out configuration from GitHub
-          uses: actions/checkout@v3.0.1
-        - name: 🚀 Run Home Assistant Configuration Check
-          uses: frenck/action-home-assistant@v1.3
-          with:
-            path: "."
-            secrets: ./secrets.fake.yaml
-            version: "${{ matrix.version }}"
+name: Home Assistant CI
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: 0 12 * * *
+
+jobs:
+  yamllint:
+    name: 🧹 yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out configuration from GitHub
+        uses: actions/checkout@v3.0.1
+      - name: 🚀 Run yamllint
+        uses: frenck/action-yamllint@v1.1.2
+
+  remarklint:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: ⤵️ Check out configuration from GitHub
+        uses: actions/checkout@v3.0.1
+      - name: Running Remark lint
+        uses: "docker://pipelinecomponents/remark-lint:latest"
+        continue-on-error: true
+        with:
+          args: "remark --no-stdout --color --frail --use preset-lint-recommended ."
+
+  home-assistant:
+    name: "Home Assistant Core ${{ matrix.version }} Configuration Check"
+    needs: [yamllint]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["stable", "beta", "dev"]
+    steps:
+      - name: ⤵️ Check out configuration from GitHub
+        uses: actions/checkout@v3.0.1
+      - name: 🚀 Run Home Assistant Configuration Check
+        uses: frenck/action-home-assistant@v1.3
+        with:
+          path: "."
+          secrets: ./secrets.fake.yaml
+          version: "${{ matrix.version }}"

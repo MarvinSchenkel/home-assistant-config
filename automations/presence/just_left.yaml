@@ -7,12 +7,12 @@ id: 388b4902-87a3-4312-9f98-5a81fd720a9c
 trigger:
   - platform: state
     entity_id: person.marvin
-    from: 'home'
-    to: 'not_home'
+    from: "home"
+    to: "not_home"
   - platform: state
     entity_id: person.laura
-    from: 'home'
-    to: 'not_home'
+    from: "home"
+    to: "not_home"
 
 action:
   - service: input_select.select_option

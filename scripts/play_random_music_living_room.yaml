@@ -1,9 +1,10 @@
+---
 alias: "Play music"
 sequence:
   - service: script.play_random_music
     data:
       sonos_entity: media_player.sonos_livingroom
-      genre: 'chill'
+      genre: "chill"
   - service: media_player.volume_set
     data:
       entity_id: media_player.sonos_livingroom

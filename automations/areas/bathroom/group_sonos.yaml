@@ -1,6 +1,7 @@
 ---
-description: Group sonos to the living room when there is music playing and motion is detected
-alias:  areas_bathroom_group_sonos
+description: >
+  Group sonos to the living room when there is music playing and motion is detected
+alias: areas_bathroom_group_sonos
 id: 2f985b72-d45e-4cbd-9d7c-bffd86e602bf
 
 use_blueprint:

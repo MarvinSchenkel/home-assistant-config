@@ -3,5 +3,5 @@ binary_sensor:
   name: presence_wc
   unique_id: b7241688-e182-44ba-9bf5-69dc19303364
   state: >
-    {{  is_state("binary_sensor.pir_wc", "on")  
+    {{  is_state("binary_sensor.pir_wc", "on")
         or is_state("binary_sensor.presence_wc_door", "on") }}

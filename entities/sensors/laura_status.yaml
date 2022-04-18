@@ -3,9 +3,10 @@ platform: template
 sensors:
   laura_status:
     value_template: >
-      {% if states.input_select.laura_sleep_status_dropdown.state == 'Slaapt' or states.input_select.laura_sleep_status_dropdown.state == 'Net wakker' %}
+      {% if states.input_select.laura_sleep_status_dropdown.state == 'Slaapt'
+         or states.input_select.laura_sleep_status_dropdown.state == 'Net wakker' %}
       {{ states.input_select.laura_sleep_status_dropdown.state }}
       {% else %}
       {{ states.input_select.laura_status_dropdown.state }}
       {% endif %}
-    friendly_name: 'Laura'
+    friendly_name: "Laura"
