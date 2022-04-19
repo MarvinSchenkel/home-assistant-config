@@ -1,0 +1,15 @@
+---
+sensor:
+  name: rmn_next_pickup_in
+  state: >
+    {%- set paper = state_attr('sensor.rmn_papier', 'Days_until') %}
+    {%- set gft = state_attr('sensor.rmn_gft', 'Days_until') %}
+    {%- set pmd = state_attr('sensor.rmn_pmd', 'Days_until') %}
+    {%- set rest = state_attr('sensor.rmn_restafval', 'Days_until') %}
+    {%- set sensors = [
+        paper if paper > 0 else 99 | int,
+        gft if gft > 0 else 99 | int,
+        pmd if pmd > 0 else 99 | int,
+        rest if rest > 0 else 99 | int,
+      ] %}
+    {{ sensors | min }}
