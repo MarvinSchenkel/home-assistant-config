@@ -34,6 +34,6 @@ action:
         - service: input_select.select_option
           target:
             entity_id: >
-              "input_select.{{ scene_room }}_current_{{ scene_category }}_scene"
+              input_select.{{ scene_room }}_current_{{ scene_category }}_scene
           data:
             option: "{{ scene_name }}"

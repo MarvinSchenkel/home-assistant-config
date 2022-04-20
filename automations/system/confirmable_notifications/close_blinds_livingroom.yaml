@@ -1,6 +1,6 @@
 ---
 alias: system_confirmable_notifications_close_blinds_livingroom
-description: Ask to close the blinds when watching a movie
+description: Ask to close the blinds when watching a movie and the sun is shining
 mode: single
 id: 9f858a28-2613-4966-af14-74394f090a03
 
@@ -10,26 +10,48 @@ trigger:
     to: "playing"
     for:
       seconds: 10
+  - platform: event
+    id: close_blinds
+    event_type: alexa_actionable_notification
+    event_data:
+      event_id: close_blinds_livingroom
+      event_response_type: ResponseYes
 
-condition:
-  - condition: state
-    entity_id: sensor.marvin_status
-    state:
-      - "Thuis"
-      - "Net thuis"
-  - condition: state
-    entity_id:
-      - binary_sensor.sun_at_south_windows
-    state: "on"
-  - "{{ not is_state('input_select.livingroom_current_cover_scene', 'closed') }}"
-  - condition: numeric_state
-    entity_id:
-      - sensor.buienradar_irradiance
-    above: 200
-  - condition: state
-    entity_id:
-      - sensor.marvin_work_status
-    state: "Niet aan het werk"
+condition: []
 
 action:
-  - service: script.cn_close_blinds_movie
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "close_blinds"
+
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id:
+                - scene.livingroom_cover_closed
+                - scene.gardendoor_cover_closed
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_at_south_windows
+            state: "on"
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: input_select.livingroom_current_cover_scene
+                state: "closed"
+          - condition: numeric_state
+            entity_id:
+              - sensor.buienradar_irradiance
+            above: 200
+
+        sequence:
+          - service: script.activate_alexa_actionable_notification
+            data_template:
+              text: "Would you like me to close the blinds?"
+              event_id: "close_blinds_livingroom"
+              alexa_device: "media_player.alexa_sonos_livingroom"
+
+    default: []

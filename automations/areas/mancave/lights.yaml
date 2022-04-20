@@ -42,25 +42,6 @@ condition: []
 
 action:
   - choose:
-      - alias: "Disable manual control when normal scene is activated"
-        conditions:
-          - condition: trigger
-            id: "scene_normal"
-        sequence:
-          - service: adaptive_lighting.set_manual_control
-            data:
-              entity_id:
-                - switch.adaptive_lighting_mancave
-              manual_control: false
-
-      - alias: "Stop automating the lights if any of the lights are manually controlled"
-        conditions:
-          - condition: not
-            conditions:
-              - condition: trigger
-                id: "tv_off"
-        sequence: []
-
       - conditions:
           - &presence
             alias: "Check if someone is in the mancave"

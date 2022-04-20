@@ -1,0 +1,2 @@
+---
+input_text: !include_dir_named ../entities/input_texts
