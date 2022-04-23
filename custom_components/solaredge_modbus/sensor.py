@@ -55,7 +55,7 @@ class SolarEdgeModbusSensor(Entity):
         return round(floatval, 2)
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._device_state_attributes
 
@@ -72,9 +72,7 @@ class SolarEdgeModbusSensor(Entity):
 
     async def modbus_loop(self):
         while True:
-            sleep(0.005)
             try:
-		        
                 reading = self._client.read_holding_registers(40069, 39)
                 if reading:
                     data = BinaryPayloadDecoder.fromRegisters(reading, byteorder=Endian.Big, wordorder=Endian.Big)
@@ -257,7 +255,7 @@ class SolarEdgeMeterSensor(Entity):
         return round(floatval, 2)
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._device_state_attributes
 
@@ -274,7 +272,6 @@ class SolarEdgeMeterSensor(Entity):
 
     async def modbus_loop(self):
         while True:
-            sleep(0.005)
             try:
 		        
                 reading = self._client.read_holding_registers(40188, 107)

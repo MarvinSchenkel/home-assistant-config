@@ -9,6 +9,6 @@ trigger:
   at: "02:00:00"
 
 action:
-  - service: hassio.snapshot_full
+  - service: hassio.backup_full
     data_template:
       name: Automated Backup {{ now().strftime('%Y-%m-%d') }}

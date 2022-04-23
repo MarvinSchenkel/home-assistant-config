@@ -13,7 +13,7 @@ trigger:
     id: "laura"
   - platform: state
     entity_id:
-      - binary_sensor.g4_doorbell_person_motion
+      - binary_sensor.g4_doorbell_motion
 
 variables:
   min_confidence: 85

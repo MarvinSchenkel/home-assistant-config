@@ -19,7 +19,7 @@ trigger:
       - sensor.luxaflex_kitchen_battery_level
       - sensor.luxaflex_garden_door_battery_level
       - sensor.flood_sensor_battery_level
-      - sensor.small_bedroom_battery_level
+      - sensor.pir_smallbedroom_battery_level
       - sensor.mancave_door_battery_level
       - sensor.gardendoor_sensor_battery_level
       - sensor.front_door_battery_level
@@ -45,7 +45,7 @@ trigger:
       - sensor.luxaflex_kitchen_battery_level
       - sensor.luxaflex_garden_door_battery_level
       - sensor.flood_sensor_battery_level
-      - sensor.small_bedroom_battery_level
+      - sensor.pir_smallbedroom_battery_level
       - sensor.mancave_door_battery_level
       - sensor.gardendoor_sensor_battery_level
       - sensor.front_door_battery_level

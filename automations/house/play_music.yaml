@@ -7,17 +7,16 @@ id: 32df87f3-7bbb-4c20-b9e8-bf641ad8314c
 
 trigger:
   - platform: state
-    entity_id: input_select.laura_sleep_status_dropdown
-    to: "Net wakker"
-  - platform: state
-    entity_id: input_select.marvin_sleep_status_dropdown
-    to: "Net wakker"
+    entity_id: binary_sensor.house_mode_someone_just_awake
+    to: "on"
 
 condition:
   condition: and
   conditions:
-    - "{{ not is_state('input_select.marvin_sleep_status_dropdown', 'Slaapt') }}"
-    - "{{ not is_state('input_select.laura_sleep_status_dropdown', 'Slaapt') }}"
+    - condition: state
+      entity_id:
+        - binary_sensor.house_mode_someone_asleep
+      state: "off"
     - condition: or
       conditions:
         - condition: state
@@ -30,17 +29,9 @@ condition:
 action:
   - service: script.play_random_music
     data:
-      sonos_entity: media_player.living_room
+      sonos_entity: media_player.sonos_livingroom
       genre: "chill"
   - service: media_player.volume_set
     data:
-      entity_id: media_player.living_room
+      entity_id: media_player.sonos_livingroom
       volume_level: 0.10
-  - service: sonos.join
-    data:
-      master: media_player.living_room
-      entity_id: media_player.bedroom
-  - service: media_player.volume_set
-    data:
-      entity_id: media_player.bedroom
-      volume_level: 0.12

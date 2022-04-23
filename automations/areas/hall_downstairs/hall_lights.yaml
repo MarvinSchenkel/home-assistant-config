@@ -18,7 +18,7 @@ trigger:
     for:
       seconds: 40
   - platform: state
-    entity_id: input_select.livingroom_current_scene
+    entity_id: input_select.livingroom_current_lights_scene
     to: "movie"
     id: "movie"
 

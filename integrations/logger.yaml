@@ -1,6 +1,3 @@
 ---
 logger:
   default: error
-  logs:
-    pyunifiprotect: debug
-    custom_components.unifiprotect: debug

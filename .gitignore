@@ -39,6 +39,7 @@ www/laura
 mqtt_dump.txt
 webostv.conf
 www/*.jfif
+watchman_report.txt
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 ip_bans.yaml

@@ -1,4 +1,5 @@
 # Marvin's Home Assistant Configuration
+[![GitHub Actions][actions-shield]][actions]
 [![GitHub Activity][commits-shield]][commits]
 [![GitHub Last Commit][last-commit-shield]][commits]
 
@@ -51,3 +52,5 @@ TODO
 [stars-shield]: https://img.shields.io/github/stars/MarvinSchenkel/home-assistant-config.svg?style=social&label=Stars
 [forks-shield]: https://img.shields.io/github/forks/MarvinSchenkel/home-assistant-config.svg?style=social&label=Forks
 [watchers-shield]: https://img.shields.io/github/watchers/MarvinSchenkel/home-assistant-config.svg?style=social&label=Watchers
+[actions-shield]: https://github.com/MarvinSchenkel/home-assistant-config/workflows/Home%20Assistant%20CI/badge.svg
+[actions]: https://github.com/MarvinSchenkel/home-assistant-config/actions

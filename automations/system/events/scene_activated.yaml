@@ -26,10 +26,10 @@ action:
       count: "{{ scenes | length }}"
       sequence:
         - variables:
-            scene: "{{ scenes[repeat.index-1] }}"
-            scene_room: "{{ scene.replace('scene.', '').split('_')[0] }}"
-            scene_category: "{{ scene.replace('scene.', '').split('_')[1] }}"
-            scene_name: "{{ scene.replace('scene.', '').split('_')[2] }}"
+            scene_full: "{{ scenes[repeat.index-1] }}"
+            scene_room: "{{ scene_full.replace('scene.', '').split('_')[0] }}"
+            scene_category: "{{ scene_full.replace('scene.', '').split('_')[1] }}"
+            scene_name: "{{ scene_full.replace('scene.', '').split('_')[2] }}"
 
         - service: input_select.select_option
           target:
