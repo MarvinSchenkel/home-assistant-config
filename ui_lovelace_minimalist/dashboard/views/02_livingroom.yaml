@@ -413,6 +413,16 @@ cards:
       - type: horizontal-stack
         cards:
           - type: "custom:button-card"
+            template: card_input_boolean
+            entity: input_boolean.livingroom_cover_manual_control
+            name: Handmatig woonkamer
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: input_boolean.kitchen_cover_manual_control
+            name: Handmatig keuken
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
             template: card_light
             entity: light.fibaro_kitchen
             variables:

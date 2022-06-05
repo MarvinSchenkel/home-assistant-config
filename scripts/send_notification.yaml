@@ -15,6 +15,8 @@ fields:
     description: List of people that need to receive the notification
   type:
     description: Type of the notification, default 'normal'
+  image:
+    description: (Optional) Image URL to show in the notification
   intercom_devices:
     description: >
       List of sonos devices to broadcast the message to
@@ -22,6 +24,7 @@ fields:
 
 variables:
   type: "{{ type | default('normal') }}"
+  image: "{{ image | default('None') }}"
   home_status: ["Thuis", "Net Thuis"]
   away_status: ["Weg", "Net weg", "Lang weg"]
   laura_state: "{{ states('input_select.laura_status_dropdown') }}"
@@ -49,12 +52,15 @@ sequence:
                     and not is_state('media_player.living_room_tv', 'off') }}"
               sequence:
                 - service: notify.woonkamer
+                  continue_on_error: true
                   data:
                     message: "{{ message }}"
                     title: "{{ title }}"
                     data:
                       duration: 7
                       position: top-right
+                      image:
+                        url: "{{ image }}"
 
         # Check if we need to notify the mancave TV
         - choose:
@@ -67,70 +73,37 @@ sequence:
                 - "{{ marvin_state in home_status }}"
               sequence:
                 - service: notify.mancave_tv
+                  continue_on_error: true
                   data:
                     message: "{{ message }}"
                     title: "{{ title }}"
-
-        # Then check if we need to play it as an alert on our Sonos devices
-        # Disabled, since TTS is not good enough
-        # - choose:
-        #     - conditions:
-        #         - "{{ receiver == 'intercom' }}"
-        #         - condition: state
-        #           entity_id:
-        #             - binary_sensor.house_mode_someone_asleep
-        #           state: "off"
-        #       sequence:
-        #         - repeat:
-        #             count: "{{ intercom_devices | length }}"
-        #             sequence:
-        #               - variables:
-        #                   sonos_entity: "{{ intercom_devices[repeat.index-1] }}"
-        #               - service: sonos.snapshot
-        #                 data:
-        #                   entity_id: "{{ sonos_entity }}"
-        #               - service: sonos.unjoin
-        #                 data:
-        #                   entity_id: "{{ sonos_entity }}"
-        #               - service: media_player.volume_set
-        #                 data:
-        #                   entity_id: "{{ sonos_entity }}"
-        #                   volume_level: 0.20
-        #               - service: media_player.play_media
-        #                 data:
-        #                   entity_id: "{{ sonos_entity }}"
-        #                   media_content_id: !secret notification_sound_url
-        #                   media_content_type: music
-        #               - delay:
-        #                   seconds: 1
-        #               - service: tts.google_cloud_say
-        #                 data:
-        #                   entity_id: "{{ sonos_entity }}"
-        #                   message: "{{ message }}"
-        #               - delay:
-        #                   seconds: 5
-        #               - service: sonos.restore
-        #                 data:
-        #                   entity_id: "{{ sonos_entity }}"
+                    data:
+                      image: "{{ image }}"
 
         # Send mobile notifications
         - choose:
             - conditions: "{{ receiver == 'marvin'
                 and (type == 'normal' or
-                (type == 'away_only' and marvin_state in away_status)
+                (type == 'away_only' and marvin_state in away_status) or
+                (type == 'home_only' and marvin_state in home_status)
                 ) }}"
               sequence:
-                - service: notify.mobile_app_marvins_iphone
+                - service: notify.mobile_app_marvins_iphone_13_nieuw
                   data:
                     message: "{{ message }}"
                     title: "{{ title }}"
+                    data:
+                      image: "{{ image }}"
         - choose:
             - conditions: "{{ receiver == 'laura'
                 and (type == 'normal' or
-                (type == 'away_only' and laura_state in away_status)
+                (type == 'away_only' and laura_state in away_status) or
+                (type == 'home_only' and laura_state in home_status)
                 ) }}"
               sequence:
                 - service: notify.mobile_app_iphone_van_l_a
                   data:
                     message: "{{ message }}"
                     title: "{{ title }}"
+                    data:
+                      image: "{{ image }}"

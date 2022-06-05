@@ -16,8 +16,10 @@ action:
     target:
       entity_id: camera.g4_doorbell_high
 
-  - service: notify.mobile_app_marvins_iphone
+  - service: script.send_notification
     data:
-      message: "De bel gaat!"
-      data:
-        image: !secret doorbell_snapshot_url
+      receivers:
+        - "marvin"
+      message: >-
+        De bel gaat!
+      image: !secret doorbell_snapshot_url

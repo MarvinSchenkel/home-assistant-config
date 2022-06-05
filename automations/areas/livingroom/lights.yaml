@@ -9,14 +9,18 @@ trace:
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id:
       - input_boolean.setting_manual_lights
       - input_boolean.livingroom_manual_control
       - binary_sensor.livingroom_is_dark
       - binary_sensor.house_mode_everyone_at_home_working
+    from: ~
+
   - platform: state
     entity_id:
       - binary_sensor.house_mode_someone_just_awake
@@ -24,50 +28,108 @@ trigger:
       - binary_sensor.everyone_left_home
     from: "off"
     to: "on"
+
   - platform: state
     entity_id:
       - binary_sensor.house_mode_everyone_asleep
     from: "off"
     to: "on"
     id: "everyone_asleep"
-  - platform: state
-    entity_id:
-      - light.livingroom
-      - light.kitchen
-    id: "lights"
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     below: -5
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     below: 1
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     above: 1
+
   - platform: state
     entity_id:
       - light.livingroom
       - light.kitchen
-    from: "off"
-    to: "on"
+    to: "off"
     id: "lights_off"
+
+  - platform: state
+    entity_id:
+      - light.livingroom
+      - light.kitchen
+    attribute: brightness
+    to: ~
+    id: "light_brightness_change"
+
   - platform: time
     at: "19:00:00"
+
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "on_press"
+      command: "on"
     id: "hue_dimmer_on_press"
+
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "off_press"
+      command: "off_with_effect"
     id: "hue_dimmer_off_press"
+
+variables:
+  anchors:
+    - &manual_control_off
+      alias: "Turn manual control off"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.livingroom_manual_control
+
+    - &manual_control_on
+      alias: "Set lights downstairs as manually controlled"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.livingroom_manual_control
+
+    - &turn_off
+      alias: "Turn the lights off"
+      service: light.turn_off
+      target:
+        entity_id:
+          - light.livingroom
+          - light.kitchen
+      data:
+        transition: 5
+
+    - &turn_on_evening
+      alias: "Turn on the evening scene"
+      service: scene.turn_on
+      target:
+        entity_id: scene.livingroom_lights_evening
+      data:
+        transition: 4
+
+    - &turn_on_normal
+      alias: "Turn on the 'normal' light scene"
+      service: scene.turn_on
+      target:
+        entity_id: scene.livingroom_lights_normal
+      data:
+        transition: 4
+
+    - &turn_on_movie
+      alias: "Then turn on the movie scene"
+      service: scene.turn_on
+      target:
+        entity_id: scene.livingroom_lights_movie
+      data:
+        transition: 4
 
 condition:
   - condition: state
@@ -82,27 +144,19 @@ action:
             id: "lights_off"
 
         sequence:
-          - &manual_control_off
-            alias: "Turn manual control off"
-            service: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.livingroom_manual_control
+          - *manual_control_off
 
       - alias: "Set lights as manually controlled when someone changes them"
         conditions:
-          - &lights_changed
-            alias: "Lights have changed"
+          - alias: "Lights were changed"
             condition: trigger
-            id: "lights"
+            id: "light_brightness_change"
           - alias: "It was changed by a user"
             condition: template
             value_template: "{{ trigger.to_state.context.user_id != None }}"
 
         sequence:
-          - alias: "Set lights downstairs as manually controlled"
-            service: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.livingroom_manual_control
+          - *manual_control_on
 
       - alias: >
           Turn the light off when we go to sleep, even if it is manually controlled
@@ -112,15 +166,7 @@ action:
             id: "everyone_asleep"
 
         sequence:
-          - &turn_off
-            alias: "Turn the lights off"
-            service: light.turn_off
-            target:
-              entity_id:
-                - light.livingroom
-                - light.kitchen
-            data:
-              transition: 5
+          - *turn_off
           - *manual_control_off
 
       - alias: >
@@ -142,7 +188,7 @@ action:
 
       - alias: >
           Stop automating the lights if any of the lights are manually controlled or if
-          this automation is triggered by lights changed due to transition
+          we are watching a movie.
         conditions:
           - condition: or
             conditions:
@@ -150,7 +196,6 @@ action:
                 entity_id:
                   - input_boolean.livingroom_manual_control
                 state: "on"
-              - *lights_changed
               - condition: state
                 entity_id:
                   - input_select.livingroom_current_lights_scene
@@ -214,12 +259,7 @@ action:
                           - "evening"
 
                 sequence:
-                  - alias: "Then turn on the movie scene"
-                    service: scene.turn_on
-                    target:
-                      entity_id: scene.livingroom_lights_movie
-                    data:
-                      transition: 4
+                  - *turn_on_movie
 
               - alias: "When the sun has been down for a while and it's after 7pm.."
                 conditions:
@@ -233,20 +273,10 @@ action:
                         after: "19:00:00"
 
                 sequence:
-                  - alias: "Turn on the evening scene"
-                    service: scene.turn_on
-                    target:
-                      entity_id: scene.livingroom_lights_evening
-                    data:
-                      transition: 4
+                  - *turn_on_evening
 
             default:
-              - alias: "Turn on the 'normal' light scene"
-                service: scene.turn_on
-                target:
-                  entity_id: scene.livingroom_lights_normal
-                data:
-                  transition: 4
+              - *turn_on_normal
 
     default:
       - *turn_off

@@ -11,8 +11,10 @@ id: 38622ce4-5865-45c4-8cb8-7b3b54801280
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id:
       # Whether we just woke up / gone to sleep
@@ -20,35 +22,80 @@ trigger:
       - binary_sensor.house_mode_someone_awake
     from: "off"
     to: "on"
+
   - platform: state
     entity_id:
       - input_boolean.setting_manual_blinds
-  # Sun
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     below: 0
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     above: 0
-  # Close the kitchen blinds at 20:30, even if the sun has not set yet
+
   - platform: time
-    at: "20:30:00"
+    at: "20:45:00"
     id: "time_close_kitchen"
-  # Hue Remote events
+
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "down_press"
+      command: "step"
+      params:
+        step_mode: 1
     id: "hue_dimmer_down_press"
+
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "up_press"
+      command: "step"
+      params:
+        step_mode: 0
     id: "hue_dimmer_up_press"
+
+  - platform: state
+    entity_id:
+      - scene.kitchen_cover_closed
+      - scene.kitchen_cover_halfclosed
+      - scene.kitchen_cover_halfopen
+      - scene.kitchen_cover_open
+    id: kitchen_blinds
+
+  - platform: time
+    at: "00:03:00"
+    id: "reset"
+
+variables:
+  anchors:
+    - &halfclosed
+      alias: "Close the blinds halfway"
+      service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_cover_halfclosed
+
+    - &halfopen
+      alias: "Open the blinds halfway"
+      service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_cover_halfopen
+
+    - &manual_control_on
+      alias: "Set manual control to on, so the blinds stay closed"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.kitchen_cover_manual_control
+
+    - &manual_control_off
+      alias: "Reset manual control to on, so the blinds are automated again"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.kitchen_cover_manual_control
 
 condition:
   - condition: state
@@ -57,27 +104,54 @@ condition:
 
 action:
   - choose:
-      # Hue events
-      - conditions:
+      - alias: "Close the blinds when hue remote down is pressed"
+        conditions:
           - condition: trigger
             id: "hue_dimmer_down_press"
         sequence:
-          - &halfclosed
-            service: scene.turn_on
-            target:
-              entity_id: scene.kitchen_cover_halfclosed
+          - *halfclosed
+          - *manual_control_on
 
-      - conditions:
+      - alias: "Open the blinds when hue remote up is pressed"
+        conditions:
           - condition: trigger
             id: "hue_dimmer_up_press"
         sequence:
-          - &halfopen
-            service: scene.turn_on
-            target:
-              entity_id: scene.kitchen_cover_halfopen
+          - *halfopen
+          - *manual_control_off
 
-      # Half closed
-      - conditions:
+      - alias: "Check if we manually changed the blinds"
+        conditions:
+          - condition: trigger
+            id: kitchen_blinds
+        sequence:
+          - choose:
+              - conditions:
+                  - alias: "It was changed by a user"
+                    condition: template
+                    value_template: "{{ trigger.to_state.context.user_id != None }}"
+                sequence:
+                  - *manual_control_on
+
+      - alias: "Reset manual override before the new day starts"
+        conditions:
+          - alias: "When triggerd by the reset time"
+            condition: trigger
+            id: "reset"
+        sequence:
+          - *manual_control_off
+
+      - alias: "Stop automating the blinds when manual control is on"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.kitchen_cover_manual_control
+            state: "on"
+        sequence:
+          - stop: "Blinds are manually controlled"
+
+      - alias: "Half closed when everyone is asleep or it is passed 8:45pm"
+        conditions:
           - condition: or
             conditions:
               - condition: numeric_state
@@ -85,7 +159,7 @@ action:
                   - sensor.sun_adjusted_elevation
                 below: 0
               - condition: time
-                after: "20:30:00"
+                after: "20:45:00"
               - condition: state
                 entity_id: binary_sensor.house_mode_everyone_asleep
                 state:
@@ -93,6 +167,5 @@ action:
         sequence:
           - *halfclosed
 
-    # Half open
     default:
       - *halfopen

@@ -13,13 +13,18 @@ id: 3b9ac19f-e963-4f1d-9ef8-a6fd0c4ebc5c
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id:
-      # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
       - input_boolean.setting_manual_blinds
+      - input_boolean.livingroom_cover_manual_control
+      - binary_sensor.house_mode_everyone_asleep
+      - binary_sensor.house_mode_someone_awake
+      - binary_sensor.house_mode_someone_just_awake
       - input_boolean.livingroom_cover_manual_control
     from:
       - "off"
@@ -27,27 +32,17 @@ trigger:
     to:
       - "off"
       - "on"
-  - platform: state
-    entity_id:
-      # Whether we just woke up / gone to sleep
-      - binary_sensor.house_mode_everyone_asleep
-      - binary_sensor.house_mode_someone_awake
-    from:
-      - "off"
-      - "on"
-    to:
-      - "off"
-      - "on"
-  # Sun
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
-    below: -10
+    below: -9
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     above: 0
-  # Sync blinds 10m after finish wathing TV
+
   - platform: state
     entity_id: media_player.apple_tv
     to:
@@ -56,18 +51,53 @@ trigger:
       - standby
     for:
       minutes: 8
+
   - platform: state
     entity_id:
-      - sensor.zoey_status
-    to: "Slaapt beneden"
-    id: "zoey_sleeps_downstairs"
-  - platform: state
-    entity_id:
-      - sensor.zoey_status
-    to:
-      - "Wakker"
-      - "Slaapt boven"
-    id: "zoey_awake"
+      - scene.livingroom_cover_closed
+      - scene.livingroom_cover_halfclosed
+      - scene.livingroom_cover_halfopen
+      - scene.livingroom_cover_open
+    id: livingroom_blinds
+
+  - platform: time
+    at: "00:03:00"
+    id: "reset"
+
+variables:
+  anchors:
+    - &cover_closed
+      alias: "Close the blinds"
+      service: scene.turn_on
+      target:
+        entity_id:
+          - scene.livingroom_cover_closed
+
+    - &cover_half_closed
+      alias: "Close the blinds halfway"
+      service: scene.turn_on
+      target:
+        entity_id:
+          - scene.livingroom_cover_halfclosed
+
+    - &cover_half_open
+      alias: "Open the blinds half way"
+      service: scene.turn_on
+      target:
+        entity_id:
+          - scene.livingroom_cover_halfopen
+
+    - &manual_control_on
+      alias: "Set manual control to on, so the blinds stay closed"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.livingroom_cover_manual_control
+
+    - &manual_control_off
+      alias: "Reset manual control, so the blinds stay closed"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.livingroom_cover_manual_control
 
 condition:
   - condition: state
@@ -77,32 +107,26 @@ condition:
 
 action:
   - choose:
-      - alias: "Zoey sleeps downstairs"
+      - alias: "Check if we manually changed the blinds"
         conditions:
           - condition: trigger
-            id: "zoey_sleeps_downstairs"
+            id: livingroom_blinds
         sequence:
-          - &cover_closed
-            alias: "Close the blinds"
-            service: scene.turn_on
-            target:
-              entity_id:
-                - scene.livingroom_cover_closed
+          - choose:
+              - conditions:
+                  - alias: "It was changed by a user"
+                    condition: template
+                    value_template: "{{ trigger.to_state.context.user_id != None }}"
+                sequence:
+                  - *manual_control_on
 
-          - alias: "Set manual control to on, so the blinds stay closed"
-            service: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.livingroom_cover_manual_control
-
-      - alias: "Zoey wakes up"
+      - alias: "Reset manual override before the new day starts"
         conditions:
-          - condition: trigger
-            id: "zoey_awake"
+          - alias: "When triggerd by the reset time"
+            condition: trigger
+            id: "reset"
         sequence:
-          - alias: "Reset manual control to on, so the blinds stay closed"
-            service: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.livingroom_cover_manual_control
+          - *manual_control_off
 
       - alias: "Stop automating the blinds when manual control is on"
         conditions:
@@ -110,10 +134,11 @@ action:
             entity_id:
               - input_boolean.livingroom_cover_manual_control
             state: "on"
-        sequence: []
+        sequence:
+          - stop: "Living room blinds are manually controlled"
 
-      # Fully closed
-      - conditions:
+      - alias: "Fully close the blinds when we go to sleep or when it is hot"
+        conditions:
           - condition: or
             conditions:
               - condition: or
@@ -143,20 +168,14 @@ action:
         sequence:
           - *cover_closed
 
-      # Half closed
-      - conditions:
+      - alias: "Cover half closed when sun is down"
+        conditions:
           - condition: numeric_state
             entity_id:
               - sensor.sun_adjusted_elevation
-            below: -10
+            below: -9
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id:
-                - scene.livingroom_cover_halfclosed
-    # Half open
+          - *cover_half_closed
+
     default:
-      - service: scene.turn_on
-        target:
-          entity_id:
-            - scene.livingroom_cover_halfopen
+      - *cover_half_open

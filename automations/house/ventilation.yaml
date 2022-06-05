@@ -8,19 +8,23 @@ trigger:
   - platform: state
     entity_id: binary_sensor.bathroom_flood
     to: "on"
+
   - platform: state
     entity_id: binary_sensor.bathroom_flood
     to: "off"
     for:
       minutes: 15
+
   - platform: numeric_state
     entity_id:
       - sensor.pir_bathroom_humidity
     above: 85
+
   - platform: numeric_state
     entity_id:
       - sensor.pir_bathroom_humidity
     below: 75
+
   - platform: event
     event_type: zwave_js_value_notification
     event_data:
@@ -28,34 +32,90 @@ trigger:
       value: 14
     id: "bathroom_double_click"
 
+  - platform: state
+    entity_id:
+      - light.fibaro_wc
+    to: "on"
+    for:
+      minutes: 4
+
+  - platform: state
+    entity_id:
+      - light.fibaro_wc
+    to: "off"
+    for:
+      minutes: 10
+
+variables:
+  anchors:
+    - &turn_on
+      alias: "Turns on the ventilation"
+      service: fan.turn_on
+      target:
+        entity_id: fan.itho
+
+    - &turn_off
+      alias: "Turns off the ventilation"
+      service: fan.turn_off
+      target:
+        entity_id: fan.itho
+
+    - &toggle
+      alias: "Toggles the ventilation"
+      service: fan.toggle
+      target:
+        entity_id: fan.itho
+
+    - &shower_on
+      alias: "When someone is taking a shower"
+      condition: state
+      entity_id: binary_sensor.bathroom_flood
+      state: "on"
+
 action:
   choose:
-    # Toggle fan on bathroom scene double click activations
     - conditions:
-        - condition: trigger
+        - alias: "When we double click the bathroom switch"
+          condition: trigger
           id: "bathroom_double_click"
       sequence:
-        - service: fan.toggle
-          entity_id: fan.itho
+        - *toggle
+
+    - alias: "Turn ventilation off when someone is sleeping and the shower is off"
+      conditions:
+        - alias: "When someone is asleep"
+          condition: state
+          entity_id:
+            - binary_sensor.house_mode_someone_asleep
+          state: "on"
+        - condition: not
+          conditions:
+            - *shower_on
+      sequence:
+        - *turn_off
 
     - conditions:
-        - condition: or
+        - alias: "Someone is taking a shower or humidity is very high"
+          condition: or
           conditions:
-            - condition: state
-              entity_id: binary_sensor.bathroom_flood
-              state: "on"
+            - *shower_on
             - condition: numeric_state
               entity_id:
                 - sensor.pir_bathroom_humidity
               above: 85
       sequence:
-        - service: fan.set_preset_mode
-          data:
-            preset_mode: high
-          target:
-            entity_id: fan.itho
+        - *turn_on
+
+    - alias: "When there is some number 2 action going on"
+      conditions:
+        - alias: "When the restoom lights are on for longer than 4 minutes"
+          condition: state
+          entity_id: light.fibaro_wc
+          state: "on"
+          for:
+            minutes: 4
+      sequence:
+        - *turn_on
 
   default:
-    - service: fan.turn_off
-      target:
-        entity_id: fan.itho
+    - *turn_off

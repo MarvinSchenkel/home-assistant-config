@@ -90,7 +90,7 @@ action:
   # Only join when we have not already joined, since this would cause a 1 sec silence
   - choose:
       - conditions:
-          - '{{ sonos_target not in state_attr(sonos_source, "sonos_group") }}'
+          - '{{ sonos_target not in state_attr(sonos_source, "group_members") }}'
         sequence:
           - service: sonos.join
             data:

@@ -83,14 +83,6 @@ trigger:
     id: "all_lights_off"
   - platform: state
     entity_id:
-      - switch.nspanel_master_bedroom_relay_1
-    id: "nspanel_left"
-  - platform: state
-    entity_id:
-      - switch.nspanel_master_bedroom_relay_2
-    id: "nspanel_right"
-  - platform: state
-    entity_id:
       - sensor.zoey_status
     to: "Slaapt boven"
     id: "zoey_sleeps_upstairs"
@@ -145,12 +137,8 @@ action:
 
       - alias: "When Laura clicks the button when she is already sleeping"
         conditions:
-          - condition: or
-            conditions:
-              - condition: trigger
-                id: "button_laura_single"
-              - condition: trigger
-                id: "nspanel_left"
+          - condition: trigger
+            id: "button_laura_single"
           - condition: state
             entity_id:
               - input_select.laura_sleep_status_dropdown

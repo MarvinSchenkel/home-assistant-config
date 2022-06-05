@@ -14,4 +14,4 @@ action:
       receivers:
         - "marvin"
       message: >
-        Wasmachine overload! {{ trigger.to_state.name }}
+        Wasmachine overload! {{ trigger.to_state }}

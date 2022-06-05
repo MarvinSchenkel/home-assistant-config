@@ -9,6 +9,10 @@ trigger:
   - platform: state
     entity_id: binary_sensor.house_mode_someone_just_awake
     to: "on"
+  - platform: state
+    entity_id:
+      - binary_sensor.house_mode_someone_asleep
+    to: "off"
 
 condition:
   condition: and
@@ -34,4 +38,4 @@ action:
   - service: media_player.volume_set
     data:
       entity_id: media_player.sonos_livingroom
-      volume_level: 0.10
+      volume_level: 0.08

@@ -1,7 +1,7 @@
 """
 Sensor component for waste pickup dates from dutch and belgium waste collectors
 Original Author: Pippijn Stortelder
-Current Version: 4.9.0 20220106 - Pippijn Stortelder
+Current Version: 4.9.2 20220118 - Pippijn Stortelder
 20210112 - Updated date format for RD4
 20210114 - Fix error made in commit 9d720ec
 20210120 - Enabled textile for RecycleApp
@@ -37,6 +37,8 @@ Current Version: 4.9.0 20220106 - Pippijn Stortelder
 20220105 - Changed collector circulus-berkel to circulus
 20220105 - Added support for wastcollector Voorschoten
 20220106 - Added support for Ximmio commercial address (option added customerid)
+20220113 - Added support for wastcollector Lingewaard
+20220118 - Fix Cranendonck mapping
 
 Example config:
 Configuration.yaml:
@@ -127,6 +129,7 @@ OPZET_COLLECTOR_URLS = {
     'denhaag': 'https://huisvuilkalender.denhaag.nl',
     'gad': 'https://inzamelkalender.gad.nl',
     'hvc': 'https://inzamelkalender.hvcgroep.nl',
+    'lingewaard': 'https://afvalwijzer.lingewaard.nl',
     'middelburg-vlissingen': 'https://afvalwijzer.middelburgvlissingen.nl',
     'montfoort': 'https://afvalkalender.cyclusnv.nl',
     'peelenmaas': 'https://afvalkalender.peelenmaas.nl',
@@ -301,7 +304,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     if waste_collector in DEPRECATED_AND_NEW_WASTECOLLECTORS:
         persistent_notification.create(
                 hass,
-                "Update your config to use {}! You are still using {} as a wast collector, which is deprecated. Check your automations and lovelace config, as the sensor names may also be changed!".format(
+                "Update your config to use {}! You are still using {} as a waste collector, which is deprecated. Check your automations and lovelace config, as the sensor names may also be changed!".format(
                     DEPRECATED_AND_NEW_WASTECOLLECTORS[waste_collector], 
                     waste_collector),
                 "Afvalbeheer", 
@@ -965,6 +968,7 @@ class OpzetCollector(WasteCollector):
         'gft': WASTE_TYPE_GREEN,
         'chemisch': WASTE_TYPE_KCA,
         'kca': WASTE_TYPE_KCA,
+        'tariefzak restafval': WASTE_TYPE_GREY_BAGS,
         'restafvalzakken': WASTE_TYPE_GREY_BAGS,
         'rest': WASTE_TYPE_GREY,
         'plastic': WASTE_TYPE_PACKAGES,

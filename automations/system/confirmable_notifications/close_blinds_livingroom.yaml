@@ -11,19 +11,26 @@ trigger:
     for:
       seconds: 10
   - platform: event
-    id: close_blinds
+    id: response_yes
     event_type: alexa_actionable_notification
     event_data:
       event_id: close_blinds_livingroom
       event_response_type: ResponseYes
+  - platform: event
+    id: response_no
+    event_type: alexa_actionable_notification
+    event_data:
+      event_id: close_blinds_livingroom
+      event_response_type: ResponseNo
 
 condition: []
 
 action:
   - choose:
-      - conditions:
+      - alias: "Close Luxaflex when we respond YES"
+        conditions:
           - condition: trigger
-            id: "close_blinds"
+            id: "response_yes"
 
         sequence:
           - service: scene.turn_on
@@ -31,6 +38,15 @@ action:
               entity_id:
                 - scene.livingroom_cover_closed
                 - scene.gardendoor_cover_closed
+
+      - alias: "Disable automation for 60 minutes when we response NO"
+        conditions:
+          - condition: trigger
+            id: "response_no"
+
+        sequence:
+          - delay:
+              minutes: 60
 
       - conditions:
           - condition: state

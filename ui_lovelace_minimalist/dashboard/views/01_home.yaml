@@ -40,8 +40,8 @@ cards:
             template: custom_card_imswel_person
             variables:
               ulm_card_imswel_person_entity: sensor.marvin_status
-              ulm_card_imswel_person_wifi_tracker: device_tracker.marvins_iphone_2
-              ulm_card_imswel_person_gps_tracker: device_tracker.marvins_iphone_3
+              ulm_card_imswel_person_wifi_tracker: device_tracker.unifi_marvins_iphone
+              ulm_card_imswel_person_gps_tracker: device_tracker.marvins_iphone_13
               ulm_card_imswel_person_use_entity_picture: true
               ulm_card_imswel_person_zones:
                 - zone.home

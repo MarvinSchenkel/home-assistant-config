@@ -11,15 +11,26 @@ id: c5bc22e2-4499-4fb6-9ff1-1985efa93118
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id:
-      # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
       - binary_sensor.sun_at_south_windows
       - media_player.mancave_tv
       - input_boolean.setting_manual_blinds
+      - input_boolean.mancave_cover_manual_control
+
+  - platform: state
+    entity_id:
+      - scene.mancave_cover_closed
+      - scene.mancave_cover_halfclosed
+      - scene.mancave_cover_halfopen
+      - scene.mancave_cover_tophalfopen
+    id: mancave_blinds
+
   - platform: state
     entity_id:
       - sensor.marvin_work_status
@@ -28,15 +39,34 @@ trigger:
       - "Niet aan het werk"
     for:
       minutes: 1
-  # Sun
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
     below: 16.0
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_azimuth
     above: 200
+
+  - platform: time
+    at: "00:03:00"
+    id: "reset"
+
+variables:
+  anchors:
+    - &manual_control_on
+      alias: "Set manual control to on, so the blinds stay closed"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.mancave_cover_manual_control
+
+    - &manual_control_off
+      alias: "Reset manual control to on, so the blinds are automated again"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.mancave_cover_manual_control
 
 condition:
   - condition: state
@@ -46,8 +76,39 @@ condition:
 
 action:
   - choose:
-      # TV is on or sun is hot -> Fully closed
-      - conditions:
+      - alias: "Check if we manually changed the blinds"
+        conditions:
+          - condition: trigger
+            id: mancave_blinds
+        sequence:
+          - choose:
+              - conditions:
+                  - alias: "It was changed by a user"
+                    condition: template
+                    value_template: "{{ trigger.to_state.context.user_id != None }}"
+                sequence:
+                  - *manual_control_on
+
+      - alias: "Reset manual override before the new day starts"
+        conditions:
+          - alias: "When triggerd by the reset time"
+            condition: trigger
+            id: "reset"
+        sequence:
+          - *manual_control_off
+
+      - alias: "Check if the blinds are not manually overridden"
+        conditions:
+          - alias: "When manual control is on"
+            condition: state
+            entity_id:
+              - input_boolean.mancave_cover_manual_control
+            state: "on"
+        sequence:
+          - stop: "Mancave blinds are manually overridden"
+
+      - alias: "TV is on or sun is hot -> Fully closed"
+        conditions:
           - condition: or
             conditions:
               - condition: state

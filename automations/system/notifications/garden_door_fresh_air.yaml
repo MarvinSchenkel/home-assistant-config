@@ -1,0 +1,62 @@
+---
+description: >
+  Send a notification when it is hot inside and it has cooled off outside to
+  open our door for a bit of fresh air
+alias: system_notifications_garden_door_fresh_air
+mode: single
+id: ad5c9ea0-d6c7-43ed-9262-675d976967b1
+
+variables:
+  temperature_difference: >
+    {{
+      (states("sensor.current_temperature") | float
+      - states("sensor.pir_kitchen_temperature") | float)
+      | round(2)
+    }}
+
+trigger:
+  - platform: time
+    at: "18:00:01"
+  - platform: numeric_state
+    entity_id:
+      - sensor.pir_kitchen_temperature
+    above: 21.5
+  - platform: template
+    value_template: >
+      {{
+        (states("sensor.pir_kitchen_temperature") | float
+        - states("sensor.current_temperature") | float)
+        | round(2) > 2
+      }}
+
+condition: []
+
+action:
+  - if:
+      - condition: template
+        value_template: >
+          {{
+            (states("sensor.pir_kitchen_temperature") | float
+            - states("sensor.current_temperature") | float)
+            | round(2) > 2
+          }}
+      - condition: numeric_state
+        entity_id: sensor.pir_kitchen_temperature
+        above: 21.5
+      - condition: time
+        after: "18:00:00"
+        before: "23:00:00"
+      - condition: state
+        entity_id: binary_sensor.garden_door_open
+        state: "off"
+
+    then:
+      - service: script.send_notification
+        data:
+          receivers:
+            - "marvin"
+            - "laura"
+          type: "home_only"
+          message: >-
+            Het is erg warm binnen en buiten is het al afgekoeld. Zet de buitendeur
+            voor wat frisse lucht!
