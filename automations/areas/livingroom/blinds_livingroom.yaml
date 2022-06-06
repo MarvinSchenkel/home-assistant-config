@@ -147,10 +147,15 @@ action:
                     entity_id: binary_sensor.house_mode_everyone_asleep
                     state:
                       - "on"
-                  - condition: state
-                    entity_id: binary_sensor.house_mode_someone_just_awake
-                    state:
-                      - "on"
+                  - and:
+                      - condition: state
+                        entity_id: binary_sensor.house_mode_someone_just_awake
+                        state:
+                          - "on"
+                      - condition: state
+                        entity_id:
+                          - input_select.livingroom_current_cover_scene
+                        state: "closed"
               - condition: state
                 entity_id:
                   - binary_sensor.sun_should_close_south_blinds
