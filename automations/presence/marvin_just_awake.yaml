@@ -11,6 +11,7 @@ trigger:
   - platform: webhook
     webhook_id: marvin_awake
     id: "webhook"
+
   - platform: event
     event_type: "zha_event"
     event_data:
@@ -18,38 +19,73 @@ trigger:
       command: "hold"
     id: "button"
 
-condition:
-  - condition: or
-    conditions:
-      - condition: state
+  - platform: state
+    entity_id:
+      - sensor.marvins_iphone_13_floors_ascended
+      - sensor.marvins_iphone_13_floors_descended
+    id: "marvin_floor_activity"
+
+  - platform: state
+    entity_id:
+      - sensor.marvins_iphone_13_activity
+    not_to:
+      - Unknown
+      - Stationary
+    id: "marvin_activity"
+
+variables:
+  anchors:
+    - &marvin_just_awake
+      alias: "Set Marvin to just awake"
+      service: input_select.select_option
+      data:
         entity_id: input_select.marvin_sleep_status_dropdown
-        state: "Slaapt"
-      - condition: and
+        option: "Net wakker"
+
+    - &time_check
+      alias: "Check if it is within the window of waking up"
+      condition: time
+      after: "06:00:00"
+      before: "09:00:00"
+
+    - &marvin_asleep
+      alias: "Check if I am asleep, only then we want to trigger this"
+      condition: state
+      entity_id: input_select.marvin_sleep_status_dropdown
+      state: "Slaapt"
+
+condition: []
+
+action:
+  - choose:
+      - alias: "Check if the alarm triggered in the morning"
         conditions:
           - condition: trigger
             id: "webhook"
-          - condition: time
-            after: "06:00:00"
-            before: "09:00:00"
-
-action:
-  - alias: "Check if it's an alarm that triggered the automation or manual button"
-    choose:
-      - conditions:
-          - condition: or
-            conditions:
-              - condition: trigger
-                id: "button"
-              - condition: time
-                after: "06:00:00"
-                before: "09:00:00"
+          - *time_check
+          - *marvin_asleep
         sequence:
-          - service: input_select.select_option
-            data:
-              entity_id: input_select.marvin_sleep_status_dropdown
-              option: "Net wakker"
-    default:
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.marvin_sleep_status_dropdown
-          option: "{{ states('input_select.marvin_sleep_status_dropdown') }}"
+          - *marvin_just_awake
+
+      - alias: "Check of we pressed the bedside button"
+        conditions:
+          - condition: trigger
+            id: "button"
+          - *time_check
+          - *marvin_asleep
+        sequence:
+          - *marvin_just_awake
+
+      - alias: "Check if the phone detected activity"
+        conditions:
+          - or:
+              - condition: trigger
+                id: "marvin_activity"
+              - condition: trigger
+                id: "marvin_floor_activity"
+          - *time_check
+          - *marvin_asleep
+        sequence:
+          - *marvin_just_awake
+
+    default: []
