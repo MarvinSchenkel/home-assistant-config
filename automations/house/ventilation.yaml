@@ -46,6 +46,10 @@ trigger:
     for:
       minutes: 10
 
+  - platform: state
+    entity_id:
+      - input_boolean.house_mode_cooking
+
 variables:
   anchors:
     - &turn_on
@@ -93,6 +97,16 @@ action:
             - *shower_on
       sequence:
         - *turn_off
+
+    - alias: "Check if someone is cooking"
+      conditions:
+        - alias: "Cooking mode is on"
+          condition: state
+          entity_id:
+            - input_boolean.house_mode_cooking
+          state: "on"
+      sequence:
+        - *turn_on
 
     - conditions:
         - alias: "Someone is taking a shower or humidity is very high"

@@ -8,10 +8,6 @@ mode: single
 id: 0069afb3-adb3-433c-beff-107c17508dbd
 
 trigger:
-  - platform: webhook
-    webhook_id: marvin_awake
-    id: "webhook"
-
   - platform: event
     event_type: "zha_event"
     event_data:
@@ -46,7 +42,7 @@ variables:
       alias: "Check if it is within the window of waking up"
       condition: time
       after: "06:00:00"
-      before: "09:00:00"
+      before: "15:00:00"
 
     - &marvin_asleep
       alias: "Check if I am asleep, only then we want to trigger this"
@@ -60,8 +56,7 @@ action:
   - choose:
       - alias: "Check if the alarm triggered in the morning"
         conditions:
-          - condition: trigger
-            id: "webhook"
+          - "{{ not trigger.platform }}"
           - *time_check
           - *marvin_asleep
         sequence:
@@ -81,8 +76,18 @@ action:
           - or:
               - condition: trigger
                 id: "marvin_activity"
-              - condition: trigger
-                id: "marvin_floor_activity"
+              - and:
+                  - condition: trigger
+                    id: "marvin_floor_activity"
+                  - or:
+                      - condition: numeric_state
+                        entity_id:
+                          - sensor.marvins_iphone_13_floors_ascended
+                        above: 0
+                      - condition: numeric_state
+                        entity_id:
+                          - sensor.marvins_iphone_13_floors_descended
+                        above: 0
           - *time_check
           - *marvin_asleep
         sequence:

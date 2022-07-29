@@ -83,6 +83,10 @@ trigger:
       command: "off_with_effect"
     id: "hue_dimmer_off_press"
 
+  - platform: time
+    at: "00:03:00"
+    id: "reset"
+
 variables:
   anchors:
     - &manual_control_off
@@ -142,9 +146,19 @@ action:
         conditions:
           - condition: trigger
             id: "lights_off"
-
         sequence:
           - *manual_control_off
+
+      - alias: "Reset active scene to 'normal' during reset"
+        conditions:
+          - condition: trigger
+            id: "reset"
+        sequence:
+          - *manual_control_off
+          - service: input_select.select_option
+            entity_id: input_select.livingroom_current_lights_scene
+            data:
+              option: normal
 
       - alias: "Set lights as manually controlled when someone changes them"
         conditions:
@@ -154,7 +168,6 @@ action:
           - alias: "It was changed by a user"
             condition: template
             value_template: "{{ trigger.to_state.context.user_id != None }}"
-
         sequence:
           - *manual_control_on
 
@@ -164,7 +177,6 @@ action:
           - alias: "Everyone has gone to sleep"
             condition: trigger
             id: "everyone_asleep"
-
         sequence:
           - *turn_off
           - *manual_control_off
@@ -182,7 +194,6 @@ action:
             entity_id:
               - sensor.sun_adjusted_elevation
             above: 1.0
-
         sequence:
           - *turn_off
 
@@ -206,8 +217,8 @@ action:
                 id:
                   - "hue_dimmer_on_press"
                   - "hue_dimmer_off_press"
-
-        sequence: []
+        sequence:
+          - stop: "Living room lights are manually controlled"
 
       - alias: "Determine if we need to turn on the lights at all"
         conditions:
@@ -238,7 +249,6 @@ action:
                         entity_id:
                           - binary_sensor.house_mode_someone_awake
                         state: "on"
-
         sequence:
           - choose:
               - alias: >
@@ -257,7 +267,6 @@ action:
                         state:
                           - "normal"
                           - "evening"
-
                 sequence:
                   - *turn_on_movie
 
@@ -271,7 +280,6 @@ action:
                         below: -5
                       - condition: time
                         after: "19:00:00"
-
                 sequence:
                   - *turn_on_evening
 

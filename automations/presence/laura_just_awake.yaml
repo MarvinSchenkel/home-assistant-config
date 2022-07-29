@@ -5,10 +5,6 @@ mode: single
 id: a8abbc27-211f-4bae-bc44-013d8735e6c9
 
 trigger:
-  - platform: webhook
-    webhook_id: laura_awake
-    id: "webhook"
-
   - platform: event
     event_type: "zha_event"
     event_data:
@@ -43,7 +39,7 @@ variables:
       alias: "Check if it is within the window of waking up"
       condition: time
       after: "06:00:00"
-      before: "11:00:00"
+      before: "15:00:00"
 
     - &laura_asleep
       alias: "Check if I am asleep, only then we want to trigger this"
@@ -57,8 +53,7 @@ action:
   - choose:
       - alias: "Check if the alarm triggered in the morning"
         conditions:
-          - condition: trigger
-            id: "webhook"
+          - "{{ not trigger.platform }}"
           - *time_check
           - *laura_asleep
         sequence:
@@ -78,9 +73,20 @@ action:
           - or:
               - condition: trigger
                 id: "laura_activity"
-              - condition: trigger
-                id: "laura_floor_activity"
+              - and:
+                  - condition: trigger
+                    id: "laura_floor_activity"
+                  - or:
+                      - condition: numeric_state
+                        entity_id:
+                          - sensor.iphone_van_l_a_floors_ascended
+                        above: 0
+                      - condition: numeric_state
+                        entity_id:
+                          - sensor.iphone_van_l_a_floors_descended
+                        above: 0
           - *laura_asleep
+          - *time_check
         sequence:
           - *laura_just_awake
 

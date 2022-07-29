@@ -6,14 +6,6 @@ alias: system_notifications_garden_door_fresh_air
 mode: single
 id: ad5c9ea0-d6c7-43ed-9262-675d976967b1
 
-variables:
-  temperature_difference: >
-    {{
-      (states("sensor.current_temperature") | float
-      - states("sensor.pir_kitchen_temperature") | float)
-      | round(2)
-    }}
-
 trigger:
   - platform: time
     at: "18:00:01"

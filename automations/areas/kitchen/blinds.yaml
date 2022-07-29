@@ -17,7 +17,6 @@ trigger:
 
   - platform: state
     entity_id:
-      # Whether we just woke up / gone to sleep
       - binary_sensor.house_mode_everyone_asleep
       - binary_sensor.house_mode_someone_awake
     from: "off"
@@ -26,6 +25,7 @@ trigger:
   - platform: state
     entity_id:
       - input_boolean.setting_manual_blinds
+      - input_boolean.kitchen_cover_manual_control
 
   - platform: numeric_state
     entity_id:

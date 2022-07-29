@@ -1,0 +1,25 @@
+---
+alias: kitchen_cooking_mode
+description: Toggle cooking mode by the press of a button
+mode: queued
+id: b9982ead-5320-48cb-8b44-b7df02698f32
+
+trigger:
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "6b98a1925417612221ed14e06c21a6b4"
+      command: "single"
+    id: "single_press"
+
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "6b98a1925417612221ed14e06c21a6b4"
+      command: "double"
+    id: "double_press"
+
+action:
+  - service: input_boolean.toggle
+    target:
+      entity_id: input_boolean.house_mode_cooking
