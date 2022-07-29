@@ -4,11 +4,11 @@
 # combination with the sun_at_south_windows to control
 # the blinds
 binary_sensor:
-  name: sun_hot
-  unique_id: 9fd20f87-052a-4a50-9990-553144b9c807
-  state: >
-    {%- if states("sensor.solaredge_ac_power_output") | int > 1400 -%}
-      on
-    {%- else -%}
-      off
-    {%- endif -%}
+  - name: sun_hot
+    unique_id: 9fd20f87-052a-4a50-9990-553144b9c807
+    state: >
+      {%- if states("sensor.solaredge_ac_power_output") | int > 1400 -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}

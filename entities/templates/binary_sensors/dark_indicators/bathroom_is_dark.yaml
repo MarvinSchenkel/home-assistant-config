@@ -5,7 +5,7 @@ binary_sensor:
     unique_id: 1cf2b12e-9202-410e-bcc9-9ff2cf812f5a
     state: >
       {%-
-        if states("sensor.pir_bathroom_luminance") | int > 20
+        if states("sensor.pir_bathroom_luminance") | int > 15
         and is_state("light.fibaro_bathroom", "off")
       -%}
         off
