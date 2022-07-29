@@ -27,6 +27,7 @@ www/fonts
 fonts
 www/upcoming-media-card-images
 www/nspanel
+custom_components
 
 # Ignore specific files
 zwcfg_*
