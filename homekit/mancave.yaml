@@ -1,0 +1,10 @@
+---
+- binary_sensor.presence_mancave
+- binary_sensor.mancave_door_open
+- light.mancave
+- scene.mancave_cover_closed
+- scene.mancave_cover_halfclosed
+- scene.mancave_cover_halfopen
+- scene.mancave_cover_tophalfopen
+- scene.mancave_lights_normal
+- scene.mancave_lights_tv
