@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ["stable", "beta", "dev"]
+        version: ["stable", "beta"]
     steps:
       - name: ⤵️ Check out configuration from GitHub
         uses: actions/checkout@v3.0.1
