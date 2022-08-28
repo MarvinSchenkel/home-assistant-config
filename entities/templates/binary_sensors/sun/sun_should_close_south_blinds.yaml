@@ -18,7 +18,7 @@ trigger:
       - binary_sensor.sun_hot
     to: "off"
     for:
-      minutes: 10
+      minutes: 15
   - platform: numeric_state
     entity_id: sensor.current_temperature
     above: 19
@@ -47,6 +47,9 @@ binary_sensor:
           or (
             states('sensor.current_temperature') | float > 16.0
             and is_state('weather.buienradar', 'sunny')
+          )
+          or (
+            states('sensor.pir_kitchen_temperature') | float > 24.0
           )
         )
       -%}

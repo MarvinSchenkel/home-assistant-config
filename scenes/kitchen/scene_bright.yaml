@@ -1,0 +1,8 @@
+---
+name: kitchen_lights_bright
+id: 6bbf0066-8fda-4e2b-84a4-3e4b3e38630b
+icon: mdi:lightbulb
+entities:
+  light.led_kitchen:
+    state: "on"
+    brightness_pct: 100

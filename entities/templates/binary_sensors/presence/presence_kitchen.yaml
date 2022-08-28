@@ -1,0 +1,11 @@
+---
+# Determine presence in the kitchen based on
+# - PIR
+# - Cooking mode
+
+binary_sensor:
+  - name: presence_kitchen
+    unique_id: 76368ba8-4ed1-4f38-879a-c61455eb1f47
+    state: >
+      {{ is_state("binary_sensor.pir_kitchen", "on")
+          or is_state("input_boolean.house_mode_cooking", "on") }}

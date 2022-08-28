@@ -1,6 +1,6 @@
 ---
 sensor:
-  name: current_temperature
-  unit_of_measurement: "°C"
-  state: >
-    {{ state_attr('weather.buienradar', 'temperature') }}
+  - name: current_temperature
+    unit_of_measurement: "°C"
+    state: >
+      {{ state_attr('weather.buienradar', 'temperature') | default(1) }}

@@ -1,0 +1,9 @@
+---
+name: Muziek schema
+options:
+  - just_awake
+  - early_morning
+  - morning
+  - day
+  - evening
+  - "off"

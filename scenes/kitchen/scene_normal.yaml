@@ -1,0 +1,8 @@
+---
+name: kitchen_lights_normal
+id: ac500529-453e-4086-bc38-7e4e557b0aec
+icon: mdi:lightbulb
+entities:
+  light.led_kitchen:
+    state: "on"
+    brightness_pct: 65

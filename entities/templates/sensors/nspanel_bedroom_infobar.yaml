@@ -1,17 +1,17 @@
 ---
 sensor:
-  name: nspanel_bedroom_infobar
-  state: >-
-    {% if state_attr("media_player.sonos_master_bedroom", "source") != "TV"
-      and is_state("media_player.sonos_master_bedroom", "playing") %}
-    {{ state_attr("media_player.sonos_master_bedroom", "media_artist") }}
-    -
-    {{ state_attr("media_player.sonos_master_bedroom", "media_title") }}
+  - name: nspanel_bedroom_infobar
+    state: >-
+      {% if state_attr("media_player.sonos_master_bedroom", "source") != "TV"
+        and is_state("media_player.sonos_master_bedroom", "playing") %}
+      {{ state_attr("media_player.sonos_master_bedroom", "media_artist") }}
+      -
+      {{ state_attr("media_player.sonos_master_bedroom", "media_title") }}
 
-    {% elif states("sensor.openweathermap_forecast_precipitation") | float > 0.2 %}
-    {{ states("sensor.openweathermap_forecast_precipitation") }}
-    mm regen verwacht binnen 1u!
+      {% elif states("sensor.openweathermap_forecast_precipitation") | float > 0.2 %}
+      {{ states("sensor.openweathermap_forecast_precipitation") }}
+      mm regen verwacht binnen 1u!
 
-    {% else %}
-    Geen regen verwacht!
-    {% endif %}
+      {% else %}
+      Geen regen verwacht!
+      {% endif %}

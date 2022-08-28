@@ -7,7 +7,7 @@ binary_sensor:
   - name: sun_hot
     unique_id: 9fd20f87-052a-4a50-9990-553144b9c807
     state: >
-      {%- if states("sensor.solaredge_ac_power_output") | int > 1400 -%}
+      {%- if states("sensor.power_production") | float > 1.350 -%}
         on
       {%- else -%}
         off

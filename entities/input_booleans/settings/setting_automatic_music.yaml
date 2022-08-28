@@ -1,0 +1,5 @@
+---
+# This setting is used in automations to automatically
+# play music
+name: Automatische muziek
+icon: mdi:music-circle

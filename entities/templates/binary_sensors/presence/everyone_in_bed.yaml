@@ -1,8 +1,8 @@
 ---
 binary_sensor:
-  name: everyone_in_bed
-  unique_id: 2eaeeebc-f776-4d93-8513-5d0ae4d6147b
-  state: >
-    {%- set people_in_bed = states("sensor.num_people_in_bed") | int %}
-    {{  people_in_bed > 0
-        and people_in_bed >= states("sensor.num_people_at_home") | int }}
+  - name: everyone_in_bed
+    unique_id: 2eaeeebc-f776-4d93-8513-5d0ae4d6147b
+    state: >
+      {%- set people_in_bed = states("sensor.num_people_in_bed") | int(0) %}
+      {{  people_in_bed > 0
+          and people_in_bed >= states("sensor.num_people_at_home") | int(0) }}

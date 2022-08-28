@@ -2,15 +2,15 @@
 # Keep track of how many people are at home
 # so we know when everyone has gone to bed
 sensor:
-  name: num_people_at_home
-  unit_of_measurement: "people"
-  state: >-
-    {% set noOfPeople = 0 %}
-    {% set homeValues = ["Thuis", "Net thuis"] %}
-    {% if states("input_select.marvin_status_dropdown") in homeValues %}
-    {% set noOfPeople = noOfPeople + 1 %}
-    {% endif %}
-    {% if states("input_select.laura_status_dropdown") in homeValues %}
-    {% set noOfPeople = noOfPeople + 1 %}
-    {% endif %}
-    {{ noOfPeople }}
+  - name: num_people_at_home
+    unit_of_measurement: "people"
+    state: >-
+      {% set noOfPeople = 0 %}
+      {% set homeValues = ["Thuis", "Net thuis"] %}
+      {% if states("input_select.marvin_status_dropdown") in homeValues %}
+      {% set noOfPeople = noOfPeople + 1 %}
+      {% endif %}
+      {% if states("input_select.laura_status_dropdown") in homeValues %}
+      {% set noOfPeople = noOfPeople + 1 %}
+      {% endif %}
+      {{ noOfPeople | default(0) }}

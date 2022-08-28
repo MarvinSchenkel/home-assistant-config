@@ -1,0 +1,17 @@
+---
+# Determine presence in the entire house
+# based on all other presence sensors
+
+binary_sensor:
+  - name: presence_house
+    unique_id: 6226c6b1-0c08-4cd1-b597-34247933dda1
+    state: >
+      {{ is_state("binary_sensor.presence_attic", "on")
+          or is_state("binary_sensor.presence_bathroom", "on")
+          or is_state("binary_sensor.presence_hall_upstairs", "on")
+          or is_state("binary_sensor.presence_master_bedroom", "on")
+          or is_state("binary_sensor.presence_small_bedroom", "on")
+          or is_state("binary_sensor.presence_mancave", "on")
+          or is_state("binary_sensor.presence_hall_downstairs", "on")
+          or is_state("binary_sensor.presence_wc", "on")
+          or is_state("binary_sensor.presence_livingroom", "on") }}

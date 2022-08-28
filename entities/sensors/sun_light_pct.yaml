@@ -6,7 +6,7 @@ sensors:
     value_template: >-
       {%- set cloud_factor =
         [
-        (1 - (0.75 * ( (states("sensor.openweathermap_cloud_coverage") | float)
-        / 100) ** 3 )) * ([(states("sensor.buienradar_irradiance") | float / 75)
+        (1 - (0.75 * ( (states("sensor.openweathermap_cloud_coverage") | float(1))
+        / 100) ** 3 )) * ([(states("sensor.buienradar_irradiance") | float(1) / 75)
         , 1] | max), 1] | min %}
-      {{ (cloud_factor * states("sensor.sun_adjusted_elevation") | float) | round }}
+      {{ (cloud_factor * states("sensor.sun_adjusted_elevation") | float(1)) | round }}

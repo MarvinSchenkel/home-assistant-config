@@ -4,4 +4,4 @@ sensors:
   sun_azimuth:
     unit_of_measurement: "degrees"
     value_template: >-
-      {{ state_attr("sun.sun", "azimuth") | float }}
+      {{ state_attr("sun.sun", "azimuth") | float(1) }}

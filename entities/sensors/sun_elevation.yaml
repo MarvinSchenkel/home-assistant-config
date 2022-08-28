@@ -4,4 +4,4 @@ sensors:
   sun_elevation:
     unit_of_measurement: "degrees"
     value_template: >-
-      {{ state_attr("sun.sun", "elevation") | float }}
+      {{ state_attr("sun.sun", "elevation") | float(1) }}

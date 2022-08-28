@@ -1,13 +1,13 @@
 ---
 sensor:
-  name: livingroom_cover_state
-  state: >-
-    {% set coverState = states("input_select.gardendoor_current_cover_scene") %}
-    {%- if coverState == "open" -%} Open
-    {%- elif coverState == "halfopen" -%} Half open
-    {%- elif coverState == "halfclosed" -%} Half dicht
-    {%- elif coverState == "closed" -%} Dicht
-    {%- elif coverState == "ventilating" -%} Ventileren
-    {%- elif coverState == "ventilatingnight" -%} Ventileren Nacht
-    {%- else %} Onbekend
-    {%- endif -%}
+  - name: livingroom_cover_state
+    state: >-
+      {% set coverState = states("input_select.gardendoor_current_cover_scene") %}
+      {%- if coverState == "open" -%} Open
+      {%- elif coverState == "halfopen" -%} Half open
+      {%- elif coverState == "halfclosed" -%} Half dicht
+      {%- elif coverState == "closed" -%} Dicht
+      {%- elif coverState == "ventilating" -%} Ventileren
+      {%- elif coverState == "ventilatingnight" -%} Ventileren Nacht
+      {%- else %} Onbekend
+      {%- endif -%}

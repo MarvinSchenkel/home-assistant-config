@@ -1,15 +1,15 @@
 ---
 sensor:
-  name: rmn_next_garbage_pickup
-  state: >
-    {%- set paper = state_attr('sensor.rmn_papier', 'Days_until') %}
-    {%- set gft = state_attr('sensor.rmn_gft', 'Days_until') %}
-    {%- set pmd = state_attr('sensor.rmn_pmd', 'Days_until') %}
-    {%- set rest = state_attr('sensor.rmn_restafval', 'Days_until') %}
-    {%- set next_pickup = states('sensor.rmn_next_pickup_in') | int %}
+  - name: rmn_next_garbage_pickup
+    state: >
+      {%- set paper = state_attr('sensor.rmn_papier', 'Days_until') | int(1) %}
+      {%- set gft = state_attr('sensor.rmn_gft', 'Days_until') | int(1) %}
+      {%- set pmd = state_attr('sensor.rmn_pmd', 'Days_until') | int(1) %}
+      {%- set rest = state_attr('sensor.rmn_restafval', 'Days_until') | int(1) %}
+      {%- set next_pickup = states('sensor.rmn_next_pickup_in') | int(0) %}
 
-    {% if paper | int == next_pickup %} het papier
-    {% elif gft | int == next_pickup %} het GFT
-    {% elif pmd | int == next_pickup %} het PMD
-    {% elif rest | int == next_pickup %} de grijze container
-    {% endif %}
+      {% if paper | int == next_pickup %} het papier
+      {% elif gft | int == next_pickup %} het GFT
+      {% elif pmd | int == next_pickup %} het PMD
+      {% elif rest | int == next_pickup %} de grijze container
+      {% endif %}
