@@ -1,0 +1,96 @@
+---
+description: >
+  Automatically select the music schedule that suits the situation
+  or time of day
+alias: house_music_schedule
+id: ae7dbcfa-03e6-44c3-bd57-26c4b64454fe
+mode: single
+
+trigger:
+  - platform: time
+    at:
+      - "07:00:00"
+      - "09:00:00"
+      - "11:00:00"
+      - "18:00:00"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.house_mode_someone_just_awake
+      - input_boolean.setting_automatic_music
+
+  - platform: homeassistant
+    event: start
+
+variables:
+  anchors:
+    - &select_schedule
+      alias: "Select the schedule"
+      service: input_select.select_option
+      target:
+        entity_id: input_select.current_music_schedule
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.setting_automatic_music
+            state: "off"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "off"
+
+      - conditions:
+          - condition: state
+            entity_id: binary_sensor.house_mode_someone_just_awake
+            state: "on"
+          - condition: time
+            after: "07:00:00"
+            before: "11:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "just_awake"
+
+      - conditions:
+          - condition: time
+            after: "07:00:00"
+            before: "09:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "early_morning"
+
+      - conditions:
+          - condition: time
+            after: "09:00:00"
+            before: "11:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "morning"
+
+      - conditions:
+          - condition: time
+            after: "11:00:00"
+            before: "18:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "day"
+
+      - conditions:
+          - condition: time
+            after: "18:00:00"
+            before: "22:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "evening"
+
+    default:
+      - <<: *select_schedule
+        data:
+          option: "off"

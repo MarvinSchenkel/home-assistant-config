@@ -1,0 +1,109 @@
+---
+alias: areas_kitchen_lights
+description: Turns the hallway lights on when motion has been detected
+mode: queued
+id: 166a33e7-2c06-419b-b12d-147aecaa1362
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id: binary_sensor.presence_kitchen
+    to: "on"
+
+  - platform: state
+    entity_id: binary_sensor.presence_kitchen
+    to: "off"
+    for:
+      seconds: 50
+
+  - platform: state
+    entity_id:
+      - binary_sensor.kitchen_is_dark
+
+variables:
+  anchors:
+    - &lights_normal
+      alias: "Turn the lights to normal scene"
+      service: scene.turn_on
+      data:
+        entity_id: scene.kitchen_lights_normal
+        transition: 3
+
+    - &lights_dim
+      alias: "Turn the lights to dim scene"
+      service: scene.turn_on
+      data:
+        entity_id: scene.kitchen_lights_dim
+        transition: 3
+
+    - &lights_bright
+      alias: "Turn the lights to bright scene"
+      service: scene.turn_on
+      data:
+        entity_id: scene.kitchen_lights_bright
+        transition: 3
+
+    - &lights_off
+      alias: "Turn the lights off"
+      service: light.turn_off
+      data:
+        entity_id: light.led_kitchen
+        transition: 3
+
+    - &is_presence_detected
+      alias: "Presence is detected"
+      condition: state
+      entity_id: binary_sensor.presence_kitchen
+      state: "on"
+
+    - &is_dark
+      alias: "It is dark in the hall"
+      condition: state
+      entity_id: binary_sensor.kitchen_is_dark
+      state: "on"
+
+condition:
+  - condition: state
+    alias: "Check if we can automate the lights"
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+
+action:
+  - choose:
+      - conditions:
+          - *is_presence_detected
+          - *is_dark
+          - condition: state
+            entity_id:
+              - input_boolean.house_mode_cooking
+            state: "on"
+        sequence:
+          - *lights_bright
+
+      - conditions:
+          - *is_presence_detected
+          - *is_dark
+          - condition: numeric_state
+            alias: "If the sun has set a fair bit"
+            entity_id:
+              - sensor.sun_elevation
+            below: -3
+          - condition: time
+            alias: "And it is after 7pm"
+            after: "19:00:00"
+        sequence:
+          - *lights_dim
+
+      - conditions:
+          - *is_presence_detected
+          - *is_dark
+        sequence:
+          - *lights_normal
+
+    default:
+      - *lights_off

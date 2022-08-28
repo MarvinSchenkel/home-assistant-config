@@ -9,6 +9,8 @@ trigger:
     entity_id:
       - sensor.picnic_next_delivery_eta_start
       - sensor.picnic_next_delivery_eta_end
+  - platform: time
+    at: "08:30:00"
 
 variables:
   eta_start: >

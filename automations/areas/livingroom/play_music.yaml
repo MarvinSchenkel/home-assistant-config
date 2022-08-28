@@ -1,0 +1,99 @@
+---
+description: >
+  Automatically play music in the living room
+alias: areas_livingroom_play_music
+id: bdbbd6e8-fb02-4777-980e-dffd9865995c
+
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_house
+      - binary_sensor.presence_livingroom
+    to: "on"
+
+  - platform: state
+    entity_id: binary_sensor.presence_house
+    to: "off"
+    for:
+      seconds: 900
+
+  - platform: state
+    entity_id:
+      - media_player.apple_tv
+    to:
+      - "standby"
+      - "inactive"
+    for:
+      minutes: 10
+
+  - platform: homeassistant
+    event: start
+
+variables:
+  anchors:
+    - &play_media
+      alias: "Start playing music on the master group"
+      service: media_player.media_play
+      data: {}
+      target:
+        entity_id: media_player.mass_sonos_livingroom
+
+    - &pause
+      alias: "Pause the player"
+      service: media_player.media_pause
+      data: {}
+      target:
+        entity_id: media_player.mass_sonos_livingroom
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_house
+              - input_boolean.setting_automatic_music
+            state: "on"
+          - alias: "Time must be between reasonable hours"
+            condition: time
+            after: "07:00:00"
+            before: "21:00:00"
+          - alias: "We are actually awake"
+            condition: state
+            entity_id:
+              - binary_sensor.house_mode_everyone_asleep
+            state: "off"
+          - alias: "We're not watching TV"
+            condition: state
+            entity_id: media_player.apple_tv
+            state:
+              - "idle"
+              - "standby"
+              - "off"
+              - "paused"
+              - "unavailable"
+            for:
+              minutes: 2
+        sequence:
+          - if:
+              - not:
+                  - condition: state
+                    entity_id:
+                      - media_player.mass_sonos_livingroom
+                    state: "playing"
+            then:
+              - *play_media
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_house
+            state: "off"
+            for:
+              seconds: 900
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.mass_sonos_livingroom
+                state: "off"
+        sequence:
+          - *pause

@@ -13,76 +13,126 @@ id: aa45eaa1-b64b-4319-acf5-1d3ac0ea1d1a
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id:
-      # Include auto-shut blinds on hot days
       - binary_sensor.sun_should_close_south_blinds
-      # Whenever we wake up or go to sleep
-      - input_select.laura_sleep_status_dropdown
-      - input_select.marvin_sleep_status_dropdown
+      - binary_sensor.house_mode_someone_asleep
+      - binary_sensor.house_mode_someone_just_awake
       - input_boolean.setting_manual_blinds
+      - input_boolean.masterbedroom_cover_manual_control
+
   - platform: state
-    id: "asleep"
+    id: "reset"
     entity_id:
-      - input_select.laura_sleep_status_dropdown
-      - input_select.marvin_sleep_status_dropdown
-    to: "Slaapt"
-  # Sun
+      - binary_sensor.house_mode_someone_asleep
+    to: "off"
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
     below: 1.0
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
     above: 1.0
+
   - platform: time
     at:
       - "19:00:00"
       - "21:15:00"
-  # Buttons for ventilating
-  - platform: event
-    id: "button_marvin_double"
-    event_type: "zha_event"
-    event_data:
-      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
-      command: "double"
-  - platform: event
-    id: "button_laura_double"
-    event_type: "zha_event"
-    event_data:
-      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
-      command: "double"
+
+  - platform: state
+    entity_id:
+      - scene.bedroom_cover_ventilating
+      - scene.bedroom_cover_ventilatingnight
+      - scene.bedroom_cover_closed
+      - scene.bedroom_cover_halfclosed
+      - scene.bedroom_cover_halfopen
+      - scene.bedroom_cover_open
+    id: bedroom_blinds
+
+variables:
+  anchors:
+    - &ventilating
+      service: scene.turn_on
+      target:
+        entity_id: scene.bedroom_cover_ventilating
+
+    - &ventilating_night
+      service: scene.turn_on
+      target:
+        entity_id: scene.bedroom_cover_ventilatingnight
+
+    - &closed
+      service: scene.turn_on
+      target:
+        entity_id: scene.bedroom_cover_closed
+
+    - &half_closed
+      service: scene.turn_on
+      target:
+        entity_id: scene.bedroom_cover_halfclosed
+
+    - &open
+      alias: "Open the blinds"
+      service: scene.turn_on
+      target:
+        entity_id: scene.bedroom_cover_halfopen
+
+    - &manual_control_on
+      alias: "Set manual control to on, so the blinds stay closed"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.masterbedroom_cover_manual_control
+
+    - &manual_control_off
+      alias: "Reset manual control, so the blinds stay closed"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.masterbedroom_cover_manual_control
 
 condition:
   - condition: state
     entity_id:
       - input_boolean.setting_manual_blinds
     state: "off"
-  - condition: or
-    conditions:
-      - "{{ not is_state('input_select.bedroom_current_cover_scene', 'ventilating') }}"
-      - condition: trigger
-        id: "asleep"
 
 action:
   - choose:
-      - alias: >
-          Ventilating when desired so we can cool down our bedroom
-          on hot days after opening the windows.
+      - alias: "Check if we manually changed the blinds"
         conditions:
-          - condition: or
-            conditions:
-              - condition: trigger
-                id: "button_marvin_double"
-              - condition: trigger
-                id: "button_laura_double"
+          - condition: trigger
+            id: bedroom_blinds
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.bedroom_cover_ventilating
+          - choose:
+              - conditions:
+                  - alias: "It was changed by a user"
+                    condition: template
+                    value_template: "{{ trigger.to_state.context.user_id != None }}"
+                sequence:
+                  - *manual_control_on
+
+      - alias: "Reset manual override before the new day starts"
+        conditions:
+          - alias: "When triggerd by the reset time"
+            condition: trigger
+            id: "reset"
+        sequence:
+          - *manual_control_off
+
+      - alias: "Stop automating the blinds when manual control is on"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.masterbedroom_cover_manual_control
+            state: "on"
+        sequence:
+          - stop: "Master bedroom blinds are manually controlled"
 
       - alias: >
           This nearly closes our blinds but leaves a small gap at the top for fresh air
@@ -100,9 +150,7 @@ action:
               - condition: time
                 after: "21:15:00"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.bedroom_cover_ventilatingnight
+          - *ventilating_night
 
       - alias: "This fully closes the blinds on hot days"
         conditions:
@@ -111,9 +159,7 @@ action:
               - binary_sensor.sun_should_close_south_blinds
             state: "on"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.bedroom_cover_closed
+          - *closed
 
       - alias: "This closes the blinds half way when it gets dark"
         conditions:
@@ -127,12 +173,7 @@ action:
                 after: "19:00:00"
                 before: "21:15:00"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.bedroom_cover_halfclosed
+          - *half_closed
 
     default:
-      - alias: "Otherwise, open the blinds"
-        service: scene.turn_on
-        target:
-          entity_id: scene.bedroom_cover_halfopen
+      - *open

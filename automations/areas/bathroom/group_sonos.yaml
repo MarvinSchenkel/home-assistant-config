@@ -12,5 +12,6 @@ use_blueprint:
     sonos_target: media_player.sonos_bathroom
     no_presence_wait: 75
     custom_conditions:
-      - "{{ not is_state('sensor.marvin_status', 'Slaapt') }}"
-      - "{{ not is_state('sensor.laura_status', 'Slaapt') }}"
+      - condition: state
+        entity_id: binary_sensor.house_mode_someone_asleep
+        state: "off"

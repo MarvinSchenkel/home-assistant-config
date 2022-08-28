@@ -1,0 +1,13 @@
+---
+description: >
+  Group sonos to the living room when there is music playing and motion is detected
+alias: areas_kitchen_group_sonos
+id: ba047f3b-d31d-40b0-9361-083ddeb80706
+
+use_blueprint:
+  path: motion_group_sonos.yaml
+  input:
+    presence_entity: binary_sensor.presence_house
+    sonos_source: media_player.sonos_livingroom
+    sonos_target: media_player.sonos_kitchen
+    no_presence_wait: 900

@@ -1,15 +1,15 @@
 ---
 description: Set volume of sonos based on the music schedule
-alias: areas_bathroom_sonos_set_volume
+alias: areas_kitchen_sonos_set_volume
 mode: queued
-id: aab41c28-0266-43b7-8e9d-bb74700b1343
+id: 9faefd62-f09e-4fb7-b521-54a4adf312dd
 
 use_blueprint:
   path: sonos_set_volume.yaml
   input:
     just_awake_volume: 6
     early_morning_volume: 8
-    morning_volume: 10
-    day_volume: 12
+    morning_volume: 9
+    day_volume: 10
     evening_volume: 8
-    sonos: media_player.sonos_bathroom
+    sonos: media_player.sonos_kitchen

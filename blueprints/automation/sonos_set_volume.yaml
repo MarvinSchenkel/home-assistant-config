@@ -1,0 +1,118 @@
+---
+blueprint:
+  name: Set volume
+  description: >
+    Set the Sonos volume automatically based on the music schedules throughout
+    the day
+  domain: automation
+  input:
+    sonos:
+      name: Sonos
+      description: Sonos entity to control
+      selector:
+        entity:
+          integration: sonos
+    just_awake_volume:
+      name: just_awake_volume
+      description: Volume for the just awake schedule
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    early_morning_volume:
+      name: early_morning_volume
+      description: Volume for the early morning schedule
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    morning_volume:
+      name: morning_volume
+      description: Volume for the morning schedule
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    day_volume:
+      name: day_volume
+      description: Volume for the day schedule
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    evening_volume:
+      name: evening_volume
+      description: Volume for the evening schedule
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+
+mode: restart
+max_exceeded: silent
+
+variables:
+  just_awake_volume: !input just_awake_volume
+  early_morning_volume: !input early_morning_volume
+  morning_volume: !input morning_volume
+  day_volume: !input day_volume
+  evening_volume: !input evening_volume
+  sonos: !input sonos
+
+  music_schedule: >
+    {{ states('input_select.current_music_schedule') }}
+
+trigger:
+  - platform: state
+    entity_id:
+      - input_select.current_music_schedule
+      - input_boolean.setting_automatic_music
+
+  - platform: event
+    event_type: mass_event
+    event_data:
+      type: player_updated
+      object_id: media_player.sonos_livingroom
+      data:
+        player_id: media_player.sonos_livingroom
+        state: playing
+
+condition:
+  - alias: "Only control the volume when we are automating the music"
+    condition: state
+    entity_id: input_boolean.setting_automatic_music
+    state: "on"
+  - '{{ state_attr(sonos, "source")  != "TV" }}'
+
+action:
+  - variables:
+      schedule_volume: >
+        {% if music_schedule == "just_awake" %}
+          {{ just_awake_volume }}
+        {% elif music_schedule == "early_morning" %}
+          {{ early_morning_volume }}
+        {% elif music_schedule == "morning" %}
+          {{ morning_volume }}
+        {% elif music_schedule == "day" %}
+          {{ day_volume }}
+        {% elif music_schedule == "evening" %}
+          {{ evening_volume }}
+        {% else %}
+          0
+        {% endif %}
+
+  - service: media_player.volume_set
+    target:
+      entity_id: "{{ sonos }}"
+    data:
+      volume_level: "{{ schedule_volume | int / 100.0 }}"

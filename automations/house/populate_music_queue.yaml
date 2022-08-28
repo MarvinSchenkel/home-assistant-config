@@ -1,0 +1,78 @@
+---
+description: >
+  Automatically fill the queue of the master media player
+  with music that suits the music schedule of the day
+alias: house_populate_music_queue
+id: 7f94ed28-03ab-4dbf-b509-973f867931a9
+mode: single
+
+trigger:
+  - platform: state
+    entity_id:
+      - input_select.current_music_schedule
+      - input_boolean.setting_automatic_music
+
+  - platform: homeassistant
+    event: start
+    id: "ha_start"
+
+variables:
+  just_awake_music: ["Classical Meditation", "Tranquil spa day"]
+  early_morning_music: ["Chill", "Chill step", "Reflections"]
+  morning_music: ["Chill step", "Ambient / Relax"]
+  day_music: ["Ambient / Relax", "My Mix 1", "deepchill"]
+  evening_music: ["Ambient / Relax"]
+
+  active_schedule: '{{ states("input_select.current_music_schedule") }}'
+  music_to_play: >-
+    {% if active_schedule == "just_awake" %}
+      {{ just_awake_music }}
+    {% elif active_schedule == "early_morning" %}
+      {{ early_morning_music }}
+    {% elif active_schedule == "morning" %}
+      {{ morning_music }}
+    {% elif active_schedule == "day" %}
+      {{ day_music }}
+    {% elif active_schedule == "evening" %}
+      {{ evening_music }}
+    {% endif %}
+  radio_mode: >-
+    {% if active_schedule == "just_awake" %}
+      {{ false }}
+    {% else %}
+      {{ true }}
+    {% endif %}
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_automatic_music
+    state: "on"
+
+action:
+  - if:
+      - condition: trigger
+        id: "ha_start"
+    then:
+      - delay:
+          minutes: 1
+  - if:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id:
+              - media_player.mass_sonos_livingroom
+            state: "playing"
+    then:
+      - service: mass.queue_command
+        data:
+          command: clear
+        target:
+          entity_id: media_player.mass_sonos_livingroom
+  - service: mass.queue_command
+    data:
+      command: play_media
+      uri: "{{ music_to_play }}"
+      enqueue_mode: replace_next
+      radio_mode: "{{ radio_mode }}"
+    target:
+      entity_id: media_player.mass_sonos_livingroom
