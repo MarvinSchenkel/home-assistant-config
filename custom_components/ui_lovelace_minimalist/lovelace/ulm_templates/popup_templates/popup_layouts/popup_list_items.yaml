@@ -1,6 +1,0 @@
----
-popup_list_items:
-  template: "list_items"
-  styles:
-    card:
-      - background: "none"
