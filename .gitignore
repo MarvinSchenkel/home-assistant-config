@@ -28,6 +28,7 @@ fonts
 www/upcoming-media-card-images
 www/nspanel
 custom_components
+www/community
 
 # Ignore specific files
 zwcfg_*
@@ -42,6 +43,8 @@ webostv.conf
 www/*.jfif
 watchman_report.txt
 www/doorbell/*.jpg
+music_assistant.db*
+zigbee.db-journal
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 ip_bans.yaml
