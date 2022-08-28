@@ -1,7 +1,7 @@
 ---
-solaredge_modbus:
-  name: "SolarEdge Modbus"
-  host: !secret solaredge_ip
-  port: !secret solaredge_port
-  scan_interval: 5
-  read_meter1: false
+# solaredge_modbus:
+#   name: "SolarEdge Modbus"
+#   host: !secret solaredge_ip
+#   port: !secret solaredge_port
+#   scan_interval: 5
+#   read_meter1: false
