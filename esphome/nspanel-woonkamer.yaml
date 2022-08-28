@@ -270,18 +270,17 @@ text_sensor:
     on_value:
       then:
         - lambda: >-
-            'id(disp1).set_component_text_printf("home.infobar", "%s", x.c_str());'
+            id(disp1).set_component_text_printf("home.infobar", "%s", x.c_str());
         - lambda: >-
-            'id(disp1).set_component_text_printf("screensaver.infobar",
-                                                "%s", x.c_str());'
+            id(disp1).set_component_text_printf("screensaver.infobar","%s", x.c_str());
         - lambda: >-
-            'id(disp1).set_component_text_printf("lights.infobar", "%s", x.c_str());'
+            id(disp1).set_component_text_printf("lights.infobar", "%s", x.c_str());
         - lambda: >-
-            'id(disp1).set_component_text_printf("blinds_garden.infobar",
-                                                "%s", x.c_str());'
+            id(disp1).set_component_text_printf("blinds_garden.infobar",
+            "%s", x.c_str());
         - lambda: >-
-            'id(disp1).set_component_text_printf("blinds_living.infobar",
-                                                "%s", x.c_str());'
+            id(disp1).set_component_text_printf("blinds_living.infobar",
+            "%s", x.c_str());
 
   # Push the current time to the ambient screensaver screen
   - platform: homeassistant

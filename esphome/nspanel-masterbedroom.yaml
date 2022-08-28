@@ -124,6 +124,10 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_halfopen
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.masterbedroom_cover_manual_control
 
   # Virtual button to control the blinds
   - platform: nextion
@@ -135,6 +139,10 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_halfclosed
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.masterbedroom_cover_manual_control
 
   # Virtual button to control the blinds
   - platform: nextion
@@ -146,6 +154,10 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_closed
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.masterbedroom_cover_manual_control
 
   # Virtual button to control the blinds
   - platform: nextion
@@ -157,6 +169,10 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_ventilating
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.masterbedroom_cover_manual_control
 
   # Virtual button to control the blinds
   - platform: nextion
@@ -168,6 +184,10 @@ binary_sensor:
           service: scene.turn_on
           data:
             entity_id: scene.bedroom_cover_ventilatingnight
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.masterbedroom_cover_manual_control
 
 sensor:
   # Read wifi status from NS Panel
@@ -218,15 +238,15 @@ text_sensor:
   # when music is playing or other info (like weather) when no music is playing
   - platform: homeassistant
     id: infobar
-    entity_id: sensor.nspanel_bedroom_infobar
+    entity_id: sensor.nspanel_livingroom_infobar
     on_value:
       then:
         - lambda: >-
-            'id(disp1).set_component_text_printf("home.infobar", "%s", x.c_str());'
+            id(disp1).set_component_text_printf("home.infobar", "%s", x.c_str());
         - lambda: >-
-            'id(disp1).set_component_text_printf("lights.infobar", "%s", x.c_str());'
+            id(disp1).set_component_text_printf("lights.infobar","%s", x.c_str());
         - lambda: >-
-            'id(disp1).set_component_text_printf("blinds.infobar", "%s", x.c_str());'
+            id(disp1).set_component_text_printf("blinds.infobar","%s", x.c_str());
 
 # Define some outputs
 switch:

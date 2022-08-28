@@ -1,0 +1,162 @@
+---
+custom_card_luxaflex:
+  template:
+    - "icon_info_bg"
+  #   - "ulm_language_variables"
+  variables:
+    ulm_card_luxaflex_scene_1: ""
+    ulm_card_luxaflex_scene_2: ""
+    ulm_card_luxaflex_scene_3: ""
+    ulm_card_luxaflex_scene_4: ""
+  tap_action:
+    action: "fire-dom-event"
+    browser_mod:
+      command: "popup"
+      large: true
+      hide_header: true
+      card:
+        type: "custom:button-card"
+        template: "custom_popup_luxaflex"
+        entity: "[[[ return entity.entity_id ]]]"
+        variables:
+          ulm_card_luxaflex_scene_1: "[[[ return variables.ulm_card_luxaflex_scene_1 ]]]"
+          ulm_card_luxaflex_scene_2: "[[[ return variables.ulm_card_luxaflex_scene_2 ]]]"
+          ulm_card_luxaflex_scene_3: "[[[ return variables.ulm_card_luxaflex_scene_3 ]]]"
+          ulm_card_luxaflex_scene_4: "[[[ return variables.ulm_card_luxaflex_scene_4 ]]]"
+      style:
+        $: |
+          :host .mdc-dialog .mdc-dialog__container .mdc-dialog__surface .mdc-dialog__content {
+            padding: 20px 24px;
+          }
+          @media (max-width: 450px), (max-height: 500px) {
+            .mdc-dialog .mdc-dialog__container .mdc-dialog__surface {
+              border-radius: 0px;
+            }
+          }
+        .: |
+          @media (max-width: 450px), (max-height: 500px) {
+            ha-dialog {
+              --ha-card-border-radius: 0px;
+            }
+          }
+          :host {
+            --mdc-theme-surface: var(--primary-background-color);
+          }
+  show_entity_picture: false
+  show_label: true
+  show_name: true
+  icon: "mdi:blinds"
+  label: >
+    [[[
+      if (entity.state == "halfopen") return "Half Open";
+      if (entity.state == "halfclosed") return "Half Dicht";
+      if (entity.state == "closed") return "Dicht";
+      if (entity.state == "ventilating") return "Ventileren";
+      if (entity.state == "open") return "Open";
+      if (entity.state == "ventilatingnight") return "Ventileren Nacht";
+    ]]]
+  name: "[[[ return entity.attributes.friendly_name ]]]"
+
+custom_popup_luxaflex:
+  show_icon: false
+  show_name: false
+  show_label: false
+  show_units: false
+  triggers_update: "all"
+  styles:
+    grid:
+      - grid-template-areas: "'header header' 'content1 content1' 'content2 content2' 'footer footer'"
+      - grid-template-rows: "16vh 12vh 44vh 14vh"
+      - grid-template-columns: "1fr 1fr"
+      - column-gap: "30px"
+    card:
+      - background: "var(--primary-background-color)"
+      - box-shadow: "none"
+      - padding: "5%"
+    custom_fields:
+      header:
+        - align-self: "start"
+      content1:
+        - align-self: "start"
+      content2:
+        - align-self: "start"
+      buttons:
+        - display: "none"
+      footer:
+        - align-self: "end"
+        - margin-top: "25px"
+  extra_styles: |
+    @media (max-width: 800px) {
+      #container {
+        grid-template-areas: "header" "content1" "content2" "footer" !important;
+        grid-template-rows: 16vh 12vh 54vh 14vh !important;
+        grid-template-columns: 1fr !important;
+      }      
+    }
+  custom_fields:
+    header:
+      card:
+        type: "custom:button-card"
+        template: card_title
+        name: Luxaflex scenes
+    content1:
+      card:
+        type: "grid"
+        columns: 2
+        square: false
+        cards:
+          - type: "custom:button-card"
+            template: card_script
+            variables:
+              ulm_card_script_title: "[[[ return variables.ulm_card_luxaflex_scene_1.name ]]]"
+              ulm_card_script_icon: "mdi:blinds-open"
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: "[[[ return variables.ulm_card_luxaflex_scene_1.entity_id ]]]"
+          - type: "custom:button-card"
+            template: card_script
+            variables:
+              ulm_card_script_title: "[[[ return variables.ulm_card_luxaflex_scene_2.name ]]]"
+              ulm_card_script_icon: "mdi:blinds"
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: "[[[ return variables.ulm_card_luxaflex_scene_2.entity_id ]]]"
+    content2:
+      card:
+        type: "grid"
+        columns: 2
+        square: false
+        cards:
+          - type: "custom:button-card"
+            template: card_script
+            variables:
+              ulm_card_script_title: "[[[ return variables.ulm_card_luxaflex_scene_3.name ]]]"
+              ulm_card_script_icon: "mdi:blinds"
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: "[[[ return variables.ulm_card_luxaflex_scene_3.entity_id ]]]"
+          - type: "custom:button-card"
+            template: card_script
+            variables:
+              ulm_card_script_title: "[[[ return variables.ulm_card_luxaflex_scene_4.name ]]]"
+              ulm_card_script_icon: "mdi:blinds"
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: "[[[ return variables.ulm_card_luxaflex_scene_4.entity_id ]]]"
+    footer:
+      card:
+        type: "custom:button-card"
+        template: "popup_list_items"
+        custom_fields:
+          item1:
+            card:
+              type: "custom:button-card"
+              template: "popup_button_back"

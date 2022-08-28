@@ -1,0 +1,30 @@
+title: "Debug"
+path: debug
+icon: "mdi:bug"
+
+cards:
+  - type: "vertical-stack"
+    cards:
+      - type: "custom:button-card"
+        template: card_title
+        name: Luxaflex en zon
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            variables:
+              ulm_card_binary_sensor_alert: true
+              ulm_show_last_changed: true
+            entity: binary_sensor.sun_should_close_south_blinds
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            variables:
+              ulm_card_binary_sensor_alert: true
+              ulm_show_last_changed: true
+            entity: binary_sensor.sun_hot
+      - type: "custom:button-card"
+        template: card_binary_sensor
+        variables:
+          ulm_card_binary_sensor_alert: true
+          ulm_show_last_changed: true
+        entity: binary_sensor.sun_at_south_windows

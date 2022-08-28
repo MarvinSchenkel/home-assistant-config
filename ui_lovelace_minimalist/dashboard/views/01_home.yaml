@@ -30,6 +30,16 @@ cards:
               action: "navigate"
               navigation_path: /energy
 
+          - type: "custom:button-card"
+            template: chip_temperature
+            variables:
+              ulm_chip_temperature_inside: sensor.buienradar_temperature
+              ulm_chip_temperature_outside: sensor.pir_kitchen_temperature
+              ulm_chip_temperature_weather: weather.buienradar
+              # ulm_card_tap_action: "popup"
+              # ulm_custom_popup:
+              #   template: "popup_weather_forecast"
+
       - type: "custom:button-card"
         template: card_title
         name: Home
@@ -74,33 +84,67 @@ cards:
           - type: "custom:button-card"
             template: card_input_boolean
             entity: switch.doorbell_chime
-            name: Deurbel
+            variables:
+              ulm_card_input_boolean_name: Deurbel
           - type: "custom:button-card"
             template: card_input_boolean
             entity: fan.itho
             name: Ventilatie
+
+      - type: "horizontal-stack"
+        cards:
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: input_boolean.house_mode_cooking
+            variables:
+              ulm_card_input_boolean_name: Kook modus
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: input_boolean.setting_automatic_music
+            variables:
+              ulm_card_input_boolean_name: Autom. muziek
+
       - type: "horizontal-stack"
         cards:
           - type: "custom:button-card"
             template: card_input_boolean
             entity: input_boolean.setting_guest_mode
-            name: Gast mode
+            variables:
+              ulm_card_input_boolean_name: Gast mode
           - type: "custom:button-card"
             color_type: blank-card
 
       - type: conditional
         conditions:
-          - entity: media_player.sonos_livingroom
+          - entity: media_player.mass_sonos_livingroom
             state: "playing"
         card:
           type: "custom:button-card"
           template: card_media_player
-          entity: media_player.sonos_livingroom
+          entity: media_player.mass_sonos_livingroom
           name: Sonos woonkamer
           variables:
             ulm_card_media_player_enable_controls: true
             ulm_card_media_player_enable_volume_slider: true
-            ulm_card_media_player_enable_art: false
+            ulm_card_media_player_enable_art: true
+            ulm_card_media_player_more_info: true
+
+      # - type: conditional
+      #   conditions:
+      #     - entity: media_player.sonos_livingroom
+      #       state: "playing"
+      #     - entity: media_player.mass_sonos_livingroom
+      #       state_not: "playing"
+      #   card:
+      #     type: "custom:button-card"
+      #     template: card_media_player
+      #     entity: media_player.sonos_livingroom
+      #     name: Sonos woonkamer
+      #     variables:
+      #       ulm_card_media_player_enable_controls: true
+      #       ulm_card_media_player_enable_volume_slider: true
+      #       ulm_card_media_player_enable_art: true
+      #       ulm_card_media_player_more_info: true
 
       - type: "custom:button-card"
         template: "card_vacuum"

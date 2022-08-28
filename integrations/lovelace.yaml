@@ -64,6 +64,8 @@ lovelace:
       type: module
     - url: /local/community/my-cards/my-cards.js
       type: module
+    - url: /local/community/weather-radar-card/weather-radar-card.js
+      type: module
 
   dashboards:
     lovelace-tablet:

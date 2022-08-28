@@ -42,384 +42,63 @@ cards:
       - type: horizontal-stack
         cards:
           - type: "custom:button-card"
-            template: card_generic_swap
+            template: custom_card_luxaflex
             entity: input_select.gardendoor_current_cover_scene
-            icon: "mdi:blinds"
-            label: >
-              [[[ 
-                if (entity.state == "halfopen") return "Half Open";
-                if (entity.state == "halfclosed") return "Half Dicht";
-                if (entity.state == "closed") return "Dicht";
-                if (entity.state == "ventilating") return "Ventileren";
-                if (entity.state == "open") return "Open";
-                if (entity.state == "ventilatingnight") return "Ventileren Nacht";
-              ]]]
-            tap_action:
-              action: "fire-dom-event"
-              browser_mod:
-                command: "popup"
-                title: "Luxaflex scene"
-                style:
-                  $: >
-                    [[[
-                      if (hass.themes.theme.includes("desktop")){
-                        var dialog = `
-                          .mdc-dialog__surface{
-                            border-radius: var(--border-radius) !important;
-                          }
-                        `;
-                      } else{
-                        var dialog = "";
-                      }
-                      return `
-                        *{
-                          --secondary-background-color: none !important;
-                        }
-                        ${dialog}
-                      `;
-                    ]]]
-                  hui-vertical-stack-card:
-                    $: >
-                      button-card {
-                        align-self: center;
-                        padding: 0.2em 0 2.3em 0;
-                      }
-                      hui-entities-card{
-                        padding: 0.8em 1.4em;
-                      }
-                    $hui-entities-card$: >
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-history-graph-card$: >
-                      .content {
-                        padding: 0 2.4em !important;
-                      }
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-glance-card$: >
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-map-card:
-                      $: >
-                        ha-icon-button {
-                          color: rgba(var(--color-blue),1);
-                        }
-                      $ha-map:
-                        $: >
-                          .leaflet-control-attribution {
-                            display: none;
-                          }
-                          .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
-                            border: 2px solid rgba(var(--color-blue),0.4) !important;
-                          }
-                          .leaflet-bar a {
-                            background-color: rgba(var(--color-blue),0.2) !important;
-                            color: rgba(var(--color-blue),1) !important;
-                          }
-                          .leaflet-bar a:first-child {
-                            border-bottom: 2px solid rgba(var(--color-blue),0.4) !important;
-                          }
-                          .leaflet-pane.leaflet-tile-pane {
-                            filter: contrast(95%);
-                          }
-                card:
-                  type: "vertical-stack"
-                  cards:
-                    - type: horizontal-stack
-                      cards:
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Open
-                            ulm_card_script_icon: "mdi:blinds-open"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.gardendoor_cover_halfopen
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Half-dicht
-                            ulm_card_script_icon: "mdi:blinds"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.gardendoor_cover_halfclosed
-                    - type: horizontal-stack
-                      cards:
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Dicht
-                            ulm_card_script_icon: "mdi:blinds"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.gardendoor_cover_closed
+            variables:
+              ulm_card_luxaflex_scene_1:
+                name: Half Open
+                entity_id: scene.gardendoor_cover_halfopen
+              ulm_card_luxaflex_scene_2:
+                name: Half Dicht
+                entity_id: scene.gardendoor_cover_halfclosed
+              ulm_card_luxaflex_scene_3:
+                name: Dicht
+                entity_id: scene.gardendoor_cover_closed
           - type: "custom:button-card"
-            template: card_generic_swap
+            template: custom_card_luxaflex
             entity: input_select.livingroom_current_cover_scene
-            icon: "mdi:blinds"
-            label: >
-              [[[ 
-                if (entity.state == "halfopen") return "Half Open";
-                if (entity.state == "halfclosed") return "Half Dicht";
-                if (entity.state == "closed") return "Dicht";
-                if (entity.state == "ventilating") return "Ventileren";
-                if (entity.state == "open") return "Open";
-                if (entity.state == "ventilatingnight") return "Ventileren Nacht";
-              ]]]
-            tap_action:
-              action: "fire-dom-event"
-              browser_mod:
-                command: "popup"
-                title: "Luxaflex scene"
-                style:
-                  $: >
-                    [[[
-                      if (hass.themes.theme.includes("desktop")){
-                        var dialog = `
-                          .mdc-dialog__surface{
-                            border-radius: var(--border-radius) !important;
-                          }
-                        `;
-                      } else{
-                        var dialog = "";
-                      }
-                      return `
-                        *{
-                          --secondary-background-color: none !important;
-                        }
-                        ${dialog}
-                      `;
-                    ]]]
-                  hui-vertical-stack-card:
-                    $: >
-                      button-card {
-                        align-self: center;
-                        padding: 0.2em 0 2.3em 0;
-                      }
-                      hui-entities-card{
-                        padding: 0.8em 1.4em;
-                      }
-                    $hui-entities-card$: >
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-history-graph-card$: >
-                      .content {
-                        padding: 0 2.4em !important;
-                      }
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-glance-card$: >
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-map-card:
-                      $: >
-                        ha-icon-button {
-                          color: rgba(var(--color-blue),1);
-                        }
-                      $ha-map:
-                        $: >
-                          .leaflet-control-attribution {
-                            display: none;
-                          }
-                          .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
-                            border: 2px solid rgba(var(--color-blue),0.4) !important;
-                          }
-                          .leaflet-bar a {
-                            background-color: rgba(var(--color-blue),0.2) !important;
-                            color: rgba(var(--color-blue),1) !important;
-                          }
-                          .leaflet-bar a:first-child {
-                            border-bottom: 2px solid rgba(var(--color-blue),0.4) !important;
-                          }
-                          .leaflet-pane.leaflet-tile-pane {
-                            filter: contrast(95%);
-                          }
-                card:
-                  type: "vertical-stack"
-                  cards:
-                    - type: horizontal-stack
-                      cards:
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Open
-                            ulm_card_script_icon: "mdi:blinds-open"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.livingroom_cover_halfopen
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Half-dicht
-                            ulm_card_script_icon: "mdi:blinds"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.livingroom_cover_halfclosed
-                    - type: horizontal-stack
-                      cards:
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Dicht
-                            ulm_card_script_icon: "mdi:blinds"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.livingroom_cover_closed
+            variables:
+              ulm_card_luxaflex_scene_1:
+                name: Half Open
+                entity_id: scene.livingroom_cover_halfopen
+              ulm_card_luxaflex_scene_2:
+                name: Half Dicht
+                entity_id: scene.livingroom_cover_halfclosed
+              ulm_card_luxaflex_scene_3:
+                name: Dicht
+                entity_id: scene.livingroom_cover_closed
       - type: horizontal-stack
         cards:
           - type: "custom:button-card"
-            template: card_generic_swap
+            template: custom_card_luxaflex
             entity: input_select.kitchen_current_cover_scene
-            icon: "mdi:blinds"
-            label: >
-              [[[ 
-                if (entity.state == "halfopen") return "Half Open";
-                if (entity.state == "halfclosed") return "Half Dicht";
-                if (entity.state == "closed") return "Dicht";
-                if (entity.state == "ventilating") return "Ventileren";
-                if (entity.state == "open") return "Open";
-                if (entity.state == "ventilatingnight") return "Ventileren Nacht";
-              ]]]
-            tap_action:
-              action: "fire-dom-event"
-              browser_mod:
-                command: "popup"
-                title: "Luxaflex scene"
-                style:
-                  $: >
-                    [[[
-                      if (hass.themes.theme.includes("desktop")){
-                        var dialog = `
-                          .mdc-dialog__surface{
-                            border-radius: var(--border-radius) !important;
-                          }
-                        `;
-                      } else{
-                        var dialog = "";
-                      }
-                      return `
-                        *{
-                          --secondary-background-color: none !important;
-                        }
-                        ${dialog}
-                      `;
-                    ]]]
-                  hui-vertical-stack-card:
-                    $: >
-                      button-card {
-                        align-self: center;
-                        padding: 0.2em 0 2.3em 0;
-                      }
-                      hui-entities-card{
-                        padding: 0.8em 1.4em;
-                      }
-                    $hui-entities-card$: >
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-history-graph-card$: >
-                      .content {
-                        padding: 0 2.4em !important;
-                      }
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-glance-card$: >
-                      ha-card{
-                        box-shadow: none;
-                      }
-                    $hui-map-card:
-                      $: >
-                        ha-icon-button {
-                          color: rgba(var(--color-blue),1);
-                        }
-                      $ha-map:
-                        $: >
-                          .leaflet-control-attribution {
-                            display: none;
-                          }
-                          .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
-                            border: 2px solid rgba(var(--color-blue),0.4) !important;
-                          }
-                          .leaflet-bar a {
-                            background-color: rgba(var(--color-blue),0.2) !important;
-                            color: rgba(var(--color-blue),1) !important;
-                          }
-                          .leaflet-bar a:first-child {
-                            border-bottom: 2px solid rgba(var(--color-blue),0.4) !important;
-                          }
-                          .leaflet-pane.leaflet-tile-pane {
-                            filter: contrast(95%);
-                          }
-                card:
-                  type: "vertical-stack"
-                  cards:
-                    - type: horizontal-stack
-                      cards:
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Open
-                            ulm_card_script_icon: "mdi:blinds-open"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.kitchen_cover_halfopen
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Half-dicht
-                            ulm_card_script_icon: "mdi:blinds"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.kitchen_cover_halfclosed
-                    - type: horizontal-stack
-                      cards:
-                        - type: "custom:button-card"
-                          template: card_script
-                          variables:
-                            ulm_card_script_title: Dicht
-                            ulm_card_script_icon: "mdi:blinds"
-                          tap_action:
-                            action: call-service
-                            service: scene.turn_on
-                            service_data:
-                              entity_id: scene.kitchen_cover_closed
+            variables:
+              ulm_card_luxaflex_scene_1:
+                name: Half Open
+                entity_id: scene.kitchen_cover_halfopen
+              ulm_card_luxaflex_scene_2:
+                name: Half Dicht
+                entity_id: scene.kitchen_cover_halfclosed
+              ulm_card_luxaflex_scene_3:
+                name: Dicht
+                entity_id: scene.kitchen_cover_closed
           - type: "custom:button-card"
             template: card_input_boolean
             entity: input_boolean.livingroom_manual_control
-            name: Handmatige lampen
+            variables:
+              ulm_card_input_boolean_name: Handmatige lampen
       - type: horizontal-stack
         cards:
           - type: "custom:button-card"
             template: card_input_boolean
             entity: input_boolean.livingroom_cover_manual_control
-            name: Handmatig woonkamer
+            variables:
+              ulm_card_input_boolean_name: Handmatig woonkamer
           - type: "custom:button-card"
             template: card_input_boolean
             entity: input_boolean.kitchen_cover_manual_control
-            name: Handmatig keuken
+            variables:
+              ulm_card_input_boolean_name: Handmatig keuken
       - type: horizontal-stack
         cards:
           - type: "custom:button-card"
@@ -468,17 +147,24 @@ cards:
               - type: "custom:button-card"
                 template: card_binary_sensor_alert
                 variables:
-                  - ulm_card_binary_sensor_alert: true
+                  ulm_card_binary_sensor_alert: true
+                  ulm_show_last_changed: true
                 entity: binary_sensor.presence_livingroom
-                show_last_changed: true
               - type: "custom:button-card"
                 template: card_binary_sensor
                 variables:
-                  - ulm_card_binary_sensor_alert: true
+                  ulm_card_binary_sensor_alert: true
+                  ulm_show_last_changed: true
                 entity: binary_sensor.livingroom_door_open
-                show_last_changed: true
+              - type: "custom:button-card"
+                template: card_binary_sensor
+                variables:
+                  ulm_card_binary_sensor_alert: true
+                  ulm_show_last_changed: true
+                entity: binary_sensor.garden_door_open
           - type: "custom:button-card"
             template: card_graph
+            entity: sensor.pir_kitchen_temperature
             variables:
               ulm_card_graph_name: Temperatuur
               ulm_card_graph_entity: sensor.pir_kitchen_temperature
