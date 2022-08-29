@@ -51,3 +51,7 @@ ip_bans.yaml
 secrets.yaml
 known_devices.yaml
 google_calendars.yaml
+
+# Keep specific files required for CI
+!custom_components/afvalbeheer
+!custom_components/browser_mod
