@@ -24,7 +24,7 @@ trigger:
       - "standby"
       - "inactive"
     for:
-      minutes: 10
+      minutes: 5
 
   - platform: homeassistant
     event: start

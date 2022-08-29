@@ -27,7 +27,6 @@ www/fonts
 fonts
 www/upcoming-media-card-images
 www/nspanel
-custom_components
 www/community
 
 # Ignore specific files
@@ -51,3 +50,8 @@ ip_bans.yaml
 secrets.yaml
 known_devices.yaml
 google_calendars.yaml
+
+# Keep specific custom components required for CI
+custom_components/*
+!custom_components/afvalbeheer/
+!custom_components/browser_mod/
