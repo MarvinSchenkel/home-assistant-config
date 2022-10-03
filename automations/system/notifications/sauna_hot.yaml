@@ -1,0 +1,21 @@
+---
+description: Send a notification when our sauna is ready to be used
+alias: notification_sauna_hot
+mode: single
+id: 1457f2ed-c313-4af4-9fdf-827596238980
+
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.sauna_temperature
+    above: 50
+    for:
+      minutes: 1
+
+action:
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+      type: "home_only"
+      message: "🥵 De sauna is nu {{ states('sensor.sauna_temperature') }}°C!"

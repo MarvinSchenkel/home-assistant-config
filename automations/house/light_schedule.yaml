@@ -1,0 +1,64 @@
+---
+description: >
+  Automatically select the light schedule that suits the situation
+  or time of day
+alias: house_light_schedule
+id: 5840c714-45b1-4f4a-b805-023a268d0813
+mode: single
+
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.house_mode_someone_asleep
+
+  - platform: numeric_state
+    entity_id:
+      - sensor.sun_adjusted_elevation
+    below: -5
+
+  - platform: homeassistant
+    event: start
+
+variables:
+  anchors:
+    - &select_schedule
+      alias: "Select the schedule"
+      service: input_select.select_option
+      target:
+        entity_id: input_select.current_light_schedule
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.house_mode_someone_asleep
+            state: "on"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "night"
+
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.sun_adjusted_elevation
+            below: -5
+          - condition: time
+            alias: "And it is after 7pm"
+            after: "19:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "dim"
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.house_mode_someone_asleep
+            state: "off"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "normal"
+
+    default: []

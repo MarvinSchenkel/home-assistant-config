@@ -1,7 +1,0 @@
----
-platform: template
-sensors:
-  solaredge_energy_today_kwh:
-    value_template: "{{ (states('sensor.daily_energy_produced') | float) | round(1) }}"
-    unit_of_measurement: "KWh"
-    icon_template: "mdi:solar-power"

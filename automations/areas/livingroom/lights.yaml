@@ -19,6 +19,7 @@ trigger:
       - input_boolean.livingroom_manual_control
       - binary_sensor.livingroom_is_dark
       - binary_sensor.house_mode_everyone_at_home_working
+      - input_select.current_light_schedule
     from: ~
 
   - platform: state
@@ -35,11 +36,6 @@ trigger:
     from: "off"
     to: "on"
     id: "everyone_asleep"
-
-  - platform: numeric_state
-    entity_id:
-      - sensor.sun_adjusted_elevation
-    below: -5
 
   - platform: numeric_state
     entity_id:
@@ -270,16 +266,12 @@ action:
                 sequence:
                   - *turn_on_movie
 
-              - alias: "When the sun has been down for a while and it's after 7pm.."
+              - alias: "When the sun has been down for a while."
                 conditions:
-                  - condition: and
-                    conditions:
-                      - condition: numeric_state
-                        entity_id:
-                          - sensor.sun_adjusted_elevation
-                        below: -5
-                      - condition: time
-                        after: "19:00:00"
+                  - condition: state
+                    entity_id:
+                      - input_select.current_light_schedule
+                    state: "dim"
                 sequence:
                   - *turn_on_evening
 

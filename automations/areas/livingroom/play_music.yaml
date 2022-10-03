@@ -20,14 +20,34 @@ trigger:
   - platform: state
     entity_id:
       - media_player.apple_tv
+    from:
+      - "paused"
+      - "playing"
     to:
+      - "idle"
       - "standby"
-      - "inactive"
+      - "off"
+      - "unavailable"
     for:
-      minutes: 5
+      minutes: 2
+
+  - platform: state
+    entity_id:
+      - media_player.apple_tv
+    from:
+      - "playing"
+    to:
+      - "paused"
+    for:
+      minutes: 20
 
   - platform: homeassistant
     event: start
+
+  - platform: state
+    entity_id:
+      - input_boolean.setting_automatic_music
+    id: "setting_automatic_music"
 
 variables:
   anchors:
@@ -63,33 +83,47 @@ action:
               - binary_sensor.house_mode_everyone_asleep
             state: "off"
           - alias: "We're not watching TV"
-            condition: state
-            entity_id: media_player.apple_tv
-            state:
-              - "idle"
-              - "standby"
-              - "off"
-              - "paused"
-              - "unavailable"
-            for:
-              minutes: 2
+            condition: or
+            conditions:
+              - condition: state
+                entity_id: media_player.apple_tv
+                state:
+                  - "idle"
+                  - "standby"
+                  - "off"
+                  - "unavailable"
+                for:
+                  minutes: 2
+              - condition: state
+                entity_id: media_player.apple_tv
+                state: "paused"
+                for:
+                  minutes: 20
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.mass_sonos_livingroom
+                state: "playing"
         sequence:
-          - if:
-              - not:
-                  - condition: state
-                    entity_id:
-                      - media_player.mass_sonos_livingroom
-                    state: "playing"
-            then:
-              - *play_media
+          - *play_media
 
       - conditions:
-          - condition: state
-            entity_id:
-              - binary_sensor.presence_house
-            state: "off"
-            for:
-              seconds: 900
+          - or:
+              - alias: "No presence is detected"
+                condition: state
+                entity_id:
+                  - binary_sensor.presence_house
+                state: "off"
+                for:
+                  seconds: 900
+              - alias: "Or we switched of automatic music"
+                and:
+                  - condition: trigger
+                    id: "setting_automatic_music"
+                  - condition: state
+                    entity_id:
+                      - input_boolean.setting_automatic_music
+                    state: "off"
           - not:
               - condition: state
                 entity_id:

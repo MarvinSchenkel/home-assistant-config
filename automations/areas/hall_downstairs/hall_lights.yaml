@@ -34,7 +34,6 @@ action:
           - condition: trigger
             alias: "Check if we started watching a movie"
             id: "movie"
-
         sequence:
           - &lights_turn_off
             service: light.turn_off
@@ -54,15 +53,9 @@ action:
             alias: "It is dark in the hall"
             entity_id: binary_sensor.hall_is_dark
             state: "on"
-          - condition: numeric_state
-            alias: "If the sun has set a fair bit"
-            entity_id:
-              - sensor.sun_elevation
-            below: -3
-          - condition: time
-            alias: "And it is after 7pm"
-            after: "19:00:00"
-
+          - condition: state
+            entity_id: input_select.current_light_schedule
+            state: "dim"
         sequence:
           - service: scene.turn_on
             alias: "Turn the hall lights to dim scene"
@@ -73,11 +66,8 @@ action:
           - *presence
           - *dark
           - condition: state
-            alias: "If it is dark in the living room, meaning lights are on there"
-            entity_id:
-              - binary_sensor.livingroom_is_dark
-            state: "on"
-
+            entity_id: input_select.current_light_schedule
+            state: "normal"
         sequence:
           - service: scene.turn_on
             alias: "Turn the hall lights to normal scene"
@@ -87,12 +77,14 @@ action:
       - conditions:
           - *presence
           - *dark
-
+          - condition: state
+            entity_id: input_select.current_light_schedule
+            state: "night"
         sequence:
           - service: scene.turn_on
-            alias: "Turn the hall lights to bright scene"
+            alias: "Turn the hall lights to night scene"
             data:
-              entity_id: scene.halldownstairs_lights_bright
+              entity_id: scene.halldownstairs_lights_night
 
     default:
       - *lights_turn_off

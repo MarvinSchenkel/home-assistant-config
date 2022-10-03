@@ -14,6 +14,18 @@ variables:
           / -3600
         ) | float
     }}
+  anchors:
+    - &start
+      alias: "Start cleaning"
+      service: vacuum.start
+      data:
+        entity_id: vacuum.norby
+
+    - &return
+      alias: "Return to base"
+      service: vacuum.return_to_base
+      data:
+        entity_id: vacuum.norby
 
 trigger:
   - platform: state
@@ -25,11 +37,13 @@ trigger:
     for:
       minutes: 2
 
+  - platform: state
+    entity_id:
+      - binary_sensor.house_mode_someone_just_home
+    from: "off"
+    to: "on"
+
 condition:
-  - "{{ hours_since_last_clean > 12.0 }}"
-  - condition: time
-    after: "07:30:00"
-    before: "22:00:00"
   - alias: "Do not automate when a guest is over"
     condition: state
     entity_id:
@@ -37,6 +51,30 @@ condition:
     state: "off"
 
 action:
-  - service: vacuum.start
-    data:
-      entity_id: vacuum.norby
+  - choose:
+      - conditions:
+          - "{{ hours_since_last_clean > 12.0 }}"
+          - condition: time
+            after: "07:30:00"
+            before: "22:00:00"
+          - not:
+              - condition: state
+                entity_id:
+                  - vacuum.norby
+                state: "cleaning"
+        sequence:
+          - *start
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - vacuum.norby
+            state: "cleaning"
+          - condition: state
+            entity_id:
+              - binary_sensor.house_mode_someone_just_home
+            state: "on"
+        sequence:
+          - *return
+
+    default: []

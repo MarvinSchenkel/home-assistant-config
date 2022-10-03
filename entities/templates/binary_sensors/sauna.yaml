@@ -1,0 +1,14 @@
+---
+binary_sensor:
+  - name: sauna
+    unique_id: 2bbc94c9-acf3-4f0b-9020-4ab7614354d4
+    delay_off:
+      minutes: 1
+    state: >
+      {%-
+        if states("sensor.sauna_temperature") | float(0) > 40
+      -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}

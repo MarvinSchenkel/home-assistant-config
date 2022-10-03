@@ -1,13 +1,13 @@
-# ---
-# solar_production_daily:
-#   source: sensor.solaredge_lifetime_production
-#   cycle: daily
-# solar_production_hourly:
-#   source: sensor.solaredge_lifetime_production
-#   cycle: hourly
-# solar_production_weekly:
-#   source: sensor.solaredge_lifetime_production
-#   cycle: weekly
-# solar_production_monthly:
-#   source: sensor.solaredge_lifetime_production
-#   cycle: monthly
+---
+solar_production_daily:
+  source: sensor.solaredge_i1_ac_energy_kwh
+  cycle: daily
+solar_production_hourly:
+  source: sensor.solaredge_i1_ac_energy_kwh
+  cycle: hourly
+solar_production_weekly:
+  source: sensor.solaredge_i1_ac_energy_kwh
+  cycle: weekly
+solar_production_monthly:
+  source: sensor.solaredge_i1_ac_energy_kwh
+  cycle: monthly

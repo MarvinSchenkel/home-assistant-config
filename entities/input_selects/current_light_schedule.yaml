@@ -1,0 +1,7 @@
+---
+name: Licht schema
+options:
+  - normal
+  - dim
+  - night
+  - bright

@@ -4,7 +4,7 @@ description: >
   or time of day
 alias: house_music_schedule
 id: ae7dbcfa-03e6-44c3-bd57-26c4b64454fe
-mode: single
+mode: queued
 
 trigger:
   - platform: time

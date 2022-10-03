@@ -5,7 +5,8 @@ sensors:
     value_template: >-
       {% set hour = as_timestamp(now()) | timestamp_custom("%H") | int  %}
       {%
-        if (is_state("device_tracker.lpzwnl000036211", "home"))
+        if (is_state("device_tracker.lpzwnl000036211", "home")
+        )
         and hour > 7
         and hour < 18
       %}

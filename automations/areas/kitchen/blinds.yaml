@@ -19,8 +19,13 @@ trigger:
     entity_id:
       - binary_sensor.house_mode_everyone_asleep
       - binary_sensor.house_mode_someone_awake
-    from: "off"
-    to: "on"
+      - binary_sensor.house_mode_someone_just_awake
+    from:
+      - "off"
+      - "on"
+    to:
+      - "on"
+      - "off"
 
   - platform: state
     entity_id:
@@ -68,7 +73,7 @@ trigger:
     id: kitchen_blinds
 
   - platform: time
-    at: "00:03:00"
+    at: "03:00:00"
     id: "reset"
 
 variables:
@@ -164,6 +169,15 @@ action:
                 entity_id: binary_sensor.house_mode_everyone_asleep
                 state:
                   - "on"
+              - and:
+                  - condition: state
+                    entity_id: binary_sensor.house_mode_someone_just_awake
+                    state:
+                      - "on"
+                  - condition: state
+                    entity_id:
+                      - input_select.kitchen_current_cover_scene
+                    state: "halfclosed"
         sequence:
           - *halfclosed
 

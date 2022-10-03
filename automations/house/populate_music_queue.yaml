@@ -4,7 +4,7 @@ description: >
   with music that suits the music schedule of the day
 alias: house_populate_music_queue
 id: 7f94ed28-03ab-4dbf-b509-973f867931a9
-mode: single
+mode: queued
 
 trigger:
   - platform: state
@@ -20,7 +20,7 @@ variables:
   just_awake_music: ["Classical Meditation", "Tranquil spa day"]
   early_morning_music: ["Chill", "Chill step", "Reflections"]
   morning_music: ["Chill step", "Ambient / Relax"]
-  day_music: ["Ambient / Relax", "My Mix 1", "deepchill"]
+  day_music: ["Ambient / Relax", "deepchill"]
   evening_music: ["Ambient / Relax"]
 
   active_schedule: '{{ states("input_select.current_music_schedule") }}'

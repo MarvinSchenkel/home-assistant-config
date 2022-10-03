@@ -22,8 +22,21 @@ trigger:
       seconds: 50
 
   - platform: state
+    entity_id: binary_sensor.presence_kitchen
+    to: "off"
+    for:
+      seconds: 10
+    id: "presence_off_10s"
+
+  - platform: state
+    entity_id: media_player.apple_tv
+    to: "playing"
+    id: "apple_tv_playing"
+
+  - platform: state
     entity_id:
       - binary_sensor.kitchen_is_dark
+      - input_boolean.house_mode_cooking
 
 variables:
   anchors:
@@ -67,6 +80,11 @@ variables:
       entity_id: binary_sensor.kitchen_is_dark
       state: "on"
 
+    - &is_light_schedule
+      alias: "Check current light schedule"
+      condition: state
+      entity_id: input_select.current_light_schedule
+
 condition:
   - condition: state
     alias: "Check if we can automate the lights"
@@ -88,22 +106,32 @@ action:
       - conditions:
           - *is_presence_detected
           - *is_dark
-          - condition: numeric_state
-            alias: "If the sun has set a fair bit"
-            entity_id:
-              - sensor.sun_elevation
-            below: -3
-          - condition: time
-            alias: "And it is after 7pm"
-            after: "19:00:00"
+          - <<: *is_light_schedule
+            state: "dim"
         sequence:
           - *lights_dim
 
       - conditions:
           - *is_presence_detected
           - *is_dark
+          - <<: *is_light_schedule
+            state: "normal"
         sequence:
           - *lights_normal
+
+      - alias: "Turn the lights off faster when we are watching TV."
+        conditions:
+          - or:
+              - condition: trigger
+                id: "presence_off_10s"
+              - condition: trigger
+                id: "media_player.apple_tv"
+          - condition: state
+            entity_id:
+              - input_select.livingroom_current_lights_scene
+            state: "movie"
+        sequence:
+          - *lights_off
 
     default:
       - *lights_off

@@ -1,0 +1,11 @@
+---
+sensor:
+  - name: daily_energy_delivered_to_net
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: measurement
+    attributes:
+      last_reset: "1970-01-01T00:00:00+00:00"
+    state: >
+      {{ states('sensor.daily_energy_produced_offpeak') | float(0)
+        + states('sensor.daily_energy_produced_peak') | float(0) }}

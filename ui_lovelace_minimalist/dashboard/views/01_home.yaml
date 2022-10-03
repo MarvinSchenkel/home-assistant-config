@@ -6,20 +6,29 @@ cards:
     cards:
       - type: horizontal-stack
         cards:
-          # - type: "custom:button-card"
-          #   template: chip_temperature
-          #   variables:
-          #     ulm_chip_temperature_inside: sensor.pir_kitchen_temperature
-          #     ulm_chip_temperature_outside: sensor.current_temperature
-          #     ulm_chip_temperature_weather: weather.buienradar
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.sauna
+                state: "on"
+            card:
+              type: "custom:button-card"
+              template: chip_icon_state
+              variables:
+                ulm_chip_icon_state_icon: "🧖"
+                ulm_chip_icon_state_entity: sensor.sauna_temperature
 
-          - type: "custom:button-card"
-            template: chip_icon_double_state
-            variables:
-              ulm_chip_icon_double_state_icon: "⚡"
-              ulm_chip_icon_double_state_entity_1: sensor.daily_energy
-              ulm_chip_icon_double_state_entity_2: sensor.solaredge_energy_today_kwh
-              ulm_chip_navigate_path: /energy
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.sauna
+                state: "off"
+            card:
+              type: "custom:button-card"
+              template: chip_icon_double_state
+              variables:
+                ulm_chip_icon_double_state_icon: "⚡"
+                ulm_chip_icon_double_state_entity_1: sensor.daily_energy
+                ulm_chip_icon_double_state_entity_2: sensor.daily_energy_produced
+                ulm_chip_navigate_path: /energy
 
           - type: "custom:button-card"
             template: chip_icon_state

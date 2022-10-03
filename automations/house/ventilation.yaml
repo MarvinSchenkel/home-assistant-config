@@ -17,12 +17,12 @@ trigger:
 
   - platform: numeric_state
     entity_id:
-      - sensor.pir_bathroom_humidity
+      - sensor.bathroom_ble_humidity
     above: 85
 
   - platform: numeric_state
     entity_id:
-      - sensor.pir_bathroom_humidity
+      - sensor.bathroom_ble_humidity
     below: 75
 
   - platform: event
@@ -49,6 +49,18 @@ trigger:
   - platform: state
     entity_id:
       - input_boolean.house_mode_cooking
+
+  - platform: state
+    entity_id:
+      - binary_sensor.sauna
+    to: "on"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.sauna
+    to: "off"
+    for:
+      minutes: 15
 
 variables:
   anchors:
@@ -115,7 +127,7 @@ action:
             - *shower_on
             - condition: numeric_state
               entity_id:
-                - sensor.pir_bathroom_humidity
+                - sensor.bathroom_ble_humidity
               above: 85
       sequence:
         - *turn_on
@@ -128,6 +140,15 @@ action:
           state: "on"
           for:
             minutes: 4
+      sequence:
+        - *turn_on
+
+    - alias: "Turn on when we are using the sauna"
+      conditions:
+        - alias: "When the sauna is on"
+          condition: state
+          entity_id: binary_sensor.sauna
+          state: "on"
       sequence:
         - *turn_on
 

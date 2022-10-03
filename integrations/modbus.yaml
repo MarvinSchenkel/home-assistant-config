@@ -1,0 +1,16 @@
+# ---
+# modbus:
+#   - name: "solarpanel"
+#     type: tcp
+#     close_comm_on_error: true
+#     timeout: 5
+#     host: !secret solaredge_ip
+#     port: !secret solaredge_port
+#     retry_on_empty: true
+#     sensors:
+#       - name: modbus_solaredge_current
+#         address: 40071
+#         scan_interval: 38
+#         input_type: holding
+#         data_type: uint16
+#         count: 5
