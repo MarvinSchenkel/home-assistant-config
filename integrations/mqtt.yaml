@@ -1,0 +1,4 @@
+---
+mqtt:
+  fan: !include_dir_list ../entities/mqtt/fans
+  sensor: !include_dir_list ../entities/mqtt/sensors

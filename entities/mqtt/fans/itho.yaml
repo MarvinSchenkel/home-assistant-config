@@ -1,5 +1,4 @@
 ---
-platform: mqtt
 name: "itho"
 command_topic: "ITHO/Fan/cmd"
 state_topic: "ITHO/Fan/State"

@@ -1,5 +1,4 @@
 ---
-platform: mqtt
 name: itho_speed
 state_topic: "ITHO/Fan/State"
 icon: mdi:fan
