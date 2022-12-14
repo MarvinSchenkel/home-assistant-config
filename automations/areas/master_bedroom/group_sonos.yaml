@@ -15,5 +15,7 @@ use_blueprint:
       - condition: state
         entity_id: binary_sensor.house_mode_someone_asleep
         state: "off"
+        for:
+          minutes: 10
       - condition: time
         before: "19:00:00"

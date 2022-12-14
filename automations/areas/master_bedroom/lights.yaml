@@ -81,16 +81,6 @@ trigger:
     from: "on"
     to: "off"
     id: "all_lights_off"
-  - platform: state
-    entity_id:
-      - sensor.zoey_status
-    to: "Slaapt boven"
-    id: "zoey_sleeps_upstairs"
-  - platform: state
-    entity_id:
-      - sensor.zoey_status
-    to: "Wakker"
-    id: "zoey_awake"
 
 condition:
   - condition: state
@@ -170,14 +160,9 @@ action:
       - alias: >
           Turn the light off when we go to sleep, even if it is manually controlled
         conditions:
-          - condition: or
-            conditions:
-              - alias: "Someone goes to sleep"
-                condition: trigger
-                id: "house_mode_someone_asleep"
-              - alias: "Or Zoey goes to sleep"
-                condition: trigger
-                id: "zoey_sleeps_upstairs"
+          - alias: "Someone goes to sleep"
+            condition: trigger
+            id: "house_mode_someone_asleep"
 
         sequence:
           - &turn_off
@@ -219,12 +204,6 @@ action:
           - condition: state
             entity_id: binary_sensor.presence_master_bedroom
             state: "on"
-          - condition: not
-            conditions:
-              - condition: state
-                entity_id:
-                  - sensor.zoey_status
-                state: "Slaapt boven"
 
         sequence:
           - choose:

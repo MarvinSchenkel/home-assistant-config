@@ -1,8 +1,8 @@
 ---
 binary_sensor:
-  name: presence_master_bedroom
-  unique_id: 89ad341e-11ef-4aa8-9b36-1aaf176e9c0b
-  state: >
-    {{  is_state("binary_sensor.pir_master_bedroom", "on")
-        or is_state("binary_sensor.presence_master_bedroom_door", "on")
-        or is_state("binary_sensor.someone_in_bed", "on") }}
+  - name: presence_master_bedroom
+    unique_id: 89ad341e-11ef-4aa8-9b36-1aaf176e9c0b
+    state: >
+      {{  is_state("binary_sensor.pir_master_bedroom", "on")
+          or is_state("binary_sensor.presence_master_bedroom_door", "on")
+          or is_state("binary_sensor.someone_in_bed", "on") }}

@@ -2,19 +2,19 @@
 # A binary sensor based on presence
 # indicating whether someone just got home
 binary_sensor:
-  name: house_mode_someone_just_home
-  unique_id: ea97e092-6aa6-40a9-8875-58c3e7b74fc2
-  state: >
-    {% set noOfPeople = 0 %}
-    {% set homeValues = ["Net thuis"] %}
-    {% if states("input_select.marvin_status_dropdown") in homeValues %}
-    {% set noOfPeople = noOfPeople + 1 %}
-    {% endif %}
-    {% if states("input_select.laura_status_dropdown") in homeValues %}
-    {% set noOfPeople = noOfPeople + 1 %}
-    {% endif %}
-    {%- if noOfPeople | int > 0 -%}
-      on
-    {%- else -%}
-      off
-    {%- endif -%}
+  - name: house_mode_someone_just_home
+    unique_id: ea97e092-6aa6-40a9-8875-58c3e7b74fc2
+    state: >
+      {% set noOfPeople = 0 %}
+      {% set homeValues = ["Net thuis"] %}
+      {% if states("input_select.marvin_status_dropdown") in homeValues %}
+      {% set noOfPeople = noOfPeople + 1 %}
+      {% endif %}
+      {% if states("input_select.laura_status_dropdown") in homeValues %}
+      {% set noOfPeople = noOfPeople + 1 %}
+      {% endif %}
+      {%- if noOfPeople | int > 0 -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}

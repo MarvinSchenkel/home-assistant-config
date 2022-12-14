@@ -136,6 +136,16 @@ cards:
               ulm_card_light_force_background_color: true
               ulm_card_light_name: Bank
 
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
+            template: card_input_boolean
+            entity: switch.christmas_tree
+            variables:
+              ulm_card_input_boolean_name: Kerstboom
+          - type: "custom:button-card"
+            color_type: blank-card
+
       - type: "custom:button-card"
         template: card_title
         name: Sensoren

@@ -9,7 +9,7 @@ variables:
   hours_since_last_clean: >
     {{ (
           (
-            as_timestamp(states('sensor.norby_last_cleaned')) - as_timestamp(now())
+            as_timestamp(states('sensor.norby_last_clean_end')) - as_timestamp(now())
           )
           / -3600
         ) | float
@@ -57,11 +57,12 @@ action:
           - condition: time
             after: "07:30:00"
             before: "22:00:00"
-          - not:
-              - condition: state
-                entity_id:
-                  - vacuum.norby
-                state: "cleaning"
+          - condition: state
+            entity_id:
+              - binary_sensor.everyone_left_home
+              - binary_sensor.house_mode_everyone_at_home_working
+            state: "on"
+            match: any
         sequence:
           - *start
 

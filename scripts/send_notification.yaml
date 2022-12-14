@@ -40,27 +40,27 @@ sequence:
             title: "{{ title | default('Hey') }} {{ name }}!"
 
         # First check if we need to play the notifcation on our TV
-        - choose:
-            - conditions:
-                condition: or
-                conditions:
-                  - "{{ receiver == 'marvin'
-                    and marvin_state in home_status
-                    and not is_state('media_player.living_room_tv', 'off') }}"
-                  - "{{ receiver == 'laura'
-                    and laura_state in home_status
-                    and not is_state('media_player.living_room_tv', 'off') }}"
-              sequence:
-                - service: notify.woonkamer
-                  continue_on_error: true
-                  data:
-                    message: "{{ message }}"
-                    title: "{{ title }}"
-                    data:
-                      duration: 7
-                      position: top-right
-                      image:
-                        url: "{{ image }}"
+        # - choose:
+        #     - conditions:
+        #         condition: or
+        #         conditions:
+        #           - "{{ receiver == 'marvin'
+        #             and marvin_state in home_status
+        #             and not is_state('media_player.living_room_tv', 'off') }}"
+        #           - "{{ receiver == 'laura'
+        #             and laura_state in home_status
+        #             and not is_state('media_player.living_room_tv', 'off') }}"
+        #       sequence:
+        #         - service: notify.woonkamer
+        #           continue_on_error: true
+        #           data:
+        #             message: "{{ message }}"
+        #             title: "{{ title }}"
+        #             data:
+        #               duration: 7
+        #               position: top-right
+        #               image:
+        #                 url: "{{ image }}"
 
         # Check if we need to notify the mancave TV
         - choose:

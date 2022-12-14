@@ -4,6 +4,31 @@ description: Turns the bathroom lights on when motion has been detected
 mode: queued
 id: 9617f5b7-0733-4877-82ea-1ab8bc5332b0
 
+variables:
+  anchors:
+    - &manual_control_off
+      alias: "Turn manual control off"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.bathroom_manual_control
+
+    - &presence_detected
+      alias: "There is movement in the bathroom"
+      condition: state
+      entity_id: binary_sensor.presence_bathroom
+      state: "on"
+
+    - &is_dark
+      alias: "It is dark"
+      condition: state
+      entity_id: binary_sensor.bathroom_is_dark
+      state: "on"
+
+    - &is_light_schedule
+      alias: "Check current light schedule"
+      condition: state
+      entity_id: input_select.current_light_schedule
+
 trigger:
   - platform: homeassistant
     event: start
@@ -50,19 +75,13 @@ action:
         conditions:
           - condition: trigger
             id: "reset"
-
         sequence:
-          - &manual_control_off
-            alias: "Turn manual control off"
-            service: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.bathroom_manual_control
+          - *manual_control_off
 
       - alias: "Set manual control when switch is pressed"
         conditions:
           - condition: trigger
             id: "bathroom_switch"
-
         sequence:
           - alias: "Turn manual control on"
             service: input_boolean.turn_on
@@ -73,7 +92,6 @@ action:
         conditions:
           - condition: trigger
             id: "light_off"
-
         sequence:
           - *manual_control_off
 
@@ -83,34 +101,42 @@ action:
             entity_id:
               - input_boolean.bathroom_manual_control
             state: "on"
-
         sequence: []
 
       - alias: "Turn lights on when presence is detected and we're not asleep"
         conditions:
-          - condition: state
-            entity_id: binary_sensor.presence_bathroom
-            state: "on"
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id:
-                  - binary_sensor.house_mode_someone_just_awake
-                state: "on"
-              - condition: not
-                conditions:
-                  - condition: state
-                    entity_id:
-                      - binary_sensor.house_mode_someone_asleep
-                    state: "on"
-          - condition: state
-            entity_id: binary_sensor.bathroom_is_dark
-            state: "on"
-
+          - *presence_detected
+          - *is_dark
+          - <<: *is_light_schedule
+            state: "dim"
+          # - condition: or
+          #   conditions:
+          #     - condition: state
+          #       entity_id:
+          #         - binary_sensor.house_mode_someone_just_awake
+          #       state: "on"
+          #     - condition: not
+          #       conditions:
+          #         - condition: state
+          #           entity_id:
+          #             - binary_sensor.house_mode_someone_asleep
+          #           state: "on"
         sequence:
-          - service: light.turn_on
+          - service: scene.turn_on
             data:
-              entity_id: light.fibaro_bathroom
+              entity_id: scene.bathroom_lights_dim
+              transition: 1
+
+      - alias: "Turn lights on when presence is detected and we're not asleep"
+        conditions:
+          - *presence_detected
+          - *is_dark
+          - <<: *is_light_schedule
+            state: "normal"
+        sequence:
+          - service: scene.turn_on
+            data:
+              entity_id: scene.bathroom_lights_normal
               transition: 1
 
     default:

@@ -18,7 +18,7 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.bathroom_ble_humidity
-    above: 85
+    above: 80
 
   - platform: numeric_state
     entity_id:
@@ -128,7 +128,7 @@ action:
             - condition: numeric_state
               entity_id:
                 - sensor.bathroom_ble_humidity
-              above: 85
+              above: 80
       sequence:
         - *turn_on
 

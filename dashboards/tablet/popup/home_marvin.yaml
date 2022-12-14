@@ -60,12 +60,12 @@ browser_mod:
             icon: custom:iphone-modern
             style: *style
 
-          - entity: sensor.marvin_work_status
+          - entity: binary_sensor.marvin_is_working
             name: Aan het werk?
             icon: mdi:briefcase
             style: |
               state-badge {
-                color: {{ '#3182b7' if is_state(config.entity, 'Aan het werk') else '#3c3f3f' }};
+                color: {{ '#3182b7' if is_state(config.entity, 'on') else '#3c3f3f' }};
               }
 
       - type: entities

@@ -3,6 +3,8 @@ description: >
   Automatically play music in the living room
 alias: areas_livingroom_play_music
 id: bdbbd6e8-fb02-4777-980e-dffd9865995c
+trace:
+  stored_traces: 25
 
 trigger:
   - platform: state
@@ -83,27 +85,31 @@ action:
               - binary_sensor.house_mode_everyone_asleep
             state: "off"
           - alias: "We're not watching TV"
-            condition: or
-            conditions:
+            not:
               - condition: state
                 entity_id: media_player.apple_tv
-                state:
-                  - "idle"
-                  - "standby"
-                  - "off"
-                  - "unavailable"
-                for:
-                  minutes: 2
-              - condition: state
-                entity_id: media_player.apple_tv
-                state: "paused"
-                for:
-                  minutes: 20
-          - not:
-              - condition: state
-                entity_id:
-                  - media_player.mass_sonos_livingroom
                 state: "playing"
+          - alias: "No need for music when everyone is working from home"
+            condition: state
+            entity_id:
+              - binary_sensor.house_mode_everyone_at_home_working
+            state: "off"
+          - or:
+              - not:
+                  - condition: state
+                    entity_id:
+                      - media_player.mass_sonos_livingroom
+                    state: "playing"
+              - and:
+                  - condition: state
+                    entity_id:
+                      - media_player.mass_sonos_livingroom
+                    state: "playing"
+                  - condition: state
+                    entity_id:
+                      - media_player.mass_sonos_livingroom
+                    attribute: "media_title"
+                    state: "TV"
         sequence:
           - *play_media
 

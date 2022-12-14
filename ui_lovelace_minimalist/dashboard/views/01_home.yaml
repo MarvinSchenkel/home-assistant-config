@@ -43,7 +43,7 @@ cards:
             template: chip_temperature
             variables:
               ulm_chip_temperature_inside: sensor.buienradar_temperature
-              ulm_chip_temperature_outside: sensor.pir_kitchen_temperature
+              ulm_chip_temperature_outside: sensor.livingroom_temperature
               ulm_chip_temperature_weather: weather.buienradar
               # ulm_card_tap_action: "popup"
               # ulm_custom_popup:
@@ -138,23 +138,17 @@ cards:
             ulm_card_media_player_enable_art: true
             ulm_card_media_player_more_info: true
 
-      # - type: conditional
-      #   conditions:
-      #     - entity: media_player.sonos_livingroom
-      #       state: "playing"
-      #     - entity: media_player.mass_sonos_livingroom
-      #       state_not: "playing"
-      #   card:
-      #     type: "custom:button-card"
-      #     template: card_media_player
-      #     entity: media_player.sonos_livingroom
-      #     name: Sonos woonkamer
-      #     variables:
-      #       ulm_card_media_player_enable_controls: true
-      #       ulm_card_media_player_enable_volume_slider: true
-      #       ulm_card_media_player_enable_art: true
-      #       ulm_card_media_player_more_info: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.livingroom_thermostat
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_popup: true
 
       - type: "custom:button-card"
         template: "card_vacuum"
         entity: "vacuum.norby"
+        variables:
+          ulm_card_vacuum_enable_popup: true

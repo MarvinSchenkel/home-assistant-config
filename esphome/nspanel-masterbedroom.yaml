@@ -18,6 +18,9 @@ esphome:
 esp32:
   board: esp32dev
 
+# bluetooth_proxy:
+#   active: true
+
 ota:
   password: !secret ota_pwd
 

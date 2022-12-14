@@ -22,9 +22,28 @@ cards:
               ulm_card_binary_sensor_alert: true
               ulm_show_last_changed: true
             entity: binary_sensor.sun_hot
-      - type: "custom:button-card"
-        template: card_binary_sensor
-        variables:
-          ulm_card_binary_sensor_alert: true
-          ulm_show_last_changed: true
-        entity: binary_sensor.sun_at_south_windows
+
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            variables:
+              ulm_card_binary_sensor_alert: true
+              ulm_show_last_changed: true
+            entity: binary_sensor.sun_at_south_windows
+          - type: "custom:button-card"
+            template: card_generic_swap
+            entity: input_select.current_music_schedule
+
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            entity: binary_sensor.kitchen_is_dark
+            variables:
+              ulm_show_last_changed: true
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            entity: binary_sensor.livingroom_is_dark
+            variables:
+              ulm_show_last_changed: true

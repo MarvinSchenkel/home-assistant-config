@@ -33,25 +33,34 @@ trigger:
 
   - platform: state
     entity_id:
-      - sensor.marvin_work_status
-    to:
-      - "Aan het werk"
-      - "Niet aan het werk"
+      - binary_sensor.marvin_is_working
+    to: "on"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.marvin_is_working
+    to: "off"
     for:
-      minutes: 1
+      minutes: 5
 
   - platform: numeric_state
     entity_id:
       - sensor.sun_elevation
-    below: 16.0
+    below: 17.5
 
   - platform: numeric_state
     entity_id:
       - sensor.sun_azimuth
     above: 200
 
-  - platform: time
-    at: "00:03:00"
+  - platform: state
+    entity_id: input_select.marvin_sleep_status_dropdown
+    to: "Slaapt"
+
+  - platform: state
+    entity_id:
+      - input_select.marvin_sleep_status_dropdown
+    to: "Wakker"
     id: "reset"
 
 variables:
@@ -119,6 +128,12 @@ action:
                 entity_id:
                   - media_player.mancave_tv
                 state: "on"
+              - condition: state
+                entity_id:
+                  - input_select.marvin_sleep_status_dropdown
+                state:
+                  - "Slaapt"
+                  - "Net wakker"
         sequence:
           - service: scene.turn_on
             target:
@@ -129,7 +144,7 @@ action:
           - condition: numeric_state
             entity_id:
               - sensor.sun_elevation
-            below: 16.0
+            below: 17.5
           - condition: numeric_state
             entity_id:
               - sensor.sun_azimuth
@@ -140,8 +155,8 @@ action:
             state: "on"
           - condition: state
             entity_id:
-              - sensor.marvin_work_status
-            state: "Aan het werk"
+              - binary_sensor.marvin_is_working
+            state: "on"
           - condition: numeric_state
             entity_id: sensor.buienradar_irradiance
             above: 110
@@ -161,8 +176,8 @@ action:
                 below: 1.0
               - condition: state
                 entity_id:
-                  - sensor.marvin_work_status
-                state: "Aan het werk"
+                  - binary_sensor.marvin_is_working
+                state: "on"
 
         sequence:
           - service: scene.turn_on

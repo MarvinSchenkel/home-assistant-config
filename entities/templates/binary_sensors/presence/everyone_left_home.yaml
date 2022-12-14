@@ -1,10 +1,10 @@
 ---
 binary_sensor:
-  name: everyone_left_home
-  unique_id: 5957f6f7-2cd8-4913-9376-b447b28445af
-  state: >
-    {%
-      set away = ["Net weg", "Weg", "Lang weg"]
-    %}
-    {{  states("input_select.laura_status_dropdown") in away
+  - name: everyone_left_home
+    unique_id: 5957f6f7-2cd8-4913-9376-b447b28445af
+    state: >
+      {%
+        set away = ["Net weg", "Weg", "Lang weg"]
+      %}
+      {{  states("input_select.laura_status_dropdown") in away
         and states("input_select.marvin_status_dropdown") in away }}

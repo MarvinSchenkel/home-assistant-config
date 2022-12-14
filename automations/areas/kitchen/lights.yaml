@@ -3,6 +3,8 @@ alias: areas_kitchen_lights
 description: Turns the hallway lights on when motion has been detected
 mode: queued
 id: 166a33e7-2c06-419b-b12d-147aecaa1362
+trace:
+  stored_traces: 25
 
 trigger:
   - platform: homeassistant
@@ -25,8 +27,8 @@ trigger:
     entity_id: binary_sensor.presence_kitchen
     to: "off"
     for:
-      seconds: 10
-    id: "presence_off_10s"
+      seconds: 5
+    id: "presence_off_5s"
 
   - platform: state
     entity_id: media_player.apple_tv
@@ -37,6 +39,7 @@ trigger:
     entity_id:
       - binary_sensor.kitchen_is_dark
       - input_boolean.house_mode_cooking
+      - input_select.current_light_schedule
 
 variables:
   anchors:
@@ -59,6 +62,13 @@ variables:
       service: scene.turn_on
       data:
         entity_id: scene.kitchen_lights_bright
+        transition: 3
+
+    - &lights_night
+      alias: "Turn the lights to bright scene"
+      service: scene.turn_on
+      data:
+        entity_id: scene.kitchen_lights_night
         transition: 3
 
     - &lights_off
@@ -93,6 +103,20 @@ condition:
 
 action:
   - choose:
+      - alias: "Turn the lights off faster when we are watching TV."
+        conditions:
+          - or:
+              - condition: trigger
+                id: "presence_off_5s"
+              - condition: trigger
+                id: "apple_tv_playing"
+          - condition: state
+            entity_id:
+              - input_select.livingroom_current_lights_scene
+            state: "movie"
+        sequence:
+          - *lights_off
+
       - conditions:
           - *is_presence_detected
           - *is_dark
@@ -119,19 +143,20 @@ action:
         sequence:
           - *lights_normal
 
-      - alias: "Turn the lights off faster when we are watching TV."
-        conditions:
-          - or:
-              - condition: trigger
-                id: "presence_off_10s"
-              - condition: trigger
-                id: "media_player.apple_tv"
-          - condition: state
-            entity_id:
-              - input_select.livingroom_current_lights_scene
-            state: "movie"
+      - conditions:
+          - *is_presence_detected
+          - *is_dark
+          - <<: *is_light_schedule
+            state: "night"
         sequence:
-          - *lights_off
+          - *lights_night
+
+      - alias: "Ignore 5s trigger when not in movie scene"
+        conditions:
+          - condition: trigger
+            id: "presence_off_5s"
+        sequence:
+          - stop: "Ignore this trigger"
 
     default:
       - *lights_off

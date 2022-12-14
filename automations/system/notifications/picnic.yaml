@@ -43,6 +43,6 @@ action:
         - media_player.sonos_bathroom
         - media_player.sonos_master_bedroom
       message: >-
-        Picnic bezorgt {{ day_name }} tussen
+        🛒 Picnic bezorgt {{ day_name }} tussen
         {{ eta_start | timestamp_custom('%H:%M') }}
         en {{ eta_end | timestamp_custom('%H:%M') }}!

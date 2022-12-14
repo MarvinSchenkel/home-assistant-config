@@ -4,15 +4,42 @@ description: Turns the wc lights on when motion has been detected
 mode: single
 id: 722db137-6291-4fb6-b244-12edfbf9c6e4
 
+variables:
+  anchors:
+    - &presence_detected
+      condition: state
+      entity_id: binary_sensor.presence_wc
+      state: "on"
+
+    - &is_light_schedule
+      alias: "Check current light schedule"
+      condition: state
+      entity_id: input_select.current_light_schedule
+
+    - &select_scene
+      service: scene.turn_on
+      alias: "Turn the hall lights to appropriate scene"
+      data:
+        transition: 2
+
+    - &lights_turn_off
+      service: light.turn_off
+      alias: "Turn the hall lights off"
+      data:
+        entity_id: light.fibaro_wc
+        transition: 5
+
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
-    entity_id:
-      - binary_sensor.presence_wc
+    entity_id: binary_sensor.presence_wc
     to: "on"
+
   - platform: state
     entity_id: binary_sensor.presence_wc
     to: "off"
@@ -21,25 +48,41 @@ trigger:
 
 condition:
   - condition: state
+    alias: "Check if we can automate the lights"
     entity_id: input_boolean.setting_manual_lights
     state: "off"
 
 action:
   - choose:
       - conditions:
-          - condition: state
-            entity_id: binary_sensor.presence_wc
-            state: "on"
-
+          - *presence_detected
+          - <<: *is_light_schedule
+            state: "dim"
         sequence:
-          - service: light.turn_on
+          - <<: *select_scene
             data:
-              entity_id: light.fibaro_wc
-              brightness_pct: 99
+              entity_id: scene.wc_lights_dim
+              transition: 2
+
+      - conditions:
+          - *presence_detected
+          - <<: *is_light_schedule
+            state: "normal"
+        sequence:
+          - <<: *select_scene
+            data:
+              entity_id: scene.wc_lights_normal
+              transition: 2
+
+      - conditions:
+          - *presence_detected
+          - <<: *is_light_schedule
+            state: "night"
+        sequence:
+          - <<: *select_scene
+            data:
+              entity_id: scene.wc_lights_night
               transition: 2
 
     default:
-      - service: light.turn_off
-        data:
-          entity_id: light.fibaro_wc
-          transition: 5
+      - *lights_turn_off

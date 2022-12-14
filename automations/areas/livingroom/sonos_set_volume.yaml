@@ -9,7 +9,7 @@ use_blueprint:
   input:
     just_awake_volume: 6
     early_morning_volume: 8
-    morning_volume: 10
-    day_volume: 10
+    morning_volume: 9
+    day_volume: 8
     evening_volume: 8
     sonos: media_player.sonos_livingroom

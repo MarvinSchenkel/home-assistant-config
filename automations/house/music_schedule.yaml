@@ -23,6 +23,15 @@ trigger:
     event: start
 
 variables:
+  hours_since_last_just_awake_schedule: >
+    {{ (
+          (
+            as_timestamp(state_attr("sensor.music_schedule_last_just_awake", "last_updated")) - as_timestamp(now())
+          )
+          / -3600
+        ) | float
+    }}
+
   anchors:
     - &select_schedule
       alias: "Select the schedule"
@@ -49,6 +58,7 @@ action:
           - condition: time
             after: "07:00:00"
             before: "11:00:00"
+          - "{{ hours_since_last_just_awake_schedule > 12.0 }}"
         sequence:
           - <<: *select_schedule
             data:

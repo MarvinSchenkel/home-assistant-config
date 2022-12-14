@@ -7,28 +7,39 @@ id: e4c284f9-2cd3-40d1-adac-e20a66eb12b9
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id: binary_sensor.presence_mancave
     to: "on"
+
   - platform: state
     entity_id: binary_sensor.presence_mancave
     to: "off"
     for:
       seconds: 120
+
   - platform: state
     entity_id:
       - binary_sensor.mancave_is_dark
+
   - platform: state
     entity_id:
       - media_player.mancave_tv
     to: "off"
     id: "tv_off"
+
   - platform: state
     entity_id:
       - media_player.mancave_tv
     to: "on"
+
+  - platform: state
+    entity_id: input_select.marvin_sleep_status_dropdown
+    to: "Slaapt"
+
   - platform: event
     event_type: call_service
     event_data:
@@ -38,49 +49,77 @@ trigger:
         entity_id: scene.mancave_lights_normal
     id: "scene_normal"
 
+variables:
+  anchors:
+    - &presence_detected
+      alias: "Check if someone is in the mancave"
+      condition: state
+      entity_id: binary_sensor.presence_mancave
+      state: "on"
+
+    - &is_dark
+      alias: "Check if it's dark enough to turn on the light"
+      condition: state
+      entity_id: binary_sensor.mancave_is_dark
+      state: "on"
+
+    - &turn_off
+      alias: "Turn lights off"
+      service: light.turn_off
+      data:
+        entity_id: light.mancave
+        transition: 5
+
+    - &turn_on_dim
+      alias: "Turn on TV scene"
+      service: scene.turn_on
+      target:
+        entity_id: scene.mancave_lights_dim
+      data:
+        transition: 5
+
+    - &turn_on_normal
+      alias: "Turn on normal scene"
+      service: scene.turn_on
+      target:
+        entity_id: scene.mancave_lights_normal
+      data:
+        transition: 1
+
 condition: []
 
 action:
   - choose:
       - conditions:
-          - &presence
-            alias: "Check if someone is in the mancave"
-            condition: state
-            entity_id: binary_sensor.presence_mancave
-            state: "on"
-          - &is_dark
-            alias: "Check if it's dark enough to turn on the light"
-            condition: state
-            entity_id: binary_sensor.mancave_is_dark
-            state: "on"
-          - alias: "Activate TV scene of TV is on"
-            condition: state
+          - condition: state
             entity_id:
-              - media_player.mancave_tv
-            state: "on"
-
+              - input_select.marvin_sleep_status_dropdown
+            state: "Slaapt"
         sequence:
-          - alias: "Turn on TV scene"
-            service: scene.turn_on
-            target:
-              entity_id: scene.mancave_lights_tv
-            data:
-              transition: 5
+          - *turn_off
 
       - conditions:
-          - *presence
+          - *presence_detected
+          - *is_dark
+          - or:
+              - alias: "Activate TV scene of TV is on"
+                condition: state
+                entity_id:
+                  - media_player.mancave_tv
+                state: "on"
+              - alias: "Or when I just woke up"
+                condition: state
+                entity_id:
+                  - input_select.marvin_sleep_status_dropdown
+                state: "Net wakker"
+        sequence:
+          - *turn_on_dim
+
+      - conditions:
+          - *presence_detected
           - *is_dark
         sequence:
-          - alias: "Turn on normal scene"
-            service: scene.turn_on
-            target:
-              entity_id: scene.mancave_lights_normal
-            data:
-              transition: 1
+          - *turn_on_normal
 
     default:
-      - alias: "Turn lights off"
-        service: light.turn_off
-        data:
-          entity_id: light.mancave
-          transition: 5
+      - *turn_off

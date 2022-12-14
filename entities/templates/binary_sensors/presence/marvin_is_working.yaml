@@ -1,0 +1,24 @@
+---
+binary_sensor:
+  - name: marvin_is_working
+    unique_id: ed8ecc89-81c9-455d-9394-88e926f5fee2
+    state: >
+      {% set hour = as_timestamp(now()) | timestamp_custom("%H") | int  %}
+      {%
+        if (
+          is_state("device_tracker.lpzwnl000036211", "home")
+          or not(
+            state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Locked")
+            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Screen Off")
+            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Screensaver")
+            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Sleeping")
+            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Terminating")
+          )
+        )
+        and hour >=7
+        and hour < 18
+      %}
+      on
+      {% else %}
+      off
+      {% endif %}

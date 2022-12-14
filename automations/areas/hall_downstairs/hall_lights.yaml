@@ -4,19 +4,47 @@ description: Turns the hallway lights on when motion has been detected
 mode: queued
 id: 797b07af-7b1f-4c4f-bd8f-be9708c64e63
 
+variables:
+  anchors:
+    - &presence_detected
+      condition: state
+      entity_id: binary_sensor.presence_hall_downstairs
+      state: "on"
+
+    - &is_dark
+      condition: state
+      entity_id: binary_sensor.hall_is_dark
+      state: "on"
+
+    - &is_light_schedule
+      alias: "Check current light schedule"
+      condition: state
+      entity_id: input_select.current_light_schedule
+
+    - &lights_turn_off
+      service: light.turn_off
+      alias: "Turn the hall lights off"
+      data:
+        entity_id: light.fibaro_hall_downstairs
+        transition: 5
+
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id: binary_sensor.presence_hall_downstairs
     to: "on"
+
   - platform: state
     entity_id: binary_sensor.presence_hall_downstairs
     to: "off"
     for:
       seconds: 40
+
   - platform: state
     entity_id: input_select.livingroom_current_lights_scene
     to: "movie"
@@ -35,26 +63,12 @@ action:
             alias: "Check if we started watching a movie"
             id: "movie"
         sequence:
-          - &lights_turn_off
-            service: light.turn_off
-            alias: "Turn the hall lights off"
-            data:
-              entity_id: light.fibaro_hall_downstairs
-              transition: 5
+          - *lights_turn_off
 
       - conditions:
-          - &presence
-            condition: state
-            alias: "Presence is detected"
-            entity_id: binary_sensor.presence_hall_downstairs
-            state: "on"
-          - &dark
-            condition: state
-            alias: "It is dark in the hall"
-            entity_id: binary_sensor.hall_is_dark
-            state: "on"
-          - condition: state
-            entity_id: input_select.current_light_schedule
+          - *presence_detected
+          - *is_dark
+          - <<: *is_light_schedule
             state: "dim"
         sequence:
           - service: scene.turn_on
@@ -63,10 +77,9 @@ action:
               entity_id: scene.halldownstairs_lights_dim
 
       - conditions:
-          - *presence
-          - *dark
-          - condition: state
-            entity_id: input_select.current_light_schedule
+          - *presence_detected
+          - *is_dark
+          - <<: *is_light_schedule
             state: "normal"
         sequence:
           - service: scene.turn_on
@@ -75,10 +88,9 @@ action:
               entity_id: scene.halldownstairs_lights_normal
 
       - conditions:
-          - *presence
-          - *dark
-          - condition: state
-            entity_id: input_select.current_light_schedule
+          - *presence_detected
+          - *is_dark
+          - <<: *is_light_schedule
             state: "night"
         sequence:
           - service: scene.turn_on

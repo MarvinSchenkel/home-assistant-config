@@ -4,19 +4,38 @@ description: Turns the attic lights on when motion has been detected
 mode: queued
 id: 6d93c5dd-87e6-4a9b-9e99-b59edc035a97
 
+variables:
+  anchors:
+    - &presence_detected
+      condition: state
+      entity_id: binary_sensor.presence_attic
+      state: "on"
+
+    - &is_light_schedule
+      alias: "Check current light schedule"
+      condition: state
+      entity_id: input_select.current_light_schedule
+
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id: binary_sensor.presence_attic
     to: "on"
+
   - platform: state
     entity_id: binary_sensor.presence_attic
     to: "off"
     for:
-      seconds: 90
+      seconds: 60
+
+  - platform: state
+    entity_id:
+      - input_select.current_light_schedule
 
 condition:
   - condition: state
@@ -26,14 +45,34 @@ condition:
 action:
   - choose:
       - conditions:
-          - condition: state
-            entity_id: binary_sensor.presence_attic
-            state: "on"
-
+          - *presence_detected
+          - <<: *is_light_schedule
+            state: "dim"
         sequence:
-          - service: light.turn_on
+          - service: scene.turn_on
+            alias: "Turn the hall lights to dim scene"
             data:
-              entity_id: light.fibaro_third_floor_stairs
+              entity_id: scene.attic_lights_dim
+
+      - conditions:
+          - *presence_detected
+          - <<: *is_light_schedule
+            state: "normal"
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to normal scene"
+            data:
+              entity_id: scene.attic_lights_normal
+
+      - conditions:
+          - *presence_detected
+          - <<: *is_light_schedule
+            state: "night"
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to night scene"
+            data:
+              entity_id: scene.attic_lights_night
 
     default:
       - service: light.turn_off

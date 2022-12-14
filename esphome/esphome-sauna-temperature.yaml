@@ -17,6 +17,13 @@ ota:
 wifi:
   ssid: !secret wifi_ssid_zolder
   password: !secret wifi_password_zolder
+  power_save_mode: none
+  reboot_timeout: 15s
+  fast_connect: true
+  manual_ip:
+    static_ip: 192.168.20.51
+    gateway: 192.168.20.1
+    subnet: 255.255.255.0  
 
 dallas:
   - pin: D4

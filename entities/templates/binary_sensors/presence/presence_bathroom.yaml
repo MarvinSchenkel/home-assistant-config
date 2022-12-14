@@ -1,8 +1,8 @@
 ---
 binary_sensor:
-  name: presence_bathroom
-  unique_id: 7768e083-f65b-4a0d-b535-2c5f6c419e4b
-  state: >
-    {{  is_state("binary_sensor.pir_bathroom", "on")
-        or is_state("binary_sensor.flood_sensor_water_alarm_water_leak_detected", "on")
-        or is_state("binary_sensor.presence_bathroom_door", "on") }}
+  - name: presence_bathroom
+    unique_id: 7768e083-f65b-4a0d-b535-2c5f6c419e4b
+    state: >
+      {{  is_state("binary_sensor.pir_bathroom", "on")
+          or is_state("binary_sensor.flood_sensor_water_alarm_water_leak_detected", "on")
+          or is_state("binary_sensor.presence_bathroom_door", "on") }}

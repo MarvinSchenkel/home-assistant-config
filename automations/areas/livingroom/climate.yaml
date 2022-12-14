@@ -1,0 +1,91 @@
+---
+alias: areas_livingroom_climate
+description: Manages the climate in our living room
+id: 1c012736-f49b-4da5-95f0-dd363369c64e
+mode: queued
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - binary_sensor.house_mode_everyone_asleep
+      - binary_sensor.everyone_left_home
+      - binary_sensor.house_mode_everyone_at_home_working
+    from: ~
+
+  - platform: time
+    at: "21:00:00"
+
+variables:
+  anchors:
+    - &target
+      target:
+        entity_id: climate.livingroom_thermostat
+
+    - &turn_on
+      <<: *target
+      alias: "Turn on heating"
+      service: climate.set_hvac_mode
+      data:
+        hvac_mode: "heat"
+
+    - &turn_down
+      <<: *target
+      alias: "Turn down living room climate"
+      service: climate.set_temperature
+      data:
+        temperature: 15.0
+
+    - &turn_up
+      <<: *target
+      alias: "Turn down living room climate"
+      service: climate.set_temperature
+      data:
+        temperature: 19.0
+
+action:
+  - choose:
+      - conditions:
+          - alias: "When the house is in away mode"
+            condition: state
+            entity_id: binary_sensor.everyone_left_home
+            state: "on"
+        sequence:
+          - *turn_down
+
+      - conditions:
+          - alias: "When the house is in away mode"
+            condition: state
+            entity_id: binary_sensor.house_mode_everyone_at_home_working
+            state: "on"
+        sequence:
+          - *turn_down
+
+      - conditions:
+          - alias: "When the house is in sleep mode"
+            condition: state
+            entity_id: binary_sensor.house_mode_everyone_asleep
+            state: "on"
+        sequence:
+          - *turn_down
+
+      - alias: "Turn down the heating before bedtime"
+        conditions:
+          - condition: time
+            after: "21:00:00"
+        sequence:
+          - *turn_down
+
+      - alias: "Turn up the heating in the morning"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.house_mode_everyone_asleep
+            state: "off"
+        sequence:
+          - *turn_on
+          - *turn_up

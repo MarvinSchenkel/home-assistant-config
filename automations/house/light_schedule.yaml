@@ -9,12 +9,16 @@ mode: single
 trigger:
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_someone_asleep
+      - binary_sensor.house_mode_everyone_asleep
+      - binary_sensor.house_mode_someone_just_awake
 
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
-    below: -5
+    below: -25
+
+  - platform: time
+    at: "19:00:00"
 
   - platform: homeassistant
     event: start
@@ -32,7 +36,7 @@ action:
       - conditions:
           - condition: state
             entity_id:
-              - binary_sensor.house_mode_someone_asleep
+              - binary_sensor.house_mode_everyone_asleep
             state: "on"
         sequence:
           - <<: *select_schedule
@@ -40,12 +44,22 @@ action:
               option: "night"
 
       - conditions:
-          - condition: numeric_state
-            entity_id: sensor.sun_adjusted_elevation
-            below: -5
-          - condition: time
-            alias: "And it is after 7pm"
-            after: "19:00:00"
+          - or:
+              - and:
+                  - condition: numeric_state
+                    entity_id: sensor.sun_adjusted_elevation
+                    below: -25
+                  - condition: time
+                    alias: "And it is after 7pm"
+                    after: "19:00:00"
+              - and:
+                  - condition: state
+                    entity_id:
+                      - binary_sensor.house_mode_someone_just_awake
+                    state: "on"
+                  - condition: state
+                    entity_id: input_select.current_light_schedule
+                    state: "night"
         sequence:
           - <<: *select_schedule
             data:
@@ -54,7 +68,7 @@ action:
       - conditions:
           - condition: state
             entity_id:
-              - binary_sensor.house_mode_someone_asleep
+              - binary_sensor.house_mode_everyone_asleep
             state: "off"
         sequence:
           - <<: *select_schedule
