@@ -23,7 +23,7 @@ wifi:
   manual_ip:
     static_ip: 192.168.20.51
     gateway: 192.168.20.1
-    subnet: 255.255.255.0  
+    subnet: 255.255.255.0
 
 dallas:
   - pin: D4

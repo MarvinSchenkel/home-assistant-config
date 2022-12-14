@@ -109,18 +109,6 @@ action:
           - *is_dark
           - <<: *is_light_schedule
             state: "dim"
-          # - condition: or
-          #   conditions:
-          #     - condition: state
-          #       entity_id:
-          #         - binary_sensor.house_mode_someone_just_awake
-          #       state: "on"
-          #     - condition: not
-          #       conditions:
-          #         - condition: state
-          #           entity_id:
-          #             - binary_sensor.house_mode_someone_asleep
-          #           state: "on"
         sequence:
           - service: scene.turn_on
             data:

@@ -26,7 +26,10 @@ variables:
   hours_since_last_just_awake_schedule: >
     {{ (
           (
-            as_timestamp(state_attr("sensor.music_schedule_last_just_awake", "last_updated")) - as_timestamp(now())
+            as_timestamp(
+              state_attr("sensor.music_schedule_last_just_awake", "last_updated")
+            )
+            - as_timestamp(now())
           )
           / -3600
         ) | float
