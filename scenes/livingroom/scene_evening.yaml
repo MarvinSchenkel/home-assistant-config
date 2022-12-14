@@ -3,11 +3,19 @@ name: livingroom_lights_evening
 id: 0542d594-e177-4b68-8f3b-dc8574108c61
 icon: mdi:lightbulb
 entities:
-  light.livingroom:
+  light.fibaro_livingroom:
+    state: "on"
+    brightness_pct: 5
+  light.dinner:
+    state: "on"
+    brightness_pct: 50
+    color_mode: color_temp
+    color_temp: 420
+  light.corner_couch:
     state: "on"
     brightness_pct: 50
     color_mode: color_temp
     color_temp: 420
   light.kitchen:
     state: "on"
-    brightness_pct: 60
+    brightness_pct: 10

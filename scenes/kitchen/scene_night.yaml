@@ -1,0 +1,8 @@
+---
+name: kitchen_lights_night
+id: ea9740ee-7d27-4754-823c-3ac0f89aa74c
+icon: mdi:lightbulb
+entities:
+  light.led_kitchen:
+    state: "on"
+    brightness_pct: 1

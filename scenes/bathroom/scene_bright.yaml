@@ -1,0 +1,8 @@
+---
+name: bathroom_lights_bright
+id: bf9c52c2-630d-48e5-947b-fc48830d7732
+icon: mdi:lightbulb
+entities:
+  light.fibaro_bathroom:
+    state: "on"
+    brightness_pct: 100

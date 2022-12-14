@@ -1,0 +1,8 @@
+---
+name: attic_lights_night
+id: faa72383-6806-4043-96c4-c911b6536b45
+icon: mdi:lightbulb
+entities:
+  light.fibaro_third_floor_stairs:
+    state: "on"
+    brightness_pct: 2
