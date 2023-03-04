@@ -103,6 +103,11 @@ action:
           - alias: "When triggerd by the reset time"
             condition: trigger
             id: "reset"
+          - alias: "When manual control is on"
+            condition: state
+            entity_id:
+              - input_boolean.mancave_cover_manual_control
+            state: "on"
         sequence:
           - *manual_control_off
 
@@ -124,10 +129,10 @@ action:
                 entity_id:
                   - binary_sensor.sun_should_close_south_blinds
                 state: "on"
-              - condition: state
-                entity_id:
-                  - media_player.mancave_tv
-                state: "on"
+              # - condition: state
+              #   entity_id:
+              #     - media_player.mancave_tv
+              #   state: "on"
               - condition: state
                 entity_id:
                   - input_select.marvin_sleep_status_dropdown
@@ -144,7 +149,7 @@ action:
           - condition: numeric_state
             entity_id:
               - sensor.sun_elevation
-            below: 17.5
+            below: 23
           - condition: numeric_state
             entity_id:
               - sensor.sun_azimuth

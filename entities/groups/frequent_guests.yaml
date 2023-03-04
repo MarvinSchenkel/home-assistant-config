@@ -1,0 +1,3 @@
+---
+name: "frequent_guests"
+entities: !secret guest_device_trackers

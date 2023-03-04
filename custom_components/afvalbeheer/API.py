@@ -1,4 +1,4 @@
-import abc
+from abc import ABC, abstractmethod
 import logging
 from datetime import datetime
 from datetime import timedelta
@@ -6,7 +6,7 @@ import json
 import requests
 import re
 import uuid
-from rsa import key, common, pkcs1
+from rsa import pkcs1
 from Crypto.PublicKey import RSA
 from base64 import b64decode, b64encode
 
@@ -56,7 +56,6 @@ class WasteCollectionRepository(object):
             return list(filter(lambda x: x.date.date() == date.date(), self.get_sorted()))
     
     def get_available_waste_types(self):
-        today = datetime.now()
         possible_waste_types = []
         for collection in self.collections:
             if collection.waste_type not in possible_waste_types:
@@ -100,7 +99,7 @@ class WasteData(object):
     def __select_collector(self):
         if self.waste_collector in XIMMIO_COLLECTOR_IDS.keys():
             self.collector = XimmioCollector(self.hass, self.waste_collector, self.postcode, self.street_number, self.suffix, self.address_id, self.customer_id)
-        elif self.waste_collector in ["mijnafvalwijzer", "afvalstoffendienstkalender"] or self.waste_collector == "rova":
+        elif self.waste_collector in ["mijnafvalwijzer", "afvalstoffendienstkalender", "rova"]:
             self.collector = AfvalwijzerCollector(self.hass, self.waste_collector, self.postcode, self.street_number, self.suffix)
         elif self.waste_collector == "afvalalert":
             self.collector = AfvalAlertCollector(self.hass, self.waste_collector, self.postcode, self.street_number, self.suffix)
@@ -122,7 +121,8 @@ class WasteData(object):
             persistent_notification.create(
                 self.hass,
                 'Waste collector "{}" not found!'.format(self.waste_collector),
-                'Afvalwijzer' + " " + self.waste_collector, NOTIFICATION_ID + "_" + self.waste_collector)
+                'Afvalwijzer' + " " + self.waste_collector, 
+                NOTIFICATION_ID + "_collectornotfound_" + self.waste_collector)
 
     async def schedule_update(self, interval):
         nxt = dt_util.utcnow() + interval
@@ -138,7 +138,8 @@ class WasteData(object):
             persistent_notification.create(
                 self.hass,
                 'Available waste types: ' + ', '.join(self.collector.collections.get_available_waste_types()),
-                'Afvalwijzer' + " " + self.waste_collector, NOTIFICATION_ID + "_" + self.waste_collector)
+                'Afvalwijzer' + " " + self.waste_collector, 
+                NOTIFICATION_ID + "_availablewastetypes_" + self.waste_collector)
             self.print_waste_type = False
 
     @property
@@ -146,7 +147,7 @@ class WasteData(object):
         return self.collector.collections
 
 
-class WasteCollector(metaclass=abc.ABCMeta):
+class WasteCollector(ABC):
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
         self.hass = hass
@@ -156,7 +157,7 @@ class WasteCollector(metaclass=abc.ABCMeta):
         self.suffix = suffix
         self.collections = WasteCollectionRepository()
 
-    @abc.abstractmethod
+    @abstractmethod
     async def update(self):
         pass
 
@@ -185,7 +186,7 @@ class AfvalAlertCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(AfvalAlertCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.main_url = "https://www.afvalalert.nl/kalender"
 
     def __get_data(self):
@@ -234,6 +235,7 @@ class AfvalwijzerCollector(WasteCollector):
         'tuinafval': WASTE_TYPE_BULKYGARDENWASTE,
         'glas': WASTE_TYPE_GLASS,
         'gft': WASTE_TYPE_GREEN,
+        'keukenafval': WASTE_TYPE_GREEN,
         'kcalocatie': WASTE_TYPE_KCA_LOCATION,
         'kca': WASTE_TYPE_KCA,
         'restafval': WASTE_TYPE_GREY,
@@ -247,7 +249,7 @@ class AfvalwijzerCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(AfvalwijzerCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.apikey = '5ef443e778f41c4f75c69459eea6e6ae0c2d92de729aa0fc61653815fbd6a8ca'
         if self.waste_collector == "rova":
             self.waste_collector_url = "inzamelkalender." + self.waste_collector
@@ -255,7 +257,7 @@ class AfvalwijzerCollector(WasteCollector):
             self.waste_collector_url = self.waste_collector
 
     def __get_data(self):
-        get_url = 'https://api.{}.nl/webservices/appsinput/?apikey={}&method=postcodecheck&postcode={}&street=&huisnummer={}&toevoeging={}&app_name=afvalwijzer&platform=phone&afvaldata={}&langs=nl'.format(
+        get_url = 'https://api.{}.nl/webservices/appsinput/?apikey={}&method=postcodecheck&postcode={}&street=&huisnummer={}&toevoeging={}&app_name=afvalwijzer&platform=web&afvaldata={}&langs=nl'.format(
                 self.waste_collector_url, self.apikey, self.postcode, self.street_number, self.suffix, datetime.today().strftime('%Y-%m-%d'))
         return requests.get(get_url)
 
@@ -310,7 +312,7 @@ class CirculusCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(CirculusCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.main_url = "https://mijn.circulus.nl"
 
     def __get_data(self):
@@ -405,7 +407,7 @@ class DeAfvalAppCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(DeAfvalAppCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.main_url = "http://dataservice.deafvalapp.nl"
 
     def __get_data(self):
@@ -466,7 +468,7 @@ class LimburgNetCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, city_name, postcode, street_name, street_number, suffix):
-        super(LimburgNetCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.city_name = city_name
         self.street_name = street_name.replace(" ", "+")
         self.main_url = "https://limburg.net/api-proxy/public"
@@ -564,7 +566,7 @@ class OmrinCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(OmrinCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.main_url = "https://api-omrin.freed.nl/Account"
         self.appId = uuid.uuid1().__str__()
         self.publicKey = None
@@ -637,7 +639,7 @@ class OpzetCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(OpzetCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.main_url = OPZET_COLLECTOR_URLS[self.waste_collector]
         self.bag_id = None
         if waste_collector == "suez":
@@ -722,7 +724,7 @@ class RD4Collector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix):
-        super(RD4Collector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.main_url = 'https://data.rd4.nl/api/v1/waste-calendar'
         self.postcode_split = re.search(r"(\d\d\d\d) ?([A-z][A-z])", self.postcode)
         self.postcode = self.postcode_split.group(1) + '+' + self.postcode_split.group(2).upper()
@@ -793,15 +795,16 @@ class RecycleApp(WasteCollector):
         'snoeihout': WASTE_TYPE_BRANCHES,
         'zachte plastics': WASTE_TYPE_SOFT_PLASTIC,
         'roze zak': WASTE_TYPE_SOFT_PLASTIC,
+        'déchets résiduels': WASTE_TYPE_GREY,
         'déchets organiques': WASTE_TYPE_GREEN,
         'omb': WASTE_TYPE_GREY,
     }
 
     def __init__(self, hass, waste_collector, postcode, street_name, street_number, suffix):
-        super(RecycleApp, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         self.street_name = street_name
         self.main_url = 'https://api.recycleapp.be/api/app/v1/'
-        self.xsecret = 'Crgja3EGWe8jdapyr4EEoMBgZACYYjRRcRpaMQrLDW9HJBvmgkfGQyYqLgeXPavAGvnJqkV87PBB2b8zx43q46sUgzqio4yRZbABhtKeagkVKypTEDjKfPgGycjLyJTtLHYpzwJgp4YmmCuJZN9ZmJY8CGEoFs8MKfdJpU9RjkEVfngmmk2LYD4QzFegLNKUbcCeAdEW'
+        self.xsecret = '8eTFgy3AQH0mzAcj3xMwaKnNyNnijEFIEegjgNpBHifqtQ4IEyWqmJGFz3ggKQ7B4vwUYS8xz8KwACZihCmboGb6brtVB3rpne2Ww5uUM2n3i4SKNUg6Vp7lhAS8INDUNH8Ll7WPhWRsQOXBCjVz5H8fr0q6fqZCosXdndbNeiNy73FqJBn794qKuUAPTFj8CuAbwI6Wom98g72Px1MPRYHwyrlHUbCijmDmA2zoWikn34LNTUZPd7kS0uuFkibkLxCc1PeOVYVHeh1xVxxwGBsMINWJEUiIBqZt9VybcHpUJTYzureqfund1aeJvmsUjwyOMhLSxj9MLQ07iTbvzQa6vbJdC0hTsqTlndccBRm9lkxzNpzJBPw8VpYSyS3AhaR2U1n4COZaJyFfUQ3LUBzdj5gV8QGVGCHMlvGJM0ThnRKENSWZLVZoHHeCBOkfgzp0xl0qnDtR8eJF0vLkFiKwjX7DImGoA8IjqOYygV3W9i9rIOfK'
         self.xconsumer = 'recycleapp.be'
         self.accessToken = ''
         self.postcode_id = ''
@@ -928,7 +931,7 @@ class XimmioCollector(WasteCollector):
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix, address_id, customer_id):
-        super(XimmioCollector, self).__init__(hass, waste_collector, postcode, street_number, suffix)
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
         if self.waste_collector in self.XIMMIO_URLS.keys():
             self.main_url = self.XIMMIO_URLS[self.waste_collector]
         else:
@@ -1023,12 +1026,9 @@ def Get_WasteData_From_Config(hass, config):
     suffix = config.get(CONF_SUFFIX)
     address_id = config.get(CONF_ADDRESS_ID)
     waste_collector = config.get(CONF_WASTE_COLLECTOR).lower()
-
     print_waste_type = config.get(CONF_PRINT_AVAILABLE_WASTE_TYPES)
-
     update_interval = config.get(CONF_UPDATE_INTERVAL)
     customer_id = config.get(CONF_CUSTOMER_ID)
-
     config["id"] = _format_id(waste_collector, postcode, street_number)
 
     if waste_collector in DEPRECATED_AND_NEW_WASTECOLLECTORS:
@@ -1038,7 +1038,7 @@ def Get_WasteData_From_Config(hass, config):
                 DEPRECATED_AND_NEW_WASTECOLLECTORS[waste_collector], waste_collector
             ),
             "Afvalbeheer" + " " + waste_collector,
-            "update_config" + "_" + waste_collector,
+            NOTIFICATION_ID + "_update_config_" + waste_collector,
         )
         waste_collector = DEPRECATED_AND_NEW_WASTECOLLECTORS[waste_collector]
 
@@ -1047,7 +1047,7 @@ def Get_WasteData_From_Config(hass, config):
             hass,
             "Config invalid! Cityname is required for {}".format(waste_collector),
             "Afvalbeheer" + " " + waste_collector,
-            "invalid_config" + "_" + waste_collector,
+            NOTIFICATION_ID + "_invalid_config_" + waste_collector,
         )
         return
 
@@ -1056,7 +1056,7 @@ def Get_WasteData_From_Config(hass, config):
             hass,
             "Config invalid! Streetname is required for {}".format(waste_collector),
             "Afvalbeheer" + " " + waste_collector,
-            "invalid_config" + "_" + waste_collector,
+            NOTIFICATION_ID + "_invalid_config_" + waste_collector,
         )
         return
 

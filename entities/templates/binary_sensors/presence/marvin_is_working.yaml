@@ -6,13 +6,13 @@ binary_sensor:
       {% set hour = as_timestamp(now()) | timestamp_custom("%H") | int  %}
       {%
         if (
-          is_state("device_tracker.lpzwnl000036211", "home")
-          or not(
-            state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Locked")
-            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Screen Off")
-            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Screensaver")
-            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Sleeping")
-            or state_attr("binary_sensor.marvins_nn_macbook_pro_active", "Terminating")
+          not(
+            state_attr("binary_sensor.macbookwork_active", "Locked")
+            or state_attr("binary_sensor.macbookwork_active", "Screen Off")
+            or state_attr("binary_sensor.macbookwork_active", "Screensaver")
+            or state_attr("binary_sensor.macbookwork_active", "Sleeping")
+            or state_attr("binary_sensor.macbookwork_active", "Terminating")
+            or state_attr("binary_sensor.macbookwork_active", "Fast User Switched")
           )
         )
         and hour >=7

@@ -1,7 +1,7 @@
 ---
-alias: areas_livingroom_climate
-description: Manages the climate in our living room
-id: 1c012736-f49b-4da5-95f0-dd363369c64e
+alias: areas_kitchen_climate
+description: Manages the climate in our kitchen
+id: 7b9f8a4f-a43f-4e1f-b28e-fdefc8f113bb
 mode: queued
 
 trigger:
@@ -25,9 +25,7 @@ variables:
   anchors:
     - &target
       target:
-        entity_id:
-          - climate.livingroom
-          - climate.livingroom_thermostat
+        entity_id: climate.kitchen
 
     - &turn_on
       <<: *target
@@ -38,14 +36,14 @@ variables:
 
     - &turn_down
       <<: *target
-      alias: "Turn down living room climate"
+      alias: "Turn down kitchen climate"
       service: climate.set_temperature
       data:
         temperature: 15.0
 
     - &turn_up
       <<: *target
-      alias: "Turn down living room climate"
+      alias: "Turn down kitchen climate"
       service: climate.set_temperature
       data:
         temperature: 19.0
@@ -65,7 +63,7 @@ action:
           - *turn_down
 
       - conditions:
-          - alias: "When everyone is working from home"
+          - alias: "When the house is in away mode"
             condition: state
             entity_id: binary_sensor.house_mode_everyone_at_home_working
             state: "on"

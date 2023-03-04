@@ -1,0 +1,50 @@
+---
+description: >
+  Turn guest mode on automaticlly when we have left home
+  and frequent guests are over
+alias: house_guest_mode
+mode: queued
+id: afa29a48-fdc5-47c0-9355-e8b9336e99a2
+
+variables:
+  anchors:
+    - &turn_on
+      alias: "Turn guest mode on"
+      service: input_boolean.turn_on
+      data:
+        entity_id: input_boolean.setting_guest_mode
+
+    - &turn_off
+      alias: "Turn guest mode off"
+      service: input_boolean.turn_off
+      data:
+        entity_id: input_boolean.setting_guest_mode
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - group.frequent_guests
+      - binary_sensor.everyone_left_home
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - group.frequent_guests
+            state: home
+          - condition: state
+            entity_id:
+              - binary_sensor.everyone_left_home
+            state: "on"
+        sequence:
+          - *turn_on
+
+    default:
+      - *turn_off

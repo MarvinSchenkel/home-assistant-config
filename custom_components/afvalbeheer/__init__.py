@@ -1,11 +1,24 @@
 """
 Sensor component for waste pickup dates from dutch and belgium waste collectors
 Original Author: Pippijn Stortelder
-Current Version: 5.0.2 202200913
+Current Version: 5.0.16 20230228
 20220829 - Major change: Added Calendar support (credits @WouterTuinstra)
 20220829 - Give persistant notifications unique id's
 20220901 - Code cleanup
 20220913 - Fix: translate today and tomorrow sensor
+20221010 - Restoring an entity and attributes on Home Assistant Restart
+20221015 - Fix Meerlanden
+20221018 - Restore entity picture
+20221019 - Add new icons
+20221021 - Fix for Mijn AfvalWijzer
+20221025 - Update RecycleApp token
+20221107 - Remove Unit of measurement for better history
+20221108 - Fix RecycleApp mapping
+20230104 - Remove deprecated DEVICE_CLASS_*
+20230123 - Change mapping for Afvalwijzer
+20230125 - Only add requested fractions to calendar
+20230208 - Add Dutch day abbreviations
+20230228 - Code refactor
 
 Example config:
 Configuration.yaml:
@@ -41,7 +54,7 @@ from .const import DOMAIN, PLATFORM_SCHEMA, CONF_ID
 from .API import Get_WasteData_From_Config
 
 
-__version__ = "5.0.2"
+__version__ = "5.0.16"
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,8 +66,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     config = config.get(DOMAIN, None)
 
     if config is None:
-        # This should not be nesseceary to keep the 'old' config methode using sensor and platform working.
-        # If using sensor there is no DOMAIN entry in config but Platform function will be called from sensor.
         return True
 
     if not isinstance(config, list):
@@ -70,7 +81,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
             Platform.SENSOR, DOMAIN, {"config": conf}, conf
         )
 
-        # if you add boolean to config you could disable calendar entities from here
         hass.helpers.discovery.load_platform(
             Platform.CALENDAR, DOMAIN, {"config": conf}, conf
         )

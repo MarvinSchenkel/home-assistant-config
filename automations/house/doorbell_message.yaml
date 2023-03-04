@@ -15,29 +15,29 @@ action:
       - conditions:
           - "{{ now().month == 12 and now().day > 23 }}"
         sequence:
-          - service: unifiprotect.set_doorbell_message
+          - service: text.set_value
+            target:
+              entity_id: text.g4_doorbell_doorbell
             data:
-              entity_id: select.g4_doorbell_doorbell_text
-              message: "🎄 FIJNE FEESTDAGEN!"
-              duration: 2
+              value: "🎄 FIJNE FEESTDAGEN!"
 
       - conditions:
           - condition: time
             after: "18:00:00"
         sequence:
-          - service: unifiprotect.set_doorbell_message
+          - service: text.set_value
+            target:
+              entity_id: text.g4_doorbell_doorbell
             data:
-              entity_id: select.g4_doorbell_doorbell_text
-              message: "GOEDENAVOND!"
-              duration: 2
+              value: "GOEDENAVOND!"
 
       - conditions:
           - condition: time
             after: "12:00:00"
         sequence:
-          - service: unifiprotect.set_doorbell_message
+          - service: text.set_value
             data:
-              entity_id: select.g4_doorbell_doorbell_text
+              entity_id: text.g4_doorbell_doorbell
               message: "GOEDEMIDDAG!"
               duration: 2
 
@@ -45,25 +45,25 @@ action:
           - condition: time
             after: "06:00:00"
         sequence:
-          - service: unifiprotect.set_doorbell_message
+          - service: text.set_value
+            target:
+              entity_id: text.g4_doorbell_doorbell
             data:
-              entity_id: select.g4_doorbell_doorbell_text
-              message: "GOEDEMORGEN!"
-              duration: 2
+              value: "GOEDEMORGEN!"
 
       - conditions:
           - condition: time
             after: "00:00:00"
         sequence:
-          - service: unifiprotect.set_doorbell_message
+          - service: text.set_value
+            target:
+              entity_id: text.g4_doorbell_doorbell
             data:
-              entity_id: select.g4_doorbell_doorbell_text
-              message: "GOEDENACHT!"
-              duration: 2
+              value: "GOEDENACHT!"
 
     default:
-      - service: unifiprotect.set_doorbell_message
+      - service: text.set_value
+        target:
+          entity_id: text.g4_doorbell_doorbell
         data:
-          entity_id: select.g4_doorbell_doorbell_text
-          message: "WELKOM!"
-          duration: 2
+          value: "WELKOM!"

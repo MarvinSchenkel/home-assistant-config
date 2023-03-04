@@ -11,5 +11,5 @@ use_blueprint:
     early_morning_volume: 8
     morning_volume: 10
     day_volume: 12
-    evening_volume: 8
+    evening_volume: 4
     sonos: media_player.sonos_bathroom

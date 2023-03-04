@@ -1,0 +1,72 @@
+title: "Klimaat"
+path: climate
+icon: "mdi:thermometer"
+cards:
+  - type: "custom:button-card"
+    template: card_title
+    name: Klimaat
+  - type: "vertical-stack"
+    cards:
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.bathroom
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.livingroom
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.kitchen
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.small_bedroom
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.master_bedroom
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.hall_downstairs
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true
+      - type: "custom:button-card"
+        template: card_thermostat
+        entity: climate.middle_bedroom
+        variables:
+          ulm_card_thermostat_enable_collapse: true
+          ulm_card_thermostat_enable_controls: true
+          ulm_card_thermostat_enable_background_color: true
+          ulm_card_thermostat_enable_hvac_modes: false
+          ulm_card_thermostat_enable_display_temperature: true

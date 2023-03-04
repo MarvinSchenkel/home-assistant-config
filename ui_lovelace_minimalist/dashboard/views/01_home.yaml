@@ -79,14 +79,14 @@ cards:
               ulm_card_inswel_person_sleep_status_dropdown: input_select.laura_sleep_status_dropdown
               ulm_card_inswel_person_home_status_dropdown: input_select.laura_status_dropdown
 
-          - type: "custom:button-card"
-            template: custom_card_imswel_person_minimal
-            variables:
-              ulm_card_imswel_person_entity: sensor.zoey_status
-              ulm_card_imswel_person_use_entity_picture: true
-              ulm_card_imswel_person_zones:
-                - zone.home
-              ulm_card_inswel_person_sleep_status_dropdown: input_select.zoey_sleep_status_dropdown
+          # - type: "custom:button-card"
+          #   template: custom_card_imswel_person_minimal
+          #   variables:
+          #     ulm_card_imswel_person_entity: sensor.zoey_status
+          #     ulm_card_imswel_person_use_entity_picture: true
+          #     ulm_card_imswel_person_zones:
+          #       - zone.home
+          #     ulm_card_inswel_person_sleep_status_dropdown: input_select.zoey_sleep_status_dropdown
 
       - type: "horizontal-stack"
         cards:
@@ -137,15 +137,6 @@ cards:
             ulm_card_media_player_enable_volume_slider: true
             ulm_card_media_player_enable_art: true
             ulm_card_media_player_more_info: true
-
-      - type: "custom:button-card"
-        template: card_thermostat
-        entity: climate.livingroom_thermostat
-        variables:
-          ulm_card_thermostat_enable_collapse: true
-          ulm_card_thermostat_enable_controls: true
-          ulm_card_thermostat_enable_hvac_modes: false
-          ulm_card_thermostat_enable_popup: true
 
       - type: "custom:button-card"
         template: "card_vacuum"

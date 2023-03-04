@@ -9,6 +9,8 @@ description: >
 mode: queued
 max_exceeded: silent
 id: aa45eaa1-b64b-4319-acf5-1d3ac0ea1d1a
+trace:
+  stored_traces: 25
 
 trigger:
   - platform: homeassistant

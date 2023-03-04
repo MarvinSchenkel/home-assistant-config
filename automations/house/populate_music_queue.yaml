@@ -20,7 +20,7 @@ variables:
   just_awake_music: ["Classical Meditation", "Tranquil spa day"]
   early_morning_music: ["Chill", "Chill step", "Reflections"]
   morning_music: ["Chill step", "Ambient / Relax"]
-  day_music: ["Ambient / Relax", "deepchill"]
+  day_music: ["Ambient / Relax", "deepchill", "Deep"]
   evening_music: ["Ambient / Relax"]
   christmas_music: ["Christmas Hits"]
 

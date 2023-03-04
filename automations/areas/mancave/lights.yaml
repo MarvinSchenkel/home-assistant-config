@@ -24,6 +24,7 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.mancave_is_dark
+      - input_select.marvin_sleep_status_dropdown
 
   - platform: state
     entity_id:
@@ -35,10 +36,6 @@ trigger:
     entity_id:
       - media_player.mancave_tv
     to: "on"
-
-  - platform: state
-    entity_id: input_select.marvin_sleep_status_dropdown
-    to: "Slaapt"
 
   - platform: event
     event_type: call_service

@@ -2,7 +2,7 @@
 sensor:
   - name: nspanel_livingroom_infobar
     state: >-
-      {% if state_attr("media_player.mass_sonos_livingroom", "source") != "TV"
+      {% if state_attr("media_player.mass_sonos_livingroom", "media_title") != "TV"
         and is_state("media_player.mass_sonos_livingroom", "playing") %}
       {{ state_attr("media_player.mass_sonos_livingroom", "media_artist") }}
       -

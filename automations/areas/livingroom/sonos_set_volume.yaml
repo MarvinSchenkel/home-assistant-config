@@ -8,8 +8,8 @@ use_blueprint:
   path: sonos_set_volume.yaml
   input:
     just_awake_volume: 6
-    early_morning_volume: 8
-    morning_volume: 9
+    early_morning_volume: 7
+    morning_volume: 8
     day_volume: 8
-    evening_volume: 8
+    evening_volume: 7
     sonos: media_player.sonos_livingroom

@@ -1,7 +1,7 @@
 ---
-alias: areas_livingroom_climate
-description: Manages the climate in our living room
-id: 1c012736-f49b-4da5-95f0-dd363369c64e
+alias: areas_master_bedroom_climate
+description: Manages the climate in our master bedroom
+id: 0a71bc6d-3ba2-45b3-af71-5b8489f1665e
 mode: queued
 
 trigger:
@@ -25,9 +25,7 @@ variables:
   anchors:
     - &target
       target:
-        entity_id:
-          - climate.livingroom
-          - climate.livingroom_thermostat
+        entity_id: climate.master_bedroom
 
     - &turn_on
       <<: *target
@@ -38,17 +36,17 @@ variables:
 
     - &turn_down
       <<: *target
-      alias: "Turn down living room climate"
+      alias: "Turn down master bedroom climate"
       service: climate.set_temperature
       data:
         temperature: 15.0
 
     - &turn_up
       <<: *target
-      alias: "Turn down living room climate"
+      alias: "Turn down master bedroom climate"
       service: climate.set_temperature
       data:
-        temperature: 19.0
+        temperature: 17.0
 
 action:
   - choose:
@@ -57,22 +55,14 @@ action:
             condition: state
             entity_id: binary_sensor.everyone_left_home
             state: "on"
-          - alias: "And there are no guests over"
-            condition: state
-            entity_id: input_boolean.setting_guest_mode
-            state: "off"
         sequence:
           - *turn_down
 
       - conditions:
-          - alias: "When everyone is working from home"
+          - alias: "When the house is in away mode"
             condition: state
             entity_id: binary_sensor.house_mode_everyone_at_home_working
             state: "on"
-          - alias: "And there are no guests over"
-            condition: state
-            entity_id: input_boolean.setting_guest_mode
-            state: "off"
         sequence:
           - *turn_down
 
@@ -82,23 +72,21 @@ action:
             entity_id: binary_sensor.house_mode_everyone_asleep
             state: "on"
         sequence:
-          - *turn_down
+          - *turn_on
+          - *turn_up
 
-      - alias: "Turn down the heating before bedtime"
+      - alias: "Turn up the heating before bedtime"
         conditions:
-          - or:
-              - condition: time
-                after: "21:00:00"
-              - condition: time
-                before: "06:00:00"
+          - condition: time
+            after: "21:00:00"
         sequence:
-          - *turn_down
+          - *turn_on
+          - *turn_up
 
-      - alias: "Turn up the heating in the morning"
+      - alias: "Turn down the heating in the morning"
         conditions:
           - condition: state
             entity_id: binary_sensor.house_mode_everyone_asleep
             state: "off"
         sequence:
-          - *turn_on
-          - *turn_up
+          - *turn_down

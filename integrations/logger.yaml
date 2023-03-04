@@ -1,5 +1,9 @@
 ---
 logger:
   default: error
-  logs:
-    custom_components.mass: info
+
+  filters:
+    pymodbus.logging:
+      # My inverter is in a flaky W-Fi sport, ignore occasional connection timeouts
+      - "^Connection to (.*) failed: \\[Errno 113\\] Host is unreachable$"
+      - "^Connection to (.*) failed: timed out$"

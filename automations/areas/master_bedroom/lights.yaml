@@ -34,6 +34,8 @@ trigger:
     entity_id:
       - binary_sensor.house_mode_someone_asleep
     to: "off"
+    for:
+      minutes: 5
   - platform: state
     entity_id:
       - binary_sensor.house_mode_someone_asleep
@@ -198,6 +200,8 @@ action:
             entity_id:
               - binary_sensor.house_mode_someone_asleep
             state: "off"
+            for:
+              minutes: 5
           - condition: state
             entity_id: binary_sensor.master_bedroom_is_dark
             state: "on"

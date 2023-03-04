@@ -2,7 +2,7 @@
 sensor:
   - name: nspanel_bedroom_infobar
     state: >-
-      {% if state_attr("media_player.sonos_master_bedroom", "source") != "TV"
+      {% if state_attr("media_player.sonos_master_bedroom", "media_title") != "TV"
         and is_state("media_player.sonos_master_bedroom", "playing") %}
       {{ state_attr("media_player.sonos_master_bedroom", "media_artist") }}
       -

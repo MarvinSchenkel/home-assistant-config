@@ -14,34 +14,26 @@ trigger:
     to: "on"
 
   - platform: state
+    entity_id:
+      - binary_sensor.house_mode_everyone_at_home_working
+
+  - platform: state
+    entity_id:
+      - media_player.sony_kd_65a1
+    to: "on"
+
+  - platform: state
+    entity_id:
+      - media_player.sony_kd_65a1
+    to: "off"
+    for:
+      minutes: 1
+
+  - platform: state
     entity_id: binary_sensor.presence_house
     to: "off"
     for:
       seconds: 900
-
-  - platform: state
-    entity_id:
-      - media_player.apple_tv
-    from:
-      - "paused"
-      - "playing"
-    to:
-      - "idle"
-      - "standby"
-      - "off"
-      - "unavailable"
-    for:
-      minutes: 2
-
-  - platform: state
-    entity_id:
-      - media_player.apple_tv
-    from:
-      - "playing"
-    to:
-      - "paused"
-    for:
-      minutes: 20
 
   - platform: homeassistant
     event: start
@@ -85,10 +77,10 @@ action:
               - binary_sensor.house_mode_everyone_asleep
             state: "off"
           - alias: "We're not watching TV"
-            not:
-              - condition: state
-                entity_id: media_player.apple_tv
-                state: "playing"
+            condition: state
+            entity_id:
+              - media_player.sony_kd_65a1
+            state: "off"
           - alias: "No need for music when everyone is working from home"
             condition: state
             entity_id:
@@ -122,7 +114,7 @@ action:
                 state: "off"
                 for:
                   seconds: 900
-              - alias: "Or we switched of automatic music"
+              - alias: "Or we switched off automatic music"
                 and:
                   - condition: trigger
                     id: "setting_automatic_music"
@@ -130,6 +122,11 @@ action:
                     entity_id:
                       - input_boolean.setting_automatic_music
                     state: "off"
+              - alias: "Or everyone at home is working"
+                condition: state
+                entity_id:
+                  - binary_sensor.house_mode_everyone_at_home_working
+                state: "on"
           - not:
               - condition: state
                 entity_id:

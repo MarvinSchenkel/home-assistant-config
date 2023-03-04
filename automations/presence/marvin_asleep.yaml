@@ -11,6 +11,7 @@ trigger:
     event_data:
       device_id: "2a93e9d147b93ca0ec5992d48dde3129"
       command: "single"
+
   - platform: state
     id: "bed_sensor"
     entity_id:
@@ -18,6 +19,7 @@ trigger:
     to: "on"
     for:
       seconds: 15
+
   # Laura remote
   - platform: event
     id: "button_laura"
@@ -25,6 +27,13 @@ trigger:
     event_data:
       device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
       command: "single"
+
+  - platform: state
+    id: "phone_charging"
+    entity_id: "sensor.marvins_iphone_13_battery_state"
+    to: "Charging"
+    for:
+      seconds: 3
 
 action:
   - choose:
@@ -66,5 +75,14 @@ action:
             data:
               entity_id: input_select.laura_sleep_status_dropdown
               option: "Slaapt"
+
+      - alias: "Set me to asleep when I put my phone on the charger"
+        conditions:
+          - condition: trigger
+            id: "phone_charging"
+          - condition: time
+            after: "21:00:00"
+        sequence:
+          - *marvin_asleep
 
     default: []
