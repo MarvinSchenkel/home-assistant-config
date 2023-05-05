@@ -83,15 +83,6 @@ trigger:
       - media_player.sonos_livingroom
     attribute: source
 
-  # - platform: event
-  #   event_type: mass_event
-  #   event_data:
-  #     type: player_updated
-  #     object_id: media_player.sonos_livingroom
-  #     data:
-  #       player_id: media_player.sonos_livingroom
-  #       state: playing
-
 condition:
   - alias: "Only control the volume when we are automating the music"
     condition: state
