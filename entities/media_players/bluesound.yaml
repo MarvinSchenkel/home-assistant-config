@@ -1,0 +1,4 @@
+---
+platform: bluesound
+hosts:
+  - host: !secret bluesound_host

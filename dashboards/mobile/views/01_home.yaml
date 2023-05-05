@@ -1,0 +1,101 @@
+path: home
+title: Home
+icon: "mdi:home"
+type: masonry
+
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ## Home
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: sensor.marvin_status
+            show_entity_picture: true
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Marvin
+                  content:
+                    type: entities
+                    entities:
+                      - entity: input_select.marvin_sleep_status_dropdown
+                        name: Slaap status
+                        icon: "mdi:sleep"
+                      - entity: input_select.marvin_status_dropdown
+                        name: Status
+                        icon: "mdi:home"
+          - type: tile
+            entity: sensor.laura_status
+            show_entity_picture: true
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Laura
+                  content:
+                    type: entities
+                    entities:
+                      - entity: input_select.laura_sleep_status_dropdown
+                        name: Slaap status
+                        icon: "mdi:sleep"
+                      - entity: input_select.laura_status_dropdown
+                        name: Status
+                        icon: "mdi:home"
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: switch.doorbell_chime
+            name: Deurbel
+          - type: tile
+            entity: fan.itho
+            name: Ventilatie
+
+      - type: "horizontal-stack"
+        cards:
+          - type: tile
+            entity: input_boolean.house_mode_cooking
+            name: Kook modus
+          - type: tile
+            entity: input_boolean.setting_automatic_music
+            name: Autom. muziek
+
+      - type: "horizontal-stack"
+        cards:
+          - type: tile
+            entity: input_boolean.setting_guest_mode
+            name: Gast mode
+          - type: tile
+            entity: vacuum.norby
+            features:
+              - type: "vacuum-commands"
+                commands:
+                  - start_pause
+                  - return_home
+                  - locate
+
+      - type: conditional
+        conditions:
+          - entity: media_player.woonkamer
+            state: "playing"
+          - entity: media_player.woonkamer
+            attribute: source
+            state_not: "HDMI ARC"
+        card:
+          type: "horizontal-stack"
+          cards:
+            - type: custom:mini-media-player
+              entity: media_player.woonkamer
+              info: short
+              artwork: cover
+              hide:
+                source: true
+                power: true
+                icon: true
+                name: true

@@ -1,6 +1,6 @@
 title: "Mancave"
 path: mancave
-icon: "mdi:google-controller"
+icon: "mdi:controller"
 cards:
   - type: "vertical-stack"
     cards:

@@ -129,10 +129,10 @@ action:
                 entity_id:
                   - binary_sensor.sun_should_close_south_blinds
                 state: "on"
-              # - condition: state
-              #   entity_id:
-              #     - media_player.mancave_tv
-              #   state: "on"
+              - condition: state
+                entity_id:
+                  - media_player.mancave_tv
+                state: "on"
               - condition: state
                 entity_id:
                   - input_select.marvin_sleep_status_dropdown

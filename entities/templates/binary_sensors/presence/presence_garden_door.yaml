@@ -1,0 +1,13 @@
+---
+# A binary sensor that is triggered when opening the door
+# It triggers presence for 10sec, so that presence is not constantly
+# detected when someone does not close the door
+trigger:
+  - platform: state
+    entity_id: binary_sensor.garden_door_open
+    to: "on"
+
+binary_sensor:
+  - name: presence_garden_door
+    auto_off: 10
+    state: "on"

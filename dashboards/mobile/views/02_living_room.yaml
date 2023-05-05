@@ -1,0 +1,77 @@
+path: livingroom
+title: Woonkamer
+icon: "mdi:fireplace"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ## Woonkamer
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_select.gardendoor_current_cover_scene
+            icon: "mdi:blinds"
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Tuindeur
+                  content:
+                    type: entities
+                    entities:
+                      - name: Half Open
+                        entity: scene.gardendoor_cover_halfopen
+                      - name: Half Dicht
+                        entity: scene.gardendoor_cover_halfclosed
+                      - name: Dicht
+                        entity: scene.gardendoor_cover_closed
+          - type: tile
+            entity: input_select.livingroom_current_cover_scene
+            icon: "mdi:blinds"
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Woonkamer
+                  content:
+                    type: entities
+                    entities:
+                      - name: Half Open
+                        entity: scene.livingroom_cover_halfopen
+                      - name: Half Dicht
+                        entity: scene.livingroom_cover_halfclosed
+                      - name: Dicht
+                        entity: scene.livingroom_cover_closed
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_select.kitchen_current_cover_scene
+            icon: "mdi:blinds"
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Keuken
+                  content:
+                    type: entities
+                    entities:
+                      - name: Half Open
+                        entity: scene.kitchen_cover_halfopen
+                      - name: Half Dicht
+                        entity: scene.kitchen_cover_halfclosed
+          - type: tile
+            entity: input_boolean.kitchen_cover_manual_control
+            name: Handmatig keuken
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_boolean.livingroom_cover_manual_control
+            icon: "mdi:blinds"
+            name: Handmatig woonkamer

@@ -1,4 +1,4 @@
-button_card_templates: !include button_card_templates.yaml
+ button_card_templates: !include button_card_templates.yaml
 
 kiosk_mode:
   hide_header: true

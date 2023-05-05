@@ -45,9 +45,12 @@ cards:
               ulm_chip_temperature_inside: sensor.buienradar_temperature
               ulm_chip_temperature_outside: sensor.livingroom_temperature
               ulm_chip_temperature_weather: weather.buienradar
-              # ulm_card_tap_action: "popup"
-              # ulm_custom_popup:
-              #   template: "popup_weather_forecast"
+              ulm_custom_popup:
+                template: "popup_weather_forecast"
+                entity: weather.buienradar
+                popup_variables:
+                  ulm_weather_popup_surpress_first_forecast: false
+              ulm_card_tap_action: "popup"
 
       - type: "custom:button-card"
         template: card_title

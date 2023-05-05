@@ -46,6 +46,22 @@ action:
   - choose:
       - conditions:
           - *presence_detected
+          - or:
+              - <<: *is_light_schedule
+                state: "night"
+              - alias: "Someone is sleeping"
+                condition: state
+                entity_id:
+                  - binary_sensor.house_mode_someone_asleep
+                state: "on"
+        sequence:
+          - service: scene.turn_on
+            alias: "Turn the hall lights to night scene"
+            data:
+              entity_id: scene.attic_lights_night
+
+      - conditions:
+          - *presence_detected
           - <<: *is_light_schedule
             state: "dim"
         sequence:
@@ -63,16 +79,6 @@ action:
             alias: "Turn the hall lights to normal scene"
             data:
               entity_id: scene.attic_lights_normal
-
-      - conditions:
-          - *presence_detected
-          - <<: *is_light_schedule
-            state: "night"
-        sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to night scene"
-            data:
-              entity_id: scene.attic_lights_night
 
     default:
       - service: light.turn_off

@@ -1,0 +1,39 @@
+path: masterbedroom
+title: Slaapkamer
+icon: "mdi:bed-king"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ## Slaapkamer
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_select.bedroom_current_cover_scene
+            icon: "mdi:blinds"
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Slaapkamer
+                  content:
+                    type: entities
+                    entities:
+                      - name: Ventileren
+                        entity: scene.bedroom_cover_ventilating
+                      - name: Ventileren Nacht
+                        entity: scene.bedroom_cover_ventilatingnight
+                      - name: Half Open
+                        entity: scene.bedroom_cover_halfopen
+                      - name: Half Dicht
+                        entity: scene.bedroom_cover_halfclosed
+                      - name: Open
+                        entity: scene.bedroom_cover_open
+                      - name: Dicht
+                        entity: scene.bedroom_cover_closed
+          - type: tile
+            entity: input_boolean.masterbedroom_cover_manual_control
+            name: Handmatig slaapkamer

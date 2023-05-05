@@ -2,11 +2,8 @@
 custom_card_luxaflex:
   template:
     - "icon_more_info_new"
-
     - "yellow"
     - "ulm_translation_engine"
-    # - "icon_info_bg"
-  #   - "ulm_language_variables"
   variables:
     ulm_card_luxaflex_scene_1: ""
     ulm_card_luxaflex_scene_2: ""

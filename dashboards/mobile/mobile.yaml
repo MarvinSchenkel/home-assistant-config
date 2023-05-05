@@ -1,0 +1,3 @@
+title: Schenkel
+views: !include_dir_list views/
+      

@@ -16,6 +16,7 @@ trigger:
       - binary_sensor.everyone_left_home
       - binary_sensor.house_mode_everyone_at_home_working
       - binary_sensor.house_mode_everyone_asleep
+      - input_boolean.setting_guest_mode
     from: ~
 
   - platform: time

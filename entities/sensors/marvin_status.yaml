@@ -2,6 +2,7 @@
 platform: template
 sensors:
   marvin_status:
+    unique_id: 1e29e66a-e710-410c-8465-4a0312daa346
     value_template: >-
       {% if states.input_select.marvin_sleep_status_dropdown.state == 'Net wakker'
          and states.input_select.marvin_status_dropdown.state == 'Net Weg' %}

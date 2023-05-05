@@ -4,4 +4,6 @@ binary_sensor:
     unique_id: 8a0ae357-2904-4b2c-ab1e-ddbbe35aa90d
     state: >
       {{  is_state("binary_sensor.pir_kitchen", "on")
-          or is_state("binary_sensor.pir_livingroom", "on") }}
+          or is_state("binary_sensor.presence_livingroom_fp2", "on")
+          or is_state("binary_sensor.presence_garden_door", "on")
+          or is_state("binary_sensor.presence_livingroom_door", "on") }}

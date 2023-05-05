@@ -175,10 +175,22 @@ action:
 
       - alias: "Cover half closed when sun is down"
         conditions:
-          - condition: numeric_state
-            entity_id:
-              - sensor.sun_adjusted_elevation
-            below: -9
+          - or:
+              - and:
+                  - condition: numeric_state
+                    entity_id:
+                      - sensor.sun_adjusted_elevation
+                    below: -9
+                  - condition: time
+                    after: "16:00:00"
+              - and:
+                - condition: numeric_state
+                  entity_id:
+                    - sensor.sun_adjusted_elevation
+                  below: 0
+                - condition: time
+                  before: "12:00:00"
+
         sequence:
           - *cover_half_closed
 

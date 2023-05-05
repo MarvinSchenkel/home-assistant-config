@@ -18,49 +18,24 @@ trigger:
       - input_boolean.setting_manual_lights
       - input_boolean.livingroom_manual_control
       - binary_sensor.livingroom_is_dark
-      - binary_sensor.house_mode_everyone_at_home_working
       - input_select.current_light_schedule
+      - binary_sensor.presence_livingroom_couch
+      - binary_sensor.presence_livingroom_dinner
+      - binary_sensor.presence_livingroom_rest
+      - binary_sensor.presence_kitchen
     from: ~
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_someone_just_awake
-      - binary_sensor.house_mode_someone_just_home
-      - binary_sensor.everyone_left_home
-    from: "off"
+      - binary_sensor.presence_livingroom
     to: "on"
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_everyone_asleep
-    from: "off"
-    to: "on"
-    id: "everyone_asleep"
-
-  - platform: numeric_state
-    entity_id:
-      - sensor.sun_adjusted_elevation
-    below: 1
-
-  - platform: numeric_state
-    entity_id:
-      - sensor.sun_adjusted_elevation
-    above: 1
-
-  - platform: state
-    entity_id:
-      - light.livingroom
-      - light.kitchen
+      - binary_sensor.presence_livingroom
     to: "off"
-    id: "lights_off"
-
-  - platform: state
-    entity_id:
-      - light.livingroom
-      - light.kitchen
-    attribute: brightness
-    to: ~
-    id: "light_brightness_change"
+    for:
+      minutes: 10
 
   - platform: time
     at: "19:00:00"
@@ -85,6 +60,50 @@ trigger:
 
 variables:
   anchors:
+    - &is_presence_detected
+      alias: "Is there presence in the room?"
+      condition: not
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom
+          state: "off"
+          for:
+            minutes: 10
+
+    - &is_presence_couch_only
+      alias: "Are we just sitting in the couch area of the room?"
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom_couch
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom_dinner
+          state: "off"
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom_rest
+          state: "off"
+        - condition: state
+          entity_id: binary_sensor.presence_kitchen
+          state: "off"
+
+    - &is_remote_pressed
+      alias: "Did we manually press the button?"
+      condition: trigger
+      id:
+        - "hue_dimmer_on_press"
+        - "hue_dimmer_off_press"
+
+    - &is_light_schedule
+      alias: "Check current light schedule"
+      condition: state
+      entity_id: input_select.current_light_schedule
+
+    - &is_current_scene
+      alias: "Check the current light scene"
+      condition: state
+      entity_id: input_select.livingroom_current_lights_scene
+
     - &manual_control_off
       alias: "Turn manual control off"
       service: input_boolean.turn_off
@@ -107,27 +126,9 @@ variables:
       data:
         transition: 5
 
-    - &turn_on_evening
-      alias: "Turn on the evening scene"
+    - &turn_on
+      alias: "Turn on the lights"
       service: scene.turn_on
-      target:
-        entity_id: scene.livingroom_lights_evening
-      data:
-        transition: 4
-
-    - &turn_on_normal
-      alias: "Turn on the 'normal' light scene"
-      service: scene.turn_on
-      target:
-        entity_id: scene.livingroom_lights_normal
-      data:
-        transition: 4
-
-    - &turn_on_movie
-      alias: "Then turn on the movie scene"
-      service: scene.turn_on
-      target:
-        entity_id: scene.livingroom_lights_movie
       data:
         transition: 4
 
@@ -138,13 +139,6 @@ condition:
 
 action:
   - choose:
-      - alias: "Reset manual control when all lights are turned off"
-        conditions:
-          - condition: trigger
-            id: "lights_off"
-        sequence:
-          - *manual_control_off
-
       - alias: "Reset active scene to 'normal' during reset"
         conditions:
           - condition: trigger
@@ -158,40 +152,11 @@ action:
 
       - alias: "Set lights as manually controlled when someone changes them"
         conditions:
-          - alias: "Lights were changed"
-            condition: trigger
-            id: "light_brightness_change"
           - alias: "It was changed by a user"
             condition: template
             value_template: "{{ trigger.to_state.context.user_id != None }}"
         sequence:
           - *manual_control_on
-
-      - alias: >
-          Turn the light off when we go to sleep, even if it is manually controlled
-        conditions:
-          - alias: "Everyone has gone to sleep"
-            condition: trigger
-            id: "everyone_asleep"
-        sequence:
-          - *turn_off
-          - *manual_control_off
-
-      - alias: >
-          Turn the light off when everyone is working from home on a dark day until
-          sunset.
-        conditions:
-          - alias: "Everyone at home is working from home"
-            condition: state
-            entity_id:
-              - binary_sensor.house_mode_everyone_at_home_working
-            state: "on"
-          - condition: numeric_state
-            entity_id:
-              - sensor.sun_adjusted_elevation
-            above: 1.0
-        sequence:
-          - *turn_off
 
       - alias: >
           Stop automating the lights if any of the lights are manually controlled or if
@@ -203,16 +168,11 @@ action:
                 entity_id:
                   - input_boolean.livingroom_manual_control
                 state: "on"
-              - condition: state
-                entity_id:
-                  - input_select.livingroom_current_lights_scene
+              - <<: *is_current_scene
                 state: "movie"
           - condition: not
             conditions:
-              - condition: trigger
-                id:
-                  - "hue_dimmer_on_press"
-                  - "hue_dimmer_off_press"
+              - *is_remote_pressed
         sequence:
           - stop: "Living room lights are manually controlled"
 
@@ -222,61 +182,59 @@ action:
             condition: state
             entity_id: binary_sensor.livingroom_is_dark
             state: "on"
-          - condition: or
-            conditions:
-              - alias: "Do we have a guest, e.g. baby sitter?"
-                condition: state
-                entity_id:
-                  - input_boolean.setting_guest_mode
-                state: "on"
-              - alias: "Or are we home and awake?"
-                condition: and
-                conditions:
-                  - condition: numeric_state
-                    entity_id: sensor.num_people_at_home
-                    above: 0
-                  - condition: or
-                    conditions:
-                      - condition: state
-                        entity_id:
-                          - binary_sensor.house_mode_someone_just_awake
-                        state: "on"
-                      - condition: state
-                        entity_id:
-                          - binary_sensor.house_mode_someone_awake
-                        state: "on"
+          - *is_presence_detected
         sequence:
           - choose:
               - alias: >
-                  When we press the remote and the  current scene is either normal
-                  or evening
+                  When we press the remote and the current scene is not movie
                 conditions:
-                  - condition: and
-                    conditions:
-                      - condition: trigger
-                        id:
-                          - "hue_dimmer_on_press"
-                          - "hue_dimmer_off_press"
-                      - condition: state
-                        entity_id:
-                          - input_select.livingroom_current_lights_scene
-                        state:
-                          - "normal"
-                          - "evening"
+                  - *is_remote_pressed
+                  - not:
+                      - <<: *is_current_scene
+                        state: "movie"
                 sequence:
-                  - *turn_on_movie
+                  - <<: *turn_on
+                    target:
+                      entity_id: scene.livingroom_lights_movie
 
               - alias: "When the sun has been down for a while."
                 conditions:
-                  - condition: state
-                    entity_id:
-                      - input_select.current_light_schedule
+                  - <<: *is_light_schedule
                     state: "dim"
                 sequence:
-                  - *turn_on_evening
+                  - choose:
+                      - conditions:
+                          - *is_presence_couch_only
+                        sequence:
+                          - <<: *turn_on
+                            target:
+                              entity_id: scene.livingroom_lights_dim_couch_only
+                    default:
+                      - <<: *turn_on
+                        target:
+                          entity_id: scene.livingroom_lights_dim
+
+              - alias: "When it is night"
+                conditions:
+                  - <<: *is_light_schedule
+                    state: "night"
+                sequence:
+                  - <<: *turn_on
+                    target:
+                      entity_id: scene.livingroom_lights_night
 
             default:
-              - *turn_on_normal
+              - choose:
+                  - conditions:
+                      - *is_presence_couch_only
+                    sequence:
+                      - <<: *turn_on
+                        target:
+                          entity_id: scene.livingroom_lights_normal_couch_only
+                default:
+                  - <<: *turn_on
+                    target:
+                      entity_id: scene.livingroom_lights_normal
 
     default:
       - *turn_off

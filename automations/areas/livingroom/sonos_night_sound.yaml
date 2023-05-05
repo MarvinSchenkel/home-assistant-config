@@ -1,0 +1,51 @@
+---
+alias: areas_livingroom_night_sound
+description: Automatically control night sound for the living room
+mode: queued
+id: e979ff3a-491b-4e95-9206-48130e35eca4
+
+trigger:
+  - platform: time
+    at: "19:00:00"
+
+  - platform: state
+    entity_id: binary_sensor.house_mode_someone_asleep
+
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+variables:
+  anchors:
+    - &night_sound_on
+      alias: "Turn night sound on"
+      service: switch.turn_on
+      target:
+        entity_id: switch.sonos_livingroom_night_sound
+
+    - &night_sound_off
+      alias: "Turn night sound off"
+      service: switch.turn_off
+      target:
+        entity_id: switch.sonos_livingroom_night_sound
+
+action:
+  - choose:
+      - conditions:
+          - condition: time
+            after: "19:00:00"
+        sequence:
+          - *night_sound_on
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.house_mode_someone_asleep
+            state: "on"
+        sequence:
+          - *night_sound_on
+
+    default:
+      - *night_sound_off

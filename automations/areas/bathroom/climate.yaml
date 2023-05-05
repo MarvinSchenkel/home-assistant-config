@@ -29,7 +29,7 @@ trigger:
       - "06:00:00"
       - "10:00:00"
       - "18:00:00"
-      - "23:00:00"
+      - "22:00:00"
 
 variables:
   anchors:
@@ -103,7 +103,7 @@ action:
             state: "off"
           - condition: time
             after: "18:00:00"
-            before: "23:00:00"
+            before: "22:00:00"
         sequence:
           - *turn_on
           - *turn_up

@@ -1,0 +1,27 @@
+---
+alias: areas_livingroom_demo
+description: Turns the livingroom lights on when motion has been detected
+mode: queued
+id: 42ad21bb-5189-4e9a-b92f-9dc14a10cb75
+trace:
+  stored_traces: 25
+
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_livingroom_dinner
+
+action:
+  - choose:
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom_dinner
+          state: "on"
+      sequence:
+        - service: light.turn_on
+          entity_id: light.dinner
+          data:
+            brightness_pct: 100
+    default:
+      - service: light.turn_off
+        entity_id: light.dinner

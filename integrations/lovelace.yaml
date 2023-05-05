@@ -76,7 +76,7 @@ lovelace:
       show_in_sidebar: true
     lovelace-mobile:
       mode: yaml
-      filename: dashboards/tablet/mobile.yaml
+      filename: dashboards/mobile/mobile.yaml
       title: Mobile
       icon: mdi:cellphone
       show_in_sidebar: true

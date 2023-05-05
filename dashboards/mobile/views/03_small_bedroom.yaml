@@ -1,0 +1,53 @@
+path: smallbedroom
+title: Slaapkamer Zoey
+icon: "mdi:koala"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ## Slaapkamer Zoey
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: light.fibaro_small_bedroom
+            name: Plafond
+          - type: tile
+            entity: input_select.smallbedroom_current_cover_scene
+            icon: "mdi:blinds"
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Gordijn
+                  content:
+                    type: entities
+                    entities:
+                      - name: Open
+                        entity: scene.smallbedroom_cover_open
+                      - name: Dicht
+                        entity: scene.smallbedroom_cover_closed
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: binary_sensor.presence_small_bedroom
+          - type: tile
+            entity: binary_sensor.smallbedroom_door_open
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: sensor.pir_smallbedroom_temperature
+            name: Temperatuur
+          # - type: "custom:button-card"
+          #   template: card_graph
+          #   entity: sensor.pir_smallbedroom_temperature
+          #   variables:
+          #     ulm_card_graph_color: "var(--google-blue)"
+          #     ulm_card_graph_name: Temperatuur
+          #     ulm_card_graph_entity: sensor.pir_smallbedroom_temperature
+          #     ulm_card_graph_type: fill
+          #     ulm_card_graph_hours: 24

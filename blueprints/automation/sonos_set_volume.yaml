@@ -78,21 +78,26 @@ trigger:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
 
-  - platform: event
-    event_type: mass_event
-    event_data:
-      type: player_updated
-      object_id: media_player.sonos_livingroom
-      data:
-        player_id: media_player.sonos_livingroom
-        state: playing
+  - platform: state
+    entity_id:
+      - media_player.sonos_livingroom
+    attribute: source
+
+  # - platform: event
+  #   event_type: mass_event
+  #   event_data:
+  #     type: player_updated
+  #     object_id: media_player.sonos_livingroom
+  #     data:
+  #       player_id: media_player.sonos_livingroom
+  #       state: playing
 
 condition:
   - alias: "Only control the volume when we are automating the music"
     condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
-  - '{{ state_attr(sonos, "source")  != "TV" }}'
+  - '{{ state_attr("media_player.sonos_livingroom", "source")  != "TV" }}'
 
 action:
   - variables:

@@ -1,21 +1,20 @@
 ---
-name: livingroom_lights_evening
-id: 0542d594-e177-4b68-8f3b-dc8574108c61
+name: livingroom_lights_normal_couch_only
+id: cf9bf8fe-9ee5-494b-8d43-e68beecf3703
 icon: mdi:lightbulb
 entities:
   light.fibaro_livingroom:
     state: "on"
-    brightness_pct: 5
+    brightness_pct: 20
   light.dinner:
     state: "on"
     brightness_pct: 50
     color_mode: color_temp
-    color_temp: 420
+    color_temp: 375
   light.corner_couch:
     state: "on"
-    brightness_pct: 50
+    brightness_pct: 70
     color_mode: color_temp
-    color_temp: 420
+    color_temp: 375
   light.kitchen:
-    state: "on"
-    brightness_pct: 10
+    state: "off"

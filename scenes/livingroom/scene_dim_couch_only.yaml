@@ -1,0 +1,20 @@
+---
+name: livingroom_lights_dim_couch_only
+id: ae0ce79f-c762-4162-a7a8-e18611ae7876
+icon: mdi:lightbulb
+entities:
+  light.fibaro_livingroom:
+    state: "on"
+    brightness_pct: 5
+  light.dinner:
+    state: "on"
+    brightness_pct: 30
+    color_mode: color_temp
+    color_temp: 420
+  light.corner_couch:
+    state: "on"
+    brightness_pct: 50
+    color_mode: color_temp
+    color_temp: 420
+  light.kitchen:
+    state: "off"

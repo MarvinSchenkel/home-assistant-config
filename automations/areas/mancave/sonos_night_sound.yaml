@@ -1,0 +1,51 @@
+---
+alias: areas_mancave_night_sound
+description: Automatically control night sound for the mancave
+mode: queued
+id: dda0cfa4-664f-43ac-9afe-c71d009f3abf
+
+trigger:
+  - platform: time
+    at: "19:00:00"
+
+  - platform: state
+    entity_id: binary_sensor.house_mode_someone_asleep
+
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+variables:
+  anchors:
+    - &night_sound_on
+      alias: "Turn night sound on"
+      service: switch.turn_on
+      target:
+        entity_id: switch.sonos_mancave_night_sound
+
+    - &night_sound_off
+      alias: "Turn night sound off"
+      service: switch.turn_off
+      target:
+        entity_id: switch.sonos_mancave_night_sound
+
+action:
+  - choose:
+      - conditions:
+          - condition: time
+            after: "19:00:00"
+        sequence:
+          - *night_sound_on
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.house_mode_someone_asleep
+            state: "on"
+        sequence:
+          - *night_sound_on
+
+    default:
+      - *night_sound_off

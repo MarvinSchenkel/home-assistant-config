@@ -19,8 +19,6 @@ variables:
     - &select_scene
       service: scene.turn_on
       alias: "Turn the hall lights to appropriate scene"
-      data:
-        transition: 2
 
     - &lights_turn_off
       service: light.turn_off

@@ -1,21 +1,21 @@
 ---
-name: livingroom_lights_normal
-id: 67d3c099-22bf-46be-88d3-0028b7b1dba5
+name: livingroom_lights_dim
+id: 0542d594-e177-4b68-8f3b-dc8574108c61
 icon: mdi:lightbulb
 entities:
   light.fibaro_livingroom:
     state: "on"
-    brightness_pct: 20
+    brightness_pct: 5
   light.dinner:
     state: "on"
-    brightness_pct: 70
+    brightness_pct: 50
     color_mode: color_temp
-    color_temp: 375
+    color_temp: 420
   light.corner_couch:
     state: "on"
-    brightness_pct: 70
+    brightness_pct: 50
     color_mode: color_temp
-    color_temp: 375
+    color_temp: 420
   light.kitchen:
     state: "on"
-    brightness_pct: 25
+    brightness_pct: 10

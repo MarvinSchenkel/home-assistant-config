@@ -7,7 +7,7 @@ cards:
     cards:
       - type: "custom:button-card"
         template: card_title
-        name: Luxaflex en zon
+        name: Debug
       - type: horizontal-stack
         cards:
           - type: "custom:button-card"
@@ -45,5 +45,35 @@ cards:
           - type: "custom:button-card"
             template: card_binary_sensor
             entity: binary_sensor.livingroom_is_dark
+            variables:
+              ulm_show_last_changed: true
+
+      - type: "custom:button-card"
+        template: card_title
+        name: Beweging
+
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            entity: binary_sensor.presence_hall_upstairs
+            variables:
+              ulm_show_last_changed: true
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            entity: binary_sensor.presence_attic
+            variables:
+              ulm_show_last_changed: true
+
+      - type: horizontal-stack
+        cards:
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            entity: binary_sensor.presence_bathroom
+            variables:
+              ulm_show_last_changed: true
+          - type: "custom:button-card"
+            template: card_binary_sensor
+            entity: binary_sensor.presence_hall_downstairs
             variables:
               ulm_show_last_changed: true

@@ -2,6 +2,7 @@
 platform: template
 sensors:
   laura_status:
+    unique_id: 143c3bed-c32c-47a8-ad26-654668f42fc3
     value_template: >
       {% if states.input_select.laura_sleep_status_dropdown.state == 'Net wakker'
          and states.input_select.laura_status_dropdown.state == 'Net Weg' %}
