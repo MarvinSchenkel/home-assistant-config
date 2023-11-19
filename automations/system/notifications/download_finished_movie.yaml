@@ -6,6 +6,7 @@ id: f097c04d-6ed3-493a-ae09-9187899d1ca2
 trigger:
   - platform: webhook
     webhook_id: "download_finished_movie"
+    local_only: true
 
 variables:
   movie: "{{ trigger.json.movie.title }}"

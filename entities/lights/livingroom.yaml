@@ -2,6 +2,8 @@
 platform: group
 name: livingroom
 entities:
-  - light.fibaro_livingroom
-  - light.dinner
+  - light.spot_stairs
+  - light.spot_garden_side
+  - light.dinner_door
+  - light.dinner_wall
   - light.corner_couch

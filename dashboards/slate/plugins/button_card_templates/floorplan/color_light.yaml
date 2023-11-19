@@ -1,7 +1,0 @@
-color_light:
-  styles:
-    card:
-      - border-radius: 50%
-      - height: 4em
-      - width: 4em
-      - margin: 4px

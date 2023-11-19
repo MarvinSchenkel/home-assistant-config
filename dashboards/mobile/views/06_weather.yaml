@@ -1,0 +1,34 @@
+title: "Weer"
+path: weather
+icon: "mdi:weather-sunny"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Weer
+      - type: weather-forecast
+        entity: weather.openweathermap
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: binary_sensor.sun_hot
+          - type: tile
+            entity: binary_sensor.is_hot_day
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: binary_sensor.sun_should_close_south_blinds
+          - type: tile
+            entity: sensor.solar_production_daily
+            name: Zonnepanelen
+            icon: "mdi:solar-power"

@@ -29,6 +29,12 @@ variables:
       condition: state
       entity_id: input_select.current_light_schedule
 
+    - &turn_off
+      service: light.turn_off
+      data:
+        entity_id: light.fibaro_bathroom
+        transition: 5
+
 trigger:
   - platform: homeassistant
     event: start
@@ -42,12 +48,10 @@ trigger:
     entity_id: binary_sensor.presence_bathroom
     to: "off"
     for:
-      seconds: 120
+      seconds: 240
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_everyone_asleep
-      - binary_sensor.house_mode_someone_just_awake
-    to: "on"
+      - input_select.bathroom_room_mode
   - platform: event
     event_type: zwave_js_value_notification
     event_data:
@@ -103,6 +107,15 @@ action:
             state: "on"
         sequence: []
 
+      - alias: "Turn lights off when someone is asleep"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_select.bathroom_room_mode
+            state: "Slaap"
+        sequence:
+          - *turn_off
+
       - alias: "Turn lights on when presence is detected and we're not asleep"
         conditions:
           - *presence_detected
@@ -128,7 +141,4 @@ action:
               transition: 1
 
     default:
-      - service: light.turn_off
-        data:
-          entity_id: light.fibaro_bathroom
-          transition: 5
+      - *turn_off

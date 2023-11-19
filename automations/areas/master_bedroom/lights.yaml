@@ -24,65 +24,104 @@ trace:
 trigger:
   - platform: homeassistant
     event: start
+
   - platform: event
     event_type: automation_reloaded
+
   - platform: state
     entity_id:
       - binary_sensor.presence_master_bedroom
     to: "on"
+
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_someone_asleep
-    to: "off"
+      - input_select.master_bedroom_room_mode
+    to: "Net wakker"
     for:
       minutes: 5
+
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_someone_asleep
-    to: "on"
+      - input_select.master_bedroom_room_mode
+    to: "Slaap"
     id: "house_mode_someone_asleep"
+
   - platform: state
     entity_id: binary_sensor.presence_master_bedroom
     to: "off"
     for:
       seconds: 60
+
   - platform: state
     entity_id:
       - binary_sensor.master_bedroom_is_dark
-  - platform: state
-    entity_id:
-      - binary_sensor.someone_in_bed
-    to: "on"
-    for:
-      seconds: 15
-  - platform: state
-    entity_id:
-      - binary_sensor.someone_in_bed
-    to: "off"
-    for:
-      seconds: 30
+      - input_select.master_bedroom_room_mode
+      - input_select.bedroom_current_cover_scene
+
   - platform: event
     id: "button_marvin_single"
     event_type: "zha_event"
     event_data:
       device_id: "2a93e9d147b93ca0ec5992d48dde3129"
       command: "single"
+
   - platform: event
     event_type: "zha_event"
     event_data:
       device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
       command: "single"
     id: "button_laura_single"
-  - platform: state
-    entity_id:
-      - light.master_bedroom_lights
-    id: "lights"
+
   - platform: state
     entity_id:
       - light.master_bedroom_lights
     from: "on"
     to: "off"
     id: "all_lights_off"
+
+variables:
+  anchors:
+    - &manual_control_on
+      alias: "Set bedside left as manually controlled"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.masterbedroom_manual_control
+
+    - &manual_control_off
+      alias: "Turn manual control off"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.masterbedroom_manual_control
+
+    - &turn_off
+      alias: "Turn the lights off"
+      service: light.turn_off
+      data:
+        entity_id: light.master_bedroom_lights
+        transition: 5
+
+    - &select_scene
+      service: scene.turn_on
+      data:
+        transition: 2
+
+    - &condition_is_dark
+      alias: "Is it dark in the room?"
+      condition: state
+      entity_id: binary_sensor.master_bedroom_is_dark
+      state: "on"
+
+    - &condition_is_presence_detected
+      alias: "Is presence detected in the room?"
+      condition: state
+      entity_id: binary_sensor.presence_master_bedroom
+      state: "on"
+
+    - &condition_is_room_mode
+      alias: "Check the room mode"
+      condition: state
+      entity_id:
+        - input_select.master_bedroom_room_mode
 
 condition:
   - condition: state
@@ -95,13 +134,8 @@ action:
         conditions:
           - condition: trigger
             id: "reset"
-
         sequence:
-          - &manual_control_off
-            alias: "Turn manual control off"
-            service: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.masterbedroom_manual_control
+          - *manual_control_off
 
       - alias: "When I click the button when I am already sleeping"
         conditions:
@@ -109,17 +143,12 @@ action:
             id: "button_marvin_single"
           - condition: state
             entity_id:
-              - input_select.marvin_sleep_status_dropdown
-            state: "Slaapt"
+              - input_select.master_bedroom_room_mode
+            state: "Slaap"
             for:
               seconds: 2
-
         sequence:
-          - &manual_control
-            alias: "Set bedside left as manually controlled"
-            service: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.masterbedroom_manual_control
+          - *manual_control_on
           - alias: "Toggle the light"
             service: light.toggle
             data:
@@ -133,13 +162,12 @@ action:
             id: "button_laura_single"
           - condition: state
             entity_id:
-              - input_select.laura_sleep_status_dropdown
-            state: "Slaapt"
+              - input_select.master_bedroom_room_mode
+            state: "Slaap"
             for:
               seconds: 2
-
         sequence:
-          - *manual_control
+          - *manual_control_on
           - alias: "Toggle the light"
             service: light.toggle
             data:
@@ -147,39 +175,20 @@ action:
               brightness_pct: 3
               transition: 2
 
-      - alias: "Set lights as manually controlled when changed by someone manually"
-        conditions:
-          - alias: "Lights changed"
-            condition: trigger
-            id: "lights"
-          - alias: "It was changed by a user"
-            condition: template
-            value_template: "{{ trigger.to_state.context.user_id != None }}"
-
-        sequence:
-          - *manual_control
-
       - alias: >
           Turn the light off when we go to sleep, even if it is manually controlled
         conditions:
           - alias: "Someone goes to sleep"
             condition: trigger
             id: "house_mode_someone_asleep"
-
         sequence:
-          - &turn_off
-            alias: "Turn the lights off"
-            service: light.turn_off
-            data:
-              entity_id: light.master_bedroom_lights
-              transition: 5
+          - *turn_off
 
       - alias: "Turn off manual control when all lights are turned off"
         conditions:
           - alias: "All lights are off"
             condition: trigger
             id: "all_lights_off"
-
         sequence:
           - *manual_control_off
 
@@ -189,80 +198,40 @@ action:
             entity_id:
               - input_boolean.masterbedroom_manual_control
             state: "on"
-
         sequence: []
 
-      - alias: >
-          Check if we need to automate the lights based on sleep status, presence
-          and luminance
+      - alias: "Turn the lights off when the blinds are fully open"
         conditions:
           - condition: state
             entity_id:
-              - binary_sensor.house_mode_someone_asleep
-            state: "off"
+              - input_select.bedroom_current_cover_scene
+            state: "ventilating"
+        sequence:
+          - *turn_off
+
+      - alias: "Turn lights to dim when we just woke up (overriding light schedule)"
+        conditions:
+          - <<: *condition_is_room_mode
+            state: "Net wakker"
             for:
               minutes: 5
-          - condition: state
-            entity_id: binary_sensor.master_bedroom_is_dark
-            state: "on"
-          - condition: state
-            entity_id: binary_sensor.presence_master_bedroom
-            state: "on"
-
+          - *condition_is_dark
+          - *condition_is_presence_detected
         sequence:
-          - choose:
-              - alias: >
-                  Start dimming the light when somone gets in bed, ready to go to sleep
-                  ,or when we have just woken up
-                conditions:
-                  - condition: or
-                    conditions:
-                      - condition: and
-                        conditions:
-                          - condition: state
-                            entity_id:
-                              - binary_sensor.someone_in_bed
-                            state: "on"
-                            for:
-                              seconds: 15
-                          - condition: time
-                            after: "21:00:00"
-                      - condition: state
-                        entity_id:
-                          - binary_sensor.house_mode_someone_just_awake
-                        state: "on"
+          - <<: *select_scene
+            target:
+              entity_id: scene.masterbedroom_lights_rusten
 
-                sequence:
-                  - &scene_dim
-                    service: scene.turn_on
-                    target:
-                      entity_id: scene.masterbedroom_lights_dim
-                    data:
-                      transition: 1
-
-              - alias: "Use the evening scene when the sun has been down for a bit"
-                conditions:
-                  - condition: numeric_state
-                    entity_id:
-                      - sensor.sun_elevation
-                    below: -3
-                  - condition: time
-                    after: "19:00:00"
-
-                sequence:
-                  - service: scene.turn_on
-                    target:
-                      entity_id: scene.masterbedroom_lights_evening
-                    data:
-                      transition: 3
-
-            default:
-              - alias: "Just turn on the lights"
-                service: scene.turn_on
-                target:
-                  entity_id: scene.masterbedroom_lights_normal
-                data:
-                  transition: 1
+      - alias: "Turn lights on according to light schedule"
+        conditions:
+          - <<: *condition_is_room_mode
+            state: "Wakker"
+          - *condition_is_dark
+          - *condition_is_presence_detected
+        sequence:
+          - <<: *select_scene
+            target:
+              entity_id: scene.masterbedroom_lights_natuurlijklicht
 
     default:
       - *turn_off

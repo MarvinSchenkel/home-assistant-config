@@ -1,0 +1,115 @@
+---
+alias: areas_livingroom_room_mode
+description: Determine the room mode
+mode: queued
+id: 775a9a3e-558d-4030-97a9-fe9f4eb24c99
+
+trigger:
+  - platform: state
+    id: "net_wakker_40m"
+    entity_id:
+      - input_select.livingroom_room_mode
+    to: "Net wakker"
+    for:
+      minutes: 40
+
+  - platform: state
+    id: "presence_off_1h"
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      minutes: 60
+
+  - platform: state
+    id: "presence_detected"
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "on"
+
+  - platform: state
+    id: "front_door_open"
+    entity_id: binary_sensor.presence_front_door
+    to: "on"
+
+  - platform: time
+    id: "reset_holiday"
+    at: "10:00:00"
+
+variables:
+  anchors:
+    - &select_mode
+      service: input_select.select_option
+      entity_id: input_select.livingroom_room_mode
+
+    - &is_sleep_mode_selected
+      condition: state
+      entity_id:
+        - input_select.livingroom_room_mode
+      state: "Slaap"
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "presence_off_1h"
+          - or:
+              - condition: time
+                after: "21:00:00"
+              - condition: time
+                before: "03:00:00"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Slaap"
+
+      - conditions:
+          - condition: trigger
+            id: "front_door_open"
+          - *is_sleep_mode_selected
+        sequence:
+          - wait_for_trigger:
+              - platform: state
+                entity_id:
+                  - binary_sensor.presence_livingroom
+                to: "on"
+            timeout:
+              minutes: 5
+            continue_on_timeout: false
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+      - conditions:
+          - condition: trigger
+            id: "presence_detected"
+          - *is_sleep_mode_selected
+          - condition: time
+            after: "05:00:00"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Net wakker"
+
+      - conditions:
+          - condition: trigger
+            id: "net_wakker_40m"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+      - conditions:
+          - condition: trigger
+            id: "reset_holiday"
+          - *is_sleep_mode_selected
+          - condition: state
+            entity_id:
+              - input_boolean.setting_guest_mode
+            state: "off"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+    default: []

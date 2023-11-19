@@ -6,7 +6,8 @@
 # in automations.
 trigger:
   - platform: state
-    entity_id: binary_sensor.sun_at_south_windows
+    entity_id:
+      - binary_sensor.sun_at_south_windows
   - platform: state
     entity_id:
       - binary_sensor.sun_hot
@@ -18,7 +19,7 @@ trigger:
       - binary_sensor.sun_hot
     to: "off"
     for:
-      minutes: 15
+      minutes: 20
   - platform: numeric_state
     entity_id: sensor.current_temperature
     above: 19
@@ -42,10 +43,7 @@ binary_sensor:
           (states('sensor.current_temperature') | float > 19.0)
           or (
             states('sensor.current_temperature') | float > 16.0
-            and is_state('weather.buienradar', 'sunny')
-          )
-          or (
-            states('sensor.pir_kitchen_temperature') | float > 24.0
+            and is_state('weather.openweathermap', 'sunny')
           )
         )
       -%}

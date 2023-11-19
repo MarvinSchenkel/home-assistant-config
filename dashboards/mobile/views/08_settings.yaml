@@ -1,0 +1,22 @@
+title: "Instellingen"
+path: settings
+icon: "mdi:cog"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Instellingen
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_select.music_source
+          - type: vertical-stack
+            cards: []

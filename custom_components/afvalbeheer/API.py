@@ -47,7 +47,7 @@ class WasteCollectionRepository(object):
     
     def get_first_upcoming(self):
         upcoming = self.get_upcoming()
-        first_item = upcoming[0]
+        first_item = upcoming[0] if upcoming else None
         return list(filter(lambda x: x.date.date() == first_item.date.date(), upcoming))
     
     def get_upcoming_by_type(self, waste_type):
@@ -124,6 +124,8 @@ class WasteData(object):
             self.collector = RecycleApp(self.hass, self.waste_collector, self.postcode, self.street_name, self.street_number, self.suffix)
         elif self.waste_collector == "rd4":
             self.collector = RD4Collector(self.hass, self.waste_collector, self.postcode, self.street_number, self.suffix)
+        elif self.waste_collector in BURGERPORTAAL_COLLECTOR_IDS.keys():
+            self.collector = BurgerportaalCollector(self.hass, self.waste_collector, self.postcode, self.street_number, self.suffix)
         elif self.waste_collector in OPZET_COLLECTOR_URLS.keys():
             self.collector = OpzetCollector(self.hass, self.waste_collector, self.postcode, self.street_number, self.suffix)
         else:
@@ -279,7 +281,14 @@ class AfvalwijzerCollector(WasteCollector):
             r = await self.hass.async_add_executor_job(self.__get_data)
             response = r.json()
 
-            data = (response['ophaaldagen']['data'] + response['ophaaldagenNext']['data'])
+            data = []
+            
+            if 'ophaaldagen' in response:
+                data = data + response['ophaaldagen']['data']
+            
+            if 'ophaaldagenNext' in response:
+                data = data + response['ophaaldagenNext']['data']
+            
             if not data:
                 _LOGGER.error('No Waste data found!')
                 return
@@ -294,6 +303,113 @@ class AfvalwijzerCollector(WasteCollector):
 
                 collection = WasteCollection.create(
                     date=datetime.strptime(item['date'], '%Y-%m-%d'),
+                    waste_type=waste_type
+                )
+                self.collections.add(collection)
+
+        except requests.exceptions.RequestException as exc:
+            _LOGGER.error('Error occurred while fetching data: %r', exc)
+            return False
+
+
+class BurgerportaalCollector(WasteCollector):
+    WASTE_TYPE_MAPPING = {
+        'gft': WASTE_TYPE_GREEN,
+        'opk': WASTE_TYPE_PAPER,
+        'pmdrest': WASTE_TYPE_PMD_GREY,
+        'rest': WASTE_TYPE_GREY,
+    }
+
+    def __init__(self, hass, waste_collector, postcode, street_number, suffix):
+        super().__init__(hass, waste_collector, postcode, street_number, suffix)
+        self.company_code = BURGERPORTAAL_COLLECTOR_IDS[self.waste_collector]
+        self.apikey = 'AIzaSyA6NkRqJypTfP-cjWzrZNFJzPUbBaGjOdk'
+        self.refresh_token = ''
+        self.id_token = ''
+        self.address_id = ''
+
+    def __fetch_refresh_token(self):
+        response = requests.post("https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key={}".format(self.apikey)).json()
+        if not response:
+            _LOGGER.error('Unable to fetch refresh token!')
+            return
+        self.refresh_token = response['refreshToken']
+        self.id_token = response['idToken']
+        
+    def __fetch_id_token(self):
+        headers = { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        
+        data = {
+            'grant_type' : 'refresh_token',
+            'refresh_token' : self.refresh_token
+        }
+        
+        response = requests.post("https://securetoken.googleapis.com/v1/token?key={}".format(self.apikey), headers=headers, data=data).json()
+        if not response:
+            _LOGGER.error('Unable to fetch refresh token!')
+            return
+        self.id_token = response['id_token']
+        
+    def __fetch_address_id(self):
+        headers = { 
+            'authorization': self.id_token
+        }
+        
+        response = requests.get("https://europe-west3-burgerportaal-production.cloudfunctions.net/exposed/organisations/{}/address?zipcode={}&housenumber={}".format(
+            self.company_code, self.postcode, self.street_number), headers=headers).json()
+        if not response:
+            _LOGGER.error('Unable to fetch refresh token!')
+            return
+        
+        if self.suffix:
+            for address in response:
+                if 'addition' in address and address['addition'] == self.suffix.upper():
+                    self.address_id = address['addressId']
+        
+        if not self.address_id:
+            self.address_id = response[0]['addressId']
+
+    def __get_data(self):
+        headers = { 
+            'authorization': self.id_token
+        }
+        
+        response = requests.get("https://europe-west3-burgerportaal-production.cloudfunctions.net/exposed/organisations/{}/address/{}/calendar".format(
+            self.company_code, self.address_id), headers=headers).json()
+        return response
+
+    async def update(self):
+        _LOGGER.debug('Updating Waste collection dates using Rest API')
+
+        self.collections.remove_all()
+
+        try:
+            if not self.refresh_token:
+                await self.hass.async_add_executor_job(self.__fetch_refresh_token)
+            else:
+                await self.hass.async_add_executor_job(self.__fetch_id_token)
+                
+            if not self.address_id:
+                await self.hass.async_add_executor_job(self.__fetch_address_id)
+                
+            response = await self.hass.async_add_executor_job(self.__get_data)
+            
+            if not response:
+                _LOGGER.error('No Waste data found!')
+                return
+
+            for item in response:
+                if not item['collectionDate']:
+                    continue
+
+                waste_type = self.map_waste_type(item['fraction'].lower())
+                if not waste_type:
+                    continue
+
+                collection = WasteCollection.create(
+                    date=datetime.strptime(item['collectionDate'].split("T")[0], '%Y-%m-%d'),
                     waste_type=waste_type
                 )
                 self.collections.add(collection)
@@ -385,7 +501,7 @@ class CirculusCollector(WasteCollector):
             r = await self.hass.async_add_executor_job(self.__get_data)
             response = r.json()
 
-            if not 'customData' in response or not response['customData']['response']['garbage']:
+            if not response or 'customData' not in response or not response['customData']['response']['garbage']:
                 _LOGGER.error('No Waste data found!')
                 return
 
@@ -464,6 +580,8 @@ class LimburgNetCollector(WasteCollector):
         'Grofvuil': WASTE_TYPE_BULKLITTER,
         'Groenafval': WASTE_TYPE_BULKYGARDENWASTE,
         'Tuin- En Snoeiafval': WASTE_TYPE_BULKYGARDENWASTE,
+        'Tuinafval': WASTE_TYPE_BULKYGARDENWASTE,
+        'Keukenafval': WASTE_TYPE_GREEN,
         # 'grof huisvuil afroep': WASTE_TYPE_BULKLITTER,
         # 'tak-snoeiafval': WASTE_TYPE_BULKYGARDENWASTE,
         'Glas': WASTE_TYPE_GLASS,
@@ -603,6 +721,11 @@ class OmrinCollector(WasteCollector):
 
             response = await self.hass.async_add_executor_job(self.__get_data)
             self.collections.remove_all()
+            
+            if not response:
+                _LOGGER.error('No Waste data found!')
+                return
+            
             for item in response:
                 if not item['Datum']:
                     continue
@@ -871,8 +994,7 @@ class RecycleApp(WasteCollector):
         _LOGGER.debug('Updating Waste collection dates using Rest API')
 
         try:
-            if (not self.accessToken):
-                await self.hass.async_add_executor_job(self.__get_access_token)
+            await self.hass.async_add_executor_job(self.__get_access_token)
 
             if (not self.postcode_id or not self.street_id) and self.accessToken:
                 await self.hass.async_add_executor_job(self.__get_location_ids)
@@ -1005,7 +1127,7 @@ class XimmioCollector(WasteCollector):
             r = await self.hass.async_add_executor_job(self.__get_data)
             response = r.json()
 
-            if not response['dataList']:
+            if not response or not response['dataList']:
                 _LOGGER.error('No Waste data found!')
                 return
 

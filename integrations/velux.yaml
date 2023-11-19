@@ -1,0 +1,4 @@
+---
+velux:
+  host: !secret velux_ip
+  password: !secret velux_password

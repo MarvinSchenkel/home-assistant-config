@@ -1,0 +1,17 @@
+---
+alias: Start all_devices
+mode: single
+sequence:
+  - if:
+      - condition: state
+        entity_id: media_player.mass_all_devices
+        state:
+          - idle
+          - "off"
+        for: "00:01:00"
+    then:
+      - service: media_player.media_play
+        data: {}
+        target:
+          entity_id: media_player.mass_all_devices
+  - delay: "00:02:00"

@@ -1,0 +1,20 @@
+---
+description: >
+  Automatically reboot the Velux Hub to prevent SSL handshake errors
+alias: house_reboot_velux_gateway
+id: 285c9998-aa21-4b8a-80fd-f742efa6bd0f
+mode: single
+
+trigger:
+  - platform: homeassistant
+    event: shutdown
+
+action:
+  - service: velux.reboot_gateway
+    data: {}
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+      message: >-
+        ⛭ De Velux Hub wordt herstart!

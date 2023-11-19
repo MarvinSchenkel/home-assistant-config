@@ -1,0 +1,38 @@
+---
+description: Send a notification when the sunscreen changes position
+alias: notification_sunscreen
+mode: single
+id: b14e125e-baa1-4aef-b6cc-e4baf74cceab
+
+trigger:
+  - platform: state
+    entity_id: input_select.garden_current_cover_scene
+
+action:
+  - if:
+      - condition: state
+        entity_id:
+          - input_select.garden_current_cover_scene
+        state: "sunblock"
+    then:
+      - service: script.send_notification
+        data:
+          receivers:
+            - "marvin"
+            - "laura"
+          message: >
+            🏖️ De zon schijnt, ik heb het zonnescherm dicht gedaan.
+
+  - if:
+      - condition: state
+        entity_id:
+          - input_select.garden_current_cover_scene
+        state: "open"
+    then:
+      - service: script.send_notification
+        data:
+          receivers:
+            - "marvin"
+            - "laura"
+          message: >
+            🏖️ De zon is weg, ik heb het zonnescherm weer open gedaan.

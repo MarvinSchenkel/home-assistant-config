@@ -19,46 +19,48 @@ trigger:
     entity_id: binary_sensor.presence_mancave
     to: "off"
     for:
-      seconds: 120
+      seconds: 300
 
   - platform: state
     entity_id:
       - binary_sensor.mancave_is_dark
-      - input_select.marvin_sleep_status_dropdown
-
-  - platform: state
-    entity_id:
+      - input_select.mancave_room_mode
       - media_player.mancave_tv
-    to: "off"
-    id: "tv_off"
-
-  - platform: state
-    entity_id:
-      - media_player.mancave_tv
-    to: "on"
-
-  - platform: event
-    event_type: call_service
-    event_data:
-      domain: scene
-      service: turn_on
-      service_data:
-        entity_id: scene.mancave_lights_normal
-    id: "scene_normal"
 
 variables:
   anchors:
-    - &presence_detected
+    - &condition_presence_detected
       alias: "Check if someone is in the mancave"
       condition: state
       entity_id: binary_sensor.presence_mancave
       state: "on"
 
-    - &is_dark
+    - &condition_is_dark
       alias: "Check if it's dark enough to turn on the light"
       condition: state
       entity_id: binary_sensor.mancave_is_dark
       state: "on"
+
+    - &condition_tv_game
+      alias: "Check if we're playing a game"
+      condition: state
+      entity_id: media_player.mancave_tv
+      attribute: "source"
+      state:
+        - "PS5 Game Console"
+        - "Nintendo Switch Game Console"
+
+    - &condition_tv_movie
+      alias: "Check if we're watching a movie or serie"
+      condition: state
+      entity_id: media_player.mancave_tv
+      attribute: "source"
+      state:
+        - "Netflix"
+        - "YouTube"
+        - "Plex"
+        - "Disney+"
+        - "Media Player"
 
     - &turn_off
       alias: "Turn lights off"
@@ -67,21 +69,11 @@ variables:
         entity_id: light.mancave
         transition: 5
 
-    - &turn_on_dim
-      alias: "Turn on TV scene"
+    - &turn_on_scene
+      alias: "Turn on scene"
       service: scene.turn_on
-      target:
-        entity_id: scene.mancave_lights_dim
       data:
-        transition: 5
-
-    - &turn_on_normal
-      alias: "Turn on normal scene"
-      service: scene.turn_on
-      target:
-        entity_id: scene.mancave_lights_normal
-      data:
-        transition: 1
+        transition: 3
 
 condition: []
 
@@ -90,33 +82,53 @@ action:
       - conditions:
           - condition: state
             entity_id:
-              - input_select.marvin_sleep_status_dropdown
-            state: "Slaapt"
+              - input_select.mancave_room_mode
+            state: "Slaap"
         sequence:
           - *turn_off
 
       - conditions:
-          - *presence_detected
-          - *is_dark
-          - or:
-              - alias: "Activate TV scene of TV is on"
-                condition: state
-                entity_id:
-                  - media_player.mancave_tv
-                state: "on"
-              - alias: "Or when I just woke up"
-                condition: state
-                entity_id:
-                  - input_select.marvin_sleep_status_dropdown
-                state: "Net wakker"
+          - *condition_presence_detected
+          - *condition_is_dark
+          - alias: "Or when I just woke up"
+            condition: state
+            entity_id:
+              - input_select.mancave_room_mode
+            state: "Net wakker"
         sequence:
-          - *turn_on_dim
+          - <<: *turn_on_scene
+            target:
+              entity_id: scene.mancave_lights_rusten
 
       - conditions:
-          - *presence_detected
-          - *is_dark
+          - *condition_presence_detected
+          - *condition_is_dark
+          - *condition_tv_game
         sequence:
-          - *turn_on_normal
+          - variables:
+              game_scenes:
+                - 'arctischedageraad'
+                - 'blauweplaneet'
+                - 'sterrenlicht'
+              game_scene: "{{ game_scenes | random }}"
+          - <<: *turn_on_scene
+            target:
+              entity_id: scene.mancave_lights_{{ game_scene }}
+
+      - conditions:
+          - *condition_presence_detected
+          - *condition_is_dark
+          - *condition_tv_movie
+        sequence:
+          - *turn_off
+
+      - conditions:
+          - *condition_presence_detected
+          - *condition_is_dark
+        sequence:
+          - <<: *turn_on_scene
+            target:
+              entity_id: scene.mancave_lights_natuurlijklicht
 
     default:
       - *turn_off

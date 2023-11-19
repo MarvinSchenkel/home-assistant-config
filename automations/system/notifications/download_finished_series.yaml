@@ -6,6 +6,7 @@ id: b0717cd7-d9dc-48fb-918d-aa8807a9ee93
 trigger:
   - platform: webhook
     webhook_id: "download_finished"
+    local_only: true
 
 variables:
   series: "{{ trigger.json.series.title }}"

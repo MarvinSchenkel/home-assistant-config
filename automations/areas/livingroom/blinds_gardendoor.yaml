@@ -23,15 +23,17 @@ trigger:
       - binary_sensor.sun_should_close_south_blinds
       - input_boolean.setting_manual_blinds
       - input_boolean.livingroom_cover_manual_control
-      - binary_sensor.house_mode_everyone_asleep
-      - binary_sensor.house_mode_someone_awake
-      - binary_sensor.house_mode_someone_just_awake
+      - binary_sensor.is_hot_day
     from:
       - "off"
       - "on"
     to:
       - "off"
       - "on"
+
+  - platform: state
+    entity_id:
+      - input_select.livingroom_room_mode
 
   - platform: numeric_state
     entity_id:
@@ -184,33 +186,27 @@ action:
 
       - alias: "Fully close blinds when we go to sleep or it is a hot day"
         conditions:
-          - condition: or
-            conditions:
-              - condition: or
-                conditions:
+          - or:
+              - or:
                   - condition: state
-                    entity_id: binary_sensor.house_mode_everyone_asleep
+                    entity_id: input_select.livingroom_room_mode
                     state:
-                      - "on"
-                  - and:
-                      - condition: state
-                        entity_id: binary_sensor.house_mode_someone_just_awake
-                        state:
-                          - "on"
-                      - condition: state
-                        entity_id:
-                          - input_select.gardendoor_current_cover_scene
-                        state: "closed"
-              - condition: state
-                entity_id:
-                  - binary_sensor.sun_should_close_south_blinds
-                state: "on"
-              - condition: and
-                conditions:
+                      - "Slaap"
+              - and:
                   - condition: state
                     entity_id:
-                      - media_player.apple_tv
-                    state: "playing"
+                      - binary_sensor.sun_should_close_south_blinds
+                    state: "on"
+                  - alias: Keep the heat out of the house on hot days
+                    condition: state
+                    entity_id:
+                      - binary_sensor.is_hot_day
+                    state: "on"
+              - and:
+                  - condition: state
+                    entity_id:
+                      - media_player.sony_kd_65a1
+                    state: "on"
                   - condition: state
                     entity_id:
                       - input_select.gardendoor_current_cover_scene
@@ -235,6 +231,11 @@ action:
                     below: 0
                   - condition: time
                     before: "12:00:00"
+              - and:
+                  - condition: state
+                    entity_id: input_select.livingroom_room_mode
+                    state:
+                      - "Net wakker"
         sequence:
           - *cover_half_closed
 

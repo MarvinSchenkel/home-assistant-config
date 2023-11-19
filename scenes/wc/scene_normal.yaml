@@ -1,8 +1,0 @@
----
-name: wc_lights_normal
-id: 8a11fa00-2ed1-435d-a50a-4597fda9d4dc
-icon: mdi:lightbulb
-entities:
-  light.fibaro_wc:
-    state: "on"
-    brightness_pct: 80

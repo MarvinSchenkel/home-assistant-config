@@ -1,0 +1,7 @@
+---
+name: Kamer modus
+icon: "mdi:theme-light-dark"
+options:
+  - Wakker
+  - Net wakker
+  - Slaap

@@ -1,0 +1,16 @@
+---
+alias: areas_bathroom_room_mode
+description: Determine the room mode, syncing it to the master bedroom for now
+mode: queued
+id: 538f6d3e-13a6-44f5-b7d5-e04b08403743
+
+trigger:
+  - platform: state
+    entity_id:
+      - input_select.master_bedroom_room_mode
+
+action:
+  - service: input_select.select_option
+    entity_id: input_select.bathroom_room_mode
+    data:
+      option: "{{ states('input_select.master_bedroom_room_mode') }}"

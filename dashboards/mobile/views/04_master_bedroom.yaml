@@ -5,8 +5,22 @@ cards:
   - type: vertical-stack
     cards:
       - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
         content: >
           ## Slaapkamer
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_select.master_bedroom_room_mode
+          - type: vertical-stack
+            cards: []
 
       - type: horizontal-stack
         cards:
@@ -37,3 +51,50 @@ cards:
           - type: tile
             entity: input_boolean.masterbedroom_cover_manual_control
             name: Handmatig slaapkamer
+            tap_action:
+              action: toggle
+            icon_tap_action:
+              action: more-info
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: light.master_bedroom_left
+            name: Nachtkastje links
+            features:
+              - type: "light-brightness"
+          - type: tile
+            entity: light.master_bedroom_right
+            name: Nachtkastje rechts
+            features:
+              - type: "light-brightness"
+
+      - type: horizontal-stack
+        cards:
+            - type: tile
+              entity: light.master_bedroom_ceiling
+              name: Plafond
+              features:
+                - type: "light-brightness"
+            - type: vertical-stack
+              cards: []
+
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Sensoren
+
+      - type: "horizontal-stack"
+        cards:
+          - type: tile
+            entity: binary_sensor.presence_master_bedroom
+            name: Aanwezigheid
+          - type: tile
+            entity: sensor.pir_master_bedroom_temperature
+            name: Temperatuur

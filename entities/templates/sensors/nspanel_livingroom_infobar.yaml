@@ -2,17 +2,10 @@
 sensor:
   - name: nspanel_livingroom_infobar
     state: >-
-      {% if state_attr("media_player.mass_sonos_livingroom", "media_title") != "TV"
-        and is_state("media_player.mass_sonos_livingroom", "playing") %}
-      {{ state_attr("media_player.mass_sonos_livingroom", "media_artist") }}
+      {% if is_state("media_player.mass_livingroom", "playing") %}
+      {{ state_attr("media_player.mass_livingroom", "media_artist") }}
       -
-      {{ state_attr("media_player.mass_sonos_livingroom", "media_title") }}
-
-      {% elif state_attr("media_player.sonos_livingroom", "source") != "TV"
-        and is_state("media_player.sonos_livingroom", "playing") %}
-      {{ state_attr("media_player.sonos_livingroom", "media_artist") }}
-      -
-      {{ state_attr("media_player.sonos_livingroom", "media_title") }}
+      {{ state_attr("media_player.mass_livingroom", "media_title") }}
 
       {% elif states("sensor.openweathermap_forecast_precipitation") | float > 0.2 %}
       {{ states("sensor.openweathermap_forecast_precipitation") }}

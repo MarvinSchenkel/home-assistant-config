@@ -22,6 +22,12 @@ trigger:
       - media_player.mancave_tv
       - input_boolean.setting_manual_blinds
       - input_boolean.mancave_cover_manual_control
+    from:
+      - "off"
+      - "on"
+    to:
+      - "off"
+      - "on"
 
   - platform: state
     entity_id:
@@ -48,18 +54,22 @@ trigger:
       - sensor.sun_elevation
     below: 17.5
 
+  - platform: state
+    entity_id:
+      - binary_sensor.is_hot_day
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_azimuth
     above: 200
 
   - platform: state
-    entity_id: input_select.marvin_sleep_status_dropdown
-    to: "Slaapt"
+    entity_id: input_select.mancave_room_mode
+    to: "Slaap"
 
   - platform: state
     entity_id:
-      - input_select.marvin_sleep_status_dropdown
+      - input_select.mancave_room_mode
     to: "Wakker"
     id: "reset"
 
@@ -76,6 +86,11 @@ variables:
       service: input_boolean.turn_off
       target:
         entity_id: input_boolean.mancave_cover_manual_control
+
+    - &fully_closed
+      service: scene.turn_on
+      target:
+        entity_id: scene.mancave_cover_closed
 
 condition:
   - condition: state
@@ -111,6 +126,17 @@ action:
         sequence:
           - *manual_control_off
 
+      - alias: "Turn the blinds down when the room is in Sleep mode"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_select.mancave_room_mode
+            state:
+              - "Slaap"
+              - "Net wakker"
+        sequence:
+          - *fully_closed
+
       - alias: "Check if the blinds are not manually overridden"
         conditions:
           - alias: "When manual control is on"
@@ -133,16 +159,13 @@ action:
                 entity_id:
                   - media_player.mancave_tv
                 state: "on"
-              - condition: state
+              - alias: Keep the heat out of the house on hot days
+                condition: state
                 entity_id:
-                  - input_select.marvin_sleep_status_dropdown
-                state:
-                  - "Slaapt"
-                  - "Net wakker"
+                  - binary_sensor.is_hot_day
+                state: "on"
         sequence:
-          - service: scene.turn_on
-            target:
-              entity_id: scene.mancave_cover_closed
+          - *fully_closed
 
       # Sun is shining at my screen when I am working
       - conditions:
@@ -162,10 +185,6 @@ action:
             entity_id:
               - binary_sensor.marvin_is_working
             state: "on"
-          - condition: numeric_state
-            entity_id: sensor.buienradar_irradiance
-            above: 110
-
         sequence:
           - service: scene.turn_on
             target:
@@ -183,7 +202,6 @@ action:
                 entity_id:
                   - binary_sensor.marvin_is_working
                 state: "on"
-
         sequence:
           - service: scene.turn_on
             target:

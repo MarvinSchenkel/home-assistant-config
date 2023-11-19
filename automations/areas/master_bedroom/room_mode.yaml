@@ -1,0 +1,114 @@
+---
+alias: areas_master_bedroom_room_mode
+description: Determine the room mode
+mode: queued
+id: e153a617-7601-494d-8f23-13e6df694439
+
+trigger:
+  # Laura remote
+  - platform: event
+    id: "button_laura_one"
+    event_type: "zha_event"
+    event_data:
+      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      command: "single"
+
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      command: "hold"
+    id: "button_laura_hold"
+
+  # Marvin remote
+  - platform: event
+    id: "button_marvin_one"
+    event_type: "zha_event"
+    event_data:
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
+      command: "single"
+
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
+      command: "hold"
+    id: "button_marvin_hold"
+
+  - platform: state
+    id: "net_wakker_40m"
+    entity_id:
+      - input_select.master_bedroom_room_mode
+    to: "Net wakker"
+    for:
+      minutes: 40
+
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_master_bedroom
+    to: "off"
+    for:
+      minutes: 30
+
+  - platform: time
+    at: "09:30:00"
+
+variables:
+  anchors:
+    - &select_mode
+      service: input_select.select_option
+      entity_id: input_select.master_bedroom_room_mode
+
+action:
+  - choose:
+      - conditions:
+          - or:
+              - condition: trigger
+                id: "button_laura_one"
+              - condition: trigger
+                id: "button_marvin_one"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Slaap"
+
+      - conditions:
+          - or:
+              - condition: trigger
+                id: "button_laura_hold"
+              - condition: trigger
+                id: "button_marvin_hold"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Net wakker"
+
+      - conditions:
+          - condition: trigger
+            id: "net_wakker_40m"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+      - conditions:
+          - condition: time
+            after: "09:30:00"
+          - condition: time
+            before: "16:00:00"
+          - condition: state
+            entity_id:
+              - input_select.master_bedroom_room_mode
+            state: "Slaap"
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_master_bedroom
+            state: "off"
+            for:
+              minutes: 30
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Net wakker"
+
+    default: []

@@ -1,16 +1,36 @@
 ---
 # A binary indicator tracking whether it is light or dark in the room
+trigger:
+  - platform: numeric_state
+    entity_id:
+      - sensor.fp2_master_bedroom_luminance
+    above: 10
+    for:
+      seconds: 5
+  - platform: numeric_state
+    entity_id:
+      - sensor.fp2_master_bedroom_luminance
+    above: 75
+    for:
+      seconds: 5
+  - platform: numeric_state
+    entity_id:
+      - sensor.fp2_master_bedroom_luminance
+    below: 10
+    for:
+      seconds: 5
+
 binary_sensor:
   - name: master_bedroom_is_dark
     unique_id: c0548756-835b-4719-8539-4fbab21209bb
     state: >
       {%-
         if (
-          states("sensor.pir_master_bedroom_luminance") | int > 30
+          states("sensor.fp2_master_bedroom_luminance") | int > 10
           and is_state("light.master_bedroom_ceiling", "off")
         )
         or (
-          states("sensor.pir_master_bedroom_luminance") | int > 60
+          states("sensor.fp2_master_bedroom_luminance") | int > 75
         )
       -%}
         off

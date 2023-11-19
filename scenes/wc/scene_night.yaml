@@ -1,8 +1,0 @@
----
-name: wc_lights_night
-id: b4321e68-7656-46c4-a942-8a3fdd7c55b0
-icon: mdi:lightbulb
-entities:
-  light.fibaro_wc:
-    state: "on"
-    brightness_pct: 15

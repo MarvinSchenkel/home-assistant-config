@@ -1,0 +1,24 @@
+---
+description: >
+  Group sonos to the living room when there is music playing and motion is detected
+alias: areas_bathroom_group_speakers
+id: 2f985b72-d45e-4cbd-9d7c-bffd86e602bf
+
+use_blueprint:
+  path: group_speakers.yaml
+  input:
+    presence_entity: binary_sensor.presence_bathroom
+    target_media_player: media_player.mass_bathroom
+    no_presence_wait: 75
+    custom_conditions:
+      - condition: state
+        entity_id:
+          - schedule.silent_hours
+        state: "off"
+      - condition: state
+        entity_id:
+          - input_select.bathroom_room_mode
+        state: "Wakker"
+    custom_state_triggers:
+      - schedule.silent_hours
+      - input_select.bathroom_room_mode

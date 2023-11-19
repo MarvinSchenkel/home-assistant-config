@@ -8,9 +8,9 @@ binary_sensor:
         if (
           states("sensor.pir_kitchen_luminance") | int > 10
           and is_state("light.led_kitchen", "off")
-          and is_state("light.fibaro_kitchen", "off")
+          and is_state("light.kitchen_spot", "off")
         )
-        or states("sensor.pir_kitchen_luminance") | int > 40
+        or states("sensor.pir_kitchen_luminance") | int > 75
       -%}
         off
       {%- else -%}

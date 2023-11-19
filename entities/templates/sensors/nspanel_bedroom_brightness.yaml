@@ -1,14 +1,10 @@
 ---
 trigger:
   - platform: state
-    entity_id: binary_sensor.house_mode_someone_asleep
+    entity_id: input_select.master_bedroom_room_mode
   - platform: state
     entity_id: binary_sensor.presence_master_bedroom
     to: "on"
-  - platform: state
-    entity_id:
-      - input_select.zoey_sleep_status_dropdown
-    to: "Slaapt boven"
   - platform: state
     entity_id: binary_sensor.presence_master_bedroom
     to: "off"
@@ -20,9 +16,8 @@ sensor:
     unique_id: a53a609c-724c-45dd-a004-c4722dad0077
     state: >
       {%-
-        if is_state("binary_sensor.house_mode_someone_asleep", "on")
+        if not is_state("input_select.master_bedroom_room_mode", "Wakker")
         or is_state("binary_sensor.presence_master_bedroom", "off")
-        or is_state("input_select.zoey_sleep_status_dropdown", "Slaapt boven")
       -%}
       {{ 0 | int }}
       {%-

@@ -16,6 +16,15 @@ variables:
       condition: state
       entity_id: input_select.current_light_schedule
 
+    - &turn_off
+      alias: "Turn the lights off"
+      service: light.turn_off
+      data:
+        entity_id:
+          - light.attic_spot_left
+          - light.attic_spot_right
+        transition: 5
+
 trigger:
   - platform: homeassistant
     event: start
@@ -55,33 +64,15 @@ action:
                   - binary_sensor.house_mode_someone_asleep
                 state: "on"
         sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to night scene"
-            data:
-              entity_id: scene.attic_lights_night
+          - *turn_off
 
       - conditions:
           - *presence_detected
-          - <<: *is_light_schedule
-            state: "dim"
         sequence:
           - service: scene.turn_on
-            alias: "Turn the hall lights to dim scene"
+            alias: "Turn the hall lights on"
             data:
-              entity_id: scene.attic_lights_dim
-
-      - conditions:
-          - *presence_detected
-          - <<: *is_light_schedule
-            state: "normal"
-        sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to normal scene"
-            data:
-              entity_id: scene.attic_lights_normal
+              entity_id: scene.attic_lights_natuurlijklicht
 
     default:
-      - service: light.turn_off
-        data:
-          entity_id: light.fibaro_third_floor_stairs
-          transition: 5
+      - *turn_off

@@ -11,10 +11,7 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.house_mode_someone_asleep
-  - platform: time
-    at:
-      - "19:00:01"
-      - "07:00:01"
+      - schedule.silent_hours
 
 action:
   - alias: "Disable the doorbell when someone is sleeping"
@@ -25,10 +22,11 @@ action:
                 condition: state
                 entity_id: binary_sensor.house_mode_someone_asleep
                 state: "on"
-              - alias: "It is Zoey's bedtime"
-                condition: time
-                after: "19:00:00"
-                before: "07:00:00"
+              - alias: "Quiet hours are active"
+                condition: state
+                entity_id:
+                  - schedule.silent_hours
+                state: "on"
         sequence:
           - alias: "Turn the doorbell off"
             service: switch.turn_off

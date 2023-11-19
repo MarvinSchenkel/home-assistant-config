@@ -17,15 +17,7 @@ trigger:
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_everyone_asleep
-      - binary_sensor.house_mode_someone_awake
-      - binary_sensor.house_mode_someone_just_awake
-    from:
-      - "off"
-      - "on"
-    to:
-      - "on"
-      - "off"
+      - input_select.livingroom_room_mode
 
   - platform: state
     entity_id:
@@ -46,30 +38,26 @@ trigger:
     at: "20:45:00"
     id: "time_close_kitchen"
 
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "step"
-      params:
-        step_mode: 1
+  - platform: device
+    device_id: 063e0720e7172ed87824f117033874a5
+    domain: hue
+    type: initial_press
+    subtype: 3
+    unique_id: c6db055a-584c-4e75-b9cc-9f153d5ba604
     id: "hue_dimmer_down_press"
 
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "step"
-      params:
-        step_mode: 0
+  - platform: device
+    device_id: 063e0720e7172ed87824f117033874a5
+    domain: hue
+    type: initial_press
+    subtype: 2
+    unique_id: 140cfc6c-e965-40a7-9f55-976627206e31
     id: "hue_dimmer_up_press"
 
   - platform: state
     entity_id:
-      - scene.kitchen_cover_closed
       - scene.kitchen_cover_halfclosed
       - scene.kitchen_cover_halfopen
-      - scene.kitchen_cover_open
     id: kitchen_blinds
 
   - platform: time
@@ -166,14 +154,14 @@ action:
               - condition: time
                 after: "20:45:00"
               - condition: state
-                entity_id: binary_sensor.house_mode_everyone_asleep
+                entity_id: input_select.livingroom_room_mode
                 state:
-                  - "on"
+                  - "Slaap"
               - and:
                   - condition: state
-                    entity_id: binary_sensor.house_mode_someone_just_awake
+                    entity_id: input_select.livingroom_room_mode
                     state:
-                      - "on"
+                      - "Net wakker"
                   - condition: state
                     entity_id:
                       - input_select.kitchen_current_cover_scene

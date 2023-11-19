@@ -11,31 +11,76 @@ trigger:
     entity_id:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
+      - input_select.music_source
 
   - platform: homeassistant
     event: start
     id: "ha_start"
 
+# TIDAL
+# Ambient / Relax: tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526
+# Anjuna: tidal://playlist/c9ebc92a-3f37-40ea-babf-175dfd02df52
+# Chill: tidal://playlist/4080a8cf-2a30-41e1-b87a-fda4152d621e
+# Chill step: tidal://playlist/5c7f2917-4dc7-4334-babd-88feef327b94
+
+# YT MUSIC
+# Ambient / Relax: ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye
+# Anjuna: ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM
+# Chill: ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5
+# Chill step: ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork
+# Reflections: ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA
+
 variables:
-  just_awake_music: ["Classical Meditation", "Tranquil spa day"]
-  early_morning_music: ["Chill", "Chill step", "Reflections"]
-  morning_music: ["Chill step", "Ambient / Relax"]
-  day_music: ["Ambient / Relax", "deepchill", "Deep"]
-  evening_music: ["Ambient / Relax"]
-  christmas_music: ["Christmas Hits"]
+  just_awake_music:
+    - "Classical Meditation"
+    - "Tranquil spa day"
+  early_morning_music_tidal:
+    - "tidal://playlist/4080a8cf-2a30-41e1-b87a-fda4152d621e"
+    - "tidal://playlist/5c7f2917-4dc7-4334-babd-88feef327b94"
+  early_morning_music_ytmusic:
+    - "ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5"
+    - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
+    - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
+  morning_music_tidal:
+    - "tidal://playlist/5c7f2917-4dc7-4334-babd-88feef327b94"
+    - "tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526"
+  morning_music_ytmusic:
+    - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
+  day_music_tidal:
+    - "tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526"
+    - "tidal://playlist/c9ebc92a-3f37-40ea-babf-175dfd02df52"
+  day_music_ytmusic:
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
+    - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM"
+  evening_music_tidal:
+    - "tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526"
+  evening_music_ytmusic:
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
+  christmas_music:
+    - "Christmas Hits"
 
   active_schedule: '{{ states("input_select.current_music_schedule") }}'
+  active_source: '{{ states("input_select.music_source") }}'
   music_to_play: >-
     {% if active_schedule == "just_awake" %}
       {{ just_awake_music }}
-    {% elif active_schedule == "early_morning" %}
-      {{ early_morning_music }}
-    {% elif active_schedule == "morning" %}
-      {{ morning_music }}
-    {% elif active_schedule == "day" %}
-      {{ day_music }}
-    {% elif active_schedule == "evening" %}
-      {{ evening_music }}
+    {% elif active_schedule == "early_morning" and active_source == "Youtube Music" %}
+      {{ early_morning_music_ytmusic }}
+    {% elif active_schedule == "morning" and active_source == "Youtube Music"  %}
+      {{ morning_music_ytmusic }}
+    {% elif active_schedule == "day" and active_source == "Youtube Music"  %}
+      {{ day_music_ytmusic }}
+    {% elif active_schedule == "evening" and active_source == "Youtube Music"  %}
+      {{ evening_music_ytmusic }}
+    {% elif active_schedule == "early_morning" and active_source == "Tidal" %}
+      {{ early_morning_music_tidal }}
+    {% elif active_schedule == "morning" and active_source == "Tidal"  %}
+      {{ morning_music_tidal }}
+    {% elif active_schedule == "day" and active_source == "Tidal"  %}
+      {{ day_music_tidal }}
+    {% elif active_schedule == "evening" and active_source == "Tidal"  %}
+      {{ evening_music_tidal }}
     {% endif %}
   radio_mode: >-
     {% if active_schedule == "just_awake" %}
@@ -43,6 +88,23 @@ variables:
     {% else %}
       {{ true }}
     {% endif %}
+  anchors:
+    - &replace_music
+      service: mass.play_media
+      data:
+        media_id: "{{ music_to_play }}"
+        enqueue: replace_next
+        radio_mode: "{{ radio_mode }}"
+      target:
+        entity_id: media_player.mass_all_devices
+    - &add_music
+      service: mass.play_media
+      data:
+        media_id: "{{ music_to_play }}"
+        enqueue: add
+        radio_mode: "{{ radio_mode }}"
+      target:
+        entity_id: media_player.mass_all_devices
 
 condition:
   - condition: state
@@ -57,75 +119,31 @@ action:
       - delay:
           minutes: 1
   - if:
+      # Clear queue at the start of the day
       - condition: not
         conditions:
           - condition: state
             entity_id:
-              - media_player.mass_sonos_livingroom
+              - media_player.mass_all_devices
             state: "playing"
+      - "{{ active_schedule == 'just_awake' }}"
     then:
-      - service: mass.queue_command
-        data:
-          command: clear
-        target:
-          entity_id: media_player.mass_sonos_livingroom
-  - service: mass.queue_command
-    data:
-      command: play_media
-      uri: "{{ music_to_play }}"
-      enqueue_mode: replace_next
-      radio_mode: "{{ radio_mode }}"
-    target:
-      entity_id: media_player.mass_sonos_livingroom
+      - service: media_player.clear_playlist
+        entity_id: media_player.mass_all_devices
+  - *replace_music
   - if:
       - "{{ now().month == 12 and now().day > 8 and now().day < 27 }}"
       - "{{ active_schedule in ['morning', 'day'] }}"
     then:
       # Dear Laura, 25% Christmas music is more than enough! /rant
-      - service: mass.queue_command
+      - *add_music
+      - *add_music
+      - *add_music
+      - *add_music
+      - *add_music
+      - service: mass.play_media
         data:
-          command: play_media
-          uri: "{{ music_to_play }}"
-          enqueue_mode: add
-          radio_mode: "{{ radio_mode }}"
+          media_id: "{{ christmas_music }}"
+          enqueue: add
         target:
-          entity_id: media_player.mass_sonos_livingroom
-      - service: mass.queue_command
-        data:
-          command: play_media
-          uri: "{{ music_to_play }}"
-          enqueue_mode: add
-          radio_mode: "{{ radio_mode }}"
-        target:
-          entity_id: media_player.mass_sonos_livingroom
-      - service: mass.queue_command
-        data:
-          command: play_media
-          uri: "{{ music_to_play }}"
-          enqueue_mode: add
-          radio_mode: "{{ radio_mode }}"
-        target:
-          entity_id: media_player.mass_sonos_livingroom
-      - service: mass.queue_command
-        data:
-          command: play_media
-          uri: "{{ music_to_play }}"
-          enqueue_mode: add
-          radio_mode: "{{ radio_mode }}"
-        target:
-          entity_id: media_player.mass_sonos_livingroom
-      - service: mass.queue_command
-        data:
-          command: play_media
-          uri: "{{ music_to_play }}"
-          enqueue_mode: add
-          radio_mode: "{{ radio_mode }}"
-        target:
-          entity_id: media_player.mass_sonos_livingroom
-      - service: mass.queue_command
-        data:
-          uri: "{{ christmas_music }}"
-          enqueue_mode: add
-          command: play_media
-        target:
-          entity_id: media_player.mass_sonos_livingroom
+          entity_id: media_player.mass_all_devices

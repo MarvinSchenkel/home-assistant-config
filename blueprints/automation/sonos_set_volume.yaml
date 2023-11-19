@@ -57,6 +57,12 @@ blueprint:
           min: 0
           max: 100
           unit_of_measurement: "%"
+    custom_conditions:
+      name: Custom conditions
+      default: []
+      description: >
+        A list of custom condititions that also have to be met before turning on
+        the media player
 
 mode: restart
 max_exceeded: silent
@@ -80,15 +86,20 @@ trigger:
 
   - platform: state
     entity_id:
-      - media_player.sonos_livingroom
+      - media_player.woonkamer
     attribute: source
+
+  - platform: state
+    entity_id: !input sonos
+    to: "playing"
 
 condition:
   - alias: "Only control the volume when we are automating the music"
     condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
-  - '{{ state_attr("media_player.sonos_livingroom", "source")  != "TV" }}'
+  - condition: and
+    conditions: !input custom_conditions
 
 action:
   - variables:

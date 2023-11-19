@@ -1,144 +1,204 @@
+---
 mobile:
-  text-color: "rgba(255, 255, 255, 0.4)"
-  primary-text-color: "var(--text-color)"
-  background-color: "linear-gradient(3deg, #1c466e, #6f617e, #689ac1)"
-  primary-background-color: "var(--background-color)"
-  secondary-background-color: "#3a3c55"
-  card-background-color: "var(--ha-card-background)"
-  accent-color: "#74e5f2"
-  accent-medium-color: "var(--accent-color)"
-  primary-color: "var(--accent-color)"
-  app-header-text-color: var(--primary-text-color)
-  app-header-background-color: "#689ac1"
-  table-row-background-color: var(--primary-background-color)
-  table-row-alternative-background-color: var(--secondary-background-color)
-  sidebar-background-color: var(--card-background-color)
-  divider-color: rgba(225, 225, 225, 0.12)
+  # version 1.0.1
+  # By LRvdLinden
+  # Journal
+  state-icon-color: "rgb(var(--color-theme))"
+  border-radius: "20px"
+  ha-card-border-radius: "var(--border-radius)"
+  error-color: "var(--google-red)"
+  warning-color: "var(--google-yellow)"
+  success-color: "var(--google-green)"
+  info-color: "var(--google-blue)"
+  divider-color: "rgba(var(--color-theme),.12)"
+  accent-color: "var(--google-yellow)"
+  ha-dialog-border-radius: "10px"
+  # fix added border-lines in 2022.11
+  ha-card-border-width: "0px"
 
-  #edited
-  ha-card-box-shadow: none
-  ha-card-background: "#3a3c55"
-  grid-card-gap: 5%
-  masonry-view-card-margin: 0px
-  ha-card-header-color: "rgba(255, 255, 255, 0.8)"
-  ha-card-header-font-family: SF Text
-  ha-card-header-font-size: 2.4vw
-  state-icon-color: "#9da0a2"
-  state-icon-active-color: "#3182b7"
-  switch-checked-color: "#70889e"
-  switch-unchecked-button-color: "#3b4041"
-  switch-unchecked-color: "#70889e"
-  switch-checked-button-color: "var(--accent-color)"
-  switch-unchecked-track-color: "var(--secondary-background-color)"
-  switch-checked-track-color: "var(--secondary-background-color)"
-
-  paper-slider-knob-color: "var(--accent-color)"
-  paper-slider-pin-color: "var(--secondary-background-color)"
-  paper-slider-active-color: "var(--accent-color)"
-  paper-slider-container-color: "var(--secondary-background-color)"
-  mdc-dialog-scrim-color: rgba(0, 0, 0, 0.5)
-  paper-toast-color: var(--primary-text-color)
-  paper-toast-background-color: "#1b1b1bf2"
-  vertical-stack-card-margin: 0
-  secondary-text-color: "#74e5f2"
-  text-medium-light-color: "#A0A2A8"
-  text-medium-color: "#80828A"
-  disabled-text-color: "#626569"
-
-  # Main Colors
-
-  markdown-code-background-color: "var(--background-color)"
-
-  # Icons
-  paper-item-icon-color: "rgba(255, 255, 255, 0.4)"
-  paper-item-icon-active-color: "var(--accent-color)"
-
-  # Sidebar
-  # Sliders
-
-  # Toggle:
-  paper-toggle-button-checked-bar-color: "var(--accent-color)"
-  mdc-theme-primary: "var(--accent-color)"
-
-  # Switch
-
-  # Radio Button
-  paper-radio-button-checked-color: "var(--accent-color)"
-
-  # Popups
-  more-info-header-background: "#132c41"
-  paper-dialog-background-color: "#132c41"
-
-  # Badges
-  label-badge-background-color: "var(--background-color)"
-  label-badge-text-color: "var(--text-primary-color)"
-  label-badge-red: "rgba(73,85,108,1)"
-  label-badge-blue: "rgba(26,137,245,1)"
-  label-badge-green: "rgba(0,202,139,1)"
-  label-badge-yellow: "rgba(222,176,107,1)"
-
-  paper-input-container-focus-color: "var(--accent-color)"
-
-  # Mini Mediaplayer
-  mini-media-player-base-color: "var(--text-color)"
-  mini-media-player-accent-color: "var(--accent-color)"
-
-  # Card-Mod #####################################################################
-  # Uncomment the Code below if you have card-mod installed and want blur effect #
-  ################################################################################
-
-  card-mod-theme: mobile
-
-  card-mod-more-info-yaml: |
-    $: |
-      .mdc-dialog .mdc-dialog__scrim {
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        background: rgba(0,0,0,0.1);
-      } 
-      .mdc-dialog .mdc-dialog__container .mdc-dialog__surface {
-        box-shadow: none !important;
-        border-radius: var(--ha-card-border-radius);
-      }
-    .: |
-      :host {
-        --ha-card-box-shadow: none;
-      }
-
-  # card-mod-root: |
-  #   ha-app-layout {
-  #     background: url('/local/background.png');
-  #     background-size: cover;
-  #   }
-
+  card-mod-theme: "minimalist-ios-tapbar"
+  header-height: "78px"
   card-mod-view-yaml: |
-    .: |
-      hui-view {
-        min-height: 100vh;
+    "*:first-child$": |
+      #columns .column > * {
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 5px;
       }
-    grid-layout:
-      $: |
-        #root {
-          margin: 0 !important;
+  # Move navbar
+  card-mod-root-yaml: |
+    ha-tabs$: |
+      #tabsContent {
+        width: 97%;
+      }
+      paper-icon-button {
+        display: none;
+      }
+    .: |
+      @media (orientation: portrait) {
+        a.menu-link[target="_blank"], ha-button-menu, ha-menu-button, [main-title] {
+          display: none !important;
         }
-
-  card-mod-card: |
-    /* * * * * * * * * * * * * * * * * *
-    *                                 *
-    *           BUTTON CARD           *
-    *                                 *
-    * * * * * * * * * * * * * * * * * */
-    .type-button {
-      display: block;
-      color: rgb(255, 255, 255);
-      opacity: 0.2;
-      transition: 0.4s;
-    }
-    .type-button:hover {
-      opacity: 0.5;
-      transition: none;
-    }
-    .type-button:active {
-      opacity: 0.7;
-      transition: none;
-    }
+      div#view{
+        transform: initial;
+        padding: 0 !important;
+        position: fixed !important;
+        margin: 0 !important;
+        width: 100%;
+        height: 100% !important;
+      }
+      .header {
+        top: auto !important;
+        bottom: 0px !important;
+        box-shadow: var(--footer-shadow);
+        height: var(--header-height) !important;
+      }
+      .toolbar {
+        height: var(--header-height) !important;
+        padding: 10px 0px !important;
+        background: var( --ha-card-background, var(--card-background-color) );
+      }
+      #view {
+        margin-top: calc(-1 * var(--header-height)) !important;
+        padding-bottom: var(--header-height) !important;
+      }
+      ha-tabs {
+        --paper-tabs-selection-bar-color: var(--header-tab-indicator-color) !important;
+        --mdc-icon-size: 26px;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        margin-top:15px;
+        height:var(--header-height) !important;
+      }
+      paper-tab[aria-selected=true] {
+        color: var(--header-active-tab-color);
+        background-color: var(--header-active-tab-bg-color);
+      }
+      paper-tab {
+        color: var(--header-all-tabs-color);
+        border-radius: 25px;
+        height:50px;
+        padding: 0 20px;
+      }
+  # Color themes
+  modes:
+    light:
+      # main interface colors
+      primary-color: "#434343"
+      google-red: "#F54436"
+      google-green: "#01C852"
+      google-yellow: "#FF9101"
+      google-blue: "#3D5AFE"
+      google-violet: "#661FFF"
+      google-grey: "#BBBBBB"
+      color-red: "245, 68, 54"
+      color-green: "1, 200, 82"
+      color-yellow: "255, 145, 1"
+      color-blue: "61, 90, 254"
+      color-purple: "102, 31, 255"
+      color-grey: "187, 187, 187"
+      color-pink: "233, 30, 99"
+      color-theme: "51,51,51"
+      color-background-yellow: "250, 250, 250"
+      color-background-blue: "250, 250, 250"
+      color-background-green: "250, 250, 250"
+      color-background-red: "250, 250, 250"
+      color-background-pink: "250, 250, 250"
+      color-background-purple: "250, 250, 250"
+      color-yellow-text: "var(--primary-text-color)"
+      color-blue-text: "var(--primary-text-color)"
+      color-green-text: "var(--primary-text-color)"
+      color-red-text: "var(--primary-text-color)"
+      color-pink-text: "var(--primary-text-color)"
+      color-purple-text: "var(--primary-text-color)"
+      opacity-bg: "1"
+      # Header / Footer
+      header-active-tab-color: "rgb(var(--color-blue))"
+      header-active-tab-bg-color: "rgba(var(--color-blue), .3)"
+      header-all-tabs-color: "var(--paper-item-icon-color)"
+      header-tab-indicator-color: "rgba(0, 0, 0, 0)"
+      app-header-text-color: "var(--primary-text-color)"
+      app-header-background-color: "var(--primary-background-color)"
+      paper-tabs-selection-bar-color: "var(--primary-text-color)"
+      footer-shadow: "0px -1px 3px 0px rgba(0,0,0,0.12)"
+      # background and sidebar
+      card-background-color: "#FAFAFA"
+      primary-background-color: "#EFEFEF"
+      secondary-background-color: "#EFEFEF"
+      # text
+      primary-text-color: "#212121"
+      # slider
+      slider-color: "rgb(var(--google-blue))"
+      slider-bar-color: "rgba(var(--google-blue),0.38)"
+      # cards
+      box-shadow: "0px 2px 4px 0px rgba(0,0,0,0.16)"
+      ha-card-box-shadow: "var(--box-shadow)"
+      # sidebar
+      sidebar-selected-text-color: "rgb(var(--color-blue))"
+      sidebar-selected-icon-color: "rgb(var(--color-blue))"
+      sidebar-text-color: "#80868b"
+      # switch
+      switch-checked-color: "rgb(var(--color-blue))"
+      # media player
+      mini-media-player-accent-color: "rgb(var(--color-yellow))"
+    dark:
+      # main interface colors
+      primary-color: "#89B3F8"
+      google-red: "#F18B82"
+      google-green: "#80C994"
+      google-yellow: "#FCD663"
+      google-blue: "#89B3F8"
+      google-violet: "#BB86FC"
+      google-grey: "#BBBBBB"
+      color-red: "241, 139, 130"
+      color-green: "128, 201, 148"
+      color-yellow: "252, 214, 99"
+      color-blue: "137, 179, 248"
+      color-theme: "221,221,221"
+      color-purple: "102, 31, 255"
+      color-grey: "187, 187, 187"
+      color-pink: "233, 30, 99"
+      color-amber: "255, 145, 1"
+      color-background-yellow: "var(--color-yellow)"
+      color-background-blue: "var(--color-blue)"
+      color-background-green: "var(--color-green)"
+      color-background-red: "var(--color-red)"
+      color-background-pink: "var(--color-pink)"
+      color-background-purple: "var(--color-purple)"
+      color-yellow-text: "var(--color-yellow)"
+      color-blue-text: "var(--color-blue)"
+      color-green-text: "var(--color-green)"
+      color-red-text: "var(--color-red)"
+      color-pink-text: "var(--color-pink)"
+      color-purple-text: "var(--color-purple)"
+      opacity-bg: "0.1"
+      # Header / Footer
+      header-active-tab-color: "rgb(var(--color-amber))"
+      header-active-tab-bg-color: "rgba(var(--color-amber), .3)"
+      header-all-tabs-color: "var(--paper-item-icon-color)"
+      header-tab-indicator-color: "rgba(0, 0, 0, 0)"
+      app-header-text-color: "var(--primary-text-color)"
+      app-header-background-color: "var(--primary-background-color)"
+      paper-tabs-selection-bar-color: "var(--primary-text-color)"
+      footer-shadow: "0px -1px 3px 0px rgba(0,0,0,0.12)"
+      # background and sidebar
+      card-background-color: "#1D1D1D"
+      primary-background-color: "#121212"
+      secondary-background-color: "#121212"
+      # text
+      primary-text-color: "#DDDDDD"
+      # floating button text color
+      mdc-theme-on-secondary: "var(--card-background-color)"
+      # Sidebar
+      sidebar-selected-text-color: "rgb(var(--color-amber))"
+      sidebar-selected-icon-color: "rgb(var(--color-amber))"
+      # Slider
+      slider-color: "rgb(var(--color-blue))"
+      slider-bar-color: "rgba(var(--color-blue),0.38)"
+      # card
+      box-shadow: "none"
+      # media player
+      mini-media-player-accent-color: "var(--google-yellow)"
+      # Journal
+      state-icon-color: "rgb(var(--color-theme))"

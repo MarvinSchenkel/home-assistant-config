@@ -20,20 +20,21 @@ trigger:
   - platform: state
     entity_id:
       - media_player.sony_kd_65a1
-    to: "on"
-
-  - platform: state
-    entity_id:
-      - media_player.sony_kd_65a1
     to: "off"
     for:
-      minutes: 1
+      minutes: 7
 
   - platform: state
     entity_id: binary_sensor.presence_house
     to: "off"
     for:
       seconds: 900
+
+  - platform: state
+    entity_id:
+      - media_player.sony_kd_65a1
+    to: "on"
+    id: "tv_input_selected"
 
   - platform: homeassistant
     event: start
@@ -50,14 +51,14 @@ variables:
       service: media_player.media_play
       data: {}
       target:
-        entity_id: media_player.mass_sonos_livingroom
+        entity_id: media_player.mass_all_devices
 
     - &pause
       alias: "Pause the player"
       service: media_player.media_pause
       data: {}
       target:
-        entity_id: media_player.mass_sonos_livingroom
+        entity_id: media_player.mass_all_devices
 
 action:
   - choose:
@@ -71,37 +72,30 @@ action:
             condition: time
             after: "07:00:00"
             before: "21:00:00"
-          - alias: "We are actually awake"
-            condition: state
-            entity_id:
-              - binary_sensor.house_mode_everyone_asleep
-            state: "off"
           - alias: "We're not watching TV"
             condition: state
             entity_id:
               - media_player.sony_kd_65a1
             state: "off"
-          - alias: "No need for music when everyone is working from home"
-            condition: state
-            entity_id:
-              - binary_sensor.house_mode_everyone_at_home_working
-            state: "off"
           - or:
-              - not:
-                  - condition: state
-                    entity_id:
-                      - media_player.mass_sonos_livingroom
-                    state: "playing"
-              - and:
-                  - condition: state
-                    entity_id:
-                      - media_player.mass_sonos_livingroom
-                    state: "playing"
-                  - condition: state
-                    entity_id:
-                      - media_player.mass_sonos_livingroom
-                    attribute: "media_title"
-                    state: "TV"
+              - alias: "No need for music when everyone is working from home"
+                condition: state
+                entity_id:
+                  - binary_sensor.house_mode_everyone_at_home_working
+                state: "off"
+              - alias: "Or we have a guest over"
+                condition: state
+                entity_id:
+                  - input_boolean.setting_guest_mode
+                state: "on"
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.mass_all_devices
+                state: "playing"
+          - not:
+              - condition: trigger
+                id: "tv_input_selected"
         sequence:
           - *play_media
 
@@ -127,10 +121,12 @@ action:
                 entity_id:
                   - binary_sensor.house_mode_everyone_at_home_working
                 state: "on"
+              - condition: trigger
+                id: "tv_input_selected"
           - not:
               - condition: state
                 entity_id:
-                  - media_player.mass_sonos_livingroom
+                  - media_player.mass_all_devices
                 state: "off"
         sequence:
           - *pause

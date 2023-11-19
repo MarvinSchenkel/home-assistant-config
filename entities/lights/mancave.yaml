@@ -1,0 +1,7 @@
+---
+platform: group
+name: mancave
+entities:
+  - light.mancave_bureau
+  - light.mancave_hoek
+  - light.mancave_muur

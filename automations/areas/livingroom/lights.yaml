@@ -16,14 +16,33 @@ trigger:
   - platform: state
     entity_id:
       - input_boolean.setting_manual_lights
-      - input_boolean.livingroom_manual_control
       - binary_sensor.livingroom_is_dark
-      - input_select.current_light_schedule
-      - binary_sensor.presence_livingroom_couch
-      - binary_sensor.presence_livingroom_dinner
-      - binary_sensor.presence_livingroom_rest
-      - binary_sensor.presence_kitchen
+      - input_select.livingroom_room_mode
     from: ~
+    for:
+      seconds: 2
+
+  - platform: state
+    entity_id:
+      - media_player.apple_tv
+    to: "playing"
+    for:
+      seconds: 10
+
+  - platform: state
+    entity_id:
+      - media_player.apple_tv
+    to:
+      - "paused"
+      - "idle"
+    for:
+      seconds: 10
+
+  - platform: state
+    entity_id:
+      - media_player.apple_tv
+    to:
+      - "standby"
 
   - platform: state
     entity_id:
@@ -37,22 +56,37 @@ trigger:
     for:
       minutes: 10
 
-  - platform: time
-    at: "19:00:00"
-
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "on"
+  - platform: device
+    device_id: 063e0720e7172ed87824f117033874a5
+    domain: hue
+    type: short_release
+    subtype: 1
+    unique_id: a9f5c750-a2cb-4924-b041-022f32291224
     id: "hue_dimmer_on_press"
 
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "dd93f7c049eb8e103af97459fb7aae53"
-      command: "off_with_effect"
+  - platform: device
+    device_id: 063e0720e7172ed87824f117033874a5
+    domain: hue
+    type: short_release
+    subtype: 4
+    unique_id: fd5ce233-c55e-449a-9c81-d55fc8078f03
     id: "hue_dimmer_off_press"
+
+  - platform: device
+    device_id: 063e0720e7172ed87824f117033874a5
+    domain: hue
+    type: long_press
+    subtype: 1
+    unique_id: a9f5c750-a2cb-4924-b041-022f32291224
+    id: "hue_dimmer_on_long_press"
+
+  - platform: device
+    device_id: 063e0720e7172ed87824f117033874a5
+    domain: hue
+    type: long_press
+    subtype: 4
+    unique_id: fd5ce233-c55e-449a-9c81-d55fc8078f03
+    id: "hue_dimmer_off_long_press"
 
   - platform: time
     at: "00:03:00"
@@ -60,7 +94,7 @@ trigger:
 
 variables:
   anchors:
-    - &is_presence_detected
+    - &condition_is_presence_detected
       alias: "Is there presence in the room?"
       condition: not
       conditions:
@@ -70,51 +104,46 @@ variables:
           for:
             minutes: 10
 
-    - &is_presence_couch_only
-      alias: "Are we just sitting in the couch area of the room?"
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.presence_livingroom_couch
-          state: "on"
-        - condition: state
-          entity_id: binary_sensor.presence_livingroom_dinner
-          state: "off"
-        - condition: state
-          entity_id: binary_sensor.presence_livingroom_rest
-          state: "off"
-        - condition: state
-          entity_id: binary_sensor.presence_kitchen
-          state: "off"
+    - &condition_is_dark
+      alias: "Is it dark in the living room?"
+      condition: state
+      entity_id: binary_sensor.livingroom_is_dark
+      state: "on"
 
-    - &is_remote_pressed
+    - &condition_is_remote_quickly_pressed
       alias: "Did we manually press the button?"
       condition: trigger
       id:
         - "hue_dimmer_on_press"
         - "hue_dimmer_off_press"
 
-    - &is_light_schedule
-      alias: "Check current light schedule"
-      condition: state
-      entity_id: input_select.current_light_schedule
+    - &condition_is_remote_long_pressed
+      alias: "Did we manually long press the button?"
+      condition: trigger
+      id:
+        - "hue_dimmer_on_long_press"
+        - "hue_dimmer_off_long_press"
 
-    - &is_current_scene
+    - &condition_is_current_scene
       alias: "Check the current light scene"
       condition: state
       entity_id: input_select.livingroom_current_lights_scene
 
-    - &manual_control_off
-      alias: "Turn manual control off"
-      service: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.livingroom_manual_control
-
-    - &manual_control_on
-      alias: "Set lights downstairs as manually controlled"
-      service: input_boolean.turn_on
-      target:
-        entity_id: input_boolean.livingroom_manual_control
+    - &condition_watching_tv
+      alias: "Check if we are watching a movie or series"
+      and:
+        - condition: state
+          entity_id: media_player.apple_tv
+          attribute: app_id
+          state:
+            - "com.amazon.aiv.AIVApp"
+            - "com.netflix.Netflix"
+            - "com.firecore.infuse"
+            - "com.plexapp.plex"
+            - "nl.omroep.uitzendinggemist"
+        - condition: state
+          entity_id: media_player.apple_tv
+          state: "playing"
 
     - &turn_off
       alias: "Turn the lights off"
@@ -130,7 +159,7 @@ variables:
       alias: "Turn on the lights"
       service: scene.turn_on
       data:
-        transition: 4
+        transition: 5
 
 condition:
   - condition: state
@@ -144,97 +173,73 @@ action:
           - condition: trigger
             id: "reset"
         sequence:
-          - *manual_control_off
           - service: input_select.select_option
             entity_id: input_select.livingroom_current_lights_scene
             data:
               option: normal
 
-      - alias: "Set lights as manually controlled when someone changes them"
+      - alias: "Toggle Philips Hue Sync Box on long press"
         conditions:
-          - alias: "It was changed by a user"
-            condition: template
-            value_template: "{{ trigger.to_state.context.user_id != None }}"
+          - *condition_is_remote_long_pressed
         sequence:
-          - *manual_control_on
-
-      - alias: >
-          Stop automating the lights if any of the lights are manually controlled or if
-          we are watching a movie.
-        conditions:
-          - condition: or
-            conditions:
+          - if:
               - condition: state
                 entity_id:
-                  - input_boolean.livingroom_manual_control
-                state: "on"
-              - <<: *is_current_scene
-                state: "movie"
-          - condition: not
-            conditions:
-              - *is_remote_pressed
-        sequence:
-          - stop: "Living room lights are manually controlled"
+                  - switch.sync_box_light_sync
+                  - switch.sync_box_power
+                match: any
+                state: "off"
+            then:
+              - service: switch.turn_on
+                entity_id: switch.sync_box_power
+              - service: switch.turn_on
+                entity_id: switch.sync_box_light_sync
+              - <<: *turn_on
+                target:
+                  entity_id: scene.livingroom_lights_movie
+                data:
+                  transition: 3
+            else:
+              - service: switch.turn_off
+                entity_id: switch.sync_box_light_sync
 
-      - alias: "Determine if we need to turn on the lights at all"
+      - alias: "Toggle movie scene on single button press."
         conditions:
-          - alias: "Is it dark?"
-            condition: state
-            entity_id: binary_sensor.livingroom_is_dark
-            state: "on"
-          - *is_presence_detected
+          - *condition_is_remote_quickly_pressed
+          - *condition_is_dark
         sequence:
-          - choose:
-              - alias: >
-                  When we press the remote and the current scene is not movie
-                conditions:
-                  - *is_remote_pressed
-                  - not:
-                      - <<: *is_current_scene
-                        state: "movie"
-                sequence:
-                  - <<: *turn_on
-                    target:
-                      entity_id: scene.livingroom_lights_movie
+          - if:
+              - <<: *condition_is_current_scene
+                state: "movie"
+            then:
+              - <<: *turn_on
+                target:
+                  entity_id: scene.livingroom_lights_natuurlijklicht
+            else:
+              - <<: *turn_on
+                target:
+                  entity_id: scene.livingroom_lights_movie
 
-              - alias: "When the sun has been down for a while."
-                conditions:
-                  - <<: *is_light_schedule
-                    state: "dim"
-                sequence:
-                  - choose:
-                      - conditions:
-                          - *is_presence_couch_only
-                        sequence:
-                          - <<: *turn_on
-                            target:
-                              entity_id: scene.livingroom_lights_dim_couch_only
-                    default:
-                      - <<: *turn_on
-                        target:
-                          entity_id: scene.livingroom_lights_dim
+      - alias: "Turn on the movie scene when we are watching a movie or series."
+        conditions:
+          - *condition_is_dark
+          - *condition_is_presence_detected
+          - *condition_watching_tv
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: scene.livingroom_lights_movie
+            data:
+              transition: 3
 
-              - alias: "When it is night"
-                conditions:
-                  - <<: *is_light_schedule
-                    state: "night"
-                sequence:
-                  - <<: *turn_on
-                    target:
-                      entity_id: scene.livingroom_lights_night
-
-            default:
-              - choose:
-                  - conditions:
-                      - *is_presence_couch_only
-                    sequence:
-                      - <<: *turn_on
-                        target:
-                          entity_id: scene.livingroom_lights_normal_couch_only
-                default:
-                  - <<: *turn_on
-                    target:
-                      entity_id: scene.livingroom_lights_normal
+      - alias: "Just turn on the lights."
+        conditions:
+          - *condition_is_dark
+          - *condition_is_presence_detected
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: scene.livingroom_lights_natuurlijklicht
 
     default:
       - *turn_off

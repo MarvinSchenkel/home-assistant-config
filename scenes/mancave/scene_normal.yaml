@@ -1,8 +1,0 @@
----
-name: mancave_lights_normal
-id: b0cb568f-4365-40b3-a1e2-763860eea2da
-icon: mdi:lightbulb
-entities:
-  light.mancave:
-    state: "on"
-    brightness_pct: 100

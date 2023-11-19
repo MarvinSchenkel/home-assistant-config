@@ -1,0 +1,58 @@
+---
+alias: areas_mancave_room_mode
+description: Determine the room mode
+mode: queued
+id: 434c6fd5-646d-4ee3-85ff-3c162d246ff8
+
+trigger:
+  - platform: state
+    id: "phone_charging"
+    entity_id: "sensor.marvins_iphone_13_battery_state"
+    to: "Charging"
+    for:
+      seconds: 3
+
+  - platform: state
+    id: "net_wakker_40m"
+    entity_id:
+      - input_select.mancave_room_mode
+    to: "Net wakker"
+    for:
+      minutes: 40
+
+variables:
+  anchors:
+    - &select_mode
+      service: input_select.select_option
+      entity_id: input_select.mancave_room_mode
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "phone_charging"
+          - or:
+              - condition: state
+                entity_id:
+                  - input_select.marvin_status_dropdown
+                state: "Thuis"
+              - condition: state
+                entity_id:
+                  - input_select.marvin_status_dropdown
+                state: "Net thuis"
+          - condition: time
+            after: "21:00:00"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Slaap"
+
+      - conditions:
+          - condition: trigger
+            id: "net_wakker_40m"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+    default: []

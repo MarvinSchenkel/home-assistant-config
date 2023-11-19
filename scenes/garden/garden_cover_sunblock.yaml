@@ -1,0 +1,8 @@
+---
+name: garden_cover_sunblock
+id: 05ad8cea-7a66-4f1b-b9fb-d1c1381c5989
+icon: mdi:awning
+entities:
+  cover.sunscreen:
+    state: "open"
+    current_position: 60

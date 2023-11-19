@@ -1,5 +1,5 @@
 ---
-alias: house_downstairs_doorbell_message
+alias: house_doorbell_message
 description: Sets a custom doorbell message based on person detection
 mode: queued
 id: e18ffbe8-61c7-4a7c-a698-7b9beeb6ec12
@@ -36,10 +36,10 @@ action:
             after: "12:00:00"
         sequence:
           - service: text.set_value
-            data:
+            target:
               entity_id: text.g4_doorbell_doorbell
-              message: "GOEDEMIDDAG!"
-              duration: 2
+            data:
+              value: "GOEDEMIDDAG!"
 
       - conditions:
           - condition: time

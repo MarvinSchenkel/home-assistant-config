@@ -1,0 +1,8 @@
+---
+name: garden_cover_dinner
+id: b43d6005-138e-4d97-bea1-3f42c4592918
+icon: mdi:awning
+entities:
+  cover.sunscreen:
+    state: "open"
+    current_position: 25

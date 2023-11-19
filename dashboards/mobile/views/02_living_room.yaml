@@ -5,8 +5,36 @@ cards:
   - type: vertical-stack
     cards:
       - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
         content: >
           ## Woonkamer
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_select.livingroom_room_mode
+          - type: tile
+            entity: input_select.kitchen_current_cover_scene
+            icon: "mdi:blinds"
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Keuken
+                  content:
+                    type: entities
+                    entities:
+                      - name: Half Open
+                        entity: scene.kitchen_cover_halfopen
+                      - name: Half Dicht
+                        entity: scene.kitchen_cover_halfclosed
 
       - type: horizontal-stack
         cards:
@@ -46,28 +74,8 @@ cards:
                         entity: scene.livingroom_cover_halfclosed
                       - name: Dicht
                         entity: scene.livingroom_cover_closed
-
-      - type: horizontal-stack
-        cards:
-          - type: tile
-            entity: input_select.kitchen_current_cover_scene
-            icon: "mdi:blinds"
-            tap_action:
-              action: fire-dom-event
-              browser_mod:
-                service: browser_mod.popup
-                data:
-                  title: Keuken
-                  content:
-                    type: entities
-                    entities:
-                      - name: Half Open
-                        entity: scene.kitchen_cover_halfopen
-                      - name: Half Dicht
-                        entity: scene.kitchen_cover_halfclosed
-          - type: tile
-            entity: input_boolean.kitchen_cover_manual_control
-            name: Handmatig keuken
+                      - name: Ventileren Nacht
+                        entity: scene.livingroom_cover_ventilatingnight
 
       - type: horizontal-stack
         cards:
@@ -75,3 +83,34 @@ cards:
             entity: input_boolean.livingroom_cover_manual_control
             icon: "mdi:blinds"
             name: Handmatig woonkamer
+            tap_action:
+              action: toggle
+            icon_tap_action:
+              action: more-info
+          - type: tile
+            entity: input_boolean.kitchen_cover_manual_control
+            name: Handmatig keuken
+            tap_action:
+              action: toggle
+            icon_tap_action:
+              action: more-info
+
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Sensoren
+
+      - type: "horizontal-stack"
+        cards:
+          - type: tile
+            entity: binary_sensor.presence_livingroom
+            name: Aanwezigheid
+          - type: tile
+            entity: sensor.livingroom_temperature
+            name: Temperatuur

@@ -16,7 +16,7 @@ trigger:
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_someone_just_awake
+      - input_select.livingroom_room_mode
       - input_boolean.setting_automatic_music
 
   - platform: homeassistant
@@ -44,14 +44,11 @@ action:
 
       - conditions:
           - condition: state
-            entity_id: binary_sensor.house_mode_someone_just_awake
-            state: "on"
+            entity_id: input_select.livingroom_room_mode
+            state: "Net wakker"
           - condition: time
             after: "07:00:00"
             before: "11:00:00"
-          - condition: numeric_state
-            entity_id: sensor.someone_just_awake_today
-            below: 0.6
         sequence:
           - <<: *select_schedule
             data:

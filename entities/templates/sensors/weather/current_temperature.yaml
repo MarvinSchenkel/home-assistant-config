@@ -1,0 +1,6 @@
+---
+sensor:
+  - name: current_temperature
+    unit_of_measurement: "°C"
+    state: >
+      {{ states('sensor.openweathermap_temperature') | default(1) }}

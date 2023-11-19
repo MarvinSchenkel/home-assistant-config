@@ -1,6 +1,0 @@
----
-platform: group
-name: dinner
-entities:
-  - light.dinner_wall
-  - light.dinner_door

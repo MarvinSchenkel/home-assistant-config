@@ -1,15 +1,36 @@
 ---
 # A binary indicator tracking whether it is light or dark in the room
+trigger:
+  - platform: numeric_state
+    entity_id:
+      - sensor.fp2_livingroom_luminance
+    above: 6
+    for:
+      seconds: 5
+  - platform: numeric_state
+    entity_id:
+      - sensor.fp2_livingroom_luminance
+    above: 45
+    for:
+      seconds: 5
+  - platform: numeric_state
+    entity_id:
+      - sensor.fp2_livingroom_luminance
+    below: 6
+    for:
+      seconds: 5
+
 binary_sensor:
   - name: livingroom_is_dark
     unique_id: 4eea3312-788b-4007-a87a-b1c68904dae3
     state: >
       {%-
         if (
-          states("sensor.fp2_livingroom_luminance") | int > 8
-          and is_state("light.dinner", "off")
+          states("sensor.fp2_livingroom_luminance") | int > 6
+          and is_state("light.dinner_door", "off")
+          and is_state("light.kitchen_spot", "off")
         )
-        or states("sensor.fp2_livingroom_luminance") | int > 35
+        or states("sensor.fp2_livingroom_luminance") | int > 45
       -%}
         off
       {%- else -%}

@@ -35,10 +35,11 @@ variables:
 
     - &nobody_asleep
       alias: "Nobody is sleeping"
-      condition: state
-      entity_id:
-        - binary_sensor.house_mode_someone_asleep
-      state: "off"
+      not:
+        condition: state
+        entity_id:
+          - input_select.hall_upstairs_room_mode
+        state: "Slaap"
 
 trigger:
   - platform: homeassistant

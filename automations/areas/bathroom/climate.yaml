@@ -13,7 +13,7 @@ trigger:
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_everyone_asleep
+      - input_select.bathroom_room_mode
       - binary_sensor.everyone_left_home
       - binary_sensor.house_mode_everyone_at_home_working
       - binary_sensor.house_mode_someone_just_awake
@@ -56,7 +56,7 @@ variables:
       alias: "Turn down small bedroom climate"
       service: climate.set_temperature
       data:
-        temperature: 19.0
+        temperature: 20.0
 
 action:
   - choose:
@@ -79,8 +79,8 @@ action:
       - conditions:
           - alias: "When the house is in sleep mode"
             condition: state
-            entity_id: binary_sensor.house_mode_everyone_asleep
-            state: "on"
+            entity_id: input_select.bathroom_room_mode
+            state: "Slaap"
         sequence:
           - *turn_down
 
@@ -99,8 +99,8 @@ action:
       - alias: "Turn up the heating in the evening"
         conditions:
           - condition: state
-            entity_id: binary_sensor.house_mode_everyone_asleep
-            state: "off"
+            entity_id: input_select.bathroom_room_mode
+            state: "Wakker"
           - condition: time
             after: "18:00:00"
             before: "22:00:00"

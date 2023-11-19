@@ -1,8 +1,0 @@
----
-name: attic_lights_dim
-id: 1c7e502b-42e1-4316-9c17-456138a3f203
-icon: mdi:lightbulb
-entities:
-  light.fibaro_third_floor_stairs:
-    state: "on"
-    brightness_pct: 70

@@ -14,19 +14,56 @@ trigger:
       value: 14
     id: "small_bedroom_double_click"
 
+  - platform: state
+    entity_id:
+      - binary_sensor.is_hot_day
+    to: "on"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.sun_should_close_south_blinds
+    to: "on"
+
 action:
   choose:
     - conditions:
+        - condition: trigger
+          id: "small_bedroom_double_click"
         - condition: state
           entity_id:
             - input_select.smallbedroom_current_cover_scene
           state: "closed"
-
       sequence:
         - service: scene.turn_on
           target:
             entity_id: scene.smallbedroom_cover_open
-  default:
-    - service: scene.turn_on
-      target:
-        entity_id: scene.smallbedroom_cover_closed
+
+    - conditions:
+        - condition: trigger
+          id: "small_bedroom_double_click"
+        - condition: state
+          entity_id:
+            - input_select.smallbedroom_current_cover_scene
+          state: "open"
+      sequence:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.smallbedroom_cover_closed
+
+    - conditions:
+        - or:
+            - condition: state
+              entity_id:
+                - binary_sensor.sun_should_close_south_blinds
+              state: "on"
+            - alias: Keep the heat out of the house on hot days
+              condition: state
+              entity_id:
+                - binary_sensor.is_hot_day
+              state: "on"
+      sequence:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.smallbedroom_cover_closed
+
+  default: []

@@ -1,8 +1,0 @@
----
-name: Luxaflex Woonkamer
-icon: mdi:blinds
-options:
-  - open
-  - halfopen
-  - halfclosed
-  - closed

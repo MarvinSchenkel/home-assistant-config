@@ -5,6 +5,13 @@ cards:
   - type: vertical-stack
     cards:
       - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
         content: >
           ## Slaapkamer Zoey
 
@@ -42,12 +49,5 @@ cards:
           - type: tile
             entity: sensor.pir_smallbedroom_temperature
             name: Temperatuur
-          # - type: "custom:button-card"
-          #   template: card_graph
-          #   entity: sensor.pir_smallbedroom_temperature
-          #   variables:
-          #     ulm_card_graph_color: "var(--google-blue)"
-          #     ulm_card_graph_name: Temperatuur
-          #     ulm_card_graph_entity: sensor.pir_smallbedroom_temperature
-          #     ulm_card_graph_type: fill
-          #     ulm_card_graph_hours: 24
+          - type: vertical-stack
+            cards: []

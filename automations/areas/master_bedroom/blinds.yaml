@@ -3,7 +3,7 @@ alias: areas_master_bedroom_blinds
 description: >
   Control the blinds in the master bedroom (which are facing south) by using
    - Sun elevation
-   - At 19:00 and 21:15
+   - At 19:00
    - The solar panels (indicating a hot day)
    - Whenever we wake up
 mode: queued
@@ -22,16 +22,19 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
-      - binary_sensor.house_mode_someone_asleep
-      - binary_sensor.house_mode_someone_just_awake
       - input_boolean.setting_manual_blinds
       - input_boolean.masterbedroom_cover_manual_control
+      - binary_sensor.is_hot_day
+    from:
+      - "off"
+      - "on"
+    to:
+      - "off"
+      - "on"
 
   - platform: state
-    id: "reset"
     entity_id:
-      - binary_sensor.house_mode_someone_asleep
-    to: "off"
+      - input_select.master_bedroom_room_mode
 
   - platform: numeric_state
     entity_id:
@@ -43,10 +46,19 @@ trigger:
       - sensor.sun_elevation
     above: 1.0
 
+  - platform: numeric_state
+    entity_id:
+      - sensor.current_temperature
+    above: 26
+
+  - platform: numeric_state
+    entity_id:
+      - sensor.current_temperature
+    below: 26
+
   - platform: time
     at:
       - "19:00:00"
-      - "21:15:00"
 
   - platform: state
     entity_id:
@@ -139,18 +151,12 @@ action:
       - alias: >
           This nearly closes our blinds but leaves a small gap at the top for fresh air
         conditions:
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id:
-                  - binary_sensor.house_mode_someone_just_awake
-                state: "on"
-              - condition: state
-                entity_id:
-                  - binary_sensor.house_mode_someone_asleep
-                state: "on"
-              - condition: time
-                after: "21:15:00"
+          - condition: state
+            entity_id:
+              - input_select.master_bedroom_room_mode
+            state:
+              - "Slaap"
+              - "Net wakker"
         sequence:
           - *ventilating_night
 
@@ -159,6 +165,15 @@ action:
           - condition: state
             entity_id:
               - binary_sensor.sun_should_close_south_blinds
+            state: "on"
+        sequence:
+          - *closed
+
+      - alias: "Keep the heat out of the house on hot days"
+        conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.is_hot_day
             state: "on"
         sequence:
           - *closed
@@ -173,7 +188,6 @@ action:
                 below: 1.0
               - condition: time
                 after: "19:00:00"
-                before: "21:15:00"
         sequence:
           - *half_closed
 

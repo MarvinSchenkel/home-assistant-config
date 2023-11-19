@@ -1,0 +1,13 @@
+---
+# A binary sensor based on the current temperature
+# indicating whether it is a hot day. Blinds use this
+# sensor to keep the heat out of the house
+binary_sensor:
+  - name: is_hot_day
+    unique_id: 698a47ec-cf7f-434f-b48e-a79c2f66d13c
+    state: >
+      {%- if states('sensor.openweathermap_temperature') | float > 25.5 -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}

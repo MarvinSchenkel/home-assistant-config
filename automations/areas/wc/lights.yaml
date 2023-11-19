@@ -16,15 +16,19 @@ variables:
       condition: state
       entity_id: input_select.current_light_schedule
 
-    - &select_scene
+    - &turn_on
       service: scene.turn_on
       alias: "Turn the hall lights to appropriate scene"
+      target:
+        entity_id: scene.wc_lights_natuurlijklicht
+      data:
+        transition: 2
 
-    - &lights_turn_off
+    - &turn_off
       service: light.turn_off
       alias: "Turn the hall lights off"
       data:
-        entity_id: light.fibaro_wc
+        entity_id: light.wc
         transition: 5
 
 trigger:
@@ -42,7 +46,7 @@ trigger:
     entity_id: binary_sensor.presence_wc
     to: "off"
     for:
-      seconds: 80
+      seconds: 90
 
 condition:
   - condition: state
@@ -54,33 +58,8 @@ action:
   - choose:
       - conditions:
           - *presence_detected
-          - <<: *is_light_schedule
-            state: "dim"
         sequence:
-          - <<: *select_scene
-            data:
-              entity_id: scene.wc_lights_dim
-              transition: 2
-
-      - conditions:
-          - *presence_detected
-          - <<: *is_light_schedule
-            state: "normal"
-        sequence:
-          - <<: *select_scene
-            data:
-              entity_id: scene.wc_lights_normal
-              transition: 2
-
-      - conditions:
-          - *presence_detected
-          - <<: *is_light_schedule
-            state: "night"
-        sequence:
-          - <<: *select_scene
-            data:
-              entity_id: scene.wc_lights_night
-              transition: 2
+          - *turn_on
 
     default:
-      - *lights_turn_off
+      - *turn_off

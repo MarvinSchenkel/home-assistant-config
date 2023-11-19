@@ -1,0 +1,8 @@
+---
+name: garden_cover_open
+id: 95c9c599-8d64-4cbe-a12c-098f1e2315a2
+icon: mdi:awning
+entities:
+  cover.sunscreen:
+    state: "open"
+    current_position: 100

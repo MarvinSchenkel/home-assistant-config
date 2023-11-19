@@ -5,11 +5,11 @@
 # the blinds
 binary_sensor:
   - name: sun_hot
-    unique_id: 9fd20f87-052a-4a50-9990-553144b9c807
+    unique_id: 259bf4cb-3522-41a7-b274-beb9a4c62991
     state: >
       {%- if states("sensor.solaredge_i1_ac_power") == "unavailable" -%}
         unavailable
-      {%- elif states("sensor.solaredge_i1_ac_power") | float > 1350 -%}
+      {%- elif states("sensor.solaredge_i1_ac_power") | float > 1450 -%}
         on
       {%- else -%}
         off

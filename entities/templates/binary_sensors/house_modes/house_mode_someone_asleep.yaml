@@ -5,7 +5,10 @@ binary_sensor:
   - name: house_mode_someone_asleep
     unique_id: a6d67947-01dc-419f-927f-c26c5ecfb9bc
     state: >
-      {%- if states("sensor.num_people_at_home_asleep") | int > 0 -%}
+      {%-
+        if is_state("input_select.master_bedroom_room_mode", "Slaap")
+        or is_state("input_select.mancave_room_mode", "Slaap")
+      -%}
         on
       {%- else -%}
         off

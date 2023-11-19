@@ -34,14 +34,14 @@ trigger:
 
   - platform: state
     entity_id:
-      - light.fibaro_wc
+      - light.wc
     to: "on"
     for:
       minutes: 4
 
   - platform: state
     entity_id:
-      - light.fibaro_wc
+      - light.wc
     to: "off"
     for:
       minutes: 10
@@ -66,19 +66,17 @@ variables:
   anchors:
     - &turn_on
       alias: "Turns on the ventilation"
-      service: fan.turn_on
+      service: fan.set_percentage
+      data:
+        percentage: 90
       target:
         entity_id: fan.itho
 
     - &turn_off
       alias: "Turns off the ventilation"
-      service: fan.turn_off
-      target:
-        entity_id: fan.itho
-
-    - &toggle
-      alias: "Toggles the ventilation"
-      service: fan.toggle
+      service: fan.set_percentage
+      data:
+        percentage: 5
       target:
         entity_id: fan.itho
 
@@ -90,13 +88,6 @@ variables:
 
 action:
   choose:
-    - conditions:
-        - alias: "When we double click the bathroom switch"
-          condition: trigger
-          id: "bathroom_double_click"
-      sequence:
-        - *toggle
-
     - alias: "Turn ventilation off when someone is sleeping and the shower is off"
       conditions:
         - alias: "When someone is asleep"
@@ -136,7 +127,7 @@ action:
       conditions:
         - alias: "When the restoom lights are on for longer than 4 minutes"
           condition: state
-          entity_id: light.fibaro_wc
+          entity_id: light.wc
           state: "on"
           for:
             minutes: 4

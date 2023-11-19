@@ -1,0 +1,17 @@
+---
+description: Set volume of the speakers based on the music schedule
+alias: areas_livingroom_speakers_set_volume
+mode: queued
+id: e483505d-49b0-4912-9152-11764858fd7c
+
+use_blueprint:
+  path: sonos_set_volume.yaml
+  input:
+    just_awake_volume: 26
+    early_morning_volume: 28
+    morning_volume: 29
+    day_volume: 31
+    evening_volume: 29
+    sonos: media_player.woonkamer
+    custom_conditions:
+      - '{{ state_attr("media_player.woonkamer", "source")  != "HDMI ARC" }}'
