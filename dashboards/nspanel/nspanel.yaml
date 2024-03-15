@@ -1,0 +1,134 @@
+title: NS Panel
+kiosk_mode:
+  hide_header: true
+views:
+  - path: home
+    title: Home
+    icon: "mdi:home"
+    type: masonry
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  border: 0px;
+                  text-align: center;
+                  background-color: transparent;
+                  box-shadow: none;
+                  font-size: 125pt;
+                  margin: 80px 0px 120px 0px;
+                }
+            content: >
+              {{ states('sensor.time') }}
+            tap_action:
+              action: call-service
+              service: browser_mod.navigate
+              target:
+                device_id: a03bdae8b392884e72a812662eae18c4
+              data:
+                path: /lovelace-nspanel/control
+          - type: weather-forecast
+            entity: weather.openweathermap
+            tap_action:
+              action: call-service
+              service: browser_mod.navigate
+              target:
+                device_id: a03bdae8b392884e72a812662eae18c4
+              data:
+                path: /lovelace-nspanel/control
+
+  - path: control
+    title: Control
+    icon: "mdi:cog-box"
+    type: masonry
+    cards:
+      - type: button
+        name: Tuin deur open
+        card_mod:
+          style: |
+            ha-card {
+              font-size: 35pt !important;
+            }
+        entity: input_button.gardendoor_nspanel
+        hide_state: true
+        tap_action:
+          action: call-service
+          service: input_button.press
+          target:
+            entity_id: input_button.gardendoor_nspanel
+
+  - path: music
+    title: Music
+    icon: "mdi:music"
+    type: masonry
+    cards:
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              z-index: 10000;
+              position: fixed;
+              width: 100%;
+              margin: 34% 0 !important;
+              border: 0px;
+              text-align: center;
+              background-color: transparent;
+              box-shadow: none;
+              font-size: 50pt;
+              font-weight: 475;
+            }
+        content: >
+          {{ state_attr('media_player.mass_all_devices', 'media_title') }}
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              z-index: 10000;
+              position: fixed;
+              width: 100%;
+              margin: 51% 0 !important;
+              border: 0px;
+              text-align: center;
+              background-color: transparent;
+              box-shadow: none;
+              font-size: 50pt;
+              font-weight: 325;
+            }
+        content: >
+          {{ state_attr('media_player.mass_all_devices', 'media_artist') }}
+      - type: custom:mini-media-player
+        entity: media_player.mass_all_devices
+        group: true
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-nspanel/control
+        card_mod:
+          style: |
+            ha-card {
+              aspect-ratio: 1 / 1;
+            }
+        artwork: full-cover-fit
+        hide:
+          source: true
+          power: true
+          icon: true
+          name: true
+          controls: true
+          volume: true
+          info: true
+          progress: true
+
+  - path: camera
+    title: Voordeur
+    type: masonry
+    cards:
+      - camera_view: live
+        entity: camera.g4_doorbell_high
+        type: picture-entity
+        card_mod:
+          style: |
+            ha-card {
+              aspect-ratio: 1 / 1;
+            }

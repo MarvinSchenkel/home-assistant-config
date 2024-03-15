@@ -1,0 +1,78 @@
+---
+description: >
+  Automatically set the brightness of the NS Panel Pro
+alias: areas_livingroom_nspanel_brightness
+id: e6d6d7bc-5ad6-493a-878c-9209248e6ee3
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - binary_sensor.livingroom_is_dark
+      - input_select.livingroom_current_lights_scene
+      - binary_sensor.presence_livingroom_gardendoor
+
+variables:
+  anchors:
+    - &set_brightness
+      service: number.set_value
+      entity_id: number.nspanel_screen_brightness
+
+    - &turn_off
+      service: switch.turn_on
+      entity_id: switch.nspanel_screensaver
+
+    - &turn_on
+      service: switch.turn_off
+      entity_id: switch.nspanel_screensaver
+
+action:
+  - choose:
+      - alias: "Turn the panel off when we are watching a movie"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_select.livingroom_current_lights_scene
+            state: "movie"
+        sequence:
+          - *turn_off
+
+      - alias: "Turn the brightness down when it gets dark"
+        conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.livingroom_is_dark
+            state: "on"
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_livingroom_gardendoor
+            state: "on"
+        sequence:
+          - *turn_on
+          - <<: *set_brightness
+            data:
+              value: 30
+
+      - alias: "Turn the brightness down when it gets dark"
+        conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_livingroom_gardendoor
+            state: "on"
+        sequence:
+          - *turn_on
+          - <<: *set_brightness
+            data:
+              value: 255
+
+    default:
+      - *turn_on
+      - alias: "Else, full brightness"
+        <<: *set_brightness
+        data:
+          value: 0

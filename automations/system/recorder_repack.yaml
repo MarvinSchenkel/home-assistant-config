@@ -1,0 +1,22 @@
+---
+alias: system_recorder_repack
+description: >-
+  Sunday morning, early morning, repack the recorder database.
+  This keeps the disk usage low and nice by reclaiming space.
+
+id: d8309021-2ef7-4ee1-a837-4d81b962487b
+mode: single
+
+trigger:
+  - platform: time
+    at: "05:55"
+
+condition:
+  - condition: time
+    weekday:
+      - sun
+
+action:
+  - service: recorder.purge
+    data:
+      repack: true

@@ -1,0 +1,4 @@
+---
+platform: telegram
+name: "telegram_marvin"
+chat_id: !secret telegram_marvin_chat_id

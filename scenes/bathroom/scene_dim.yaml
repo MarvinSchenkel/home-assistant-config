@@ -5,4 +5,4 @@ icon: mdi:lightbulb
 entities:
   light.fibaro_bathroom:
     state: "on"
-    brightness_pct: 50
+    brightness: 123

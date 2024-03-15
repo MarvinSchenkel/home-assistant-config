@@ -1,0 +1,16 @@
+---
+alias: system_recorder_purge
+description: >-
+  Purge my recorder database every hour, to keep things nice and tight.
+
+  While Home Assistant does this daily, I like to do it every hour.
+
+id: e7a84c9a-90fb-4cbf-bbbe-9bfbdd7e6c19
+mode: single
+
+trigger:
+  - platform: time_pattern
+    minutes: 12
+
+action:
+  - service: recorder.purge

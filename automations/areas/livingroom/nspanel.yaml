@@ -1,0 +1,73 @@
+---
+description: >
+  Automatically display dashboard pages on the NS Panel Pro
+alias: areas_livingroom_nspanel
+id: 5b09a806-78d6-40bf-b463-06144cb5d2dd
+
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.g4_doorbell_doorbell
+    to: "on"
+    id: "doorbell"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.g4_doorbell_doorbell
+    to: "off"
+    for:
+      minutes: 2
+
+  - platform: state
+    entity_id:
+      - media_player.mass_all_devices
+
+  - platform: state
+    entity_id:
+      - input_select.gardendoor_current_cover_scene
+    to: "halfopen"
+
+variables:
+  anchors:
+    - &go_to_home_page
+      alias: "Navigate to the home page"
+      service: browser_mod.navigate
+      target:
+        device_id: a03bdae8b392884e72a812662eae18c4
+      data:
+        path: /lovelace-nspanel/home
+
+    - &go_to_music_page
+      alias: "Navigate to the music page"
+      service: browser_mod.navigate
+      target:
+        device_id: a03bdae8b392884e72a812662eae18c4
+      data:
+        path: /lovelace-nspanel/music
+
+    - &go_to_camera_page
+      alias: "Navigate to the camera page"
+      service: browser_mod.navigate
+      target:
+        device_id: a03bdae8b392884e72a812662eae18c4
+      data:
+        path: /lovelace-nspanel/camera
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "doorbell"
+        sequence:
+          - *go_to_camera_page
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - media_player.mass_all_devices
+            state: "playing"
+        sequence:
+          - *go_to_music_page
+
+    default:
+      - *go_to_home_page

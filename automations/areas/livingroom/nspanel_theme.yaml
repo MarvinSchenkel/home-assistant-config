@@ -1,0 +1,41 @@
+---
+description: >
+  Automatically set the theme on the NS Panel
+alias: areas_livingroom_nspanel_theme
+id: c7e57828-e414-4247-b354-e17728544e5b
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - binary_sensor.livingroom_is_dark
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.livingroom_is_dark
+            state: "on"
+        sequence:
+          - alias: "Turn on dark mode"
+            service: browser_mod.set_theme
+            target:
+              device_id: a03bdae8b392884e72a812662eae18c4
+            data:
+              theme: nspanel
+              dark: dark
+
+    default:
+      - alias: "Turn on light mode"
+        service: browser_mod.set_theme
+        target:
+          device_id: a03bdae8b392884e72a812662eae18c4
+        data:
+          theme: nspanel
+          dark: light

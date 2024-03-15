@@ -47,13 +47,6 @@ trigger:
     from: "off"
     to: "on"
 
-condition:
-  - alias: "Do not automate when a guest is over"
-    condition: state
-    entity_id:
-      - input_boolean.setting_guest_mode
-    state: "off"
-
 action:
   - choose:
       - conditions:
@@ -67,6 +60,11 @@ action:
               - binary_sensor.house_mode_everyone_at_home_working
             state: "on"
             match: any
+          - alias: "Do not automate when a guest is over"
+            condition: state
+            entity_id:
+              - input_boolean.setting_guest_mode
+            state: "off"
         sequence:
           - *start
 
@@ -75,10 +73,6 @@ action:
             entity_id:
               - vacuum.norby
             state: "cleaning"
-          - condition: state
-            entity_id:
-              - binary_sensor.house_mode_someone_just_home
-            state: "on"
         sequence:
           - *return
 

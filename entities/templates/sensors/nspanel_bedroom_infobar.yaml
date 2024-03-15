@@ -2,11 +2,11 @@
 sensor:
   - name: nspanel_bedroom_infobar
     state: >-
-      {% if state_attr("media_player.sonos_master_bedroom", "media_title") != "TV"
-        and is_state("media_player.sonos_master_bedroom", "playing") %}
-      {{ state_attr("media_player.sonos_master_bedroom", "media_artist") }}
+      {% if state_attr("media_player.mass_all_devices", "media_title") != "TV"
+        and is_state("media_player.mass_all_devices", "playing") %}
+      {{ state_attr("media_player.mass_all_devices", "media_artist") }}
       -
-      {{ state_attr("media_player.sonos_master_bedroom", "media_title") }}
+      {{ state_attr("media_player.mass_all_devices", "media_title") }}
 
       {% elif states("sensor.openweathermap_forecast_precipitation") | float > 0.2 %}
       {{ states("sensor.openweathermap_forecast_precipitation") }}

@@ -43,14 +43,16 @@ variables:
   anchors:
     - &turn_on
       alias: "Turn the child media player on"
-      service: media_player.turn_on
-      data: {}
+      service: media_player.join
       target:
-        entity_id: !input target_media_player
+        entity_id: media_player.sonos_kitchen
+      data:
+        group_members:
+          - !input target_media_player
 
     - &turn_off
       alias: "Turn the child media player off"
-      service: media_player.turn_off
+      service: media_player.unjoin
       data: {}
       target:
         entity_id: !input target_media_player
@@ -87,28 +89,22 @@ action:
               - !input presence_entity
               - input_boolean.setting_automatic_music
             state: "on"
+          - condition: state
+            alias: "Only group when the master group is playing music"
+            entity_id:
+              - media_player.mass_all_devices
+            state: "playing"
           - condition: and
             conditions: !input custom_conditions
         sequence:
           - if:
-              - condition: state
-                entity_id:
-                  - !input target_media_player
-                state: "off"
-            then:
-              - *turn_on
-          - wait_template: "{{ not is_state(target_media_player, 'off') }}"
-            continue_on_timeout: true
-            timeout: "20"
-          - if:
-              - condition: not
-                conditions:
+              - not:
                   - condition: state
                     entity_id:
-                      - media_player.mass_all_devices
+                      - !input target_media_player
                     state: "playing"
             then:
-              - *play_media
+              - *turn_on
 
       - conditions:
           - condition: state

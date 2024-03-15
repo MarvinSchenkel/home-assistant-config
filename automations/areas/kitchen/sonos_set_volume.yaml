@@ -10,6 +10,6 @@ use_blueprint:
     just_awake_volume: 6
     early_morning_volume: 8
     morning_volume: 10
-    day_volume: 11
-    evening_volume: 9
-    sonos: media_player.mass_kitchen
+    day_volume: 10
+    evening_volume: 8
+    sonos: media_player.sonos_kitchen

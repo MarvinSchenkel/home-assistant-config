@@ -152,17 +152,55 @@ cards:
               icon: true
               name: true
 
-      - type: "horizontal-stack"
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Shortcuts
+
+      - type: vertical-stack
         cards:
-          - type: tile
-            entity: automation.house_populate_music_queue
-            icon: "mdi:playlist-music"
-            name: "Nieuwe playlist"
-            color: disabled
-            tap_action:
-              action: call-service
-              service: automation.trigger
-              data:
-                entity_id: automation.house_populate_music_queue
-          - type: vertical-stack
-            cards: []
+          - type: "horizontal-stack"
+            cards:
+              - type: tile
+                entity: automation.house_populate_music_queue
+                icon: "mdi:playlist-music"
+                name: "Nieuwe playlist"
+                color: primary
+                hide_state: true
+                tap_action:
+                  action: call-service
+                  service: automation.trigger
+                  data:
+                    entity_id: automation.house_populate_music_queue
+              - type: tile
+                entity: input_select.master_bedroom_room_mode
+                name: "Slaapkamer wakker"
+                color: primary
+                icon: "mdi:weather-sunny"
+                hide_state: true
+                tap_action:
+                  service: input_select.select_option
+                  confirmation:
+                    text: Weet je het zeker?
+                  data:
+                    option: "Wakker"
+                    entity_id: input_select.master_bedroom_room_mode
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: input_select.gardendoor_current_cover_scene
+                icon: "mdi:blinds"
+                name: "TV Luxaflex dicht"
+                color: primary
+                hide_state: true
+                tap_action:
+                  action: call-service
+                  service: script.close_blinds_tv_livingroom
+              - type: vertical-stack
+                cards: []

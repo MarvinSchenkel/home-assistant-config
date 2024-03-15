@@ -28,7 +28,7 @@ trigger:
     at:
       - "06:00:00"
       - "10:00:00"
-      - "18:00:00"
+      - "17:30:00"
       - "22:00:00"
 
 variables:
@@ -102,7 +102,7 @@ action:
             entity_id: input_select.bathroom_room_mode
             state: "Wakker"
           - condition: time
-            after: "18:00:00"
+            after: "17:30:00"
             before: "22:00:00"
         sequence:
           - *turn_on

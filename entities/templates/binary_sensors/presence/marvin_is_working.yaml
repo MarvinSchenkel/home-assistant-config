@@ -16,7 +16,6 @@ binary_sensor:
           )
         )
         and hour >=7
-        and hour < 18
       %}
       on
       {% else %}

@@ -17,3 +17,6 @@ action:
         - "laura"
       type: "away_only"
       message: "🧹 Norby gaat aan de slag!"
+
+  - delay:
+      hours: 2

@@ -19,7 +19,7 @@ trigger:
 
   - platform: state
     entity_id:
-      - media_player.sony_kd_65a1
+      - media_player.living_room_android
     to: "off"
     for:
       minutes: 7
@@ -32,7 +32,7 @@ trigger:
 
   - platform: state
     entity_id:
-      - media_player.sony_kd_65a1
+      - media_player.living_room_android
     to: "on"
     id: "tv_input_selected"
 
@@ -75,7 +75,7 @@ action:
           - alias: "We're not watching TV"
             condition: state
             entity_id:
-              - media_player.sony_kd_65a1
+              - media_player.living_room_android
             state: "off"
           - or:
               - alias: "No need for music when everyone is working from home"

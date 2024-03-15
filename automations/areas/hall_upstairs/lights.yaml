@@ -77,31 +77,16 @@ action:
       - conditions:
           - *presence_detected
           - *is_dark
-          - <<: *is_light_schedule
-            state: "dim"
-          - *nobody_asleep
-          - *zoey_door_closed
-        sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to dim scene"
-            data:
-              entity_id: scene.hallupstairs_lights_dim
-
-      - conditions:
-          - *presence_detected
-          - *is_dark
-          - <<: *is_light_schedule
-            state: "normal"
           - *nobody_asleep
           - *zoey_door_closed
         sequence:
           - service: scene.turn_on
             alias: "Turn the hall lights to normal scene"
             data:
-              entity_id: scene.hallupstairs_lights_normal
+              entity_id: scene.halupstairs_lights_natuurlijklicht
 
     default:
       - service: light.turn_off
         data:
-          entity_id: light.fibaro_hall_upstairs
+          entity_id: light.hall_upstairs
           transition: 5

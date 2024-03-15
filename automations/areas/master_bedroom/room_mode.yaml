@@ -51,7 +51,9 @@ trigger:
       minutes: 30
 
   - platform: time
-    at: "09:30:00"
+    at:
+      - "08:00:00"
+      - "09:30:00"
 
 variables:
   anchors:
@@ -92,8 +94,19 @@ action:
               option: "Wakker"
 
       - conditions:
-          - condition: time
-            after: "09:30:00"
+          - or:
+              - and:
+                  - condition: state
+                    entity_id: binary_sensor.weekend
+                    state: "on"
+                  - condition: time
+                    after: "09:30:00"
+              - and:
+                  - condition: state
+                    entity_id: binary_sensor.weekend
+                    state: "off"
+                  - condition: time
+                    after: "08:00:00"
           - condition: time
             before: "16:00:00"
           - condition: state

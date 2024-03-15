@@ -81,6 +81,6 @@ cards:
       - type: horizontal-stack
         cards:
           - type: tile
-            entity: sensor.pir_mancave_temperature
+            entity: sensor.pir_mancave_air_temperature
           - type: vertical-stack
             cards: []

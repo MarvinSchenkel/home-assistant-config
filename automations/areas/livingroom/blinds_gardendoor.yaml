@@ -43,17 +43,11 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
-    above: 0
+    above: 4
 
   - platform: state
-    entity_id: switch.nspanel_woonkamer_relay_1
+    entity_id: input_button.gardendoor_nspanel
     id: "garden_door_switch"
-    from:
-      - "on"
-      - "off"
-    to:
-      - "on"
-      - "off"
 
   - platform: state
     entity_id:
@@ -228,7 +222,7 @@ action:
                   - condition: numeric_state
                     entity_id:
                       - sensor.sun_adjusted_elevation
-                    below: 0
+                    below: 4
                   - condition: time
                     before: "12:00:00"
               - and:

@@ -6,11 +6,11 @@ binary_sensor:
     state: >
       {%-
         if (
-          states("sensor.pir_kitchen_luminance") | int > 10
+          states("sensor.pir_kitchen_illuminance") | int > 10
           and is_state("light.led_kitchen", "off")
           and is_state("light.kitchen_spot", "off")
         )
-        or states("sensor.pir_kitchen_luminance") | int > 75
+        or states("sensor.pir_kitchen_illuminance") | int > 75
       -%}
         off
       {%- else -%}

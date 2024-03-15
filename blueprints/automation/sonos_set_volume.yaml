@@ -118,8 +118,10 @@ action:
           0
         {% endif %}
 
-  - service: media_player.volume_set
-    target:
-      entity_id: "{{ sonos }}"
-    data:
-      volume_level: "{{ schedule_volume | int / 100.0 }}"
+  - if: "{{ schedule_volume | int > 0 }}"
+    then:
+      - service: media_player.volume_set
+        target:
+          entity_id: "{{ sonos }}"
+        data:
+          volume_level: "{{ schedule_volume | int / 100.0 }}"

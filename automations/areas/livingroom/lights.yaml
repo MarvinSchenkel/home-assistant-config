@@ -17,32 +17,20 @@ trigger:
     entity_id:
       - input_boolean.setting_manual_lights
       - binary_sensor.livingroom_is_dark
-      - input_select.livingroom_room_mode
     from: ~
     for:
       seconds: 2
 
   - platform: state
     entity_id:
-      - media_player.apple_tv
-    to: "playing"
+      - binary_sensor.livingroom_is_media_playing
     for:
       seconds: 10
 
   - platform: state
     entity_id:
-      - media_player.apple_tv
-    to:
-      - "paused"
-      - "idle"
-    for:
-      seconds: 10
-
-  - platform: state
-    entity_id:
-      - media_player.apple_tv
-    to:
-      - "standby"
+      - media_player.living_room_android
+    to: "off"
 
   - platform: state
     entity_id:
@@ -71,22 +59,6 @@ trigger:
     subtype: 4
     unique_id: fd5ce233-c55e-449a-9c81-d55fc8078f03
     id: "hue_dimmer_off_press"
-
-  - platform: device
-    device_id: 063e0720e7172ed87824f117033874a5
-    domain: hue
-    type: long_press
-    subtype: 1
-    unique_id: a9f5c750-a2cb-4924-b041-022f32291224
-    id: "hue_dimmer_on_long_press"
-
-  - platform: device
-    device_id: 063e0720e7172ed87824f117033874a5
-    domain: hue
-    type: long_press
-    subtype: 4
-    unique_id: fd5ce233-c55e-449a-9c81-d55fc8078f03
-    id: "hue_dimmer_off_long_press"
 
   - platform: time
     at: "00:03:00"
@@ -117,13 +89,6 @@ variables:
         - "hue_dimmer_on_press"
         - "hue_dimmer_off_press"
 
-    - &condition_is_remote_long_pressed
-      alias: "Did we manually long press the button?"
-      condition: trigger
-      id:
-        - "hue_dimmer_on_long_press"
-        - "hue_dimmer_off_long_press"
-
     - &condition_is_current_scene
       alias: "Check the current light scene"
       condition: state
@@ -131,19 +96,9 @@ variables:
 
     - &condition_watching_tv
       alias: "Check if we are watching a movie or series"
-      and:
-        - condition: state
-          entity_id: media_player.apple_tv
-          attribute: app_id
-          state:
-            - "com.amazon.aiv.AIVApp"
-            - "com.netflix.Netflix"
-            - "com.firecore.infuse"
-            - "com.plexapp.plex"
-            - "nl.omroep.uitzendinggemist"
-        - condition: state
-          entity_id: media_player.apple_tv
-          state: "playing"
+      condition: state
+      entity_id: binary_sensor.livingroom_is_media_playing
+      state: "on"
 
     - &turn_off
       alias: "Turn the lights off"
@@ -178,32 +133,7 @@ action:
             data:
               option: normal
 
-      - alias: "Toggle Philips Hue Sync Box on long press"
-        conditions:
-          - *condition_is_remote_long_pressed
-        sequence:
-          - if:
-              - condition: state
-                entity_id:
-                  - switch.sync_box_light_sync
-                  - switch.sync_box_power
-                match: any
-                state: "off"
-            then:
-              - service: switch.turn_on
-                entity_id: switch.sync_box_power
-              - service: switch.turn_on
-                entity_id: switch.sync_box_light_sync
-              - <<: *turn_on
-                target:
-                  entity_id: scene.livingroom_lights_movie
-                data:
-                  transition: 3
-            else:
-              - service: switch.turn_off
-                entity_id: switch.sync_box_light_sync
-
-      - alias: "Toggle movie scene on single button press."
+      - alias: "Capture manual scene control via Hue remote"
         conditions:
           - *condition_is_remote_quickly_pressed
           - *condition_is_dark
@@ -220,7 +150,8 @@ action:
                 target:
                   entity_id: scene.livingroom_lights_movie
 
-      - alias: "Turn on the movie scene when we are watching a movie or series."
+      - alias: >
+          "Toggle movie scene on single button press or when somethings starts playing"
         conditions:
           - *condition_is_dark
           - *condition_is_presence_detected
@@ -229,8 +160,6 @@ action:
           - <<: *turn_on
             target:
               entity_id: scene.livingroom_lights_movie
-            data:
-              transition: 3
 
       - alias: "Just turn on the lights."
         conditions:

@@ -96,5 +96,5 @@ cards:
             entity: binary_sensor.presence_master_bedroom
             name: Aanwezigheid
           - type: tile
-            entity: sensor.pir_master_bedroom_temperature
+            entity: sensor.pir_master_bedroom_air_temperature
             name: Temperatuur

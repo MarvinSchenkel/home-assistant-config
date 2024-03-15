@@ -85,6 +85,10 @@ action:
           - condition: time
             after: "18:00:00"
             before: "22:00:00"
+          - not:
+              - condition: state
+                entity_id: input_select.livingroom_room_mode
+                state: "Slaap"
         sequence:
           - <<: *select_schedule
             data:

@@ -6,5 +6,5 @@ binary_sensor:
       {{  is_state("binary_sensor.pir_kitchen", "on")
           or is_state("binary_sensor.presence_livingroom_fp2", "on")
           or is_state("binary_sensor.presence_garden_door", "on")
-          or is_state("media_player.sony_kd_65a1", "on")
+          or is_state("media_player.living_room_android", "on")
           or is_state("binary_sensor.presence_livingroom_door", "on") }}

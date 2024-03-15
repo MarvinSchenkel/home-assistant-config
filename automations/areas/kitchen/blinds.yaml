@@ -32,7 +32,7 @@ trigger:
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
-    above: 0
+    above: 4
 
   - platform: time
     at: "20:45:00"
@@ -147,12 +147,22 @@ action:
         conditions:
           - condition: or
             conditions:
-              - condition: numeric_state
-                entity_id:
-                  - sensor.sun_adjusted_elevation
-                below: 0
+              - and:
+                  - condition: numeric_state
+                    entity_id:
+                      - sensor.sun_adjusted_elevation
+                    below: 0
+                  - condition: time
+                    after: "16:00:00"
               - condition: time
                 after: "20:45:00"
+              - and:
+                  - condition: numeric_state
+                    entity_id:
+                      - sensor.sun_adjusted_elevation
+                    below: 4
+                  - condition: time
+                    before: "12:00:00"
               - condition: state
                 entity_id: input_select.livingroom_room_mode
                 state:

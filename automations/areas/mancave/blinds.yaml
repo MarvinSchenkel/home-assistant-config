@@ -185,6 +185,7 @@ action:
             entity_id:
               - binary_sensor.marvin_is_working
             state: "on"
+          - "{{ now().month in [6,7,8,9] }}"
         sequence:
           - service: scene.turn_on
             target:

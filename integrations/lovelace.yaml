@@ -80,3 +80,9 @@ lovelace:
       title: Mobile
       icon: mdi:cellphone
       show_in_sidebar: true
+    lovelace-nspanel:
+      mode: yaml
+      filename: dashboards/nspanel/nspanel.yaml
+      title: Mobile
+      icon: mdi:cellphone
+      show_in_sidebar: true

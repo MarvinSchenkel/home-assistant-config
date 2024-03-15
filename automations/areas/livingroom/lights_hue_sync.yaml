@@ -1,0 +1,83 @@
+---
+alias: areas_livingroom_lights_hue_sync
+description: Turns on the Philips Hue Sync Box
+mode: queued
+id: f48cadf9-13ef-47e0-b8c1-7f11bcc4b58d
+trace:
+  stored_traces: 25
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - input_boolean.setting_manual_lights
+      - binary_sensor.livingroom_is_dark
+    from: ~
+    for:
+      seconds: 2
+
+  - platform: state
+    entity_id: binary_sensor.livingroom_is_media_app_selected
+
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "on"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      minutes: 10
+
+variables:
+  anchors:
+    - &condition_is_presence_detected
+      alias: "Is there presence in the room?"
+      condition: not
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom
+          state: "off"
+          for:
+            minutes: 10
+
+    - &condition_is_dark
+      alias: "Is it dark in the living room?"
+      condition: state
+      entity_id: binary_sensor.livingroom_is_dark
+      state: "on"
+
+    - &condition_watching_tv
+      alias: "Check if we are watching a movie or series"
+      condition: state
+      entity_id: binary_sensor.livingroom_is_media_app_selected
+      state: "on"
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+
+action:
+  - choose:
+      - alias: "Toggle movie scene on single button press."
+        conditions:
+          - *condition_is_dark
+          - *condition_is_presence_detected
+          - *condition_watching_tv
+        sequence:
+          - service: switch.turn_on
+            entity_id: switch.sync_box_power
+          - service: switch.turn_on
+            entity_id: switch.sync_box_light_sync
+
+    default:
+      - service: switch.turn_off
+        entity_id: switch.sync_box_light_sync

@@ -1,0 +1,24 @@
+---
+description: >
+  Group sonos to the bedroom when there is music playing and motion is detected
+alias: areas_master_bedroom_group_speakers
+id: ebe4f8c9-22f3-44b0-a5c9-670bc7cb0902
+
+use_blueprint:
+  path: group_speakers.yaml
+  input:
+    presence_entity: binary_sensor.presence_master_bedroom
+    target_media_player: media_player.sonos_bedroom
+    no_presence_wait: 75
+    custom_conditions:
+      - condition: state
+        entity_id:
+          - schedule.silent_hours
+        state: "off"
+      - condition: state
+        entity_id:
+          - input_select.master_bedroom_room_mode
+        state: "Wakker"
+    custom_state_triggers:
+      - schedule.silent_hours
+      - input_select.master_bedroom_room_mode

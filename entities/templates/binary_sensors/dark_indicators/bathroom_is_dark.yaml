@@ -6,7 +6,7 @@ binary_sensor:
     state: >
       {%-
         if states("sensor.pir_bathroom_luminance") | int > 15
-        and is_state("light.fibaro_bathroom", "off")
+        and is_state("light.bathroom", "off")
       -%}
         off
       {%- else -%}

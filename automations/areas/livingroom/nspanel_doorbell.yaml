@@ -1,0 +1,21 @@
+---
+description: >
+  Play doorbell sound on the NS Panel when the normal doorbell
+  is turned off.
+alias: areas_livingroom_nspanel_doorbell
+id: 966923a2-3965-439c-a0e7-730e8d742daa
+
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.g4_doorbell_doorbell
+    to: "on"
+
+action:
+  - service: media_player.play_media
+    data:
+      media_content_id: !secret doorbell_chime_url
+      media_content_type: audio/mp3
+    target:
+      entity_id: media_player.nspanel_pro
+

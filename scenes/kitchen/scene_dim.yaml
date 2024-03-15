@@ -5,4 +5,4 @@ icon: mdi:lightbulb
 entities:
   light.led_kitchen:
     state: "on"
-    brightness_pct: 40
+    brightness: 102

@@ -1,0 +1,11 @@
+---
+alias: close_blinds_tv_livingroom
+description: Close both blinds in the TV area of the living room
+mode: single
+sequence:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.gardendoor_cover_closed
+  - service: scene.turn_on
+    target:
+      entity_id: scene.livingroom_cover_closed

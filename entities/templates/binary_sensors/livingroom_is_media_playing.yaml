@@ -1,0 +1,13 @@
+---
+binary_sensor:
+  - name: livingroom_is_media_playing
+    unique_id: 585ffa16-ab8b-4438-9efe-3c9eb044760a
+    state: >
+      {{
+        is_state('binary_sensor.livingroom_is_media_app_selected', 'on')
+        and (
+          is_state('media_player.apple_tv', 'playing')
+          or is_state('media_player.nvidia_shield', 'playing')
+        )
+        and is_state('media_player.living_room_android', 'on')
+      }}

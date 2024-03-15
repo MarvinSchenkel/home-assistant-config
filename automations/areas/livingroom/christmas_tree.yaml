@@ -1,0 +1,59 @@
+---
+alias: areas_livingroom_christmas_tree
+description: Turns the livingroom lights on when motion has been detected
+mode: queued
+id: 74468068-43d1-40a0-8eec-822a4235adfc
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "on"
+
+  - platform: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      minutes: 10
+
+variables:
+  anchors:
+    - &condition_is_presence_detected
+      alias: "Is there presence in the room?"
+      condition: not
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom
+          state: "off"
+          for:
+            minutes: 10
+
+    - &turn_off
+      alias: "Turn the christmas tree off"
+      service: switch.turn_off
+      target:
+        entity_id: switch.christmas_tree
+
+    - &turn_on
+      alias: "Turn on the lights"
+      service: switch.turn_on
+      target:
+        entity_id: switch.christmas_tree
+
+action:
+  - choose:
+      - alias: "Turn on the christmas tree."
+        conditions:
+          - *condition_is_presence_detected
+        sequence:
+          - *turn_on
+
+    default:
+      - *turn_off

@@ -25,7 +25,7 @@ variables:
       service: light.turn_off
       alias: "Turn the hall lights off"
       data:
-        entity_id: light.fibaro_hall_downstairs
+        entity_id: light.hall_downstairs
         transition: 5
 
 trigger:
@@ -68,35 +68,11 @@ action:
       - conditions:
           - *presence_detected
           - *is_dark
-          - <<: *is_light_schedule
-            state: "dim"
-        sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to dim scene"
-            data:
-              entity_id: scene.halldownstairs_lights_dim
-
-      - conditions:
-          - *presence_detected
-          - *is_dark
-          - <<: *is_light_schedule
-            state: "normal"
         sequence:
           - service: scene.turn_on
             alias: "Turn the hall lights to normal scene"
             data:
-              entity_id: scene.halldownstairs_lights_normal
-
-      - conditions:
-          - *presence_detected
-          - *is_dark
-          - <<: *is_light_schedule
-            state: "night"
-        sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to night scene"
-            data:
-              entity_id: scene.halldownstairs_lights_night
+              entity_id: scene.haldownstairs_lights_natuurlijklicht
 
     default:
       - *lights_turn_off

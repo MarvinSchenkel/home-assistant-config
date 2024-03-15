@@ -5,4 +5,4 @@ icon: mdi:lightbulb
 entities:
   light.fibaro_hall_downstairs:
     state: "on"
-    brightness_pct: 70
+    brightness: 179
