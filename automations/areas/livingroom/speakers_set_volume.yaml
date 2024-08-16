@@ -7,14 +7,14 @@ id: e483505d-49b0-4912-9152-11764858fd7c
 use_blueprint:
   path: sonos_set_volume.yaml
   input:
-    just_awake_volume: 18
-    early_morning_volume: 20
-    morning_volume: 22
-    day_volume: 24
-    evening_volume: 22
-    sonos: media_player.woonkamer
+    just_awake_volume: 6
+    early_morning_volume: 8
+    morning_volume: 9
+    day_volume: 11
+    evening_volume: 9
+    sonos: media_player.mass_woonkamer_nad
     custom_conditions:
       - '{{
-            state_attr("media_player.woonkamer", "media_title")
+            state_attr("media_player.mass_nad_woonkamer", "media_title")
             != "External Source"
         }}'

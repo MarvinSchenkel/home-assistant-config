@@ -17,6 +17,8 @@ fields:
     description: Type of the notification, default 'normal'
   image:
     description: (Optional) Image URL to show in the notification
+  video:
+    description: (Optional) Video URL to show in the notificaiton
   intercom_devices:
     description: >
       List of sonos devices to broadcast the message to
@@ -25,6 +27,7 @@ fields:
 variables:
   type: "{{ type | default('normal') }}"
   image: "{{ image | default('None') }}"
+  video: "{{ video | default('None') }}"
   home_status: ["Thuis", "Net Thuis"]
   away_status: ["Weg", "Net weg", "Lang weg"]
   laura_state: "{{ states('input_select.laura_status_dropdown') }}"
@@ -38,29 +41,6 @@ sequence:
             receiver: "{{ receivers[repeat.index-1] }}"
             name: "{{ receiver[0] | upper }}{{ receiver[1:] }}"
             title: "{{ title | default('Hey') }} {{ name }}!"
-
-        # First check if we need to play the notifcation on our TV
-        # - choose:
-        #     - conditions:
-        #         condition: or
-        #         conditions:
-        #           - "{{ receiver == 'marvin'
-        #             and marvin_state in home_status
-        #             and not is_state('media_player.living_room_tv', 'off') }}"
-        #           - "{{ receiver == 'laura'
-        #             and laura_state in home_status
-        #             and not is_state('media_player.living_room_tv', 'off') }}"
-        #       sequence:
-        #         - service: notify.woonkamer
-        #           continue_on_error: true
-        #           data:
-        #             message: "{{ message }}"
-        #             title: "{{ title }}"
-        #             data:
-        #               duration: 7
-        #               position: top-right
-        #               image:
-        #                 url: "{{ image }}"
 
         # Check if we need to notify the mancave TV
         - choose:
@@ -79,6 +59,7 @@ sequence:
                     title: "{{ title }}"
                     data:
                       image: "{{ image }}"
+                      video: "{{ video }}"
 
         # Send mobile notifications
         - choose:
@@ -94,6 +75,7 @@ sequence:
                     title: "{{ title }}"
                     data:
                       image: "{{ image }}"
+                      video: "{{ video }}"
         - choose:
             - conditions: "{{ receiver == 'laura'
                 and (type == 'normal' or
@@ -107,3 +89,4 @@ sequence:
                     title: "{{ title }}"
                     data:
                       image: "{{ image }}"
+                      video: "{{ video }}"

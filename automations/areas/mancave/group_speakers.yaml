@@ -1,0 +1,129 @@
+---
+alias: areas_mancave_group_speakers
+id: 17d144c4-cb42-419b-a699-e3bf6d993cbe
+description: >
+  Group sonos to the living room when there is music playing and motion is
+  detected
+mode: queued
+max_exceeded: silent
+
+variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
+
+trigger:
+  - platform: state
+    entity_id: binary_sensor.presence_mancave
+    to: "on"
+  - platform: state
+    entity_id:
+      - input_select.mancave_room_mode
+      - binary_sensor.sonos_move_charging
+      - media_player.mass_all_devices
+  - platform: state
+    entity_id:
+      - binary_sensor.macbookwork_camera_in_use
+    for:
+      seconds: 1
+  - platform: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      seconds: 75
+  - platform: homeassistant
+    event: start
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.sonos_move_charging
+            state: "off"
+            for:
+              minutes: 1
+        sequence:
+          - stop: >
+              "Block auto grouping / ungrouping for the
+              Move since it is not in the dock."
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_mancave
+              - input_boolean.setting_automatic_music
+            state: "on"
+          - "{{ is_state(mass_entity, 'playing') }}"
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id:
+                  - input_select.mancave_room_mode
+                state: Wakker
+              - alias: When the Move is docked
+                condition: state
+                entity_id:
+                  - binary_sensor.sonos_move_charging
+                state: "on"
+              - alias: When I am not in a call
+                condition: state
+                entity_id:
+                  - binary_sensor.macbookwork_camera_in_use
+                state: "off"
+        sequence:
+          - if:
+              - not:
+                  - condition: state
+                    entity_id:
+                      - media_player.sonos_move
+                    state: playing
+            then:
+              - alias: Turn the child media player on
+                service: media_player.join
+                target:
+                  entity_id: media_player.sonos_kitchen
+                data:
+                  group_members:
+                    - media_player.sonos_move
+
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_mancave
+            state: "off"
+            for:
+              seconds: 75
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.sonos_move
+                state: "off"
+        sequence:
+          - alias: Turn the child media player off
+            service: media_player.unjoin
+            data: {}
+            target:
+              entity_id: media_player.sonos_move
+
+      - conditions:
+          - not:
+              - and:
+                  - condition: state
+                    entity_id:
+                      - input_select.mancave_room_mode
+                    state: Wakker
+                  - alias: When the Move is docked
+                    condition: state
+                    entity_id:
+                      - binary_sensor.sonos_move_charging
+                    state: "on"
+                  - alias: When I am not in a call
+                    condition: state
+                    entity_id:
+                      - binary_sensor.macbookwork_camera_in_use
+                    state: "off"
+        sequence:
+          - alias: Turn the child media player off
+            service: media_player.unjoin
+            data: {}
+            target:
+              entity_id: media_player.sonos_move

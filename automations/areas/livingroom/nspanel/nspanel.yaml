@@ -21,6 +21,7 @@ trigger:
   - platform: state
     entity_id:
       - media_player.mass_all_devices
+      - media_player.mass_all_devices_beta
 
   - platform: state
     entity_id:
@@ -28,6 +29,7 @@ trigger:
     to: "halfopen"
 
 variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
     - &go_to_home_page
       alias: "Navigate to the home page"
@@ -62,10 +64,7 @@ action:
           - *go_to_camera_page
 
       - conditions:
-          - condition: state
-            entity_id:
-              - media_player.mass_all_devices
-            state: "playing"
+          - "{{ is_state(mass_entity, 'playing') }}"
         sequence:
           - *go_to_music_page
 

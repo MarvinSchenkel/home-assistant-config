@@ -29,6 +29,7 @@ binary_sensor:
           states("sensor.fp2_livingroom_luminance") | int > 6
           and is_state("light.dinner_door", "off")
           and is_state("light.kitchen_spot", "off")
+          and is_state("switch.sync_box_light_sync", "off")
         )
         or states("sensor.fp2_livingroom_luminance") | int > 45
       -%}

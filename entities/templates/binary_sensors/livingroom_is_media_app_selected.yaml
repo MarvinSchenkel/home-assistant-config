@@ -3,21 +3,29 @@ binary_sensor:
   - name: livingroom_is_media_app_selected
     unique_id: d47d06d0-66fd-4d45-8d89-efafbcba96ee
     state: >
-      {{
-        state_attr("media_player.apple_tv", "app_id")
-        in [
-          "com.amazon.aiv.AIVApp",
-          "com.netflix.Netflix",
-          "com.firecore.infuse",
-          "com.plexapp.plex",
-          "nl.omroep.uitzendinggemist"
-        ]
-        or state_attr("media_player.nvidia_shield", "app_id")
-        in [
-          "com.netflix.ninja",
-          "com.amazon.amazonvideo.livingroom",
-          "Failed to write while dumping service window: Broken pipe",
-          "nl.uitzendinggemist",
-          "com.plexapp.android"
-        ]
-      }}
+      {%  set to_state =
+          state_attr("media_player.apple_tv", "app_id")
+          in [
+            "com.amazon.aiv.AIVApp",
+            "com.netflix.Netflix",
+            "com.firecore.infuse",
+            "com.disney.disneyplus",
+            "com.plexapp.plex",
+            "nl.omroep.uitzendinggemist"
+          ]
+          or state_attr("media_player.nvidia_shield", "app_id")
+          in [
+            "com.netflix.ninja",
+            "com.amazon.amazonvideo.livingroom",
+            "nl.uitzendinggemist",
+            "com.plexapp.android"
+          ]
+      %}
+      {%-
+        if state_attr("media_player.nvidia_shield", "app_id")
+        == "Failed to write while dumping service window: Broken pipe"
+      -%}
+        {{ states('binary_sensor.livingroom_is_media_app_selected') }}
+      {%- else -%}
+        {{ to_state }}
+      {%- endif -%}

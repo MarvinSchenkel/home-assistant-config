@@ -1,0 +1,7 @@
+---
+sensor:
+  - name: mass_media_entity
+    state: >-
+      {{  "media_player.mass_all_devices_beta"
+          if is_state("media_player.mass_all_devices", "unavailable")
+          else "media_player.mass_all_devices" }}

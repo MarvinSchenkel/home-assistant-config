@@ -1,0 +1,15 @@
+---
+description: >
+  Automatically reconnect the NSPanel when browser mod loses connection
+alias: areas_livingroom_nspanel_reconnect
+id: f3118cb2-221d-49e2-93de-08617e3efeed
+
+trigger:
+  - platform: state
+    entity_id:
+      - light.npanelfkm_screen
+    to: "unavailable"
+
+action:
+  - service: button.press
+    entity_id: button.rk3326_restart_browser

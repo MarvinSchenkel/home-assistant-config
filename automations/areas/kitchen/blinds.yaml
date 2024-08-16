@@ -38,22 +38,6 @@ trigger:
     at: "20:45:00"
     id: "time_close_kitchen"
 
-  - platform: device
-    device_id: 063e0720e7172ed87824f117033874a5
-    domain: hue
-    type: initial_press
-    subtype: 3
-    unique_id: c6db055a-584c-4e75-b9cc-9f153d5ba604
-    id: "hue_dimmer_down_press"
-
-  - platform: device
-    device_id: 063e0720e7172ed87824f117033874a5
-    domain: hue
-    type: initial_press
-    subtype: 2
-    unique_id: 140cfc6c-e965-40a7-9f55-976627206e31
-    id: "hue_dimmer_up_press"
-
   - platform: state
     entity_id:
       - scene.kitchen_cover_halfclosed

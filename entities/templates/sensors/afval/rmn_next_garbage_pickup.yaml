@@ -1,6 +1,8 @@
 ---
 sensor:
   - name: rmn_next_garbage_pickup
+    unique_id: 48ee5f82-e183-40da-af2c-462202617c7c
+    icon: "mdi:trash-can-outline"
     state: >
       {%- set paper = state_attr('sensor.rmn_papier', 'Days_until') | int(1) %}
       {%- set gft = state_attr('sensor.rmn_gft', 'Days_until') | int(1) %}

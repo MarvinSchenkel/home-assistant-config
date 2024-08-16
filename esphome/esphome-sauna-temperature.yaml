@@ -12,7 +12,8 @@ logger:
 api:
 
 ota:
-  password: !secret ota_pwd
+  - platform: esphome
+    password: !secret ota_pwd
 
 wifi:
   ssid: !secret wifi_ssid
@@ -25,11 +26,11 @@ wifi:
     gateway: 192.168.1.1
     subnet: 255.255.255.0
 
-dallas:
-  - pin: D4
-    update_interval: 10s
+one_wire:
+  - platform: gpio
+    pin: D4
 
 sensor:
-  - platform: dallas
+  - platform: dallas_temp
     name: "Sauna Temperature"
     address: "0xd43c9df649f6e828"

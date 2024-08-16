@@ -9,19 +9,15 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - type: markdown
-            card_mod:
-              style: |
-                ha-card {
-                  border: 0px;
-                  text-align: center;
-                  background-color: transparent;
-                  box-shadow: none;
-                  font-size: 125pt;
-                  margin: 80px 0px 120px 0px;
-                }
-            content: >
-              {{ states('sensor.time') }}
+          - type: custom:button-card
+            entity: sensor.time
+            show_state: true
+            show_name: false
+            styles:
+              card:
+                - font-size: 125pt;
+                - text-align: center
+                - background-color: transparent
             tap_action:
               action: call-service
               service: browser_mod.navigate
@@ -31,6 +27,8 @@ views:
                 path: /lovelace-nspanel/control
           - type: weather-forecast
             entity: weather.openweathermap
+            show_forecast: true
+            forecast_type: hourly
             tap_action:
               action: call-service
               service: browser_mod.navigate
@@ -44,81 +42,257 @@ views:
     icon: "mdi:cog-box"
     type: masonry
     cards:
-      - type: button
-        name: Tuin deur open
-        card_mod:
-          style: |
-            ha-card {
-              font-size: 35pt !important;
-            }
-        entity: input_button.gardendoor_nspanel
-        hide_state: true
-        tap_action:
-          action: call-service
-          service: input_button.press
-          target:
-            entity_id: input_button.gardendoor_nspanel
+      - type: vertical-stack
+        cards:
+          - type: button
+            name: Tuin deur open
+            card_mod:
+              style: |
+                ha-card {
+                  font-size: 35pt !important;
+                }
+            entity: input_button.gardendoor_nspanel
+            hide_state: true
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.gardendoor_nspanel
+          - type: button
+            name: Terug
+            card_mod:
+              style: |
+                ha-card {
+                  font-size: 15pt !important;
+                  background: transparent;
+                  padding-top: 50px !important;
+                }
+                ha-state-icon {
+                  width: 20% !important;
+                }
+            entity: input_button.gardendoor_nspanel
+            icon: "mdi:arrow-left-circle"
+            hide_state: true
+            tap_action:
+              action: call-service
+              service: browser_mod.navigate
+              target:
+                device_id: a03bdae8b392884e72a812662eae18c4
+              data:
+                path: /lovelace-nspanel/home
 
   - path: music
     title: Music
     icon: "mdi:music"
     type: masonry
     cards:
-      - type: markdown
-        card_mod:
-          style: |
-            ha-card {
-              z-index: 10000;
-              position: fixed;
-              width: 100%;
-              margin: 34% 0 !important;
-              border: 0px;
-              text-align: center;
-              background-color: transparent;
-              box-shadow: none;
-              font-size: 50pt;
-              font-weight: 475;
-            }
-        content: >
-          {{ state_attr('media_player.mass_all_devices', 'media_title') }}
-      - type: markdown
-        card_mod:
-          style: |
-            ha-card {
-              z-index: 10000;
-              position: fixed;
-              width: 100%;
-              margin: 51% 0 !important;
-              border: 0px;
-              text-align: center;
-              background-color: transparent;
-              box-shadow: none;
-              font-size: 50pt;
-              font-weight: 325;
-            }
-        content: >
-          {{ state_attr('media_player.mass_all_devices', 'media_artist') }}
-      - type: custom:mini-media-player
-        entity: media_player.mass_all_devices
-        group: true
-        tap_action:
-          action: navigate
-          navigation_path: /lovelace-nspanel/control
-        card_mod:
-          style: |
-            ha-card {
-              aspect-ratio: 1 / 1;
-            }
-        artwork: full-cover-fit
-        hide:
-          source: true
-          power: true
-          icon: true
-          name: true
-          controls: true
-          volume: true
-          info: true
-          progress: true
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.mass_all_devices
+            state_not: "unavailable"
+        card:
+          type: custom:button-card
+          entity: media_player.mass_all_devices
+          label: >
+            [[[
+              return states['media_player.mass_all_devices'].attributes.media_title
+            ]]]
+          extra_styles: |
+            [[[
+              return `
+                @keyframes scrolling {
+                  0% {
+                    transform: translate(100%, 0);
+                  }
+                  50% {
+                    transform: translate(0, 0);
+                  }
+                  100% {
+                    transform: translate(-100%, 0);
+                  }
+                }
+              `
+            ]]]
+          styles:
+            card:
+              - z-index: 10000
+              - position: fixed
+              - margin: 34% 0 !important
+              - border: 0px
+              - text-align: center
+              - background-color: transparent
+              - box-shadow: none
+              - font-size: 50pt
+              - font-weight: 475
+            label:
+              - animation: >
+                  [[[
+                    if (states['media_player.mass_all_devices'].attributes.media_title.length > 12)
+                      return "scrolling 10s linear infinite"
+                  ]]]
+              - overflow: visible
+          show_label: true
+          show_state: false
+          show_name: false
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.mass_all_devices
+            state_not: "unavailable"
+        card:
+          type: custom:button-card
+          entity: media_player.mass_all_devices
+          label: >
+            [[[
+              return states['media_player.mass_all_devices'].attributes.media_artist
+            ]]]
+          styles:
+            card:
+              - z-index: 10000
+              - position: fixed
+              - width: 100%
+              - margin: 51% 0 !important
+              - border: 0px
+              - text-align: center
+              - background-color: transparent
+              - box-shadow: none
+              - font-size: 50pt
+              - font-weight: 325
+          show_label: true
+          show_state: false
+          show_name: false
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.mass_all_devices
+            state_not: "unavailable"
+        card:
+          type: custom:mini-media-player
+          entity: media_player.mass_all_devices
+          group: true
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace-nspanel/control
+          card_mod:
+            style: |
+              ha-card {
+                aspect-ratio: 1 / 1;
+              }
+          artwork: full-cover-fit
+          hide:
+            source: true
+            power: true
+            icon: true
+            name: true
+            controls: true
+            volume: true
+            info: true
+            progress: true
+
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.mass_all_devices_beta
+            state_not: "unavailable"
+        card:
+          type: custom:button-card
+          entity: media_player.mass_all_devices_beta
+          label: >
+            [[[
+              return states['media_player.mass_all_devices_beta'].attributes.media_title
+            ]]]
+          extra_styles: |
+            [[[
+              return `
+                @keyframes scrolling {
+                  0% {
+                    transform: translate(100%, 0);
+                  }
+                  50% {
+                    transform: translate(0, 0);
+                  }
+                  100% {
+                    transform: translate(-100%, 0);
+                  }
+                }
+              `
+            ]]]
+          styles:
+            card:
+              - z-index: 10000
+              - position: fixed
+              - margin: 34% 0 !important
+              - border: 0px
+              - text-align: center
+              - background-color: transparent
+              - box-shadow: none
+              - font-size: 50pt
+              - font-weight: 475
+            label:
+              - animation: >
+                  [[[
+                    if (states['media_player.mass_all_devices_beta'].attributes.media_title.length > 12)
+                      return "scrolling 10s linear infinite"
+                  ]]]
+              - overflow: visible
+          show_label: true
+          show_state: false
+          show_name: false
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.mass_all_devices_beta
+            state_not: "unavailable"
+        card:
+          type: custom:button-card
+          entity: media_player.mass_all_devices_beta
+          label: >
+            [[[
+              return states['media_player.mass_all_devices_beta'].attributes.media_artist
+            ]]]
+          styles:
+            card:
+              - z-index: 10000
+              - position: fixed
+              - width: 100%
+              - margin: 51% 0 !important
+              - border: 0px
+              - text-align: center
+              - background-color: transparent
+              - box-shadow: none
+              - font-size: 50pt
+              - font-weight: 325
+          show_label: true
+          show_state: false
+          show_name: false
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.mass_all_devices_beta
+            state_not: "unavailable"
+        card:
+          type: custom:mini-media-player
+          entity: media_player.mass_all_devices_beta
+          group: true
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace-nspanel/control
+          card_mod:
+            style: |
+              ha-card {
+                aspect-ratio: 1 / 1;
+              }
+          artwork: full-cover-fit
+          hide:
+            source: true
+            power: true
+            icon: true
+            name: true
+            controls: true
+            volume: true
+            info: true
+            progress: true
 
   - path: camera
     title: Voordeur

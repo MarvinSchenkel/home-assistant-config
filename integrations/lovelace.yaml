@@ -34,8 +34,6 @@ lovelace:
       type: module
     - url: /local/community/swipe-card/swipe-card.js
       type: module
-    - url: /local/community/HomeAssistant-Cupertino-Icons/HomeAssistant-Cupertino-Icons.js
-      type: module
     - url: /local/community/atomic-calendar-revive/atomic-calendar-revive.js
       type: module
     - url: /local/community/slider-entity-row/slider-entity-row.js
@@ -65,6 +63,8 @@ lovelace:
     - url: /local/community/my-cards/my-cards.js
       type: module
     - url: /local/community/weather-radar-card/weather-radar-card.js
+      type: module
+    - url: /local/custom_js/color-thief.min.js
       type: module
 
   dashboards:

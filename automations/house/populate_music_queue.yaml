@@ -31,6 +31,7 @@ trigger:
 # Reflections: ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA
 
 variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
   just_awake_music:
     - "Classical Meditation"
     - "Tranquil spa day"
@@ -96,7 +97,7 @@ variables:
         enqueue: replace_next
         radio_mode: "{{ radio_mode }}"
       target:
-        entity_id: media_player.mass_all_devices
+        entity_id: "{{ mass_entity }}"
     - &add_music
       service: mass.play_media
       data:
@@ -104,7 +105,7 @@ variables:
         enqueue: add
         radio_mode: "{{ radio_mode }}"
       target:
-        entity_id: media_player.mass_all_devices
+        entity_id: "{{ mass_entity }}"
 
 condition:
   - condition: state
@@ -120,16 +121,12 @@ action:
           minutes: 1
   - if:
       # Clear queue at the start of the day
-      - condition: not
-        conditions:
-          - condition: state
-            entity_id:
-              - media_player.mass_all_devices
-            state: "playing"
+      - "{{ not is_state(mass_entity, 'playing') }}"
       - "{{ active_schedule == 'just_awake' }}"
     then:
       - service: media_player.clear_playlist
-        entity_id: media_player.mass_all_devices
+        target:
+          entity_id: "{{ mass_entity }}"
   - *replace_music
   - if:
       - "{{ now().month == 12 and now().day > 8 and now().day < 27 }}"
@@ -146,4 +143,4 @@ action:
           media_id: "{{ christmas_music }}"
           enqueue: add
         target:
-          entity_id: media_player.mass_all_devices
+          entity_id: "{{ mass_entity }}"

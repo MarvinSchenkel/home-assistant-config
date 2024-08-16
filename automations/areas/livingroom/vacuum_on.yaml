@@ -39,13 +39,14 @@ trigger:
 
   - platform: state
     entity_id:
-      - input_boolean.setting_guest_mode
+      - binary_sensor.everyone_left_home
+      - binary_sensor.house_mode_everyone_at_home_working
+    from: "on"
+    to: "off"
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_someone_just_home
-    from: "off"
-    to: "on"
+      - input_boolean.setting_guest_mode
 
 action:
   - choose:

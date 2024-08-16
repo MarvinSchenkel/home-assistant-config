@@ -6,34 +6,19 @@ id: e153a617-7601-494d-8f23-13e6df694439
 
 trigger:
   # Laura remote
-  - platform: event
+  - platform: device
+    domain: mqtt
+    device_id: 7fb6275ba6053149bcde2015d9dccaa3
+    type: action
+    subtype: single
     id: "button_laura_one"
-    event_type: "zha_event"
-    event_data:
-      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
-      command: "single"
 
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
-      command: "hold"
+  - platform: device
+    domain: mqtt
+    device_id: 7fb6275ba6053149bcde2015d9dccaa3
+    type: action
+    subtype: hold
     id: "button_laura_hold"
-
-  # Marvin remote
-  - platform: event
-    id: "button_marvin_one"
-    event_type: "zha_event"
-    event_data:
-      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
-      command: "single"
-
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
-      command: "hold"
-    id: "button_marvin_hold"
 
   - platform: state
     id: "net_wakker_40m"

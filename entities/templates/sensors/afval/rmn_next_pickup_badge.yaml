@@ -1,0 +1,19 @@
+---
+sensor:
+  - name: rmn_next_garbage_pickup_badge
+    unique_id: 6c020df9-30cc-441e-9cc7-97e0ea70fadb
+    icon: "mdi:trash-can-outline"
+    state: >
+      {%- set paper = int(state_attr('sensor.rmn_papier', 'Days_until')) | int(1) %}
+      {%- set gft = int(state_attr('sensor.rmn_gft', 'Days_until')) | int(1) %}
+      {%- set pmd = int(state_attr('sensor.rmn_pmd', 'Days_until')) | int(1) %}
+      {%- set rest = int(state_attr('sensor.rmn_restafval', 'Days_until')) | int(1) %}
+      {%- set next_pickup = int(states('sensor.rmn_next_pickup_in')) | int(0) %}
+      {%- set day = "morgen" %}
+
+      {% if next_pickup > 1 %} Geen
+      {% elif paper | int == next_pickup %} Papier ({{day}})
+      {% elif gft | int == next_pickup %} GFT ({{day}})
+      {% elif pmd | int == next_pickup %} PMD ({{day}})
+      {% elif rest | int == next_pickup %} Grijs ({{day}})
+      {% endif %}

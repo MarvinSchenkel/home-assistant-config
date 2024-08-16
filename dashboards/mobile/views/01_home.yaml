@@ -3,19 +3,79 @@ title: Home
 icon: "mdi:home"
 type: masonry
 
+badges:
+  - type: entity-filter
+    entities:
+      - entity: input_boolean.setting_guest_mode
+        state_content: name
+    conditions:
+      - condition: state
+        entity_id: input_boolean.setting_guest_mode
+        state: "on"
+  - type: entity-filter
+    entities:
+      - entity: sensor.rmn_next_garbage_pickup_badge
+        state_content: state
+    conditions:
+      - condition: state
+        state_not: Geen
+
 cards:
   - type: vertical-stack
     cards:
-      - type: markdown
-        card_mod:
-          style: |
-            ha-card {
-              border: 0px;
-              background-color: transparent;
-              box-shadow: none;
-            }
-        content: >
-          ## Home
+      - type: horizontal-stack
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  border: 0px;
+                  background-color: transparent;
+                  box-shadow: none;
+                }
+            content: >
+              ## Home
+          - type: custom:button-card
+            entity: sensor.time
+            name: 💬
+            show_state: false
+            show_name: true
+            styles:
+              card:
+                - font-size: 18pt;
+                - text-align: right;
+                - background-color: transparent;
+            tap_action:
+              action: assist
+
+      # Information banner
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: input_boolean.setting_guest_mode
+                state: "on"
+            card:
+              type: tile
+              entity: input_boolean.setting_guest_mode
+              name: Gast mode
+              card_mod:
+                style: |
+                  ha-card {
+                    transform: scale(0.8);
+                  }
+              hide_state: true
+              vertical: true
+              tap_action:
+                action: toggle
+              icon_tap_action:
+                action: more-info
+          - type: vertical-stack
+            cards: []
+          - type: vertical-stack
+            cards: []
+
       - type: horizontal-stack
         cards:
           - type: tile
@@ -59,42 +119,8 @@ cards:
             icon_tap_action:
               action: more-info
           - type: tile
-            entity: fan.itho
-            name: Ventilatie
-            icon_tap_action:
-              action: call-service
-              service:
-                - if:
-                    - condition: numeric_state
-                      entity_id:
-                        - fan.itho
-                      attribute: percentage
-                      above: 50
-                  then:
-                    service: fan.set_percentage
-                    data:
-                      percentage: 90
-                    target:
-                      entity_id: fan.itho
-                  else:
-                    service: fan.set_percentage
-                    data:
-                      percentage: 5
-                    target:
-                      entity_id: fan.itho
-
-      - type: "horizontal-stack"
-        cards:
-          - type: tile
             entity: input_boolean.house_mode_cooking
             name: Kook modus
-            tap_action:
-              action: toggle
-            icon_tap_action:
-              action: more-info
-          - type: tile
-            entity: input_boolean.setting_automatic_music
-            name: Autom. muziek
             tap_action:
               action: toggle
             icon_tap_action:
@@ -122,11 +148,9 @@ cards:
                             entity: scene.garden_cover_sunblock
                           - name: Eetstand
                             entity: scene.garden_cover_dinner
-                          # - name: Zonnescherm
-                          #   entity: cover.sunscreen
               - type: tile
-                entity: input_boolean.setting_guest_mode
-                name: Gast mode
+                entity: input_boolean.setting_automatic_music
+                name: Autom. muziek
                 tap_action:
                   action: toggle
                 icon_tap_action:
@@ -142,15 +166,36 @@ cards:
 
       - type: "horizontal-stack"
         cards:
-          - type: custom:mini-media-player
-            entity: media_player.mass_all_devices
-            info: short
-            artwork: cover
-            hide:
-              source: true
-              power: true
-              icon: true
-              name: true
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: media_player.mass_all_devices_beta
+                state_not: "unavailable"
+            card:
+              type: custom:mini-media-player
+              entity: media_player.mass_all_devices_beta
+              info: short
+              artwork: cover
+              hide:
+                source: true
+                power: true
+                icon: true
+                name: true
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: media_player.mass_all_devices
+                state_not: "unavailable"
+            card:
+              type: custom:mini-media-player
+              entity: media_player.mass_all_devices
+              info: short
+              artwork: cover
+              hide:
+                source: true
+                power: true
+                icon: true
+                name: true
 
       - type: markdown
         card_mod:
@@ -185,9 +230,10 @@ cards:
                 icon: "mdi:weather-sunny"
                 hide_state: true
                 tap_action:
+                  action: call-service
                   service: input_select.select_option
                   confirmation:
-                    text: Weet je het zeker?
+                    text: Weet je zeker dat je de slaapkamer op wakker wilt zetten?
                   data:
                     option: "Wakker"
                     entity_id: input_select.master_bedroom_room_mode

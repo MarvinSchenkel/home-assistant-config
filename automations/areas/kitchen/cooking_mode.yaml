@@ -5,19 +5,17 @@ mode: queued
 id: b9982ead-5320-48cb-8b44-b7df02698f32
 
 trigger:
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "6b98a1925417612221ed14e06c21a6b4"
-      command: "single"
-    id: "single_press"
+  - platform: device
+    domain: mqtt
+    device_id: 8a8d8e4f3443c4af9343605b2b2d67b8
+    type: action
+    subtype: single
 
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "6b98a1925417612221ed14e06c21a6b4"
-      command: "double"
-    id: "double_press"
+  - platform: device
+    domain: mqtt
+    device_id: 8a8d8e4f3443c4af9343605b2b2d67b8
+    type: action
+    subtype: double
 
 action:
   - service: input_boolean.toggle

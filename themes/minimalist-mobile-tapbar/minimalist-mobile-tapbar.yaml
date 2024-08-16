@@ -38,8 +38,8 @@ minimalist-mobile-tapbar:
         padding: 0 !important;
         position: fixed !important;
         margin: 0 !important;
-        width: 100%;
-        height: 100% !important;
+        #width: 100%;
+        #height: 100% !important;
       }
       .header {
         top: auto !important;

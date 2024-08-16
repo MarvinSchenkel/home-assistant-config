@@ -1,0 +1,8 @@
+---
+platform: mqtt_room
+name: ble_marvin_apple_watch
+device_id: "ble_marvin_apple_watch"
+state_topic: "espresense/devices/ble_marvin_apple_watch"
+unique_id: marvin_apple_watch
+timeout: 5
+away_timeout: 120

@@ -1,0 +1,94 @@
+title: "Lampen"
+path: lights
+icon: "mdi:lightbulb-group"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Beneden
+      - type: "horizontal-stack"
+        cards:
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: light.spot_garden_side
+              - type: tile
+                entity: light.spot_stairs
+              - type: tile
+                entity: light.corner_couch
+              - type: tile
+                entity: light.kitchen_spot
+              - type: tile
+                entity: light.wc
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: light.dinner_door
+              - type: tile
+                entity: light.dinner_wall
+              - type: tile
+                entity: light.led_kitchen
+              - type: tile
+                entity: light.hall_downstairs
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Boven
+      - type: "horizontal-stack"
+        cards:
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: light.hall_upstairs
+              - type: tile
+                entity: light.master_bedroom_left
+              - type: tile
+                entity: light.bathroom
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: light.master_bedroom_ceiling
+              - type: tile
+                entity: light.master_bedroom_right
+              - type: tile
+                entity: light.fibaro_small_bedroom
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Zolder
+      - type: "horizontal-stack"
+        cards:
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: light.attic_spot_left
+              - type: tile
+                entity: light.mancave_bureau
+              - type: tile
+                entity: light.mancave_muur
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: light.attic_spot_right
+              - type: tile
+                entity: light.mancave_hoek

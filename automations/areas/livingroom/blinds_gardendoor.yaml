@@ -61,13 +61,10 @@ trigger:
     to: "off"
 
   - platform: state
-    entity_id: media_player.apple_tv
-    to:
-      - idle
-      - standby
-      - paused
+    entity_id: media_player.living_room_android
+    to: "off"
     for:
-      minutes: 8
+      minutes: 1
 
   - platform: state
     entity_id:
@@ -75,6 +72,7 @@ trigger:
       - scene.gardendoor_cover_halfclosed
       - scene.gardendoor_cover_halfopen
       - scene.gardendoor_cover_open
+      - scene.gardendoor_cover_sun
     id: gardendoor_blinds
 
   - platform: time
@@ -103,6 +101,13 @@ variables:
       target:
         entity_id:
           - scene.gardendoor_cover_halfopen
+
+    - &cover_sun
+      alias: "Block out the sun on a hot day"
+      service: scene.turn_on
+      target:
+        entity_id:
+          - scene.gardendoor_cover_sun
 
     - &manual_control_on
       alias: "Set manual control to on, so the blinds stay closed"
@@ -145,6 +150,10 @@ action:
           - condition: state
             entity_id: binary_sensor.garden_door_open
             state: "on"
+          - condition: state
+            entity_id:
+              - input_select.gardendoor_current_cover_scene
+            state: "closed"
         sequence:
           - *cover_half_open
 
@@ -181,25 +190,14 @@ action:
       - alias: "Fully close blinds when we go to sleep or it is a hot day"
         conditions:
           - or:
-              - or:
-                  - condition: state
-                    entity_id: input_select.livingroom_room_mode
-                    state:
-                      - "Slaap"
+              - condition: state
+                entity_id: input_select.livingroom_room_mode
+                state:
+                  - "Slaap"
               - and:
                   - condition: state
                     entity_id:
-                      - binary_sensor.sun_should_close_south_blinds
-                    state: "on"
-                  - alias: Keep the heat out of the house on hot days
-                    condition: state
-                    entity_id:
-                      - binary_sensor.is_hot_day
-                    state: "on"
-              - and:
-                  - condition: state
-                    entity_id:
-                      - media_player.sony_kd_65a1
+                      - media_player.living_room_android
                     state: "on"
                   - condition: state
                     entity_id:
@@ -207,6 +205,20 @@ action:
                     state: "closed"
         sequence:
           - *cover_closed
+
+      - alias: "Close the blinds a bit more a hot day"
+        conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_should_close_south_blinds
+            state: "on"
+          - alias: Keep the heat out of the house on hot days
+            condition: state
+            entity_id:
+              - binary_sensor.is_hot_day
+            state: "on"
+        sequence:
+          - *cover_sun
 
       - alias: "Set to half closed when sun has set"
         conditions:

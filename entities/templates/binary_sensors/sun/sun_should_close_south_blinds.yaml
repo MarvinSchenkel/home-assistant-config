@@ -8,9 +8,11 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.sun_at_south_windows
+    from: ~
   - platform: state
     entity_id:
       - binary_sensor.sun_hot
+    from: ~
     to: "on"
     for:
       minutes: 5

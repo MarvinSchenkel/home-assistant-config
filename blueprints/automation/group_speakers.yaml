@@ -35,11 +35,12 @@ blueprint:
         A list of entities that will be used as additional state triggers for the
          automation
 
-mode: restart
+mode: queued
 max_exceeded: silent
 
 variables:
   target_media_player: !input target_media_player
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
     - &turn_on
       alias: "Turn the child media player on"
@@ -89,11 +90,7 @@ action:
               - !input presence_entity
               - input_boolean.setting_automatic_music
             state: "on"
-          - condition: state
-            alias: "Only group when the master group is playing music"
-            entity_id:
-              - media_player.mass_all_devices
-            state: "playing"
+          - "{{ is_state(mass_entity, 'playing') }}"
           - condition: and
             conditions: !input custom_conditions
         sequence:

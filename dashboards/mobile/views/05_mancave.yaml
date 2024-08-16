@@ -38,10 +38,10 @@ cards:
                       content:
                         type: entities
                         entities:
-                          - name: Open
-                            entity: scene.mancave_cover_halfopen
                           - name: Half Open
                             entity: scene.mancave_cover_halfopen
+                          - name: Half Dicht
+                            entity: scene.mancave_cover_halfclosed
                           - name: Top-half Open
                             entity: scene.mancave_cover_tophalfopen
                           - name: Dicht

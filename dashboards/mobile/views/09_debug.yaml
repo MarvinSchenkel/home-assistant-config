@@ -1,0 +1,154 @@
+title: "Debug"
+path: debug
+icon: "mdi:bug"
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Aanwezigheid
+      - type: "horizontal-stack"
+        cards:
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: binary_sensor.presence_livingroom
+                name: Woonkamer
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_wc
+                name: WC
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_master_bedroom
+                name: Grote slaapkamer
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_mancave
+                name: Mancave
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_attic
+                name: Zolder
+                state_content: last-changed
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: binary_sensor.presence_kitchen
+                name: Keuken
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_hall_downstairs
+                name: Hal beneden
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_hall_upstairs
+                name: Hal boven
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.presence_bathroom
+                name: Badkamer
+                state_content: last-changed
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Licht / Donker
+      - type: "horizontal-stack"
+        cards:
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: binary_sensor.livingroom_is_dark
+                name: Woonkamer
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.hall_is_dark
+                name: Hal beneden
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.attic_is_dark
+                name: Zolder
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.bathroom_is_dark
+                name: Badkamer
+                state_content: last-changed
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: binary_sensor.kitchen_is_dark
+                name: Keuken
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.hall_upstairs_is_dark
+                name: Hal boven
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.master_bedroom_is_dark
+                name: Grote slaapkamer
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.mancave_is_dark
+                name: Mancave
+                state_content: last-changed
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Deuren
+      - type: "horizontal-stack"
+        cards:
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: binary_sensor.front_door_open
+                name: Voordeur
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.garden_door_open
+                name: Tuin
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.smallbedroom_door_open
+                name: Slaapkamer Zoey
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.bathroom_door_open
+                name: Badkamer
+                state_content: last-changed
+          - type: "vertical-stack"
+            cards:
+              - type: tile
+                entity: binary_sensor.livingroom_door_open
+                name: Woonkamer
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.wc_door_open
+                name: WC
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.master_bedroom_door_open
+                name: Slaapkamer
+                state_content: last-changed
+              - type: tile
+                entity: binary_sensor.mancave_door_open
+                name: Mancave
+                state_content: last-changed

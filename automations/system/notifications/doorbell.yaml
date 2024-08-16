@@ -9,17 +9,30 @@ trigger:
       - binary_sensor.g4_doorbell_doorbell
     to: "on"
 
-action:
-  - service: camera.snapshot
-    data:
-      filename: !secret doorbell_snapshot_local_url
-    target:
-      entity_id: camera.g4_doorbell_high
+variables:
+  video_start: "{{ (utcnow() - timedelta(seconds=5)).isoformat() }}"
+  video_end: "{{ utcnow().isoformat() }}"
+  event_id: "{{ state_attr('binary_sensor.g4_doorbell_doorbell', 'event_id') }}"
 
-  - service: script.send_notification
-    data:
-      receivers:
-        - "marvin"
-      message: >-
-        🛎️ De bel gaat!
-      image: !secret doorbell_snapshot_url
+action:
+  - choose:
+      - conditions:
+          - "{{ event_id is string }}"
+        sequence:
+          - service: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+              message: >-
+                🛎️ De bel gaat!
+              image: >
+                "{{ '/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/'
+                    + event_id }}"
+
+    default:
+      - service: script.send_notification
+        data:
+          receivers:
+            - "marvin"
+          message: >-
+            🛎️ De bel gaat!

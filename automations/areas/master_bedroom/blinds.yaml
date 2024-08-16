@@ -35,6 +35,15 @@ trigger:
   - platform: state
     entity_id:
       - input_select.master_bedroom_room_mode
+    to:
+      - "Slaap"
+      - "Net wakker"
+
+  - platform: state
+    entity_id:
+      - input_select.master_bedroom_room_mode
+    to: "Wakker"
+    id: awake
 
   - platform: numeric_state
     entity_id:
@@ -46,19 +55,13 @@ trigger:
       - sensor.sun_elevation
     above: 1.0
 
-  - platform: numeric_state
-    entity_id:
-      - sensor.current_temperature
-    above: 26
-
-  - platform: numeric_state
-    entity_id:
-      - sensor.current_temperature
-    below: 26
-
   - platform: time
     at:
       - "19:00:00"
+
+  - platform: time
+    at: "03:00:00"
+    id: "reset"
 
   - platform: state
     entity_id:
@@ -133,9 +136,13 @@ action:
 
       - alias: "Reset manual override before the new day starts"
         conditions:
-          - alias: "When triggerd by the reset time"
-            condition: trigger
-            id: "reset"
+          - or:
+              - alias: "When triggerd by the reset time"
+                condition: trigger
+                id: "reset"
+              - alias: "When the room goes to awake"
+                condition: trigger
+                id: "awake"
         sequence:
           - *manual_control_off
 

@@ -1,7 +1,7 @@
 ---
 alias: areas_livingroom_lights_hue_sync
 description: Turns on the Philips Hue Sync Box
-mode: queued
+mode: restart
 id: f48cadf9-13ef-47e0-b8c1-7f11bcc4b58d
 trace:
   stored_traces: 25
@@ -48,6 +48,12 @@ variables:
           for:
             minutes: 10
 
+    - &condition_is_hue_not_syncing
+      alias: "Are the hue lights currently synced?"
+      condition: state
+      entity_id: switch.sync_box_light_sync
+      state: "off"
+
     - &condition_is_dark
       alias: "Is it dark in the living room?"
       condition: state
@@ -60,6 +66,22 @@ variables:
       entity_id: binary_sensor.livingroom_is_media_app_selected
       state: "on"
 
+    - &condition_the_wife_is_not_home
+      alias: "Check if we can use a more intense light syncing / include more lights"
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: sensor.marvin_status
+          state:
+            - "Thuis"
+            - "Net thuis"
+        - condition: state
+          entity_id: sensor.laura_status
+          state:
+            - "Weg"
+            - "Net weg"
+            - "Lang weg"
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -67,17 +89,45 @@ condition:
 
 action:
   - choose:
-      - alias: "Toggle movie scene on single button press."
+      - alias: "Go nuts with the hue lights when I am home alone."
+        conditions:
+          - *condition_is_dark
+          - *condition_is_presence_detected
+          - *condition_watching_tv
+          - *condition_the_wife_is_not_home
+        sequence:
+          - action: huesyncbox.set_sync_state
+            target:
+              device_id: 9d38d5016fcd873b337b31b73387971d
+            data:
+              power: true
+              sync: true
+              brightness: 71
+              mode: video
+              intensity: high
+              entertainment_area: "TV area Marvin"
+
+      - alias: "Set the hue lights a bit more subtle when I am not home alone."
         conditions:
           - *condition_is_dark
           - *condition_is_presence_detected
           - *condition_watching_tv
         sequence:
-          - service: switch.turn_on
-            entity_id: switch.sync_box_power
-          - service: switch.turn_on
-            entity_id: switch.sync_box_light_sync
+          - action: huesyncbox.set_sync_state
+            target:
+              device_id: 9d38d5016fcd873b337b31b73387971d
+            data:
+              power: true
+              sync: true
+              brightness: 71
+              mode: video
+              intensity: moderate
+              entertainment_area: "TV area"
 
     default:
       - service: switch.turn_off
-        entity_id: switch.sync_box_light_sync
+        target:
+          entity_id: switch.sync_box_light_sync
+      - service: light.turn_off
+        target:
+          entity_id: light.woonkamer_tv

@@ -6,9 +6,13 @@ binary_sensor:
     state: >
       {%-
         if (
-          states("sensor.pir_mancave_illuminance") | int > 20
-          and is_state("light.mancave", "off")
-        ) or states("sensor.pir_mancave_illuminance") | int > 75
+          (
+            states("sensor.pir_mancave_illuminance") | int > 20
+            and is_state("light.mancave", "off")
+          )
+          or states("sensor.pir_mancave_illuminance") | int > 75
+        )
+        and not is_state("input_select.mancave_current_cover_scene", "closed")
       -%}
         off
       {%- else -%}

@@ -37,8 +37,6 @@ trigger:
     entity_id:
       - input_select.master_bedroom_room_mode
     to: "Net wakker"
-    for:
-      minutes: 5
 
   - platform: state
     entity_id:
@@ -213,8 +211,6 @@ action:
         conditions:
           - <<: *condition_is_room_mode
             state: "Net wakker"
-            for:
-              minutes: 5
           - *condition_is_dark
           - *condition_is_presence_detected
         sequence:

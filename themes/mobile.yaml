@@ -16,7 +16,7 @@ mobile:
   # fix added border-lines in 2022.11
   ha-card-border-width: "0px"
 
-  card-mod-theme: "minimalist-ios-tapbar"
+  card-mod-theme: "mobile"
   header-height: "78px"
   card-mod-view-yaml: |
     "*:first-child$": |
@@ -41,11 +41,9 @@ mobile:
         }
       div#view{
         transform: initial;
-        padding: 0 !important;
-        position: fixed !important;
-        margin: 0 !important;
+        padding: 0 0 var(--header-height) 0 !important;
+        margin: 0!important;
         width: 100%;
-        height: 100% !important;
       }
       .header {
         top: auto !important;

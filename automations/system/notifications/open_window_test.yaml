@@ -1,0 +1,18 @@
+---
+description: >
+  Send a notification when an open window is detected
+alias: notification_open_window
+mode: single
+id: 3534d717-37f4-46ef-a6d8-8af04cb35622
+
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperatue_change_climate_livingroom
+    below: -0.2
+
+action:
+  - service: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+      message: "🪟 Open raam gedetecteerd in de woonkamer!"

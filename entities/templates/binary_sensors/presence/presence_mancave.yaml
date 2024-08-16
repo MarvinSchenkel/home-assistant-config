@@ -1,9 +1,4 @@
 ---
-# Determine presence in the mancave based on
-# - PIR Motion sensor
-# - Door sensor
-# - TV status
-# - Whether I am working (laptop device tracker)
 binary_sensor:
   - name: presence_mancave
     unique_id: 1dc29348-5085-410a-9e76-0b67d26a220d
@@ -11,4 +6,4 @@ binary_sensor:
       {{ is_state("binary_sensor.pir_mancave", "on")
           or is_state("binary_sensor.presence_mancave_door", "on")
           or is_state("media_player.mancave_tv", "on")
-          or is_state("binary_sensor.marvin_is_working", "on") }}
+          or is_state("sensor.marvin_apple_watch", "mancave") }}

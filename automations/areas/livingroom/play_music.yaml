@@ -3,6 +3,7 @@ description: >
   Automatically play music in the living room
 alias: areas_livingroom_play_music
 id: bdbbd6e8-fb02-4777-980e-dffd9865995c
+mode: single
 trace:
   stored_traces: 25
 
@@ -10,12 +11,11 @@ trigger:
   - platform: state
     entity_id:
       - binary_sensor.presence_house
-      - binary_sensor.presence_livingroom
     to: "on"
 
   - platform: state
     entity_id:
-      - binary_sensor.house_mode_everyone_at_home_working
+      - input_select.livingroom_room_mode
 
   - platform: state
     entity_id:
@@ -44,24 +44,39 @@ trigger:
       - input_boolean.setting_automatic_music
     id: "setting_automatic_music"
 
+  - platform: time
+    at:
+      - "07:00:00"
+      - "21:30:00"
+
 variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
     - &play_media
       alias: "Start playing music on the master group"
       service: media_player.media_play
       data: {}
       target:
-        entity_id: media_player.mass_all_devices
+        entity_id: "{{ mass_entity }}"
 
     - &pause
       alias: "Pause the player"
       service: media_player.media_pause
       data: {}
       target:
-        entity_id: media_player.mass_all_devices
+        entity_id: "{{ mass_entity }}"
 
 action:
   - choose:
+      - conditions:
+          - or:
+              - condition: time
+                after: "21:30:00"
+              - condition: time
+                before: "07:00:00"
+        sequence:
+          - *pause
+
       - conditions:
           - condition: state
             entity_id:
@@ -71,33 +86,25 @@ action:
           - alias: "Time must be between reasonable hours"
             condition: time
             after: "07:00:00"
-            before: "21:00:00"
+            before: "21:30:00"
           - alias: "We're not watching TV"
             condition: state
             entity_id:
               - media_player.living_room_android
             state: "off"
-          - or:
-              - alias: "No need for music when everyone is working from home"
-                condition: state
-                entity_id:
-                  - binary_sensor.house_mode_everyone_at_home_working
-                state: "off"
-              - alias: "Or we have a guest over"
-                condition: state
-                entity_id:
-                  - input_boolean.setting_guest_mode
-                state: "on"
+          - "{{ not is_state(mass_entity, 'playing') }}"
           - not:
               - condition: state
                 entity_id:
-                  - media_player.mass_all_devices
-                state: "playing"
+                  - input_select.livingroom_room_mode
+                state: "Slaap"
           - not:
               - condition: trigger
                 id: "tv_input_selected"
         sequence:
           - *play_media
+          - delay:
+              seconds: 10
 
       - conditions:
           - or:
@@ -116,17 +123,8 @@ action:
                     entity_id:
                       - input_boolean.setting_automatic_music
                     state: "off"
-              - alias: "Or everyone at home is working"
-                condition: state
-                entity_id:
-                  - binary_sensor.house_mode_everyone_at_home_working
-                state: "on"
               - condition: trigger
                 id: "tv_input_selected"
-          - not:
-              - condition: state
-                entity_id:
-                  - media_player.mass_all_devices
-                state: "off"
+          - "{{ not is_state(mass_entity, 'off') }}"
         sequence:
           - *pause
