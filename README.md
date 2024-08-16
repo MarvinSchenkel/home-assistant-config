@@ -8,13 +8,13 @@
 ![GitHub Forks][forks-shield]
 
 Hey there 👋!
-This is my personal home assistant configuration. My modular setup is based on Frenck's configuration found [here](https://github.com/frenck/home-assistant-config). The aim of my setup is to automate as many things as possible, reducing the need for a mobile app to control my house. However, it does include a beautiful for those few cases where I want to take control. 
+This is my personal home assistant configuration. My modular setup is based on Frenck's configuration found [here](https://github.com/frenck/home-assistant-config). The aim of my setup is to automate as many things as possible, reducing the need for a mobile app to control my house. However, it does include a beautiful for those few cases where I want to take control.
 
-Feel free to have a look at my automations and draw some inspiration from them. Happy home automating :house:! 
+Feel free to have a look at my automations and draw some inspiration from them. Happy home automating :house:!
 
 ## Features
 Some of the highlights of my setup include:
-- 📻 **Personal DJ**: As a core member of the [Music Assistant](https://music-assistant.io/) I obviously had to apply it to my smart home. I use a combination of a [music schedule] that changes based on the time of day along with some base playlists that I use to [dynamically populate my queue](https://github.com/MarvinSchenkel/home-assistant-config/blob/master/automations/house/populate_music_queue.yaml). This gives me an endless stream of music that matches the time of day _and_ it allows me to discover new music.
+- 📻 **Personal DJ**: As a core member of the [Music Assistant](https://music-assistant.io/) I obviously had to apply it to my smart home. I use a combination of a [music schedule](./automations/house/music_schedule.yaml) that changes based on the time of day along with some base playlists that I use to [dynamically populate my queue](https://github.com/MarvinSchenkel/home-assistant-config/blob/master/automations/house/populate_music_queue.yaml). This gives me an endless stream of music that matches the time of day _and_ it allows me to discover new music.
 - 🎶 **Follow-me music**: My music automatically follows me around the house whenever music is playing in the living room. I use [Sonos](https://www.sonos.com) speakers all throughout my house in combination with motion sensors to achieve this. Have a look at [this](./blueprints/automation/motion_group_sonos.yaml) blueprint for more information.
 - :sunny: **Automatic sun protection**: My blinds automatically close on hot days whenever the sun is shining directly on the south-facing windows. I use my solar panels to measure the sun's intensity and use the sun's azimuth/elevation to determine whether it is shining directly on my windows. Have a look at [these](./entities/templates/binary_sensors/sun) entities if you want to learn more.
 - :busts_in_silhouette: **Advanced presence detection**: I use [various automations](./automations/presence) to build an advance presence detection system that keeps track of different presence states:
