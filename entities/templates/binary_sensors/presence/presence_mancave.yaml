@@ -6,4 +6,8 @@ binary_sensor:
       {{ is_state("binary_sensor.pir_mancave", "on")
           or is_state("binary_sensor.presence_mancave_door", "on")
           or is_state("media_player.mancave_tv", "on")
-          or is_state("sensor.marvin_apple_watch", "mancave") }}
+          or (
+            is_state("sensor.apple_watch_marvin", "Mancave")
+            and states("sensor.apple_watch_marvin_distance") | int < 7
+          )
+      }}

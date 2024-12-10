@@ -76,7 +76,7 @@ variables:
   sonos: !input sonos
 
   mass_entity_suffix: >
-    {{ "_beta" if is_state("media_player.mass_all_devices", "unavailable") else "" }}
+    {{ "" if is_state("media_player.mass_all_devices", "unavailable") else "" }}
   mass_entity: "{{ sonos + mass_entity_suffix }}"
   music_schedule: >
     {{ states('input_select.current_music_schedule') }}

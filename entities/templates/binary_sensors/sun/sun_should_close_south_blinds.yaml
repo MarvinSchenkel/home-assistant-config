@@ -28,6 +28,8 @@ trigger:
   - platform: numeric_state
     entity_id: sensor.current_temperature
     above: 16
+  - platform: event
+    event_type: event_template_reloaded
 
 binary_sensor:
   - name: sun_should_close_south_blinds

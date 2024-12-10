@@ -46,6 +46,8 @@ cards:
                             entity: scene.mancave_cover_tophalfopen
                           - name: Dicht
                             entity: scene.mancave_cover_closed
+                          - name: Ventileren Nacht
+                            entity: scene.mancave_cover_ventilatingnight
 
               - type: tile
                 entity: input_boolean.mancave_cover_manual_control

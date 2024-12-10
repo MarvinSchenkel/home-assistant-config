@@ -25,13 +25,6 @@ trigger:
       - sensor.bathroom_ble_humidity
     below: 75
 
-  - platform: event
-    event_type: zwave_js_value_notification
-    event_data:
-      device_id: 67eb822e4407671200f5bbd6f9ca00c2
-      value: 14
-    id: "bathroom_double_click"
-
   - platform: state
     entity_id:
       - light.wc
@@ -68,7 +61,7 @@ variables:
       alias: "Turns on the ventilation"
       service: fan.set_percentage
       data:
-        percentage: 90
+        percentage: 100
       target:
         entity_id: fan.itho
 
@@ -76,7 +69,7 @@ variables:
       alias: "Turns off the ventilation"
       service: fan.set_percentage
       data:
-        percentage: 5
+        percentage: 8
       target:
         entity_id: fan.itho
 

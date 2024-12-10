@@ -122,8 +122,8 @@ mobile:
       footer-shadow: "0px -1px 3px 0px rgba(0,0,0,0.12)"
       # background and sidebar
       card-background-color: "#FAFAFA"
-      primary-background-color: "#EFEFEF"
-      secondary-background-color: "#EFEFEF"
+      primary-background-color: "#E0E0E0"
+      secondary-background-color: "#E0E0E0"
       # text
       primary-text-color: "#212121"
       # slider

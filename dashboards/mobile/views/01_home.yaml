@@ -19,6 +19,13 @@ badges:
     conditions:
       - condition: state
         state_not: Geen
+  - type: entity-filter
+    entities:
+      - entity: sensor.bathroom_ble_humidity
+    conditions:
+      - condition: numeric_state
+        entity_id: sensor.bathroom_ble_humidity
+        above: 75.0
 
 cards:
   - type: vertical-stack
@@ -47,34 +54,6 @@ cards:
                 - background-color: transparent;
             tap_action:
               action: assist
-
-      # Information banner
-      - type: horizontal-stack
-        cards:
-          - type: conditional
-            conditions:
-              - condition: state
-                entity: input_boolean.setting_guest_mode
-                state: "on"
-            card:
-              type: tile
-              entity: input_boolean.setting_guest_mode
-              name: Gast mode
-              card_mod:
-                style: |
-                  ha-card {
-                    transform: scale(0.8);
-                  }
-              hide_state: true
-              vertical: true
-              tap_action:
-                action: toggle
-              icon_tap_action:
-                action: more-info
-          - type: vertical-stack
-            cards: []
-          - type: vertical-stack
-            cards: []
 
       - type: horizontal-stack
         cards:

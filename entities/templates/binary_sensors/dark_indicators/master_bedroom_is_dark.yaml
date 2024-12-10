@@ -3,19 +3,19 @@
 trigger:
   - platform: numeric_state
     entity_id:
-      - sensor.fp2_master_bedroom_luminance
+      - sensor.pir_master_bedroom_illuminance
     above: 10
     for:
       seconds: 5
   - platform: numeric_state
     entity_id:
-      - sensor.fp2_master_bedroom_luminance
-    above: 75
+      - sensor.pir_master_bedroom_illuminance
+    above: 100
     for:
       seconds: 5
   - platform: numeric_state
     entity_id:
-      - sensor.fp2_master_bedroom_luminance
+      - sensor.pir_master_bedroom_illuminance
     below: 10
     for:
       seconds: 5
@@ -26,11 +26,11 @@ binary_sensor:
     state: >
       {%-
         if (
-          states("sensor.fp2_master_bedroom_luminance") | int > 10
+          states("sensor.pir_master_bedroom_illuminance") | int > 10
           and is_state("light.master_bedroom_ceiling", "off")
         )
         or (
-          states("sensor.fp2_master_bedroom_luminance") | int > 75
+          states("sensor.pir_master_bedroom_illuminance") | int > 100
         )
       -%}
         off

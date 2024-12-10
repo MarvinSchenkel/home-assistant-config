@@ -4,32 +4,10 @@ description: Turns the mancave lights on when motion has been detected
 mode: queued
 id: e4c284f9-2cd3-40d1-adac-e20a66eb12b9
 
-trigger:
-  - platform: homeassistant
-    event: start
-
-  - platform: event
-    event_type: automation_reloaded
-
-  - platform: state
-    entity_id: binary_sensor.presence_mancave
-    to: "on"
-
-  - platform: state
-    entity_id: binary_sensor.presence_mancave
-    to: "off"
-    for:
-      seconds: 300
-
-  - platform: state
-    entity_id:
-      - binary_sensor.mancave_is_dark
-      - input_select.mancave_room_mode
-      - media_player.mancave_tv
-
 variables:
+  current_light_scene: 'scene.mancave_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
-    - &condition_presence_detected
+    - &condition_is_presence_detected
       alias: "Check if someone is in the mancave"
       condition: state
       entity_id: binary_sensor.presence_mancave
@@ -62,6 +40,11 @@ variables:
         - "Disney+"
         - "Media Player"
 
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
+
     - &turn_off
       alias: "Turn lights off"
       service: light.turn_off
@@ -69,11 +52,38 @@ variables:
         entity_id: light.mancave
         transition: 5
 
-    - &turn_on_scene
+    - &turn_on
       alias: "Turn on scene"
       service: scene.turn_on
       data:
-        transition: 3
+        transition: 1
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id: binary_sensor.presence_mancave
+    to: "on"
+
+  - platform: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      seconds: 300
+
+  - platform: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
+
+  - platform: state
+    entity_id:
+      - binary_sensor.mancave_is_dark
+      - input_select.mancave_room_mode
+      - media_player.mancave_tv
 
 condition: []
 
@@ -88,7 +98,7 @@ action:
           - *turn_off
 
       - conditions:
-          - *condition_presence_detected
+          - *condition_is_presence_detected
           - *condition_is_dark
           - alias: "Or when I just woke up"
             condition: state
@@ -96,12 +106,12 @@ action:
               - input_select.mancave_room_mode
             state: "Net wakker"
         sequence:
-          - <<: *turn_on_scene
+          - <<: *turn_on
             target:
               entity_id: scene.mancave_lights_rusten
 
       - conditions:
-          - *condition_presence_detected
+          - *condition_is_presence_detected
           - *condition_is_dark
           - *condition_tv_game
         sequence:
@@ -111,24 +121,36 @@ action:
                 - 'blauweplaneet'
                 - 'sterrenlicht'
               game_scene: "{{ game_scenes | random }}"
-          - <<: *turn_on_scene
+          - <<: *turn_on
             target:
               entity_id: scene.mancave_lights_{{ game_scene }}
 
       - conditions:
-          - *condition_presence_detected
+          - *condition_is_presence_detected
           - *condition_is_dark
           - *condition_tv_movie
         sequence:
           - *turn_off
 
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - *condition_is_presence_detected
+          - *condition_is_dark
+          - *condition_light_schedule_change
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 120
+
       - conditions:
-          - *condition_presence_detected
+          - *condition_is_presence_detected
           - *condition_is_dark
         sequence:
-          - <<: *turn_on_scene
+          - <<: *turn_on
             target:
-              entity_id: scene.mancave_lights_natuurlijklicht
+              entity_id: "{{ current_light_scene }}"
 
     default:
       - *turn_off

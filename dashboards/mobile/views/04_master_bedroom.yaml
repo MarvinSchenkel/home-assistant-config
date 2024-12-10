@@ -58,6 +58,18 @@ cards:
 
       - type: horizontal-stack
         cards:
+            - type: tile
+              entity: cover.master_bedroom_curtains
+              features:
+                - type: "cover-position"
+            - type: tile
+              entity: light.master_bedroom_ceiling
+              name: Plafond
+              features:
+                - type: "light-brightness"
+
+      - type: horizontal-stack
+        cards:
           - type: tile
             entity: light.master_bedroom_left
             name: Nachtkastje links
@@ -68,16 +80,6 @@ cards:
             name: Nachtkastje rechts
             features:
               - type: "light-brightness"
-
-      - type: horizontal-stack
-        cards:
-            - type: tile
-              entity: light.master_bedroom_ceiling
-              name: Plafond
-              features:
-                - type: "light-brightness"
-            - type: vertical-stack
-              cards: []
 
       - type: markdown
         card_mod:
@@ -95,6 +97,3 @@ cards:
           - type: tile
             entity: binary_sensor.presence_master_bedroom
             name: Aanwezigheid
-          - type: tile
-            entity: sensor.pir_master_bedroom_air_temperature
-            name: Temperatuur

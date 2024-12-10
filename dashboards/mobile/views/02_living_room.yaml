@@ -4,16 +4,20 @@ icon: "mdi:fireplace"
 cards:
   - type: vertical-stack
     cards:
-      - type: markdown
-        card_mod:
-          style: |
-            ha-card {
-              border: 0px;
-              background-color: transparent;
-              box-shadow: none;
-            }
-        content: >
-          ## Woonkamer
+      - type: heading
+        heading: Woonkamer
+        badges:
+          - type: entity
+            entity: sensor.livingroom_temperature
+            color: state
+            tap_action:
+              action: more-info
+          - type: entity
+            entity: binary_sensor.presence_livingroom
+            color: state
+            show_state: false
+            tap_action:
+              action: more-info
 
       - type: horizontal-stack
         cards:
@@ -94,23 +98,3 @@ cards:
               action: toggle
             icon_tap_action:
               action: more-info
-
-      - type: markdown
-        card_mod:
-          style: |
-            ha-card {
-              border: 0px;
-              background-color: transparent;
-              box-shadow: none;
-            }
-        content: >
-          ## Sensoren
-
-      - type: "horizontal-stack"
-        cards:
-          - type: tile
-            entity: binary_sensor.presence_livingroom
-            name: Aanwezigheid
-          - type: tile
-            entity: sensor.livingroom_temperature
-            name: Temperatuur

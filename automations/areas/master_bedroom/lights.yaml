@@ -16,10 +16,61 @@ description: >-
 
   - Manual control is used to disable automation when we override the default behaviour
 
-mode: queued
+mode: restart
 id: e1d01b47-8989-4d64-b7c1-c1f069f622f5
 trace:
   stored_traces: 25
+
+variables:
+  current_light_scene: >-
+    'scene.masterbedroom_lights_{{ states("input_select.current_light_schedule") }}'
+  anchors:
+    - &manual_control_on
+      alias: "Set bedside left as manually controlled"
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.masterbedroom_manual_control
+
+    - &manual_control_off
+      alias: "Turn manual control off"
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.masterbedroom_manual_control
+
+    - &turn_off
+      alias: "Turn the lights off"
+      service: light.turn_off
+      data:
+        entity_id: light.master_bedroom_lights
+        transition: 5
+
+    - &turn_on
+      service: scene.turn_on
+      data:
+        transition: 1
+
+    - &condition_is_dark
+      alias: "Is it dark in the room?"
+      condition: state
+      entity_id: binary_sensor.master_bedroom_is_dark
+      state: "on"
+
+    - &condition_is_presence_detected
+      alias: "Is presence detected in the room?"
+      condition: state
+      entity_id: binary_sensor.presence_master_bedroom
+      state: "on"
+
+    - &condition_is_room_mode
+      alias: "Check the room mode"
+      condition: state
+      entity_id:
+        - input_select.master_bedroom_room_mode
+
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
 
 trigger:
   - platform: homeassistant
@@ -57,18 +108,15 @@ trigger:
       - input_select.bedroom_current_cover_scene
 
   - platform: event
-    id: "button_marvin_single"
     event_type: "zha_event"
     event_data:
-      device_id: "2a93e9d147b93ca0ec5992d48dde3129"
-      command: "single"
-
-  - platform: event
-    event_type: "zha_event"
-    event_data:
-      device_id: "92cb556d8bab10f8b49ae0ed3e8dbe32"
+      device_id: "5256a27d772442b3a6065b595fc4a327"
       command: "single"
     id: "button_laura_single"
+
+  - platform: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
 
   - platform: state
     entity_id:
@@ -76,50 +124,6 @@ trigger:
     from: "on"
     to: "off"
     id: "all_lights_off"
-
-variables:
-  anchors:
-    - &manual_control_on
-      alias: "Set bedside left as manually controlled"
-      service: input_boolean.turn_on
-      target:
-        entity_id: input_boolean.masterbedroom_manual_control
-
-    - &manual_control_off
-      alias: "Turn manual control off"
-      service: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.masterbedroom_manual_control
-
-    - &turn_off
-      alias: "Turn the lights off"
-      service: light.turn_off
-      data:
-        entity_id: light.master_bedroom_lights
-        transition: 5
-
-    - &select_scene
-      service: scene.turn_on
-      data:
-        transition: 2
-
-    - &condition_is_dark
-      alias: "Is it dark in the room?"
-      condition: state
-      entity_id: binary_sensor.master_bedroom_is_dark
-      state: "on"
-
-    - &condition_is_presence_detected
-      alias: "Is presence detected in the room?"
-      condition: state
-      entity_id: binary_sensor.presence_master_bedroom
-      state: "on"
-
-    - &condition_is_room_mode
-      alias: "Check the room mode"
-      condition: state
-      entity_id:
-        - input_select.master_bedroom_room_mode
 
 condition:
   - condition: state
@@ -214,9 +218,23 @@ action:
           - *condition_is_dark
           - *condition_is_presence_detected
         sequence:
-          - <<: *select_scene
+          - <<: *turn_on
             target:
               entity_id: scene.masterbedroom_lights_rusten
+
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - <<: *condition_is_room_mode
+            state: "Wakker"
+          - *condition_is_presence_detected
+          - *condition_is_dark
+          - *condition_light_schedule_change
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 120
 
       - alias: "Turn lights on according to light schedule"
         conditions:
@@ -225,9 +243,9 @@ action:
           - *condition_is_dark
           - *condition_is_presence_detected
         sequence:
-          - <<: *select_scene
+          - <<: *turn_on
             target:
-              entity_id: scene.masterbedroom_lights_natuurlijklicht
+              entity_id: "{{ current_light_scene }}"
 
     default:
       - *turn_off

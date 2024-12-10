@@ -19,6 +19,7 @@ trigger:
       - input_select.mancave_room_mode
       - binary_sensor.sonos_move_charging
       - media_player.mass_all_devices
+      - media_player.mass_all_devices_beta
   - platform: state
     entity_id:
       - binary_sensor.macbookwork_camera_in_use

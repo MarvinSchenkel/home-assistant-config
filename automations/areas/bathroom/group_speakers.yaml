@@ -22,4 +22,3 @@ use_blueprint:
     custom_state_triggers:
       - schedule.silent_hours
       - input_select.bathroom_room_mode
-      - media_player.mass_all_devices

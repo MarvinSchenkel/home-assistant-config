@@ -17,71 +17,39 @@ trigger:
     event: start
     id: "ha_start"
 
-# TIDAL
-# Ambient / Relax: tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526
-# Anjuna: tidal://playlist/c9ebc92a-3f37-40ea-babf-175dfd02df52
-# Chill: tidal://playlist/4080a8cf-2a30-41e1-b87a-fda4152d621e
-# Chill step: tidal://playlist/5c7f2917-4dc7-4334-babd-88feef327b94
-
-# YT MUSIC
-# Ambient / Relax: ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye
-# Anjuna: ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM
-# Chill: ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5
-# Chill step: ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork
-# Reflections: ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA
-
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   just_awake_music:
     - "Classical Meditation"
     - "Tranquil spa day"
-  early_morning_music_tidal:
-    - "tidal://playlist/4080a8cf-2a30-41e1-b87a-fda4152d621e"
-    - "tidal://playlist/5c7f2917-4dc7-4334-babd-88feef327b94"
-  early_morning_music_ytmusic:
+    - "ytmusic://playlist/RDCLAK5uy_nZJzoZEBYRptA2XXskbxGTvKkevapT_F4"
+  early_morning_music:
     - "ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5"
     - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
     - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
-  morning_music_tidal:
-    - "tidal://playlist/5c7f2917-4dc7-4334-babd-88feef327b94"
-    - "tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526"
-  morning_music_ytmusic:
+  morning_music:
     - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
     - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
-  day_music_tidal:
-    - "tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526"
-    - "tidal://playlist/c9ebc92a-3f37-40ea-babf-175dfd02df52"
-  day_music_ytmusic:
+  day_music:
     - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
     - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM"
-  evening_music_tidal:
-    - "tidal://playlist/7adbfd05-93ba-4844-ad1c-f98b273d0526"
-  evening_music_ytmusic:
+  evening_music:
     - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
   christmas_music:
     - "Christmas Hits"
 
   active_schedule: '{{ states("input_select.current_music_schedule") }}'
-  active_source: '{{ states("input_select.music_source") }}'
   music_to_play: >-
     {% if active_schedule == "just_awake" %}
       {{ just_awake_music }}
-    {% elif active_schedule == "early_morning" and active_source == "Youtube Music" %}
-      {{ early_morning_music_ytmusic }}
-    {% elif active_schedule == "morning" and active_source == "Youtube Music"  %}
-      {{ morning_music_ytmusic }}
-    {% elif active_schedule == "day" and active_source == "Youtube Music"  %}
-      {{ day_music_ytmusic }}
-    {% elif active_schedule == "evening" and active_source == "Youtube Music"  %}
-      {{ evening_music_ytmusic }}
-    {% elif active_schedule == "early_morning" and active_source == "Tidal" %}
-      {{ early_morning_music_tidal }}
-    {% elif active_schedule == "morning" and active_source == "Tidal"  %}
-      {{ morning_music_tidal }}
-    {% elif active_schedule == "day" and active_source == "Tidal"  %}
-      {{ day_music_tidal }}
-    {% elif active_schedule == "evening" and active_source == "Tidal"  %}
-      {{ evening_music_tidal }}
+    {% elif active_schedule == "early_morning" %}
+      {{ early_morning_music }}
+    {% elif active_schedule == "morning" %}
+      {{ morning_music }}
+    {% elif active_schedule == "day" %}
+      {{ day_music }}
+    {% elif active_schedule == "evening" %}
+      {{ evening_music }}
     {% endif %}
   radio_mode: >-
     {% if active_schedule == "just_awake" %}

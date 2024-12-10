@@ -1,7 +1,10 @@
 ---
 name: Licht schema
 options:
-  - normal
-  - dim
-  - night
-  - bright
+  - nachtlampje
+  - rusten
+  - ontspannen
+  - lezen
+  - concentreren
+  - ontspannen
+  - energie

@@ -31,6 +31,10 @@ trigger:
     id: "presence_off_5s"
 
   - platform: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
+
+  - platform: state
     entity_id: media_player.apple_tv
     to: "playing"
     id: "apple_tv_playing"
@@ -39,39 +43,17 @@ trigger:
     entity_id:
       - binary_sensor.kitchen_is_dark
       - input_boolean.house_mode_cooking
-      - input_select.current_light_schedule
 
 variables:
+  current_light_scene: 'scene.kitchen_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
-    - &lights_normal
-      alias: "Turn the lights to normal scene"
+    - &turn_on
+      alias: "Turn on the lights"
       service: scene.turn_on
       data:
-        entity_id: scene.kitchen_lights_normal
-        transition: 3
+        transition: 1
 
-    - &lights_dim
-      alias: "Turn the lights to dim scene"
-      service: scene.turn_on
-      data:
-        entity_id: scene.kitchen_lights_dim
-        transition: 3
-
-    - &lights_bright
-      alias: "Turn the lights to bright scene"
-      service: scene.turn_on
-      data:
-        entity_id: scene.kitchen_lights_bright
-        transition: 3
-
-    - &lights_night
-      alias: "Turn the lights to bright scene"
-      service: scene.turn_on
-      data:
-        entity_id: scene.kitchen_lights_night
-        transition: 3
-
-    - &lights_off
+    - &turn_off
       alias: "Turn the lights off"
       service: light.turn_off
       data:
@@ -90,10 +72,10 @@ variables:
       entity_id: binary_sensor.kitchen_is_dark
       state: "on"
 
-    - &is_light_schedule
-      alias: "Check current light schedule"
-      condition: state
-      entity_id: input_select.current_light_schedule
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
 
 condition:
   - condition: state
@@ -115,9 +97,10 @@ action:
               - input_select.livingroom_current_lights_scene
             state: "movie"
         sequence:
-          - *lights_off
+          - *turn_off
 
-      - conditions:
+      - alias: "Turn on bright lights when cooking"
+        conditions:
           - *is_presence_detected
           - *is_dark
           - condition: state
@@ -125,31 +108,30 @@ action:
               - input_boolean.house_mode_cooking
             state: "on"
         sequence:
-          - *lights_bright
+          - <<: *turn_on
+            target:
+              entity_id: scene.kitchen_lights_concentreren
 
-      - conditions:
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
           - *is_presence_detected
           - *is_dark
-          - <<: *is_light_schedule
-            state: "dim"
+          - *condition_light_schedule_change
         sequence:
-          - *lights_dim
+          - <<: *turn_on
+            target:
+              entity_id: '{{ current_light_scene }}'
+            data:
+              transition: 120
 
-      - conditions:
+      - alias: "Just turn the lights on according to schedule"
+        conditions:
           - *is_presence_detected
           - *is_dark
-          - <<: *is_light_schedule
-            state: "normal"
         sequence:
-          - *lights_normal
-
-      - conditions:
-          - *is_presence_detected
-          - *is_dark
-          - <<: *is_light_schedule
-            state: "night"
-        sequence:
-          - *lights_night
+          - <<: *turn_on
+            target:
+              entity_id: '{{ current_light_scene }}'
 
       - alias: "Ignore 5s trigger when not in movie scene"
         conditions:
@@ -159,4 +141,4 @@ action:
           - stop: "Ignore this trigger"
 
     default:
-      - *lights_off
+      - *turn_off

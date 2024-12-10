@@ -1,0 +1,85 @@
+---
+alias: areas_master_bedroom_curtains
+description: >
+  Control the curtains in the master bedroom
+mode: queued
+max_exceeded: silent
+id: e9a9a846-9dcc-4b6e-83cc-4534e9a73005
+trace:
+  stored_traces: 25
+
+trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
+  - platform: state
+    entity_id:
+      - binary_sensor.sun_should_close_south_blinds
+      - binary_sensor.is_hot_day
+    from:
+      - "off"
+      - "on"
+    to:
+      - "off"
+      - "on"
+
+  - platform: state
+    entity_id:
+      - input_select.master_bedroom_room_mode
+    to:
+      - "Slaap"
+      - "Net wakker"
+
+  - platform: state
+    entity_id:
+      - input_select.master_bedroom_room_mode
+    to: "Wakker"
+    id: awake
+
+variables:
+  anchors:
+    - &close
+      alias: "Open the curtains"
+      service: cover.close_cover
+      target:
+        entity_id: cover.master_bedroom_curtains
+
+    - &open
+      alias: "Open the curtains"
+      service: cover.open_cover
+      target:
+        entity_id: cover.master_bedroom_curtains
+
+action:
+  - choose:
+      - alias: "This fully closes the blinds on hot days"
+        conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_should_close_south_blinds
+            state: "on"
+        sequence:
+          - *close
+
+      - alias: "Keep the heat out of the house on hot days"
+        conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.is_hot_day
+            state: "on"
+        sequence:
+          - *close
+
+      - alias: "Close the blinds when we go to sleep"
+        conditions:
+          - condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state: "Slaap"
+        sequence:
+          - *close
+
+    default:
+      - *open

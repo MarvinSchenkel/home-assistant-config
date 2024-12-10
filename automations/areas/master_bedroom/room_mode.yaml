@@ -5,19 +5,18 @@ mode: queued
 id: e153a617-7601-494d-8f23-13e6df694439
 
 trigger:
-  # Laura remote
-  - platform: device
-    domain: mqtt
-    device_id: 7fb6275ba6053149bcde2015d9dccaa3
-    type: action
-    subtype: single
+  - platform: event
     id: "button_laura_one"
+    event_type: "zha_event"
+    event_data:
+      device_id: "5256a27d772442b3a6065b595fc4a327"
+      command: "single"
 
-  - platform: device
-    domain: mqtt
-    device_id: 7fb6275ba6053149bcde2015d9dccaa3
-    type: action
-    subtype: hold
+  - platform: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "5256a27d772442b3a6065b595fc4a327"
+      command: "hold"
     id: "button_laura_hold"
 
   - platform: state

@@ -16,6 +16,8 @@ trigger:
   - platform: state
     entity_id:
       - input_select.livingroom_room_mode
+    for:
+      seconds: 15
 
   - platform: state
     entity_id:
@@ -43,10 +45,18 @@ trigger:
     entity_id:
       - input_boolean.setting_automatic_music
     id: "setting_automatic_music"
+    to: "off"
+
+  - platform: state
+    entity_id:
+      - input_boolean.setting_automatic_music
+    to: "on"
+    for:
+      seconds: 15
 
   - platform: time
     at:
-      - "07:00:00"
+      - "07:00:30"
       - "21:30:00"
 
 variables:
@@ -58,6 +68,14 @@ variables:
       data: {}
       target:
         entity_id: "{{ mass_entity }}"
+
+    - &set_shuffle
+      alias: "Ensure shuffle is on"
+      action: media_player.shuffle_set
+      target:
+        entity_id: "{{ mass_entity }}"
+      data:
+        shuffle: true
 
     - &pause
       alias: "Pause the player"
@@ -102,6 +120,7 @@ action:
               - condition: trigger
                 id: "tv_input_selected"
         sequence:
+          - *set_shuffle
           - *play_media
           - delay:
               seconds: 10
@@ -116,13 +135,13 @@ action:
                 for:
                   seconds: 900
               - alias: "Or we switched off automatic music"
-                and:
-                  - condition: trigger
-                    id: "setting_automatic_music"
-                  - condition: state
-                    entity_id:
-                      - input_boolean.setting_automatic_music
-                    state: "off"
+                # and:
+                #   - condition: trigger
+                #     id: "setting_automatic_music"
+                condition: state
+                entity_id:
+                  - input_boolean.setting_automatic_music
+                state: "off"
               - condition: trigger
                 id: "tv_input_selected"
           - "{{ not is_state(mass_entity, 'off') }}"

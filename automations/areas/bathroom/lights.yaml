@@ -5,29 +5,36 @@ mode: queued
 id: 9617f5b7-0733-4877-82ea-1ab8bc5332b0
 
 variables:
+  current_light_scene: 'scene.bathroom_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
-    - &manual_control_off
-      alias: "Turn manual control off"
-      service: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.bathroom_manual_control
-
-    - &presence_detected
+    - &condition_is_presence_detected
       alias: "There is movement in the bathroom"
       condition: state
       entity_id: binary_sensor.presence_bathroom
       state: "on"
 
-    - &is_dark
+    - &condition_is_dark
       alias: "It is dark"
       condition: state
       entity_id: binary_sensor.bathroom_is_dark
       state: "on"
 
-    - &is_light_schedule
-      alias: "Check current light schedule"
+    - &condition_is_room_mode
+      alias: "Check the room mode"
       condition: state
-      entity_id: input_select.current_light_schedule
+      entity_id:
+        - input_select.bathroom_room_mode
+
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
+
+    - &turn_on
+      service: scene.turn_on
+      alias: "Turn the bathroom lights on"
+      data:
+        transition: 1
 
     - &turn_off
       service: light.turn_off
@@ -67,26 +74,34 @@ action:
   - choose:
       - alias: "Turn lights off when someone is asleep"
         conditions:
-          - *presence_detected
-          - or:
-              - <<: *is_light_schedule
-                state: "night"
-              - alias: "Someone is sleeping"
-                condition: state
-                entity_id:
-                  - binary_sensor.house_mode_someone_asleep
-                state: "on"
+          - *condition_is_presence_detected
+          - <<: *condition_is_room_mode
+            state: "Slaap"
+            for:
+              minutes: 10
         sequence:
           - *turn_off
 
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - *condition_is_presence_detected
+          - *condition_is_dark
+          - *condition_light_schedule_change
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 120
+
       - alias: "Turn lights on when presence is detected and we're not asleep"
         conditions:
-          - *presence_detected
-          - *is_dark
+          - *condition_is_presence_detected
+          - *condition_is_dark
         sequence:
-          - service: scene.turn_on
-            data:
-              entity_id: scene.bathroom_lights_natuurlijklicht
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
 
     default:
       - *turn_off

@@ -1,7 +1,7 @@
 ---
 alias: areas_livingroom_lights_hue_sync
 description: Turns on the Philips Hue Sync Box
-mode: restart
+mode: queued
 id: f48cadf9-13ef-47e0-b8c1-7f11bcc4b58d
 trace:
   stored_traces: 25
@@ -106,6 +106,9 @@ action:
               mode: video
               intensity: high
               entertainment_area: "TV area Marvin"
+          # Prevent race condition
+          - delay:
+              seconds: 5
 
       - alias: "Set the hue lights a bit more subtle when I am not home alone."
         conditions:
@@ -123,6 +126,9 @@ action:
               mode: video
               intensity: moderate
               entertainment_area: "TV area"
+          # Prevent race condition
+          - delay:
+              seconds: 5
 
     default:
       - service: switch.turn_off

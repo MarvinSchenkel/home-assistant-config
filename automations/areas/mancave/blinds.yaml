@@ -35,6 +35,7 @@ trigger:
       - scene.mancave_cover_halfclosed
       - scene.mancave_cover_halfopen
       - scene.mancave_cover_tophalfopen
+      - scene.mancave_cover_ventilatingnight
     id: mancave_blinds
 
   - platform: state
@@ -126,6 +127,18 @@ action:
         sequence:
           - *manual_control_off
 
+      - alias: "Do not change the blinds when it's set to ventilation mode at night"
+        conditions:
+          - condition: state
+            entity_id: input_select.mancave_current_cover_scene
+            state: "ventilatingnight"
+          - condition: state
+            entity_id:
+              - input_select.mancave_room_mode
+            state: "Slaap"
+        sequence:
+          - stop: "Ventilating night is active. No automation required."
+
       - alias: "Turn the blinds down when the room is in Sleep mode"
         conditions:
           - condition: state
@@ -172,7 +185,7 @@ action:
           - condition: numeric_state
             entity_id:
               - sensor.sun_elevation
-            below: 23
+            below: 52
           - condition: numeric_state
             entity_id:
               - sensor.sun_azimuth
@@ -185,7 +198,10 @@ action:
             entity_id:
               - binary_sensor.marvin_is_working
             state: "on"
-          - "{{ now().month in [6,7,8,9] }}"
+          - condition: state
+            entity_id:
+              - binary_sensor.sun_hot
+            state: "on"
         sequence:
           - service: scene.turn_on
             target:

@@ -10,6 +10,8 @@ description: >
 mode: queued
 max_exceeded: silent
 id: 3290a52e-cd7b-435b-8d43-7295bd0de3f3
+trace:
+  stored_traces: 25
 
 trigger:
   - platform: homeassistant
@@ -147,13 +149,15 @@ action:
 
       - alias: "Open garden door blinds when door is open"
         conditions:
-          - condition: state
-            entity_id: binary_sensor.garden_door_open
-            state: "on"
+          - condition: trigger
+            id: garden_door_open
           - condition: state
             entity_id:
               - input_select.gardendoor_current_cover_scene
-            state: "closed"
+            state:
+              - "closed"
+              - "halfclosed"
+              - "halfopen"
         sequence:
           - *cover_half_open
 
@@ -167,6 +171,12 @@ action:
                   - alias: "It was changed by a user"
                     condition: template
                     value_template: "{{ trigger.to_state.context.user_id != None }}"
+                  - alias: "It wasn't an NS panel button press"
+                    condition: template
+                    value_template: >
+                      "{{
+                          trigger.to_state.context.user_id
+                          != '98b8473f95de49ecbb11a513a51df542' }}"
                 sequence:
                   - *manual_control_on
 
@@ -187,22 +197,16 @@ action:
         sequence:
           - stop: "Gardendoor blinds are manually controlled"
 
-      - alias: "Fully close blinds when we go to sleep or it is a hot day"
+      - alias: "Keep blinds closed when we are watching TV and closed the blinds"
         conditions:
-          - or:
-              - condition: state
-                entity_id: input_select.livingroom_room_mode
-                state:
-                  - "Slaap"
-              - and:
-                  - condition: state
-                    entity_id:
-                      - media_player.living_room_android
-                    state: "on"
-                  - condition: state
-                    entity_id:
-                      - input_select.gardendoor_current_cover_scene
-                    state: "closed"
+          - condition: state
+            entity_id:
+              - media_player.living_room_android
+            state: "on"
+          - condition: state
+            entity_id:
+              - input_select.gardendoor_current_cover_scene
+            state: "closed"
         sequence:
           - *cover_closed
 

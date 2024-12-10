@@ -1,0 +1,40 @@
+---
+substitutions:
+  name: esphome-presence-master-bedroom
+  friendly_name: Presence Master Bedroom
+
+packages:
+  esphome.bluetooth-proxy: github://esphome/bluetooth-proxies/m5stack/m5stack-atom-lite.yaml@main
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# Allow Over-The-Air updates
+ota:
+  - platform: esphome
+    password: !secret ota_pwd
+
+light:
+  - platform: esp32_rmt_led_strip
+    rgb_order: GRB
+    pin: 27
+    num_leds: 1
+    rmt_channel: 0
+    chipset: SK6812
+    id: status_led
+    name: ${friendly_name} Light
+    restore_mode: ALWAYS_OFF
+    effects:
+      - random:
+      - flicker:
+      - addressable_rainbow:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password

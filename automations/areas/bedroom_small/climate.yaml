@@ -16,6 +16,11 @@ trigger:
       - binary_sensor.everyone_left_home
     from: ~
 
+  - platform: time
+    at:
+      - "18:00:00"
+      - "06:00:00"
+
 variables:
   anchors:
     - &target
@@ -46,14 +51,13 @@ variables:
 action:
   - choose:
       - conditions:
-          - alias: "When the house is in away mode"
-            condition: state
-            entity_id: binary_sensor.everyone_left_home
-            state: "on"
-          - alias: "And there are no guests over"
-            condition: state
-            entity_id: input_boolean.setting_guest_mode
-            state: "off"
+          - or:
+              - alias: "When the house is in away mode"
+                condition: state
+                entity_id: binary_sensor.everyone_left_home
+                state: "on"
+              - condition: time
+                before: "18:00:00"
         sequence:
           - *turn_down
 

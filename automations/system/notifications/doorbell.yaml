@@ -4,15 +4,13 @@ alias: system_notifications_doorbell
 id: cb689da9-474a-48af-b945-e68e48fa6eeb
 
 trigger:
-  - platform: state
-    entity_id:
-      - binary_sensor.g4_doorbell_doorbell
-    to: "on"
+  - trigger: event
+    event_type: "ring"
 
 variables:
   video_start: "{{ (utcnow() - timedelta(seconds=5)).isoformat() }}"
   video_end: "{{ utcnow().isoformat() }}"
-  event_id: "{{ state_attr('binary_sensor.g4_doorbell_doorbell', 'event_id') }}"
+  event_id: "{{ state_attr('event.g4_doorbell_doorbell', 'event_id') }}"
 
 action:
   - choose:

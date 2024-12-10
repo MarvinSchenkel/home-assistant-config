@@ -13,11 +13,6 @@ trigger:
       - sensor.pir_hall_upstairs_battery_level
       - sensor.pir_hall_downstairs_battery_level
       - sensor.pir_bathroom_battery_level
-      - sensor.luxaflex_master_bedroom_battery_level
-      - sensor.luxaflex_mancave_battery_level
-      - sensor.luxaflex_living_room_battery_level
-      - sensor.luxaflex_kitchen_battery_level
-      - sensor.luxaflex_garden_door_battery_level
       - sensor.flood_sensor_battery_level
       - sensor.pir_smallbedroom_battery_level
       - sensor.mancave_door_battery_level
@@ -26,8 +21,11 @@ trigger:
       - sensor.livingroom_door_battery_level
       - sensor.smallbedroom_door_battery_level
       - sensor.bathroom_door_battery_level
+      - sensor.master_bedroom_door_battery_level
       - sensor.wc_door_battery_level
-      - sensor.pir_livingroom_battery_level
+      - sensor.smallbedroom_blinds_battery_level
+      - sensor.button_kitchen_battery_level
+      - sensor.button_laura_battery_level
     below: 1
     id: "battery_dead"
     for:
@@ -40,11 +38,6 @@ trigger:
       - sensor.pir_hall_upstairs_battery_level
       - sensor.pir_hall_downstairs_battery_level
       - sensor.pir_bathroom_battery_level
-      - sensor.luxaflex_master_bedroom_battery_level
-      - sensor.luxaflex_mancave_battery_level
-      - sensor.luxaflex_living_room_battery_level
-      - sensor.luxaflex_kitchen_battery_level
-      - sensor.luxaflex_garden_door_battery_level
       - sensor.flood_sensor_battery_level
       - sensor.pir_smallbedroom_battery_level
       - sensor.mancave_door_battery_level
@@ -53,13 +46,41 @@ trigger:
       - sensor.livingroom_door_battery_level
       - sensor.smallbedroom_door_battery_level
       - sensor.bathroom_door_battery_level
+      - sensor.master_bedroom_door_battery_level
       - sensor.wc_door_battery_level
-      - sensor.pir_livingroom_battery_level
+      - sensor.smallbedroom_blinds_battery_level
+      - sensor.button_kitchen_battery_level
+      - sensor.button_laura_battery_level
     below: 20
     above: 0
     id: "battery_low"
     for:
       minutes: 30
+  - platform: state
+    entity_id:
+      - sensor.pir_wc_battery_level
+      - sensor.pir_master_bedroom_battery_level
+      - sensor.pir_kitchen_battery_level
+      - sensor.pir_hall_upstairs_battery_level
+      - sensor.pir_hall_downstairs_battery_level
+      - sensor.pir_bathroom_battery_level
+      - sensor.flood_sensor_battery_level
+      - sensor.pir_smallbedroom_battery_level
+      - sensor.mancave_door_battery_level
+      - sensor.gardendoor_sensor_battery_level
+      - sensor.front_door_battery_level
+      - sensor.livingroom_door_battery_level
+      - sensor.smallbedroom_door_battery_level
+      - sensor.bathroom_door_battery_level
+      - sensor.master_bedroom_door_battery_level
+      - sensor.wc_door_battery_level
+      - sensor.smallbedroom_blinds_battery_level
+      - sensor.button_kitchen_battery_level
+      - sensor.button_laura_battery_level
+    to: "unavailable"
+    for:
+      minutes: 10
+    id: "battery_unavailable"
 
 action:
   - choose:
@@ -74,6 +95,19 @@ action:
               message: >-
                 De batterij van de sensor
                 {{ trigger.to_state.attributes.friendly_name }} is leeg!
+
+      - conditions:
+          - condition: trigger
+            id: "battery_unavailable"
+        sequence:
+          - service: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+              message: >-
+                De batterij van de sensor
+                {{ trigger.to_state.attributes.friendly_name }} is niet meer beschikbaar!
+
     default:
       - service: script.send_notification
         data:

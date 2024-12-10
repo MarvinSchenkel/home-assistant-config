@@ -200,6 +200,8 @@ views:
           entity: media_player.mass_all_devices_beta
           label: >
             [[[
+              const colorThief = new ColorThief();
+
               return states['media_player.mass_all_devices_beta'].attributes.media_title
             ]]]
           extra_styles: |

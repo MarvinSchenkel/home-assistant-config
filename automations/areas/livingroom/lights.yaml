@@ -16,10 +16,18 @@ trigger:
   - platform: state
     entity_id:
       - input_boolean.setting_manual_lights
+
+  - platform: state
+    entity_id:
       - binary_sensor.livingroom_is_dark
     from: ~
     for:
       seconds: 2
+    id: light_dark_change
+
+  - platform: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
 
   - platform: state
     entity_id:
@@ -44,27 +52,13 @@ trigger:
     for:
       minutes: 10
 
-  - platform: device
-    device_id: 063e0720e7172ed87824f117033874a5
-    domain: hue
-    type: short_release
-    subtype: 1
-    unique_id: a9f5c750-a2cb-4924-b041-022f32291224
-    id: "hue_dimmer_on_press"
-
-  - platform: device
-    device_id: 063e0720e7172ed87824f117033874a5
-    domain: hue
-    type: short_release
-    subtype: 4
-    unique_id: fd5ce233-c55e-449a-9c81-d55fc8078f03
-    id: "hue_dimmer_off_press"
-
   - platform: time
     at: "00:03:00"
     id: "reset"
 
 variables:
+  current_light_scene: >
+    'scene.livingroom_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
     - &condition_is_presence_detected
       alias: "Is there presence in the room?"
@@ -82,23 +76,21 @@ variables:
       entity_id: binary_sensor.livingroom_is_dark
       state: "on"
 
-    - &condition_is_remote_quickly_pressed
-      alias: "Did we manually press the button?"
-      condition: trigger
-      id:
-        - "hue_dimmer_on_press"
-        - "hue_dimmer_off_press"
-
-    - &condition_is_current_scene
-      alias: "Check the current light scene"
-      condition: state
-      entity_id: input_select.livingroom_current_lights_scene
-
     - &condition_watching_tv
       alias: "Check if we are watching a movie or series"
       condition: state
       entity_id: binary_sensor.livingroom_is_media_playing
       state: "on"
+
+    - &condition_first_turn_on
+      alias: "Gradually turn the lights on when it gets dark"
+      condition: trigger
+      id: light_dark_change
+
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
 
     - &turn_off
       alias: "Turn the lights off"
@@ -114,7 +106,7 @@ variables:
       alias: "Turn on the lights"
       service: scene.turn_on
       data:
-        transition: 5
+        transition: 2
 
 condition:
   - condition: state
@@ -123,35 +115,8 @@ condition:
 
 action:
   - choose:
-      - alias: "Reset active scene to 'normal' during reset"
-        conditions:
-          - condition: trigger
-            id: "reset"
-        sequence:
-          - service: input_select.select_option
-            entity_id: input_select.livingroom_current_lights_scene
-            data:
-              option: normal
-
-      - alias: "Capture manual scene control via Hue remote"
-        conditions:
-          - *condition_is_remote_quickly_pressed
-          - *condition_is_dark
-        sequence:
-          - if:
-              - <<: *condition_is_current_scene
-                state: "movie"
-            then:
-              - <<: *turn_on
-                target:
-                  entity_id: scene.livingroom_lights_natuurlijklicht
-            else:
-              - <<: *turn_on
-                target:
-                  entity_id: scene.livingroom_lights_movie
-
       - alias: >
-          "Toggle movie scene on single button press or when somethings starts playing"
+          "Toggle movie scene when somethings starts playing"
         conditions:
           - *condition_is_dark
           - *condition_is_presence_detected
@@ -161,6 +126,30 @@ action:
             target:
               entity_id: scene.livingroom_lights_movie
 
+      - alias: "Gradually turn on the lights the first time."
+        conditions:
+          - *condition_is_dark
+          - *condition_is_presence_detected
+          - *condition_first_turn_on
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: '{{ current_light_scene }}'
+            data:
+              transition: 10
+
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - *condition_is_dark
+          - *condition_is_presence_detected
+          - *condition_light_schedule_change
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: '{{ current_light_scene }}'
+            data:
+              transition: 120
+
       - alias: "Just turn on the lights."
         conditions:
           - *condition_is_dark
@@ -168,7 +157,7 @@ action:
         sequence:
           - <<: *turn_on
             target:
-              entity_id: scene.livingroom_lights_natuurlijklicht
+              entity_id: '{{ current_light_scene }}'
 
     default:
       - *turn_off

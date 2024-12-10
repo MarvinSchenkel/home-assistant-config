@@ -140,9 +140,14 @@ action:
               - alias: "When triggerd by the reset time"
                 condition: trigger
                 id: "reset"
-              - alias: "When the room goes to awake"
-                condition: trigger
-                id: "awake"
+              - and:
+                  - alias: "When the room goes to awake"
+                    condition: trigger
+                    id: "awake"
+                  - alias: "Manual control is on"
+                    condition: state
+                    entity_id: input_boolean.masterbedroom_cover_manual_control
+                    state: "on"
         sequence:
           - *manual_control_off
 

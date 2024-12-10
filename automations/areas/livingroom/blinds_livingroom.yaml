@@ -152,14 +152,10 @@ action:
         sequence:
           - stop: "Living room blinds are manually controlled"
 
-      - alias: "Fully close the blinds when we go to sleep or when it is hot"
+      - alias: "Fully close the blinds when we watch TV with the blinds closed or when it is hot"
         conditions:
           - condition: or
             conditions:
-              - condition: state
-                entity_id: input_select.livingroom_room_mode
-                state:
-                  - "Slaap"
               - and:
                   - condition: state
                     entity_id:

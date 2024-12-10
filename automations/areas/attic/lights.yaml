@@ -5,16 +5,28 @@ mode: queued
 id: 6d93c5dd-87e6-4a9b-9e99-b59edc035a97
 
 variables:
+  current_light_scene: 'scene.attic_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
-    - &presence_detected
+    - &condition_is_presence_detected
       condition: state
       entity_id: binary_sensor.presence_attic
       state: "on"
 
-    - &is_light_schedule
+    - &condition_is_light_schedule
       alias: "Check current light schedule"
       condition: state
       entity_id: input_select.current_light_schedule
+
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
+
+    - &turn_on
+      alias: "Turn the lights on"
+      service: scene.turn_on
+      data:
+        transition: 1
 
     - &turn_off
       alias: "Turn the lights off"
@@ -54,25 +66,37 @@ condition:
 action:
   - choose:
       - conditions:
-          - *presence_detected
+          - *condition_is_presence_detected
           - or:
-              - <<: *is_light_schedule
-                state: "night"
+              - <<: *condition_is_light_schedule
+                state: "nachtlampje"
               - alias: "Someone is sleeping"
                 condition: state
                 entity_id:
                   - binary_sensor.house_mode_someone_asleep
                 state: "on"
+                for:
+                  minutes: 10
         sequence:
           - *turn_off
 
-      - conditions:
-          - *presence_detected
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - *condition_is_presence_detected
+          - *condition_light_schedule_change
         sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights on"
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
             data:
-              entity_id: scene.attic_lights_natuurlijklicht
+              transition: 120
+
+      - conditions:
+          - *condition_is_presence_detected
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
 
     default:
       - *turn_off

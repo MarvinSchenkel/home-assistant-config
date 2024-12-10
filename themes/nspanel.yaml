@@ -67,8 +67,8 @@ nspanel:
       opacity-bg: "1"
       # background and sidebar
       card-background-color: "#FAFAFA"
-      primary-background-color: "#EFEFEF"
-      secondary-background-color: "#EFEFEF"
+      primary-background-color: "#D8D8D8"
+      secondary-background-color: "#D8D8D8"
       # header
       app-header-text-color: "var(--primary-text-color)"
       app-header-background-color: "var(--primary-background-color)"

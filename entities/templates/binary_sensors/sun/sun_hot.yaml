@@ -9,7 +9,7 @@ binary_sensor:
     state: >
       {%- if states("sensor.solaredge_i1_ac_power") == "unavailable" -%}
         unavailable
-      {%- elif states("sensor.solaredge_i1_ac_power") | float > 1450 -%}
+      {%- elif states("sensor.solaredge_i1_ac_power") | float > 1400 -%}
         on
       {%- else -%}
         off

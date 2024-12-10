@@ -1,27 +1,35 @@
 ---
 alias: areas_hall_downstairs_lights
 description: Turns the hallway lights on when motion has been detected
-mode: queued
+mode: restart
 id: 797b07af-7b1f-4c4f-bd8f-be9708c64e63
 
 variables:
+  current_light_scene: >-
+    'scene.halldownstairs_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
-    - &presence_detected
+    - &condition_is_presence_detected
       condition: state
       entity_id: binary_sensor.presence_hall_downstairs
       state: "on"
 
-    - &is_dark
+    - &condition_is_dark
       condition: state
       entity_id: binary_sensor.hall_is_dark
       state: "on"
 
-    - &is_light_schedule
-      alias: "Check current light schedule"
-      condition: state
-      entity_id: input_select.current_light_schedule
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
 
-    - &lights_turn_off
+    - &turn_on
+      service: scene.turn_on
+      alias: "Turn the hall lights on"
+      data:
+        transition: 1
+
+    - &turn_off
       service: light.turn_off
       alias: "Turn the hall lights off"
       data:
@@ -46,6 +54,10 @@ trigger:
       seconds: 40
 
   - platform: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
+
+  - platform: state
     entity_id: input_select.livingroom_current_lights_scene
     to: "movie"
     id: "movie"
@@ -63,16 +75,27 @@ action:
             alias: "Check if we started watching a movie"
             id: "movie"
         sequence:
-          - *lights_turn_off
+          - *turn_off
+
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - *condition_is_presence_detected
+          - *condition_is_dark
+          - *condition_light_schedule_change
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 120
 
       - conditions:
-          - *presence_detected
-          - *is_dark
+          - *condition_is_presence_detected
+          - *condition_is_dark
         sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to normal scene"
-            data:
-              entity_id: scene.haldownstairs_lights_natuurlijklicht
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
 
     default:
-      - *lights_turn_off
+      - *turn_off

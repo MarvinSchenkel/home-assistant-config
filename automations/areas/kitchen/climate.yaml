@@ -69,6 +69,12 @@ variables:
       entity_id: binary_sensor.garden_door_open
       state: "off"
 
+    - &warm_day_predicted
+      alias: "Check if we predict it is gonna be a warm day"
+      condition: state
+      entity_id: binary_sensor.warm_day_predicted
+      state: "on"
+
 action:
   - choose:
       - conditions:
@@ -119,6 +125,15 @@ action:
                 after: "21:00:00"
               - condition: time
                 before: "06:00:00"
+        sequence:
+          - *turn_down
+
+      - alias: "Do not turn the heating on in the morning when a warm day is predicted"
+        conditions:
+          - *warm_day_predicted
+          - condition: time
+            before: "12:00"
+            after: "05:00"
         sequence:
           - *turn_down
 

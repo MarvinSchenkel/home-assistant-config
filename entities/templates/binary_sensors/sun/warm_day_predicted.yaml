@@ -1,0 +1,45 @@
+---
+trigger:
+  - platform: time
+    at: "06:00:00"
+  - platform: event
+    event_type: event_template_reloaded
+
+action:
+  - service: weather.get_forecasts
+    data:
+      type: hourly
+    target:
+      entity_id: weather.openweathermap
+    response_variable: hourly_forecast
+  - variables:
+      average_temperature: >
+        {% set data = namespace(temperatures=[]) %}
+        {%- for item in hourly_forecast['weather.openweathermap'].forecast -%}
+            {%- if (as_timestamp(now()) | timestamp_custom("%Y-%m-%d"))
+                == (as_timestamp(item["datetime"]) | timestamp_custom("%Y-%m-%d"))
+                and as_datetime(item["datetime"]).hour >= 9
+                and as_datetime(item["datetime"]).hour <= 15
+            -%}
+              {% set data.temperatures = data.temperatures + [item["temperature"]] %}
+            {%- endif -%}
+        {% endfor %}
+        {%- if data.temperatures | length == 0 -%}
+          0
+        {%- else -%}
+          {{ data.temperatures | average }}
+        {%- endif -%}
+
+binary_sensor:
+  - name: warm_day_predicted
+    unique_id: 5abe5eeb-15bf-4f91-9e77-59ca0fe838ee
+    attributes:
+      average_temperature_used: "{{ average_temperature }}"
+    state: >
+      {%- if average_temperature == 0 -%}
+        off
+      {%- elif average_temperature > 20.0 -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}

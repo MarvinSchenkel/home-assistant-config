@@ -9,6 +9,13 @@ trigger:
     entity_id:
       - binary_sensor.g4_doorbell_motion
 
+  - platform: time
+    at:
+      - "00:00:00"
+      - "06:00:00"
+      - "12:00:00"
+      - "18:00:00"
+
 action:
   - alias: "Display greeting based on the day or the time of day"
     choose:

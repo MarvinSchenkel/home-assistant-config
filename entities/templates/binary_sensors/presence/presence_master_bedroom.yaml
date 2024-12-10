@@ -5,5 +5,4 @@ binary_sensor:
     state: >
       {{  is_state("binary_sensor.pir_master_bedroom", "on")
           or is_state("binary_sensor.presence_master_bedroom_door", "on")
-          or is_state("binary_sensor.presence_master_bedroom_fp2", "on")
           or is_state("binary_sensor.someone_in_bed", "on") }}

@@ -6,4 +6,5 @@ binary_sensor:
       {{  is_state("binary_sensor.pir_bathroom", "on")
           or is_state("binary_sensor.pir_bathroom_old", "on")
           or is_state("binary_sensor.bathroom_flood_detected", "on")
+          or is_state("sensor.toothbrush_marvin", "running")
           or is_state("binary_sensor.presence_bathroom_door", "on") }}

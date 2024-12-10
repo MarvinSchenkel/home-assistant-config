@@ -1,27 +1,24 @@
 ---
 alias: areas_hall_upstairs_lights
 description: Turns the hallway lights on when motion has been detected
-mode: queued
+mode: restart
 id: 1bc47338-f273-4ec5-b45f-ca05d19434d5
 
 variables:
+  current_light_scene: >-
+    'scene.hallupstairs_lights_{{ states("input_select.current_light_schedule") }}'
   anchors:
-    - &presence_detected
+    - &condition_is_presence_detected
       condition: state
       entity_id: binary_sensor.presence_hall_upstairs
       state: "on"
 
-    - &is_dark
+    - &condition_is_dark
       condition: state
       entity_id: binary_sensor.hall_upstairs_is_dark
       state: "on"
 
-    - &is_light_schedule
-      alias: "Check current light schedule"
-      condition: state
-      entity_id: input_select.current_light_schedule
-
-    - &zoey_door_closed
+    - &condition_is_zoey_door_closed
       alias: "Is Zoey's door closed?"
       or:
         - condition: state
@@ -33,13 +30,26 @@ variables:
           for:
             minutes: 2
 
-    - &nobody_asleep
+    - &condition_is_nobody_asleep
       alias: "Nobody is sleeping"
       not:
         condition: state
         entity_id:
           - input_select.hall_upstairs_room_mode
         state: "Slaap"
+
+    - &turn_on
+      service: scene.turn_on
+      alias: "Turn the hall lights on"
+      data:
+        transition: 1
+
+    - &turn_off
+      service: light.turn_off
+      alias: "Turn the hall lights off"
+      data:
+        entity_id: light.hall_upstairs
+        transition: 5
 
 trigger:
   - platform: homeassistant
@@ -60,7 +70,7 @@ trigger:
 
   - platform: state
     entity_id:
-      - input_select.current_light_schedule
+      - input_select.hall_upstairs_room_mode
 
   - platform: state
     entity_id:
@@ -75,18 +85,14 @@ condition:
 action:
   - choose:
       - conditions:
-          - *presence_detected
-          - *is_dark
-          - *nobody_asleep
-          - *zoey_door_closed
+          - *condition_is_presence_detected
+          - *condition_is_dark
+          - *condition_is_nobody_asleep
+          - *condition_is_zoey_door_closed
         sequence:
-          - service: scene.turn_on
-            alias: "Turn the hall lights to normal scene"
-            data:
-              entity_id: scene.halupstairs_lights_natuurlijklicht
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
 
     default:
-      - service: light.turn_off
-        data:
-          entity_id: light.hall_upstairs
-          transition: 5
+      - *turn_off

@@ -11,16 +11,21 @@ trigger:
     entity_id:
       - input_select.livingroom_room_mode
 
-  - platform: numeric_state
-    entity_id:
-      - sensor.sun_adjusted_elevation
-    below: -25
-
   - platform: time
-    at: "19:00:00"
+    at:
+      - "07:00:00"
+      - "08:00:00"
+      - "10:00:00"
+      - "17:00:00"
+      - "20:00:00"
+      - "22:00:00"
+      - "00:00:00"
 
   - platform: homeassistant
     event: start
+
+  - platform: event
+    event_type: automation_reloaded
 
 variables:
   anchors:
@@ -40,23 +45,63 @@ action:
         sequence:
           - <<: *select_schedule
             data:
-              option: "night"
+              option: "nachtlampje"
 
       - conditions:
-          - or:
-              - and:
-                  - condition: numeric_state
-                    entity_id: sensor.sun_adjusted_elevation
-                    below: -25
-                  - condition: time
-                    alias: "And it is after 7pm"
-                    after: "19:00:00"
+          - condition: time
+            alias: "It is after 10pm"
+            after: "22:00:00"
         sequence:
           - <<: *select_schedule
             data:
-              option: "dim"
+              option: "rusten"
+
+      - conditions:
+          - condition: time
+            alias: "It is after 8pm"
+            after: "20:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "ontspannen"
+
+      - conditions:
+          - condition: time
+            alias: "It is after 5pm"
+            after: "17:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "lezen"
+
+      - conditions:
+          - condition: time
+            alias: "It is after 10am"
+            after: "10:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "concentreren"
+
+      - conditions:
+          - condition: time
+            alias: "It is after 8am"
+            after: "08:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "energie"
+
+      - conditions:
+          - condition: time
+            alias: "It is after 7am"
+            after: "07:00:00"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "ontspannen"
 
     default:
       - <<: *select_schedule
         data:
-          option: "normal"
+          option: "rusten"
