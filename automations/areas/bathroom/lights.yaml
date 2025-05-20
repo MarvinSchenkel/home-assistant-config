@@ -13,6 +13,14 @@ variables:
       entity_id: binary_sensor.presence_bathroom
       state: "on"
 
+    - &condition_no_presence_detected
+      alias: "No presence has been detected for a while"
+      condition: state
+      entity_id: binary_sensor.presence_bathroom
+      state: "off"
+      for:
+        seconds: 300
+
     - &condition_is_dark
       alias: "It is dark"
       condition: state
@@ -30,37 +38,49 @@ variables:
       condition: trigger
       id: light_schedule_change
 
+    - &condition_shower_on
+      alias: "When someone is taking a shower"
+      condition: state
+      entity_id: binary_sensor.bathroom_shower_detected
+      state: "on"
+
     - &turn_on
-      service: scene.turn_on
+      action: scene.turn_on
       alias: "Turn the bathroom lights on"
       data:
         transition: 1
 
     - &turn_off
-      service: light.turn_off
+      action: light.turn_off
       data:
         entity_id: light.bathroom
         transition: 5
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_bathroom
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_bathroom
     to: "off"
     for:
-      seconds: 240
+      seconds: 300
 
-  - platform: state
+  - trigger: state
+    entity_id:
+      - input_select.bathroom_room_mode
+    to: Spa
+    id: spa_mode_on
+
+  - trigger: state
     entity_id:
       - input_select.bathroom_room_mode
       - binary_sensor.bathroom_is_dark
@@ -72,21 +92,56 @@ condition:
 
 action:
   - choose:
-      - alias: "Turn lights off when someone is asleep"
+      - alias: "Turn on fancy spa lights when spa mode is activated"
         conditions:
-          - *condition_is_presence_detected
-          - <<: *condition_is_room_mode
-            state: "Slaap"
-            for:
-              minutes: 10
+          - condition: trigger
+            id: spa_mode_on
         sequence:
-          - *turn_off
+          - variables:
+              spa_scenes:
+                - "dromerigeschemering"
+                - "melkweg"
+                - "peinzend"
+                - "robijngloed"
+                - "sterrenlicht"
+              spa_scene: "{{ spa_scenes | random }}"
+          - <<: *turn_on
+            target:
+              entity_id: scene.bathroom_lights_{{ spa_scene }}
+
+      - alias: "Keep the lights on in spa mode (when someone is taking a bath)"
+        conditions:
+          - <<: *condition_is_room_mode
+            state: "Spa"
+        sequence:
+          - stop: "Keeping the lights on in spa mode!"
+
+      - alias: >-
+          "Ensure there is some light when someone is taking a shower in the morning and people
+           are still sleeping"
+        conditions:
+          - *condition_shower_on
+          - *condition_is_dark
+          - or:
+              - condition: time
+                before: "08:00:00"
+              - <<: *condition_is_room_mode
+                state:
+                  - "Slaap"
+                  - "Net wakker"
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "scene.bathroom_lights_lezen"
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:
           - *condition_is_presence_detected
           - *condition_is_dark
           - *condition_light_schedule_change
+          - not:
+              - <<: *condition_is_room_mode
+                state: "Slaap"
         sequence:
           - <<: *turn_on
             target:
@@ -98,10 +153,18 @@ action:
         conditions:
           - *condition_is_presence_detected
           - *condition_is_dark
+          - not:
+              - <<: *condition_is_room_mode
+                state: "Slaap"
         sequence:
           - <<: *turn_on
             target:
               entity_id: "{{ current_light_scene }}"
 
-    default:
-      - *turn_off
+      - alias: "Turn the light off when presence is off for x-amount of minutes"
+        conditions:
+          - *condition_no_presence_detected
+        sequence:
+          - *turn_off
+
+    default: []

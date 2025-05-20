@@ -1,0 +1,8 @@
+---
+platform: group
+name: bathroom
+entities:
+  - light.bathroom_spot_left_door
+  - light.spot_left_sink
+  - light.spot_right_bath
+  - light.spot_right_shower

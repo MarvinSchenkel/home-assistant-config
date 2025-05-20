@@ -46,7 +46,7 @@ variables:
       alias: "Turn down small bedroom climate"
       service: climate.set_temperature
       data:
-        temperature: 17.0
+        temperature: 16.0
 
 action:
   - choose:

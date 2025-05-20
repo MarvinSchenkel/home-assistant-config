@@ -9,6 +9,15 @@ max_exceeded: silent
 
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
+  anchors:
+    - &condition_tv_game
+      alias: "Check if we're playing a game"
+      condition: state
+      entity_id: media_player.mancave_tv
+      attribute: "source"
+      state:
+        - "PS5 Game Console"
+        - "Nintendo Switch Game Console"
 
 trigger:
   - platform: state
@@ -30,23 +39,14 @@ trigger:
     to: "off"
     for:
       seconds: 75
+  - platform: state
+    entity_id: media_player.mancave_tv
+    attribute: source
   - platform: homeassistant
     event: start
 
 action:
   - choose:
-      - conditions:
-          - condition: state
-            entity_id:
-              - binary_sensor.sonos_move_charging
-            state: "off"
-            for:
-              minutes: 1
-        sequence:
-          - stop: >
-              "Block auto grouping / ungrouping for the
-              Move since it is not in the dock."
-
       - conditions:
           - condition: state
             entity_id:
@@ -60,31 +60,28 @@ action:
                 entity_id:
                   - input_select.mancave_room_mode
                 state: Wakker
-              - alias: When the Move is docked
-                condition: state
-                entity_id:
-                  - binary_sensor.sonos_move_charging
-                state: "on"
               - alias: When I am not in a call
                 condition: state
                 entity_id:
                   - binary_sensor.macbookwork_camera_in_use
                 state: "off"
+              - not:
+                  - *condition_tv_game
         sequence:
           - if:
               - not:
                   - condition: state
                     entity_id:
-                      - media_player.sonos_move
+                      - media_player.mancave_wiim_amp
                     state: playing
             then:
               - alias: Turn the child media player on
                 service: media_player.join
                 target:
-                  entity_id: media_player.sonos_kitchen
+                  entity_id: media_player.mass_sonos_kitchen
                 data:
                   group_members:
-                    - media_player.sonos_move
+                    - media_player.mass_mancave_wiim_amp
 
       - conditions:
           - condition: state
@@ -96,14 +93,14 @@ action:
           - not:
               - condition: state
                 entity_id:
-                  - media_player.sonos_move
+                  - media_player.mass_mancave_wiim_amp
                 state: "off"
         sequence:
           - alias: Turn the child media player off
             service: media_player.unjoin
             data: {}
             target:
-              entity_id: media_player.sonos_move
+              entity_id: media_player.mass_mancave_wiim_amp
 
       - conditions:
           - not:
@@ -112,19 +109,16 @@ action:
                     entity_id:
                       - input_select.mancave_room_mode
                     state: Wakker
-                  - alias: When the Move is docked
-                    condition: state
-                    entity_id:
-                      - binary_sensor.sonos_move_charging
-                    state: "on"
                   - alias: When I am not in a call
                     condition: state
                     entity_id:
                       - binary_sensor.macbookwork_camera_in_use
                     state: "off"
+                  - not:
+                      - *condition_tv_game
         sequence:
           - alias: Turn the child media player off
             service: media_player.unjoin
             data: {}
             target:
-              entity_id: media_player.sonos_move
+              entity_id: media_player.mass_mancave_wiim_amp

@@ -17,6 +17,6 @@ cards:
       - type: horizontal-stack
         cards:
           - type: tile
-            entity: input_select.music_source
+            entity: input_boolean.setting_automatic_vacuum
           - type: vertical-stack
             cards: []

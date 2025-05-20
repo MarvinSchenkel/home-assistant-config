@@ -104,7 +104,7 @@ action:
               sync: true
               brightness: 71
               mode: video
-              intensity: high
+              intensity: moderate
               entertainment_area: "TV area Marvin"
           # Prevent race condition
           - delay:

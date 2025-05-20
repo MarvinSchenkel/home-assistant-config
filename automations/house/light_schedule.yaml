@@ -34,6 +34,11 @@ variables:
       service: input_select.select_option
       target:
         entity_id: input_select.current_light_schedule
+    - &select_schedule_dynamic
+      alias: "Select the schedule"
+      service: input_select.select_option
+      target:
+        entity_id: input_select.current_light_schedule_dynamic
 
 action:
   - choose:
@@ -46,6 +51,9 @@ action:
           - <<: *select_schedule
             data:
               option: "nachtlampje"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "snachts"
 
       - conditions:
           - condition: time
@@ -55,6 +63,9 @@ action:
           - <<: *select_schedule
             data:
               option: "rusten"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "slaperig"
 
       - conditions:
           - condition: time
@@ -64,6 +75,9 @@ action:
           - <<: *select_schedule
             data:
               option: "ontspannen"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "ontladen"
 
       - conditions:
           - condition: time
@@ -73,6 +87,9 @@ action:
           - <<: *select_schedule
             data:
               option: "lezen"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "sprookjesboek"
 
       - conditions:
           - condition: time
@@ -82,6 +99,9 @@ action:
           - <<: *select_schedule
             data:
               option: "concentreren"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "stralen"
 
       - conditions:
           - condition: time
@@ -91,6 +111,9 @@ action:
           - <<: *select_schedule
             data:
               option: "energie"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "opkomen"
 
       - conditions:
           - condition: time
@@ -100,6 +123,9 @@ action:
           - <<: *select_schedule
             data:
               option: "ontspannen"
+          - <<: *select_schedule_dynamic
+            data:
+              option: "ontladen"
 
     default:
       - <<: *select_schedule

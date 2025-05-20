@@ -1,7 +1,7 @@
 """
 Sensor component for waste pickup dates from dutch and belgium waste collectors
 Original Author: Pippijn Stortelder
-Current Version: 5.4.3 20240918
+Current Version: 5.6.3 20250206
 20230705 - Added support for Afval3xBeter
 20230822 - Fix icon for papier-pmd
 20230927 - Fix ZRD API
@@ -33,6 +33,14 @@ Current Version: 5.4.3 20240918
 20240911 - Fix API url for Cyclus and Montfoort
 20240917 - Fix API url for RyclycleApp
 20240918 - Add support for Sliedrecht
+20241205 - Add support for Saver
+20241205 - Refactor sensor.py
+20241206 - Fix bugs
+20241209 - Fix attributes and date object
+20250106 - Added support for Straatbeeld
+20250116 - Fix for Burgerportaal
+20250206 - Keep current info if data retrieval has failed
+20250304 - Fix for RWM API
 
 Example config:
 Configuration.yaml:
@@ -69,7 +77,7 @@ from .const import DOMAIN, PLATFORM_SCHEMA, CONF_ID
 from .API import get_wastedata_from_config
 
 
-__version__ = "5.4.3"
+__version__ = "5.6.3"
 
 
 _LOGGER = logging.getLogger(__name__)

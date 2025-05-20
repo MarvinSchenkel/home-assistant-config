@@ -3,4 +3,5 @@
 binary_sensor:
   name: someone_in_bed
   state: >
-    {{ is_state("binary_sensor.presence_bed_laura", "on") }}
+    {{ is_state("binary_sensor.presence_bed_laura", "on")
+        or is_state("binary_sensor.presence_bed_marvin", "on") }}

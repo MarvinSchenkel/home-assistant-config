@@ -7,12 +7,9 @@ max_exceeded: silent
 id: a63e7f88-b3fd-4628-a4d1-327070e0522b
 
 trigger:
-  - platform: event
-    event_type: zwave_js_value_notification
-    event_data:
-      device_id: d2facfeac2ccc4f9eb4da6139c01da41
-      value: 14
-    id: "small_bedroom_double_click"
+  - platform: state
+    entity_id:
+      - event.hue_tap_dial_switch_small_bedroom_button_4
 
   - platform: state
     entity_id:
@@ -27,8 +24,11 @@ trigger:
 action:
   choose:
     - conditions:
-        - condition: trigger
-          id: "small_bedroom_double_click"
+        - condition: state
+          entity_id:
+            - event.hue_tap_dial_switch_small_bedroom_button_4
+          attribute: "event_type"
+          state: "repeat"
         - condition: state
           entity_id:
             - input_select.smallbedroom_current_cover_scene
@@ -39,8 +39,15 @@ action:
             entity_id: scene.smallbedroom_cover_open
 
     - conditions:
-        - condition: trigger
-          id: "small_bedroom_double_click"
+        - condition: state
+          match: any
+          entity_id:
+            - event.hue_tap_dial_switch_small_bedroom_button_1
+            - event.hue_tap_dial_switch_small_bedroom_button_2
+            - event.hue_tap_dial_switch_small_bedroom_button_3
+            - event.hue_tap_dial_switch_small_bedroom_button_4
+          attribute: "event_type"
+          state: "repeat"
         - condition: state
           entity_id:
             - input_select.smallbedroom_current_cover_scene

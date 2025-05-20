@@ -41,6 +41,7 @@ trigger:
     entity_id:
       - binary_sensor.everyone_left_home
       - binary_sensor.house_mode_everyone_at_home_working
+      - input_boolean.setting_automatic_vacuum
     from: "on"
     to: "off"
 
@@ -66,6 +67,10 @@ action:
             entity_id:
               - input_boolean.setting_guest_mode
             state: "off"
+          - alias: "Only start when the setting is enabled"
+            condition: state
+            entity_id: input_boolean.setting_automatic_vacuum
+            state: "on"
         sequence:
           - *start
 

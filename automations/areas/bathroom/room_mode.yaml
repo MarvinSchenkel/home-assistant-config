@@ -1,16 +1,55 @@
 ---
 alias: areas_bathroom_room_mode
 description: Determine the room mode, syncing it to the master bedroom for now
-mode: queued
+mode: restart
 id: 538f6d3e-13a6-44f5-b7d5-e04b08403743
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
 
-action:
-  - service: input_select.select_option
+  - trigger: state
     entity_id: input_select.bathroom_room_mode
-    data:
-      option: "{{ states('input_select.master_bedroom_room_mode') }}"
+    to: "Spa"
+    id: "spa_mode_on"
+
+  - trigger: device
+    device_id: 83b62358aeb49c31df79296b008b5045
+    domain: zha
+    type: remote_button_short_press
+    subtype: button_1
+    id: "bath_button_single_press"
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "bath_button_single_press"
+          - not:
+              - condition: state
+                entity_id: input_select.bathroom_room_mode
+                state: "Spa"
+        sequence:
+          - action: input_select.select_option
+            entity_id: input_select.bathroom_room_mode
+            data:
+              option: "Spa"
+
+      - conditions:
+          - condition: trigger
+            id: "spa_mode_on"
+        sequence:
+          # Revert to previous mode after an hour
+          - delay:
+              minutes: 60
+          - action: input_select.select_option
+            entity_id: input_select.bathroom_room_mode
+            data:
+              option: "{{ trigger.from_state.state }}"
+
+    default:
+      - action: input_select.select_option
+        entity_id: input_select.bathroom_room_mode
+        data:
+          option: "{{ states('input_select.master_bedroom_room_mode') }}"

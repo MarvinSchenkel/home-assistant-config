@@ -20,4 +20,6 @@ action:
       receivers:
         - "marvin"
         - "laura"
+        - "intercom"
+      emoji: "🗑️"
       message: "Morgen wordt {{ states('sensor.rmn_next_garbage_pickup') }} opgehaald!"

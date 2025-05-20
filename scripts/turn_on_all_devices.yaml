@@ -4,7 +4,7 @@ mode: single
 sequence:
   - if:
       - condition: state
-        entity_id: media_player.mass_all_devices
+        entity_id: '{{ states("sensor.mass_media_entity") }}'
         state:
           - idle
           - "off"
@@ -13,5 +13,5 @@ sequence:
       - service: media_player.media_play
         data: {}
         target:
-          entity_id: media_player.mass_all_devices
+          entity_id: '{{ states("sensor.mass_media_entity") }}'
   - delay: "00:02:00"

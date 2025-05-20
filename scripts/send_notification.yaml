@@ -11,6 +11,8 @@ fields:
     description: The message that needs to be sent to the receivers
   title:
     description: Title of the message
+  emoji:
+    description: The emoji to be used for the mobile notification
   receivers:
     description: List of people that need to receive the notification
   type:
@@ -18,11 +20,7 @@ fields:
   image:
     description: (Optional) Image URL to show in the notification
   video:
-    description: (Optional) Video URL to show in the notificaiton
-  intercom_devices:
-    description: >
-      List of sonos devices to broadcast the message to
-      (only used when one of the receivers is 'intercom')
+    description: (Optional) Video URL to show in the notification
 
 variables:
   type: "{{ type | default('normal') }}"
@@ -55,11 +53,43 @@ sequence:
                 - service: notify.mancave_tv
                   continue_on_error: true
                   data:
-                    message: "{{ message }}"
+                    message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ title }}"
                     data:
                       image: "{{ image }}"
                       video: "{{ video }}"
+
+        # Send notification to the intercom via TTS and MA
+        # Check woonkamer wakkker
+        - choose:
+            - conditions:
+                - "{{ receiver == 'intercom' }}"
+              sequence:
+                - if:
+                    - condition: state
+                      entity_id: input_select.livingroom_room_mode
+                      state: "Wakker"
+                    - not:
+                        - condition: state
+                          entity_id: media_player.living_room_android
+                          state: "on"
+                  then:
+                    - action: conversation.process
+                      data:
+                        agent_id: conversation.chatgpt
+                        text: >-
+                          Herschrijf de content van de volgende smart home notificatie en geef er
+                           je eigen draai aan. Antwoord alleen met de content tussen " ":
+                          {{ message }}
+                      response_variable: response
+                    - action: tts.speak
+                      target:
+                        entity_id: tts.openai_gpt_4o_mini_tts
+                      data:
+                        cache: true
+                        language: nl
+                        message: "{{ response.response.speech.plain.speech.lower() }}"
+                        media_player_entity_id: '{{ states("sensor.mass_media_entity") }}'
 
         # Send mobile notifications
         - choose:
@@ -71,7 +101,7 @@ sequence:
               sequence:
                 - service: notify.mobile_app_marvins_iphone_13_nieuw
                   data:
-                    message: "{{ message }}"
+                    message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ title }}"
                     data:
                       image: "{{ image }}"
@@ -85,7 +115,7 @@ sequence:
               sequence:
                 - service: notify.mobile_app_iphone_van_l_a
                   data:
-                    message: "{{ message }}"
+                    message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ title }}"
                     data:
                       image: "{{ image }}"

@@ -2,6 +2,7 @@
 ignore: |
   automations.yaml
   blueprints/*/homeassistant/*.yaml
+  blueprints/*/valentinfrlch/*.yaml
   blueprints/*/seblu/*.yaml
   custom_components/
   dashboards/
@@ -16,6 +17,7 @@ ignore: |
   themes/*/*.yaml
   ui_lovelace_minimalist
   .git
+  automations/areas/attic/start_dryer.yaml
 rules:
   braces:
     level: error

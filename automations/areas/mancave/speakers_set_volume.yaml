@@ -1,0 +1,15 @@
+---
+description: Set volume of the speakers based on the music schedule
+alias: areas_mancave_speakers_set_volume
+mode: queued
+id: 891d1b19-0620-48ad-a442-b8816d9483b2
+
+use_blueprint:
+  path: sonos_set_volume.yaml
+  input:
+    just_awake_volume: 8
+    early_morning_volume: 12
+    morning_volume: 12
+    day_volume: 15
+    evening_volume: 8
+    sonos: media_player.mass_mancave_wiim_amp

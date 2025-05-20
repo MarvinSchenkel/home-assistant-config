@@ -8,8 +8,8 @@ use_blueprint:
   path: group_speakers.yaml
   input:
     presence_entity: binary_sensor.presence_bathroom
-    target_media_player: media_player.sonos_bathroom
-    no_presence_wait: 75
+    target_media_player: media_player.mass_sonos_bathroom
+    no_presence_wait: 90
     custom_conditions:
       - condition: state
         entity_id:

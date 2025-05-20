@@ -10,29 +10,22 @@ max_exceeded: silent
 id: 028db081-471a-4fee-8373-844eca4943a9
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
-      - weather.openweathermap
     from: ~
 
-  - platform: numeric_state
+  - trigger: state
     entity_id:
-      - sensor.openweathermap_wind_speed
-    below: 6.0
+      - binary_sensor.weather_can_close_sunscreen
 
-  - platform: numeric_state
-    entity_id:
-      - sensor.openweathermap_wind_speed
-    above: 6.0
-
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_azimuth
     above: 285
@@ -42,27 +35,27 @@ variables:
   anchors:
     - &sunscreen_up
       alias: "Open the sunscreen"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id:
           - scene.garden_cover_open
 
     - &sunscreen_down
       alias: "Close the sunscreen"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id:
           - scene.garden_cover_sunblock
 
     - &manual_control_on
       alias: "Set manual control to on, so the sunscreen stays closed"
-      service: input_boolean.turn_on
+      action: input_boolean.turn_on
       target:
         entity_id: input_boolean.sunscreen_manual_control
 
     - &manual_control_off
       alias: "Reset manual control, so the sunscreen stay closed"
-      service: input_boolean.turn_off
+      action: input_boolean.turn_off
       target:
         entity_id: input_boolean.sunscreen_manual_control
 
@@ -73,14 +66,10 @@ action:
           - or:
               - condition: trigger
                 id: "sun_gone"
-              - condition: numeric_state
-                entity_id:
-                  - sensor.openweathermap_wind_speed
-                above: 6.0
               - condition: state
                 entity_id:
-                  - weather.openweathermap
-                state: "rainy"
+                  - binary_sensor.weather_can_close_sunscreen
+                state: "off"
         sequence:
           *sunscreen_up
 
@@ -103,3 +92,7 @@ action:
 
     default:
       - *sunscreen_up
+
+  # Prevent race condition
+  - delay:
+      seconds: 10

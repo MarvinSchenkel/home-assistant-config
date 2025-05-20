@@ -5,12 +5,18 @@ mode: queued
 id: C90E1ED3-EF56-4F15-A5C7-47F1D75B1F85
 
 trigger:
+  - platform: homeassistant
+    event: start
+
+  - platform: event
+    event_type: automation_reloaded
+
   - platform: state
-    entity_id: binary_sensor.bathroom_flood
+    entity_id: binary_sensor.bathroom_shower_detected
     to: "on"
 
   - platform: state
-    entity_id: binary_sensor.bathroom_flood
+    entity_id: binary_sensor.bathroom_shower_detected
     to: "off"
     for:
       minutes: 15
@@ -76,23 +82,11 @@ variables:
     - &shower_on
       alias: "When someone is taking a shower"
       condition: state
-      entity_id: binary_sensor.bathroom_flood
+      entity_id: binary_sensor.bathroom_shower_detected
       state: "on"
 
 action:
   choose:
-    - alias: "Turn ventilation off when someone is sleeping and the shower is off"
-      conditions:
-        - alias: "When someone is asleep"
-          condition: state
-          entity_id:
-            - binary_sensor.house_mode_someone_asleep
-          state: "on"
-        - condition: not
-          conditions:
-            - *shower_on
-      sequence:
-        - *turn_off
 
     - alias: "Check if someone is cooking"
       conditions:

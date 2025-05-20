@@ -38,11 +38,8 @@ action:
         - "marvin"
         - "laura"
         - "intercom"
-      intercom_devices:
-        - media_player.sonos_livingroom
-        - media_player.sonos_bathroom
-        - media_player.sonos_master_bedroom
+      emoji: "🛒"
       message: >-
-        🛒 Picnic bezorgt {{ day_name }} tussen
+        Picnic bezorgt {{ day_name }} tussen
         {{ eta_start | timestamp_custom('%H:%M') }}
         en {{ eta_end | timestamp_custom('%H:%M') }}!

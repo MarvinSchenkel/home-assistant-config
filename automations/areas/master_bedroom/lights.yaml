@@ -7,9 +7,6 @@ description: >-
      - Turn on to bright and cool during the day
      - Turn on less bright and warmer in the evening
 
-  - When I get in bed after 9:30pm, the ceiling light turns off and the bedside table
-    lights dim, setting a nice scene for going to sleep.
-
   - Whenever we go to sleep, the lights stay off
 
   - We can still turn the bedside table lights on/off, even when we're in sleep mode
@@ -23,29 +20,29 @@ trace:
 
 variables:
   current_light_scene: >-
-    'scene.masterbedroom_lights_{{ states("input_select.current_light_schedule") }}'
+     scene.masterbedroom_lights_{{ states("input_select.current_light_schedule") }}
   anchors:
     - &manual_control_on
       alias: "Set bedside left as manually controlled"
-      service: input_boolean.turn_on
+      action: input_boolean.turn_on
       target:
         entity_id: input_boolean.masterbedroom_manual_control
 
     - &manual_control_off
       alias: "Turn manual control off"
-      service: input_boolean.turn_off
+      action: input_boolean.turn_off
       target:
         entity_id: input_boolean.masterbedroom_manual_control
 
     - &turn_off
       alias: "Turn the lights off"
-      service: light.turn_off
+      action: light.turn_off
       data:
         entity_id: light.master_bedroom_lights
         transition: 5
 
     - &turn_on
-      service: scene.turn_on
+      action: scene.turn_on
       data:
         transition: 1
 
@@ -72,53 +69,77 @@ variables:
       condition: trigger
       id: light_schedule_change
 
+    - &condition_someone_in_bed
+      alias: "Check if someone is in bed, indicating lights need to dim"
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.someone_in_bed
+          state: "on"
+          for:
+            seconds: 10
+        - condition: time
+          after: "21:00:00"
+
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_master_bedroom
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
-    to: "Net wakker"
+    to: "Wakker"
+    id: "house_mode_awake"
 
-  - platform: state
+  - trigger: state
+    entity_id:
+      - input_select.master_bedroom_room_mode
+    to:
+      - "Net wakker"
+
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
     to: "Slaap"
     id: "house_mode_someone_asleep"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_master_bedroom
     to: "off"
     for:
       seconds: 60
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.master_bedroom_is_dark
-      - input_select.master_bedroom_room_mode
       - input_select.bedroom_current_cover_scene
 
-  - platform: event
+  - trigger: event
     event_type: "zha_event"
     event_data:
       device_id: "5256a27d772442b3a6065b595fc4a327"
       command: "single"
     id: "button_laura_single"
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
-  - platform: state
+  - trigger: state
+    entity_id: binary_sensor.someone_in_bed
+    to: "on"
+    for:
+      seconds: 10
+
+  - trigger: state
     entity_id:
       - light.master_bedroom_lights
     from: "on"
@@ -134,8 +155,11 @@ action:
   - choose:
       - alias: "Reset manual control at the start of the day"
         conditions:
-          - condition: trigger
-            id: "reset"
+          - or:
+              - condition: trigger
+                id: "reset"
+              - condition: trigger
+                id: "house_mode_awake"
         sequence:
           - *manual_control_off
 
@@ -152,7 +176,7 @@ action:
         sequence:
           - *manual_control_on
           - alias: "Toggle the light"
-            service: light.toggle
+            action: light.toggle
             data:
               entity_id: light.master_bedroom_left
               brightness_pct: 3
@@ -171,7 +195,7 @@ action:
         sequence:
           - *manual_control_on
           - alias: "Toggle the light"
-            service: light.toggle
+            action: light.toggle
             data:
               entity_id: light.master_bedroom_right
               brightness_pct: 3
@@ -213,14 +237,21 @@ action:
 
       - alias: "Turn lights to dim when we just woke up (overriding light schedule)"
         conditions:
-          - <<: *condition_is_room_mode
-            state: "Net wakker"
-          - *condition_is_dark
-          - *condition_is_presence_detected
+          - or:
+              - and:
+                  - <<: *condition_is_room_mode
+                    state: "Net wakker"
+                  - *condition_is_dark
+                  - *condition_is_presence_detected
+              - and:
+                  - <<: *condition_is_room_mode
+                    state: "Wakker"
+                  - *condition_is_dark
+                  - *condition_someone_in_bed
         sequence:
           - <<: *turn_on
             target:
-              entity_id: scene.masterbedroom_lights_rusten
+              entity_id: scene.masterbedroom_lights_nachtlampje
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:

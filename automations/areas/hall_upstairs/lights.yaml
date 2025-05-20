@@ -6,7 +6,7 @@ id: 1bc47338-f273-4ec5-b45f-ca05d19434d5
 
 variables:
   current_light_scene: >-
-    'scene.hallupstairs_lights_{{ states("input_select.current_light_schedule") }}'
+    scene.hallupstairs_lights_{{ states("input_select.current_light_schedule") }}
   anchors:
     - &condition_is_presence_detected
       condition: state

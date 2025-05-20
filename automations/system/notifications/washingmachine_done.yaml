@@ -16,5 +16,7 @@ action:
       receivers:
         - "marvin"
         - "laura"
+        - "intercom"
+      emoji: "🧼"
       message: >
-        🧼 De wasmachine is klaar
+        De wasmachine is klaar

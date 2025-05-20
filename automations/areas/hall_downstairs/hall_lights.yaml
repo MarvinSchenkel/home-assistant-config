@@ -6,7 +6,7 @@ id: 797b07af-7b1f-4c4f-bd8f-be9708c64e63
 
 variables:
   current_light_scene: >-
-    'scene.halldownstairs_lights_{{ states("input_select.current_light_schedule") }}'
+    scene.halldownstairs_lights_{{ states("input_select.current_light_schedule") }}
   anchors:
     - &condition_is_presence_detected
       condition: state
@@ -51,7 +51,10 @@ trigger:
     entity_id: binary_sensor.presence_hall_downstairs
     to: "off"
     for:
-      seconds: 40
+      seconds: 60
+
+  - platform: state
+    entity_id: binary_sensor.hall_is_dark
 
   - platform: state
     entity_id: input_select.current_light_schedule

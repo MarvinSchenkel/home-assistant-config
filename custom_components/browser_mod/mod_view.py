@@ -1,4 +1,7 @@
-from homeassistant.components.frontend import add_extra_js_url
+import json
+from homeassistant.core import HomeAssistant
+from homeassistant.components.frontend import add_extra_js_url, async_register_built_in_panel
+from homeassistant.components.http import StaticPathConfig
 
 from .const import FRONTEND_SCRIPT_URL, SETTINGS_PANEL_URL
 
@@ -6,22 +9,39 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+def get_version(hass: HomeAssistant):
+    with open(hass.config.path("custom_components/browser_mod/manifest.json"), "r") as fp:
+        manifest = json.load(fp)
+        return manifest["version"]
 
-async def async_setup_view(hass):
+async def async_setup_view(hass: HomeAssistant):
+
+    version = await hass.async_add_executor_job(get_version, hass)
 
     # Serve the Browser Mod controller and add it as extra_module_url
-    hass.http.register_static_path(
-        FRONTEND_SCRIPT_URL,
-        hass.config.path("custom_components/browser_mod/browser_mod.js"),
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                FRONTEND_SCRIPT_URL,
+                hass.config.path("custom_components/browser_mod/browser_mod.js"),
+                True,
+            )
+        ]
     )
-    add_extra_js_url(hass, FRONTEND_SCRIPT_URL)
+    add_extra_js_url(hass, FRONTEND_SCRIPT_URL + "?" + version)
 
     # Serve the Browser Mod Settings panel and register it as a panel
-    hass.http.register_static_path(
-        SETTINGS_PANEL_URL,
-        hass.config.path("custom_components/browser_mod/browser_mod_panel.js"),
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                SETTINGS_PANEL_URL,
+                hass.config.path("custom_components/browser_mod/browser_mod_panel.js"),
+                True,
+            )
+        ]
     )
-    hass.components.frontend.async_register_built_in_panel(
+    async_register_built_in_panel(
+        hass=hass,
         component_name="custom",
         sidebar_title="Browser Mod",
         sidebar_icon="mdi:server",
@@ -30,7 +50,7 @@ async def async_setup_view(hass):
         config={
             "_panel_custom": {
                 "name": "browser-mod-panel",
-                "js_url": SETTINGS_PANEL_URL,
+                "js_url": SETTINGS_PANEL_URL + "?" + version,
             }
         },
     )
@@ -57,7 +77,7 @@ async def async_setup_view(hass):
                 await resources.async_create_item(
                     {
                         "res_type": "module",
-                        "url": FRONTEND_SCRIPT_URL + "?automatically-added",
+                        "url": FRONTEND_SCRIPT_URL + "?automatically-added" + "&" + version,
                     }
                 )
             elif getattr(resources, "data", None) and getattr(
@@ -66,6 +86,7 @@ async def async_setup_view(hass):
                 resources.data.append(
                     {
                         "type": "module",
-                        "url": FRONTEND_SCRIPT_URL + "?automatically-added",
+                        "url": FRONTEND_SCRIPT_URL + "?automatically-added" + "&" + version,
+
                     }
                 )

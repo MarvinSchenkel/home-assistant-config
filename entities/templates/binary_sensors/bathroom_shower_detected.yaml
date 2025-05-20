@@ -1,0 +1,14 @@
+---
+binary_sensor:
+  name: bathroom_shower_detected
+  unique_id: def81e8f-a991-42b9-b6c0-f78e679c5190
+  delay_off:
+    minutes: 15
+  state: >
+    {%-
+      if states("sensor.bathroom_humidity_change_min") | float >= 6.0
+    -%}
+      on
+    {%- else -%}
+      off
+    {%- endif -%}

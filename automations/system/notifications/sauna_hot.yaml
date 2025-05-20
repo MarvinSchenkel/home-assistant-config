@@ -17,5 +17,7 @@ action:
       receivers:
         - "marvin"
         - "laura"
+        - "intercom"
       type: "home_only"
-      message: "🥵 De sauna is nu {{ states('sensor.sauna_temperature') }}°C!"
+      emoji: "🥵"
+      message: "De sauna is nu {{ states('sensor.sauna_temperature') | round(0) }}°C!"

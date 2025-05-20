@@ -7,13 +7,13 @@ id: 7f94ed28-03ab-4dbf-b509-973f867931a9
 mode: queued
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
       - input_select.music_source
 
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
     id: "ha_start"
 
@@ -29,12 +29,16 @@ variables:
     - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
   morning_music:
     - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
-    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"  # Ambient / Relax
+    # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
   day_music:
-    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
-    - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM"
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"  # Ambient / Reax
+    - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM"  # Anjuna
+    # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
+    # - "apple_music://playlist/p.06aW3O9sVkp4Pzr" # Anjuna
   evening_music:
-    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"  # Ambient / Relax
+    # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
   christmas_music:
     - "Christmas Hits"
 
@@ -59,7 +63,15 @@ variables:
     {% endif %}
   anchors:
     - &replace_music
-      service: mass.play_media
+      action: music_assistant.play_media
+      data:
+        media_id: "{{ music_to_play }}"
+        enqueue: replace
+        radio_mode: "{{ radio_mode }}"
+      target:
+        entity_id: "{{ mass_entity }}"
+    - &replace_next_music
+      action: music_assistant.play_media
       data:
         media_id: "{{ music_to_play }}"
         enqueue: replace_next
@@ -67,7 +79,7 @@ variables:
       target:
         entity_id: "{{ mass_entity }}"
     - &add_music
-      service: mass.play_media
+      action: music_assistant.play_media
       data:
         media_id: "{{ music_to_play }}"
         enqueue: add
@@ -92,10 +104,10 @@ action:
       - "{{ not is_state(mass_entity, 'playing') }}"
       - "{{ active_schedule == 'just_awake' }}"
     then:
-      - service: media_player.clear_playlist
+      - action: media_player.clear_playlist
         target:
           entity_id: "{{ mass_entity }}"
-  - *replace_music
+  - *replace_next_music
   - if:
       - "{{ now().month == 12 and now().day > 8 and now().day < 27 }}"
       - "{{ active_schedule in ['morning', 'day'] }}"
@@ -106,7 +118,7 @@ action:
       - *add_music
       - *add_music
       - *add_music
-      - service: mass.play_media
+      - action: music_assistant.play_media
         data:
           media_id: "{{ christmas_music }}"
           enqueue: add

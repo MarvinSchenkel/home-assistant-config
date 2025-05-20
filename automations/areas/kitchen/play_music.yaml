@@ -1,60 +1,59 @@
 ---
 description: >
   Automatically play music in the living room
-alias: areas_livingroom_play_music
+alias: areas_kitchen_play_music
 id: bdbbd6e8-fb02-4777-980e-dffd9865995c
 mode: single
 trace:
   stored_traces: 25
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_house
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.livingroom_room_mode
     for:
       seconds: 15
 
-  - platform: state
+  - trigger: state
     entity_id:
       - media_player.living_room_android
     to: "off"
     for:
-      minutes: 7
+      minutes: 5
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_house
     to: "off"
     for:
       seconds: 900
 
-  - platform: state
+  - trigger: state
     entity_id:
       - media_player.living_room_android
     to: "on"
-    id: "tv_input_selected"
 
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_boolean.setting_automatic_music
     id: "setting_automatic_music"
     to: "off"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_boolean.setting_automatic_music
     to: "on"
     for:
       seconds: 15
 
-  - platform: time
+  - trigger: time
     at:
       - "07:00:30"
       - "21:30:00"
@@ -62,9 +61,23 @@ trigger:
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
+    - &condition_watching_tv
+      alias: "We're watching TV"
+      condition: state
+      entity_id:
+        - media_player.living_room_android
+      state: "on"
+
     - &play_media
       alias: "Start playing music on the master group"
-      service: media_player.media_play
+      action: media_player.media_play
+      data: {}
+      target:
+        entity_id: "{{ mass_entity }}"
+
+    - &turn_on
+      alias: "Ensure the media player is on"
+      action: media_player.turn_on
       data: {}
       target:
         entity_id: "{{ mass_entity }}"
@@ -79,8 +92,24 @@ variables:
 
     - &pause
       alias: "Pause the player"
-      service: media_player.media_pause
+      action: media_player.media_pause
       data: {}
+      target:
+        entity_id: "{{ mass_entity }}"
+
+    - &mute
+      alias: "Mute the player"
+      action: media_player.volume_mute
+      data:
+        is_volume_muted: true
+      target:
+        entity_id: "{{ mass_entity }}"
+
+    - &unmute
+      alias: "Unmute the player"
+      action: media_player.volume_mute
+      data:
+        is_volume_muted: false
       target:
         entity_id: "{{ mass_entity }}"
 
@@ -92,6 +121,18 @@ action:
                 after: "21:30:00"
               - condition: time
                 before: "07:00:00"
+              - alias: "No presence is detected"
+                condition: state
+                entity_id:
+                  - binary_sensor.presence_house
+                state: "off"
+                for:
+                  seconds: 900
+              - alias: "Or we switched off automatic music"
+                condition: state
+                entity_id:
+                  - input_boolean.setting_automatic_music
+                state: "off"
         sequence:
           - *pause
 
@@ -101,49 +142,31 @@ action:
               - binary_sensor.presence_house
               - input_boolean.setting_automatic_music
             state: "on"
-          - alias: "Time must be between reasonable hours"
-            condition: time
-            after: "07:00:00"
-            before: "21:30:00"
-          - alias: "We're not watching TV"
-            condition: state
-            entity_id:
-              - media_player.living_room_android
-            state: "off"
+          - not:
+              - *condition_watching_tv
           - "{{ not is_state(mass_entity, 'playing') }}"
           - not:
               - condition: state
                 entity_id:
                   - input_select.livingroom_room_mode
                 state: "Slaap"
-          - not:
-              - condition: trigger
-                id: "tv_input_selected"
         sequence:
-          - *set_shuffle
-          - *play_media
+          - if:
+              - "{{ is_state(mass_entity, 'off') }}"
+            then:
+              - *turn_on
+          - if:
+              - "{{ not is_state(mass_entity, 'playing') }}"
+            then:
+              - *play_media
+          - if:
+              - "{{ is_state_attr(mass_entity, 'is_volume_muted', true) }}"
+            then: *unmute
           - delay:
               seconds: 10
 
       - conditions:
-          - or:
-              - alias: "No presence is detected"
-                condition: state
-                entity_id:
-                  - binary_sensor.presence_house
-                state: "off"
-                for:
-                  seconds: 900
-              - alias: "Or we switched off automatic music"
-                # and:
-                #   - condition: trigger
-                #     id: "setting_automatic_music"
-                condition: state
-                entity_id:
-                  - input_boolean.setting_automatic_music
-                state: "off"
-              - condition: trigger
-                id: "tv_input_selected"
+          - *condition_watching_tv
           - "{{ not is_state(mass_entity, 'off') }}"
         sequence:
-          - *pause
+          - *mute

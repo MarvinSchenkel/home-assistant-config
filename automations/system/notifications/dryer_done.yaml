@@ -1,0 +1,21 @@
+---
+description: Send a notification when the dryer is done
+alias: notification_dryer_done
+mode: single
+id: 671e238e-50a9-491c-85a6-d2ce824d9745
+
+trigger:
+  - trigger: numeric_state
+    entity_id: sensor.aeg_droger_timetoend
+    below: 1
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+        - "intercom"
+      emoji: "💨"
+      message: >
+        De droger is klaar

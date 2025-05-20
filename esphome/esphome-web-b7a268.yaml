@@ -25,7 +25,7 @@ light:
     rgb_order: GRB
     pin: 27
     num_leds: 1
-    rmt_channel: 0
+    rmt_symbols: 96
     chipset: SK6812
     id: status_led
     name: ${friendly_name} Light

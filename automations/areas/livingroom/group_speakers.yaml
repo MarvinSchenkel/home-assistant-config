@@ -1,0 +1,104 @@
+---
+description: >
+  Automatically play music in the living room
+alias: areas_livingroom_group_speakers
+id: 4d2d47e5-cf61-40e3-966e-37806dcc2428
+mode: single
+trace:
+  stored_traces: 25
+
+trigger:
+  - trigger: state
+    entity_id:
+      - input_select.livingroom_room_mode
+    for:
+      seconds: 15
+
+  - trigger: state
+    entity_id:
+      - media_player.living_room_android
+    to: "off"
+
+  - trigger: state
+    entity_id: binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      seconds: 900
+
+  - trigger: state
+    entity_id: binary_sensor.presence_livingroom
+    to: "on"
+
+  - trigger: state
+    entity_id:
+      - media_player.living_room_android
+    to: "on"
+
+  - trigger: homeassistant
+    event: start
+
+variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
+  anchors:
+    - &condition_watching_tv
+      alias: "We're watching TV"
+      condition: state
+      entity_id:
+        - media_player.living_room_android
+      state: "on"
+
+    - &group
+      alias: "Start playing music on the master group"
+      action: media_player.join
+      target:
+        entity_id: "{{ mass_entity }}"
+      data:
+        group_members:
+          - media_player.mass_woonkamer_nad
+
+    - &ungroup
+      alias: "Ensure the media player is on"
+      action: media_player.unjoin
+      data: {}
+      target:
+        entity_id: media_player.mass_woonkamer_nad
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_livingroom
+            state: "on"
+          - not:
+              *condition_watching_tv
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.mass_woonkamer_nad
+                state: "playing"
+          - not:
+              - condition: state
+                entity_id:
+                  - input_select.livingroom_room_mode
+                state: "Slaap"
+        sequence:
+          - *group
+
+      - conditions:
+          - or:
+              - alias: "No presence is detected"
+                condition: state
+                entity_id:
+                  - binary_sensor.presence_livingroom
+                state: "off"
+                for:
+                  seconds: 900
+              - *condition_watching_tv
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.mass_woonkamer_nad
+                state: "off"
+        sequence:
+          - *ungroup

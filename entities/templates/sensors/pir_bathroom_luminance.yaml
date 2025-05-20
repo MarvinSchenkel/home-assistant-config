@@ -1,0 +1,15 @@
+---
+# Grab a weighted average of the two sensors for a good indication on the luminance level
+sensor:
+  name: pir_bathroom_luminance
+  unique_id: cac2987b-cbfb-481e-bb82-97dc0833652c
+  state: >
+    {{
+      (
+        (
+          states("sensor.pir_bathroom_door_luminance") | float
+          + states("sensor.pir_bathroom_door_luminance") | float
+          + states("sensor.pir_bathroom_sink_luminance") | float
+        ) / 3
+      ) | round(1)
+    }}

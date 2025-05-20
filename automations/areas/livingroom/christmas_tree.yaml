@@ -11,6 +11,9 @@ trigger:
   - platform: event
     event_type: automation_reloaded
 
+  - platform: time
+    at: "20:00:00"
+
   - platform: state
     entity_id:
       - binary_sensor.presence_livingroom
@@ -37,23 +40,35 @@ variables:
 
     - &turn_off
       alias: "Turn the christmas tree off"
-      service: switch.turn_off
+      service: light.turn_off
       target:
-        entity_id: switch.christmas_tree
+        entity_id: light.christmas_tree
 
     - &turn_on
-      alias: "Turn on the lights"
-      service: switch.turn_on
-      target:
-        entity_id: switch.christmas_tree
+      alias: "Turn on the lights on"
+      service: scene.turn_on
+      data:
+        transition: 2
 
 action:
   - choose:
       - alias: "Turn on the christmas tree."
         conditions:
           - *condition_is_presence_detected
+          - condition: time
+            after: "20:00:00"
         sequence:
-          - *turn_on
+          - <<: *turn_on
+            target:
+              entity_id: 'scene.christmastree_lights_evening'
+
+      - alias: "Turn on the christmas tree."
+        conditions:
+          - *condition_is_presence_detected
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: 'scene.christmastree_lights_day'
 
     default:
       - *turn_off

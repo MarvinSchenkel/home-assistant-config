@@ -1,7 +1,0 @@
----
-# Convert the useless integers from the flood sensor to on/off
-binary_sensor:
-  name: bathroom_flood
-  unique_id: 4ec362a9-468b-4174-9236-1f84ae71b188
-  state: >
-    {{  states("binary_sensor.flood_sensor_water_alarm_water_leak_detected") }}

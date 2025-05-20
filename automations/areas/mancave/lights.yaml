@@ -47,39 +47,39 @@ variables:
 
     - &turn_off
       alias: "Turn lights off"
-      service: light.turn_off
+      action: light.turn_off
       data:
         entity_id: light.mancave
         transition: 5
 
     - &turn_on
       alias: "Turn on scene"
-      service: scene.turn_on
+      action: scene.turn_on
       data:
         transition: 1
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_mancave
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_mancave
     to: "off"
     for:
       seconds: 300
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.mancave_is_dark
       - input_select.mancave_room_mode
@@ -117,9 +117,9 @@ action:
         sequence:
           - variables:
               game_scenes:
-                - 'arctischedageraad'
-                - 'blauweplaneet'
-                - 'sterrenlicht'
+                - "arctischedageraad"
+                - "blauweplaneet"
+                - "sterrenlicht"
               game_scene: "{{ game_scenes | random }}"
           - <<: *turn_on
             target:

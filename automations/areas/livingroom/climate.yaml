@@ -58,9 +58,10 @@ variables:
 
     - &windows_and_doors_closed
       alias: "Verify whether the doors and windows are closed"
-      condition: state
-      entity_id: binary_sensor.garden_door_open
-      state: "off"
+      not:
+        - condition: state
+          entity_id: binary_sensor.garden_door_open
+          state: "on"
 
     - &warm_day_predicted
       alias: "Check if we predict it is gonna be a warm day"

@@ -1,0 +1,14 @@
+---
+# A binary sensor indicating whether we can safely close the sunscreen
+# based on the weather conditions
+binary_sensor:
+  - name: weather_can_close_sunscreen
+    unique_id: f266f85d-e254-4980-9f78-addc8b02675c
+    state: >
+      {%- if is_state("weather.openweathermap", "rainy")
+          or states("sensor.openweathermap_wind_speed") | float > 6.0
+      -%}
+        off
+      {%- else -%}
+        on
+      {%- endif -%}

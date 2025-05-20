@@ -15,6 +15,6 @@ use_blueprint:
     sonos: media_player.mass_woonkamer_nad
     custom_conditions:
       - '{{
-            state_attr("media_player.mass_nad_woonkamer", "media_title")
+            state_attr("media_player.mass_woonkamer_nad", "media_title")
             != "External Source"
         }}'

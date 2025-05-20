@@ -1,0 +1,9 @@
+---
+name: christmastree_lights_evening
+id: f2124269-b5b6-484a-8b7d-f893895cfb7d
+icon: mdi:string-lights
+entities:
+  light.christmas_tree:
+    state: "on"
+    brightness: 40
+    color_temp: 500

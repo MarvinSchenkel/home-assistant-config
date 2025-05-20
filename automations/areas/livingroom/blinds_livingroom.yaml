@@ -161,15 +161,21 @@ action:
                     entity_id:
                       - binary_sensor.sun_should_close_south_blinds
                     state: "on"
-                  - alias: Keep the heat out of the house on hot days
-                    condition: state
-                    entity_id:
-                      - binary_sensor.is_hot_day
-                    state: "on"
+                  - or:
+                      - alias: Keep the heat out of the house on hot days
+                        condition: state
+                        entity_id:
+                          - binary_sensor.is_hot_day
+                        state: "on"
+                      - alias: It's hot but we cannot close the sunscreen
+                        condition: state
+                        entity_id:
+                          - binary_sensor.weather_can_close_sunscreen
+                        state: "off"
               - and:
                   - condition: state
                     entity_id:
-                      - media_player.sony_kd_65a1
+                      - media_player.living_room_android
                     state: "on"
                   - condition: state
                     entity_id:
@@ -200,6 +206,10 @@ action:
                     entity_id: input_select.livingroom_room_mode
                     state:
                       - "Net wakker"
+                  - condition: state
+                    entity_id:
+                      - input_select.livingroom_current_cover_scene
+                    state: "halfclosed"
         sequence:
           - *cover_half_closed
 

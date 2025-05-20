@@ -58,7 +58,7 @@ trigger:
 
 variables:
   current_light_scene: >
-    'scene.livingroom_lights_{{ states("input_select.current_light_schedule") }}'
+    scene.livingroom_lights_{{ states("input_select.current_light_schedule") }}
   anchors:
     - &condition_is_presence_detected
       alias: "Is there presence in the room?"

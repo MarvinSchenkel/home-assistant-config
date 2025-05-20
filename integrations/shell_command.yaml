@@ -1,3 +1,0 @@
----
-shell_command:
-  shell_mount_nas_music: !secret shell_mount_nas_music

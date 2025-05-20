@@ -1,0 +1,34 @@
+---
+alias: areas_start_dryer
+description: Calculate the ideal moment to start drying based on solar forecast
+mode: single
+id: ae53e58d-1422-4c72-9b2d-bb4434fa7640
+
+trigger:
+  trigger: state
+  entity_id: binary_sensor.aeg_droger_doorstate
+  to: "blabla"
+
+action:
+  - action: conversation.process
+    data:
+      agent_id: conversation.chatgpt
+      text: >-
+        Ik wil mijn droger aanzetten in mijn huis waar ik zonnepanelen heb. Voorspel het ideale moment
+        om de droger te starten zodat ik zoveel mogelijk zelf opgewekte zonne energie gebruik.
+
+        Droger verbruikt: 700Wh
+        Voorspelde energie productie vandaag totaal: {{ states("sensor.energy_production_today_2") | float + states("sensor.energy_production_today_3") | float }} kWh
+        Voorspelde energie productie vandaag resterend: {{ states("sensor.energy_production_today_remaining_2") | float + states("sensor.energy_production_today_remaining") | float }} kWh
+        Voorspelde energie productie dit uur: {{  states("sensor.energy_current_hour_2") | float + states("sensor.energy_current_hour_3") | float }} kWh
+        Voorspelde energie productie volgende uur: {{ states("sensor.energy_next_hour_2") | float + states("sensor.energy_current_hour_3") | float }} kWh
+        Vermogenspiek vandaag: {{ as_local(as_datetime(states("sensor.power_highest_peak_time_today_3"))) }}
+
+        Geef je antwoord in het formaat uren:minute, dus 'HH:mm'
+    response_variable: response
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+      emoji: "💨"
+      message: '{{ response.response.speech.plain.speech.lower() }}'

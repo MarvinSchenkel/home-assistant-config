@@ -1,0 +1,13 @@
+---
+sensor:
+  - name: mass_media_entity_suffix
+    state: >-
+      {{  "_beta"
+          if (
+            is_state("media_player.mass_all_devices", "unavailable")
+            or (
+              not is_state("media_player.mass_all_devices_beta", "unavailable")
+              and states("media_player.mass_all_devices_beta") != "unknown"
+            )
+          )
+          else "" }}

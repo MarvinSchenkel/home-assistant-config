@@ -46,7 +46,7 @@ variables:
       alias: "Turn the child media player on"
       service: media_player.join
       target:
-        entity_id: media_player.sonos_kitchen
+        entity_id: media_player.mass_sonos_kitchen
       data:
         group_members:
           - !input target_media_player

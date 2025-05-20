@@ -48,7 +48,9 @@ action:
           receivers:
             - "marvin"
             - "laura"
+            - "intercom"
           type: "home_only"
+          emoji: "🍃"
           message: >-
             Het is erg warm binnen en buiten is het al afgekoeld. Zet de buitendeur
             voor wat frisse lucht!

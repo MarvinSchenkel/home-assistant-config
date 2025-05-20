@@ -7,8 +7,7 @@ id: 5b09a806-78d6-40bf-b463-06144cb5d2dd
 trigger:
   - platform: state
     entity_id:
-      - media_player.mass_all_devices
-      - media_player.mass_all_devices_beta
+      - media_player.mass_sonos_kitchen
 
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'

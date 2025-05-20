@@ -1,25 +1,4 @@
 ---
-# A binary indicator tracking whether it is light or dark in the room
-trigger:
-  - platform: numeric_state
-    entity_id:
-      - sensor.pir_master_bedroom_illuminance
-    above: 10
-    for:
-      seconds: 5
-  - platform: numeric_state
-    entity_id:
-      - sensor.pir_master_bedroom_illuminance
-    above: 100
-    for:
-      seconds: 5
-  - platform: numeric_state
-    entity_id:
-      - sensor.pir_master_bedroom_illuminance
-    below: 10
-    for:
-      seconds: 5
-
 binary_sensor:
   - name: master_bedroom_is_dark
     unique_id: c0548756-835b-4719-8539-4fbab21209bb
