@@ -3,19 +3,19 @@
 trigger:
   - platform: numeric_state
     entity_id:
-      - sensor.pir_bathroom_luminance
+      - sensor.pir_bathroom_door_luminance
     above: 15
     for:
       seconds: 5
   - platform: numeric_state
     entity_id:
-      - sensor.pir_bathroom_luminance
+      - sensor.pir_bathroom_door_luminance
     above: 90
     for:
       seconds: 5
   - platform: numeric_state
     entity_id:
-      - sensor.pir_bathroom_luminance
+      - sensor.pir_bathroom_door_luminance
     below: 15
     for:
       seconds: 5
@@ -26,10 +26,10 @@ binary_sensor:
     state: >
       {%-
         if (
-          states("sensor.pir_bathroom_luminance") | int > 15
+          states("sensor.pir_bathroom_door_luminance") | int > 15
           and is_state("light.bathroom", "off")
         )
-        or states("sensor.pir_bathroom_luminance") | int > 90
+        or states("sensor.pir_bathroom_door_luminance") | int > 90
       -%}
         off
       {%- else -%}

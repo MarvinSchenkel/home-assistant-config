@@ -23,6 +23,7 @@ trigger:
       - input_boolean.setting_manual_blinds
       - input_boolean.livingroom_cover_manual_control
       - binary_sensor.is_hot_day
+      - binary_sensor.weather_can_close_sunscreen
     from:
       - "off"
       - "on"
@@ -156,22 +157,21 @@ action:
         conditions:
           - condition: or
             conditions:
+              - alias: Keep the heat out of the house on hot days
+                condition: state
+                entity_id:
+                  - binary_sensor.is_hot_day
+                state: "on"
               - and:
+                  - alias: It's hot but we cannot close the sunscreen
+                    condition: state
+                    entity_id:
+                      - binary_sensor.weather_can_close_sunscreen
+                    state: "off"
                   - condition: state
                     entity_id:
                       - binary_sensor.sun_should_close_south_blinds
                     state: "on"
-                  - or:
-                      - alias: Keep the heat out of the house on hot days
-                        condition: state
-                        entity_id:
-                          - binary_sensor.is_hot_day
-                        state: "on"
-                      - alias: It's hot but we cannot close the sunscreen
-                        condition: state
-                        entity_id:
-                          - binary_sensor.weather_can_close_sunscreen
-                        state: "off"
               - and:
                   - condition: state
                     entity_id:

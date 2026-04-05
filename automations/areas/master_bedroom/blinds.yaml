@@ -13,13 +13,13 @@ trace:
   stored_traces: 25
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
       - input_boolean.setting_manual_blinds
@@ -32,38 +32,39 @@ trigger:
       - "off"
       - "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
     to:
       - "Slaap"
+      - "Dutje"
       - "Net wakker"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
     to: "Wakker"
     id: awake
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_elevation
     below: 1.0
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_elevation
     above: 1.0
 
-  - platform: time
+  - trigger: time
     at:
       - "19:00:00"
 
-  - platform: time
+  - trigger: time
     at: "03:00:00"
     id: "reset"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - scene.bedroom_cover_ventilating
       - scene.bedroom_cover_ventilatingnight
@@ -74,42 +75,43 @@ trigger:
     id: bedroom_blinds
 
 variables:
+  temperature_entity: "sensor.pir_master_bedroom_temperature"
   anchors:
     - &ventilating
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.bedroom_cover_ventilating
 
     - &ventilating_night
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.bedroom_cover_ventilatingnight
 
     - &closed
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.bedroom_cover_closed
 
     - &half_closed
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.bedroom_cover_halfclosed
 
     - &open
       alias: "Open the blinds"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.bedroom_cover_halfopen
 
     - &manual_control_on
       alias: "Set manual control to on, so the blinds stay closed"
-      service: input_boolean.turn_on
+      action: input_boolean.turn_on
       target:
         entity_id: input_boolean.masterbedroom_cover_manual_control
 
     - &manual_control_off
       alias: "Reset manual control, so the blinds stay closed"
-      service: input_boolean.turn_off
+      action: input_boolean.turn_off
       target:
         entity_id: input_boolean.masterbedroom_cover_manual_control
 
@@ -169,6 +171,7 @@ action:
             state:
               - "Slaap"
               - "Net wakker"
+              - "Dutje"
         sequence:
           - *ventilating_night
 
@@ -187,6 +190,8 @@ action:
             entity_id:
               - binary_sensor.is_hot_day
             state: "on"
+          # But only when it's hotter outside than inside
+          - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
         sequence:
           - *closed
 

@@ -13,6 +13,14 @@ variables:
       entity_id: binary_sensor.presence_hall_downstairs
       state: "on"
 
+    - &condition_no_presence_detected
+      alias: "No presence has been detected for a while"
+      condition: state
+      entity_id: binary_sensor.presence_hall_downstairs
+      state: "off"
+      for:
+        seconds: 60
+
     - &condition_is_dark
       condition: state
       entity_id: binary_sensor.hall_is_dark
@@ -24,43 +32,43 @@ variables:
       id: light_schedule_change
 
     - &turn_on
-      service: scene.turn_on
+      action: scene.turn_on
       alias: "Turn the hall lights on"
       data:
         transition: 1
 
     - &turn_off
-      service: light.turn_off
+      action: light.turn_off
       alias: "Turn the hall lights off"
       data:
         entity_id: light.hall_downstairs
         transition: 5
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_hall_downstairs
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_hall_downstairs
     to: "off"
     for:
       seconds: 60
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.hall_is_dark
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.livingroom_current_lights_scene
     to: "movie"
     id: "movie"
@@ -100,5 +108,10 @@ action:
             target:
               entity_id: "{{ current_light_scene }}"
 
-    default:
-      - *turn_off
+      - alias: "Turn the light off when presence is off for x-amount of minutes"
+        conditions:
+          - *condition_no_presence_detected
+        sequence:
+          - *turn_off
+
+    default: []

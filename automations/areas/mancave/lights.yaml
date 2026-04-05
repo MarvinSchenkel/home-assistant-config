@@ -5,7 +5,8 @@ mode: queued
 id: e4c284f9-2cd3-40d1-adac-e20a66eb12b9
 
 variables:
-  current_light_scene: 'scene.mancave_lights_{{ states("input_select.current_light_schedule") }}'
+  light_schedule: '{{ states("input_select.current_light_schedule") }}'
+  current_light_scene: 'scene.mancave_lights_{{ light_schedule }}'
   anchors:
     - &condition_is_presence_detected
       alias: "Check if someone is in the mancave"
@@ -58,6 +59,18 @@ variables:
       data:
         transition: 1
 
+    - &turn_on_led
+      alias: "Turn on the LED strip"
+      action: select.select_option
+      target:
+        entity_id: select.mancave_led_preset
+
+    - &turn_off_led
+      alias: "Turn off the LED strip"
+      action: light.turn_off
+      target:
+        entity_id: light.mancave_led
+
 trigger:
   - trigger: homeassistant
     event: start
@@ -96,6 +109,7 @@ action:
             state: "Slaap"
         sequence:
           - *turn_off
+          - *turn_off_led
 
       - conditions:
           - *condition_is_presence_detected
@@ -124,6 +138,9 @@ action:
           - <<: *turn_on
             target:
               entity_id: scene.mancave_lights_{{ game_scene }}
+          - <<: *turn_on_led
+            data:
+              option: '{{ game_scene }}'
 
       - conditions:
           - *condition_is_presence_detected
@@ -131,6 +148,7 @@ action:
           - *condition_tv_movie
         sequence:
           - *turn_off
+          - *turn_off_led
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:
@@ -143,6 +161,11 @@ action:
               entity_id: "{{ current_light_scene }}"
             data:
               transition: 120
+          - delay:
+              seconds: 100
+          - <<: *turn_on_led
+            data:
+              option: '{{ light_schedule }}'
 
       - conditions:
           - *condition_is_presence_detected
@@ -151,6 +174,10 @@ action:
           - <<: *turn_on
             target:
               entity_id: "{{ current_light_scene }}"
+          - <<: *turn_on_led
+            data:
+              option: '{{ light_schedule }}'
 
     default:
       - *turn_off
+      - *turn_off_led

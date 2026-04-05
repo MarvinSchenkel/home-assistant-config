@@ -1,0 +1,18 @@
+---
+binary_sensor:
+  - name: is_strong_wind
+    unique_id: 0f086a65-77a9-4092-8c66-bf00da912261
+    delay_off:
+      minutes: 5
+    delay_on:
+      minutes: 1
+    state: >
+      {% set gust_speed = states("sensor.gw3000a_wind_gust") | float(0) %}
+      {% set avg_speed = states("sensor.gw3000a_wind_speed") | float(0) %}
+      {% if gust_speed > 19.0
+        or avg_speed > 12.0
+        or (gust_speed > 15.0 and avg_speed > 7.0) %}
+        on
+      {% else %}
+        off
+      {% endif %}

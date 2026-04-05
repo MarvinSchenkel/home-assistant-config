@@ -63,6 +63,18 @@ blueprint:
       description: >
         A list of custom condititions that also have to be met before turning on
         the media player
+    custom_state_triggers:
+      name: Customer state triggers
+      default: []
+      description: >-
+        A list of entities that will be used as additional state triggers for the
+         automation
+    mute_conditions:
+      name: Mute conditions
+      default:
+        - '{{ false }}'
+      description: >
+        A list of conditions that will mute the target player when met
 
 mode: restart
 max_exceeded: silent
@@ -82,19 +94,17 @@ variables:
     {{ states('input_select.current_music_schedule') }}
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
 
-  - platform: state
-    entity_id:
-      - media_player.woonkamer
-    attribute: source
-
-  - platform: state
+  - trigger: state
     entity_id: !input sonos
     to: "playing"
+
+  - trigger: state
+    entity_id: !input custom_state_triggers
 
 condition:
   - alias: "Only control the volume when we are automating the music"
@@ -121,10 +131,37 @@ action:
           0
         {% endif %}
 
-  - if: "{{ schedule_volume | int > 0 }}"
-    then:
-      - service: media_player.volume_set
-        target:
-          entity_id: "{{ mass_entity }}"
-        data:
-          volume_level: "{{ schedule_volume | int / 100.0 }}"
+  - choose:
+      - conditions:
+          - condition: and
+            conditions: !input mute_conditions
+        sequence:
+          - if: '{{ "is_volume_muted" in states[mass_entity].attributes }}'
+            then:
+              - action: media_player.volume_mute
+                target:
+                  entity_id: "{{ mass_entity }}"
+                data:
+                  is_volume_muted: true
+            else:
+              - action: media_player.volume_set
+                target:
+                  entity_id: "{{ mass_entity }}"
+                data:
+                  volume_level: 0
+
+      - conditions: "{{ schedule_volume | int > 0 }}"
+        sequence:
+          - if: '{{ "is_volume_muted" in states[mass_entity].attributes }}'
+            then:
+              - action: media_player.volume_mute
+                target:
+                  entity_id: "{{ mass_entity }}"
+                data:
+                  is_volume_muted: false
+
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ mass_entity }}"
+            data:
+              volume_level: "{{ schedule_volume | int / 100.0 }}"

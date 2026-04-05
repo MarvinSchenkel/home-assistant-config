@@ -6,19 +6,17 @@ lovelace:
       type: module
     - url: /browser_mod.js
       type: module
-    - url: /local/community/vacuum-card/vacuum-card.js
+    - url: /local/community/mini-media-player/mini-media-player-bundle.js
       type: module
     - url: /local/community/lovelace-card-mod/card-mod.js
       type: module
-    - url: /local/community/mini-media-player/mini-media-player-bundle.js
-      type: module
     - url: /local/community/kiosk-mode/kiosk-mode.js
       type: module
-    - url: /local/community/button-card/button-card.js
+    - url: /hacsfiles/lovelace-navbar-card/navbar-card.js
       type: module
-    - url: /local/community/lovelace-layout-card/layout-card.js
+    - url: /hacsfiles/button-card/button-card.js
       type: module
-    - url: /local/community/weather-radar-card/weather-radar-card.js
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
       type: module
 
   dashboards:

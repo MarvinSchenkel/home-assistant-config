@@ -7,28 +7,33 @@ id: ae7dbcfa-03e6-44c3-bd57-26c4b64454fe
 mode: queued
 
 trigger:
-  - platform: time
+  - trigger: time
     at:
       - "07:00:00"
       - "09:00:00"
       - "11:00:00"
       - "18:00:00"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.livingroom_room_mode
       - input_boolean.setting_automatic_music
 
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
 variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
     - &select_schedule
       alias: "Select the schedule"
-      service: input_select.select_option
+      action: input_select.select_option
       target:
         entity_id: input_select.current_music_schedule
+    - &set_shuffle
+      action: media_player.shuffle_set
+      target:
+        entity_id: "{{ mass_entity }}"
 
 action:
   - choose:
@@ -50,6 +55,9 @@ action:
             after: "07:00:00"
             before: "11:00:00"
         sequence:
+          - <<: *set_shuffle
+            data:
+              shuffle: true
           - <<: *select_schedule
             data:
               option: "just_awake"
@@ -59,6 +67,9 @@ action:
             after: "07:00:00"
             before: "09:00:00"
         sequence:
+          - <<: *set_shuffle
+            data:
+              shuffle: false
           - <<: *select_schedule
             data:
               option: "early_morning"
@@ -68,6 +79,9 @@ action:
             after: "09:00:00"
             before: "11:00:00"
         sequence:
+          - <<: *set_shuffle
+            data:
+              shuffle: false
           - <<: *select_schedule
             data:
               option: "morning"
@@ -77,6 +91,9 @@ action:
             after: "11:00:00"
             before: "18:00:00"
         sequence:
+          - <<: *set_shuffle
+            data:
+              shuffle: false
           - <<: *select_schedule
             data:
               option: "day"
@@ -90,6 +107,9 @@ action:
                 entity_id: input_select.livingroom_room_mode
                 state: "Slaap"
         sequence:
+          - <<: *set_shuffle
+            data:
+              shuffle: false
           - <<: *select_schedule
             data:
               option: "evening"

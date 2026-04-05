@@ -1,0 +1,59 @@
+---
+description: >
+  Send a notification when it is hot inside and it has cooled off outside to
+  open our windows for a bit of fresh air
+alias: system_notifications_masterbedroom_windows_fresh_air
+mode: single
+max_exceeded: silent
+id: 95f2507a-3b67-4363-89f9-ba8551c95caf
+
+trigger:
+  - trigger: time
+    at: "18:00:01"
+  - trigger: numeric_state
+    entity_id:
+      - sensor.pir_master_bedroom_temperature
+    above: 21.5
+  - trigger: template
+    value_template: >
+      {{
+        (states("sensor.pir_master_bedroom_temperature") | float
+        - states("sensor.current_temperature") | float)
+        | round(2) > 1
+      }}
+
+condition:
+  - condition: time
+    after: 18:00
+
+action:
+  - if:
+      - condition: template
+        value_template: >
+          {{
+            (states("sensor.pir_master_bedroom_temperature") | float
+            - states("sensor.current_temperature") | float)
+            | round(2) > 1
+          }}
+      - condition: numeric_state
+        entity_id: sensor.pir_master_bedroom_temperature
+        above: 21.5
+      - condition: time
+        after: "18:00:00"
+        before: "23:00:00"
+
+    then:
+      - action: script.send_notification
+        data:
+          receivers:
+            - "marvin"
+            - "laura"
+            - "intercom"
+          type: "home_only"
+          emoji: "🍃"
+          message: >-
+            Het is op de grote slaapkamer warmer dan buiten.
+            Open de ramen voor wat frisse lucht!
+
+  - delay:
+      hours: 6

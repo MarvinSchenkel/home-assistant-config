@@ -20,8 +20,8 @@ trigger:
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   just_awake_music:
-    - "Classical Meditation"
-    - "Tranquil spa day"
+    - "ytmusic://playlist/RDCLAK5uy_ldLj_raotpFCQGWiQ7L-Ag5GTbGOyjgRY" # Classical Meditation
+    - "ytmusic://playlist/RDCLAK5uy_kjbesFvpAjQl3z_xUxMArIfRpubFn791o" # "Tranquil spa day"
     - "ytmusic://playlist/RDCLAK5uy_nZJzoZEBYRptA2XXskbxGTvKkevapT_F4"
   early_morning_music:
     - "ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5"
@@ -29,18 +29,18 @@ variables:
     - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
   morning_music:
     - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
-    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"  # Ambient / Relax
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
     # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
   day_music:
-    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"  # Ambient / Reax
-    - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM"  # Anjuna
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Reax
+    - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM" # Anjuna
     # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
     # - "apple_music://playlist/p.06aW3O9sVkp4Pzr" # Anjuna
   evening_music:
-    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye"  # Ambient / Relax
+    - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
     # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
   christmas_music:
-    - "Christmas Hits"
+    - "ytmusic://playlist/RDCLAK5uy_nwLjTxbhH7Ng3q4pCbUdtxascis5Adj5g"
 
   active_schedule: '{{ states("input_select.current_music_schedule") }}'
   music_to_play: >-
@@ -104,10 +104,9 @@ action:
       - "{{ not is_state(mass_entity, 'playing') }}"
       - "{{ active_schedule == 'just_awake' }}"
     then:
-      - action: media_player.clear_playlist
-        target:
-          entity_id: "{{ mass_entity }}"
-  - *replace_next_music
+      - *replace_music
+    else:
+      - *replace_next_music
   - if:
       - "{{ now().month == 12 and now().day > 8 and now().day < 27 }}"
       - "{{ active_schedule in ['morning', 'day'] }}"
@@ -122,5 +121,10 @@ action:
         data:
           media_id: "{{ christmas_music }}"
           enqueue: add
+        target:
+          entity_id: "{{ mass_entity }}"
+      - action: media_player.shuffle_set
+        data:
+          shuffle: true
         target:
           entity_id: "{{ mass_entity }}"

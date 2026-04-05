@@ -11,6 +11,7 @@ from .light import BrowserModLight
 from .binary_sensor import BrowserBinarySensor, ActivityBinarySensor
 from .media_player import BrowserModPlayer
 from .camera import BrowserModCamera
+from .panel import PanelSensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -132,9 +133,15 @@ class BrowserModBrowser:
             er.async_remove(self.entities["camera"].entity_id)
             del self.entities["camera"]
 
+        if "panel" not in self.entities:
+            adder = hass.data[DOMAIN][DATA_ADDERS]["sensor"]
+            new = PanelSensor(coordinator, browserID, "Panel", icon="hass:view-dashboard")
+            adder([new])
+            self.entities["panel"] = new
+
         hass.create_task(
             self.send(
-                None, browserEntities={k: v.entity_id for k, v in self.entities.items()}
+                None, browserEntities={k: {"entity_id": v.entity_id, "enabled": v.enabled} for k, v in self.entities.items()}
             )
         )
 
@@ -166,7 +173,7 @@ class BrowserModBrowser:
         self.entities = {}
 
         device = dr.async_get_device({(DOMAIN, self.browserID)})
-        dr.async_remove_device(device.id)
+        hass.add_job(removeDevice, hass, self.browserID, device.id)
 
     @property
     def connection(self):
@@ -183,7 +190,8 @@ class BrowserModBrowser:
         self._connections = list(
             filter(lambda v: v[0] != connection, self._connections)
         )
-        self.update(hass, {"connected": False})
+        if not self._connections:
+            self.update(hass, {"connected": False})
 
 
 def getBrowser(hass, browserID, *, create=True):
@@ -201,11 +209,41 @@ def getBrowser(hass, browserID, *, create=True):
 
 def deleteBrowser(hass, browserID):
     """Delete a browser by BrowserID."""
+
     browsers = hass.data[DOMAIN][DATA_BROWSERS]
+
     if browserID in browsers:
         browsers[browserID].delete(hass)
         del browsers[browserID]
+    else:
+        # Non-reporting Browser
+        dr = device_registry.async_get(hass)
+        er = entity_registry.async_get(hass)
+        _LOGGER.debug("deleteBrowser: Removing non-reporting browser %s", browserID)
 
+        dev = dr.async_get_device({(DOMAIN, browserID)})
+        if dev:
+            # Remove all entities associated with the device
+            for entity in entity_registry.async_entries_for_device(er, dev.id, include_disabled_entities=True):
+                if entity.platform == DOMAIN:
+                    _LOGGER.debug("deleteBrowser: Removing entity %s for browser %s", entity.entity_id, browserID)
+                    er.async_remove(entity.entity_id)
+            
+            hass.add_job(removeDevice, hass, browserID, dev.id)
+        
+def deleteBrowsers(hass, browsers_include, browsers_exclude):
+    """Delete browsers by list of browsers to include and exclude."""    
+    for browserID in browsers_include:
+        _LOGGER.debug("deleteBrowsers: Deleting browser %s (included)", browserID)
+        deleteBrowser(hass, browserID)
+
+    if browsers_exclude:
+        dr = device_registry.async_get(hass)
+        devices = [dev for dev in dr.devices.data.values() if any(identifier for identifier in dev.identifiers if identifier[0] == DOMAIN)]
+        for dev in devices:
+            if dev.identifiers and list(dev.identifiers)[0][1] not in browsers_exclude:
+                _LOGGER.debug("deleteBrowsers: Deleting browser %s (not excluded)", list(dev.identifiers)[0][1])
+                deleteBrowser(hass, list(dev.identifiers)[0][1])
 
 def getBrowserByConnection(hass, connection):
     """Get the browser that has a given connection open."""
@@ -214,3 +252,14 @@ def getBrowserByConnection(hass, connection):
     for k, v in browsers.items():
         if any([c[0] == connection for c in v.connection]):
             return v
+
+@callback
+def removeDevice(hass, browserID, deviceID):
+    """Remove a device by browserID."""
+    dr = device_registry.async_get(hass)
+
+    # Remove the device from the registry
+    dev = dr.async_get(deviceID)
+    if dev:
+        _LOGGER.debug("removeDevice: Removing device %s (%s)", dev.id, browserID)
+        dr.async_remove_device(dev.id)

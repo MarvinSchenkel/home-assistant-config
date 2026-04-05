@@ -12,6 +12,7 @@ views:
           - type: custom:button-card
             entity: sensor.time
             show_state: true
+            show_icon: false
             show_name: false
             styles:
               card:
@@ -86,225 +87,196 @@ views:
     icon: "mdi:music"
     type: masonry
     cards:
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.mass_all_devices
-            state_not: "unavailable"
-        card:
-          type: custom:button-card
-          entity: media_player.mass_all_devices
-          label: >
-            [[[
-              return states['media_player.mass_all_devices'].attributes.media_title
-            ]]]
-          extra_styles: |
-            [[[
-              return `
-                @keyframes scrolling {
-                  0% {
-                    transform: translate(100%, 0);
-                  }
-                  50% {
-                    transform: translate(0, 0);
-                  }
-                  100% {
-                    transform: translate(-100%, 0);
-                  }
+      - type: custom:button-card
+        entity: media_player.mass_sonos_kitchen
+        label: >
+          [[[
+            return states['media_player.mass_sonos_kitchen'].attributes.media_title
+          ]]]
+        extra_styles: |
+          [[[
+            return `
+              @keyframes scrolling {
+                0% {
+                  transform: translate(100%, 0);
                 }
-              `
-            ]]]
-          styles:
-            card:
-              - z-index: 10000
-              - position: fixed
-              - margin: 34% 0 !important
-              - border: 0px
-              - text-align: center
-              - background-color: transparent
-              - box-shadow: none
-              - font-size: 50pt
-              - font-weight: 475
-            label:
-              - animation: >
-                  [[[
-                    if (states['media_player.mass_all_devices'].attributes.media_title.length > 12)
-                      return "scrolling 10s linear infinite"
-                  ]]]
-              - overflow: visible
-          show_label: true
-          show_state: false
-          show_name: false
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.mass_all_devices
-            state_not: "unavailable"
-        card:
-          type: custom:button-card
-          entity: media_player.mass_all_devices
-          label: >
-            [[[
-              return states['media_player.mass_all_devices'].attributes.media_artist
-            ]]]
-          styles:
-            card:
-              - z-index: 10000
-              - position: fixed
-              - width: 100%
-              - margin: 51% 0 !important
-              - border: 0px
-              - text-align: center
-              - background-color: transparent
-              - box-shadow: none
-              - font-size: 50pt
-              - font-weight: 325
-          show_label: true
-          show_state: false
-          show_name: false
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.mass_all_devices
-            state_not: "unavailable"
-        card:
-          type: custom:mini-media-player
-          entity: media_player.mass_all_devices
-          group: true
-          tap_action:
-            action: navigate
-            navigation_path: /lovelace-nspanel/control
-          card_mod:
-            style: |
-              ha-card {
-                aspect-ratio: 1 / 1;
-              }
-          artwork: full-cover-fit
-          hide:
-            source: true
-            power: true
-            icon: true
-            name: true
-            controls: true
-            volume: true
-            info: true
-            progress: true
-
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.mass_all_devices_beta
-            state_not: "unavailable"
-        card:
-          type: custom:button-card
-          entity: media_player.mass_all_devices_beta
-          label: >
-            [[[
-              const colorThief = new ColorThief();
-
-              return states['media_player.mass_all_devices_beta'].attributes.media_title
-            ]]]
-          extra_styles: |
-            [[[
-              return `
-                @keyframes scrolling {
-                  0% {
-                    transform: translate(100%, 0);
-                  }
-                  50% {
-                    transform: translate(0, 0);
-                  }
-                  100% {
-                    transform: translate(-100%, 0);
-                  }
+                50% {
+                  transform: translate(0, 0);
                 }
-              `
-            ]]]
-          styles:
-            card:
-              - z-index: 10000
-              - position: fixed
-              - margin: 34% 0 !important
-              - border: 0px
-              - text-align: center
-              - background-color: transparent
-              - box-shadow: none
-              - font-size: 50pt
-              - font-weight: 475
-            label:
-              - animation: >
-                  [[[
-                    if (states['media_player.mass_all_devices_beta'].attributes.media_title.length > 12)
-                      return "scrolling 10s linear infinite"
-                  ]]]
-              - overflow: visible
-          show_label: true
-          show_state: false
-          show_name: false
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.mass_all_devices_beta
-            state_not: "unavailable"
-        card:
-          type: custom:button-card
-          entity: media_player.mass_all_devices_beta
-          label: >
-            [[[
-              return states['media_player.mass_all_devices_beta'].attributes.media_artist
-            ]]]
-          styles:
-            card:
-              - z-index: 10000
-              - position: fixed
-              - width: 100%
-              - margin: 51% 0 !important
-              - border: 0px
-              - text-align: center
-              - background-color: transparent
-              - box-shadow: none
-              - font-size: 50pt
-              - font-weight: 325
-          show_label: true
-          show_state: false
-          show_name: false
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.mass_all_devices_beta
-            state_not: "unavailable"
-        card:
-          type: custom:mini-media-player
-          entity: media_player.mass_all_devices_beta
-          group: true
-          tap_action:
-            action: navigate
-            navigation_path: /lovelace-nspanel/control
-          card_mod:
-            style: |
-              ha-card {
-                aspect-ratio: 1 / 1;
+                100% {
+                  transform: translate(-100%, 0);
+                }
               }
-          artwork: full-cover-fit
-          hide:
-            source: true
-            power: true
-            icon: true
-            name: true
-            controls: true
-            volume: true
-            info: true
-            progress: true
-
-  - path: camera
-    title: Voordeur
-    type: masonry
-    cards:
-      - camera_view: live
-        entity: camera.g4_doorbell_high
-        type: picture-entity
+            `
+          ]]]
+        styles:
+          card:
+            - z-index: 10000
+            - position: fixed
+            - margin: 34% 0 !important
+            - border: 0px
+            - text-align: center
+            - background-color: transparent
+            - box-shadow: none
+            - font-size: 50pt
+            - font-weight: 475
+          label:
+            - animation: >
+                [[[
+                  if (states['media_player.mass_sonos_kitchen'].attributes.media_title.length > 12)
+                    return "scrolling 10s linear infinite"
+                ]]]
+            - overflow: visible
+        show_label: true
+        show_state: false
+        show_name: false
+        show_icon: false
+      - type: custom:button-card
+        entity: media_player.mass_sonos_kitchen
+        label: >
+          [[[
+            return states['media_player.mass_sonos_kitchen'].attributes.media_artist
+          ]]]
+        styles:
+          card:
+            - z-index: 10000
+            - position: fixed
+            - width: 100%
+            - margin: 51% 0 !important
+            - border: 0px
+            - text-align: center
+            - background-color: transparent
+            - box-shadow: none
+            - font-size: 50pt
+            - font-weight: 325
+        show_label: true
+        show_state: false
+        show_name: false
+        show_icon: false
+      - type: custom:mini-media-player
+        entity: media_player.mass_sonos_kitchen
+        group: true
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-nspanel/control
         card_mod:
           style: |
             ha-card {
               aspect-ratio: 1 / 1;
             }
+        artwork: full-cover-fit
+        hide:
+          source: true
+          power: true
+          icon: true
+          name: true
+          controls: true
+          volume: true
+          info: true
+          progress: true
+
+      # - type: conditional
+      #   conditions:
+      #     - condition: state
+      #       entity: media_player.mass_all_devices_beta
+      #       state_not: "unavailable"
+      #   card:
+      #     type: custom:button-card
+      #     entity: media_player.mass_all_devices_beta
+      #     label: >
+      #       [[[
+      #         const colorThief = new ColorThief();
+
+      #         return states['media_player.mass_all_devices_beta'].attributes.media_title
+      #       ]]]
+      #     extra_styles: |
+      #       [[[
+      #         return `
+      #           @keyframes scrolling {
+      #             0% {
+      #               transform: translate(100%, 0);
+      #             }
+      #             50% {
+      #               transform: translate(0, 0);
+      #             }
+      #             100% {
+      #               transform: translate(-100%, 0);
+      #             }
+      #           }
+      #         `
+      #       ]]]
+      #     styles:
+      #       card:
+      #         - z-index: 10000
+      #         - position: fixed
+      #         - margin: 34% 0 !important
+      #         - border: 0px
+      #         - text-align: center
+      #         - background-color: transparent
+      #         - box-shadow: none
+      #         - font-size: 50pt
+      #         - font-weight: 475
+      #       label:
+      #         - animation: >
+      #             [[[
+      #               if (states['media_player.mass_all_devices_beta'].attributes.media_title.length > 12)
+      #                 return "scrolling 10s linear infinite"
+      #             ]]]
+      #         - overflow: visible
+      #     show_label: true
+      #     show_state: false
+      #     show_name: false
+      # - type: conditional
+      #   conditions:
+      #     - condition: state
+      #       entity: media_player.mass_all_devices_beta
+      #       state_not: "unavailable"
+      #   card:
+      #     type: custom:button-card
+      #     entity: media_player.mass_all_devices_beta
+      #     label: >
+      #       [[[
+      #         return states['media_player.mass_all_devices_beta'].attributes.media_artist
+      #       ]]]
+      #     styles:
+      #       card:
+      #         - z-index: 10000
+      #         - position: fixed
+      #         - width: 100%
+      #         - margin: 51% 0 !important
+      #         - border: 0px
+      #         - text-align: center
+      #         - background-color: transparent
+      #         - box-shadow: none
+      #         - font-size: 50pt
+      #         - font-weight: 325
+      #     show_label: true
+      #     show_state: false
+      #     show_name: false
+      # - type: conditional
+      #   conditions:
+      #     - condition: state
+      #       entity: media_player.mass_all_devices_beta
+      #       state_not: "unavailable"
+      #   card:
+      #     type: custom:mini-media-player
+      #     entity: media_player.mass_all_devices_beta
+      #     group: true
+      #     tap_action:
+      #       action: navigate
+      #       navigation_path: /lovelace-nspanel/control
+      #     card_mod:
+      #       style: |
+      #         ha-card {
+      #           aspect-ratio: 1 / 1;
+      #         }
+      #     artwork: full-cover-fit
+      #     hide:
+      #       source: true
+      #       power: true
+      #       icon: true
+      #       name: true
+      #       controls: true
+      #       volume: true
+      #       info: true
+      #       progress: true

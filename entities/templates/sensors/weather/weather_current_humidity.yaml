@@ -1,0 +1,6 @@
+---
+sensor:
+  - name: weather_current_humidity
+    unit_of_measurement: "%"
+    state: >
+      {{ states('sensor.gw3000a_humidity') | default(1) }}

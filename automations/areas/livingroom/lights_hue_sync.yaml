@@ -7,13 +7,13 @@ trace:
   stored_traces: 25
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_boolean.setting_manual_lights
       - binary_sensor.livingroom_is_dark
@@ -21,15 +21,15 @@ trigger:
     for:
       seconds: 2
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.livingroom_is_media_app_selected
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_livingroom
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_livingroom
     to: "off"
@@ -106,9 +106,6 @@ action:
               mode: video
               intensity: moderate
               entertainment_area: "TV area Marvin"
-          # Prevent race condition
-          - delay:
-              seconds: 5
 
       - alias: "Set the hue lights a bit more subtle when I am not home alone."
         conditions:
@@ -126,14 +123,17 @@ action:
               mode: video
               intensity: moderate
               entertainment_area: "TV area"
-          # Prevent race condition
-          - delay:
-              seconds: 5
 
     default:
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id: switch.sync_box_light_sync
-      - service: light.turn_off
+      - delay:
+          seconds: 5
+      - action: light.turn_off
         target:
           entity_id: light.woonkamer_tv
+
+  # Prevent race condition
+  - delay:
+      seconds: 5

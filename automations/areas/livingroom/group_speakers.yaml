@@ -18,6 +18,8 @@ trigger:
     entity_id:
       - media_player.living_room_android
     to: "off"
+    for:
+      minutes: 2
 
   - trigger: state
     entity_id: binary_sensor.presence_livingroom
@@ -37,6 +39,10 @@ trigger:
   - trigger: homeassistant
     event: start
 
+  - trigger: state
+    entity_id:
+      - input_boolean.setting_automatic_music
+
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
@@ -46,6 +52,15 @@ variables:
       entity_id:
         - media_player.living_room_android
       state: "on"
+
+    - &condition_in_group
+      alias: "Check if the speaker is already part of the group"
+      condition: template
+      value_template: |-
+        {{
+          'media_player.mass_woonkamer_nad'
+          in state_attr(mass_entity, 'group_members')
+        }}
 
     - &group
       alias: "Start playing music on the master group"
@@ -63,6 +78,12 @@ variables:
       target:
         entity_id: media_player.mass_woonkamer_nad
 
+conditions:
+  - condition: state
+    entity_id:
+      - input_boolean.setting_automatic_music
+    state: "on"
+
 action:
   - choose:
       - conditions:
@@ -70,18 +91,19 @@ action:
             entity_id:
               - binary_sensor.presence_livingroom
             state: "on"
+          - not: *condition_watching_tv
           - not:
-              *condition_watching_tv
-          - not:
-              - condition: state
-                entity_id:
-                  - media_player.mass_woonkamer_nad
-                state: "playing"
+            - condition: state
+              entity_id:
+                - media_player.mass_woonkamer_nad
+              state: playing
           - not:
               - condition: state
                 entity_id:
                   - input_select.livingroom_room_mode
                 state: "Slaap"
+          - not:
+              - *condition_in_group
         sequence:
           - *group
 
@@ -100,5 +122,8 @@ action:
                 entity_id:
                   - media_player.mass_woonkamer_nad
                 state: "off"
+          - *condition_in_group
         sequence:
           - *ungroup
+
+    default: []

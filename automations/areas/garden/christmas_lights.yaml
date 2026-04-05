@@ -1,0 +1,47 @@
+---
+alias: areas_garden_christmas_lights
+description: Turns the outdoor christmas lights on/off
+mode: single
+id: 510911b6-20d3-40be-a3a7-75fdf41dca82
+
+trigger:
+  - trigger: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 0
+
+  - trigger: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    above: 0
+
+  - trigger: state
+    entity_id: input_select.livingroom_room_mode
+
+  - trigger: homeassistant
+    event: start
+
+  - trigger: event
+    event_type: automation_reloaded
+
+action:
+  - choose:
+      - conditions:
+          - condition: numeric_state
+            entity_id:
+              - sensor.sun_elevation
+            below: 0
+          - not:
+              - condition: state
+                entity_id:
+                  - input_select.livingroom_room_mode
+                state: "Slaap"
+        sequence:
+          - action: switch.turn_on
+            data:
+              entity_id: switch.christmas_lights_shed
+
+    default:
+      - action: switch.turn_off
+        data:
+          entity_id: switch.christmas_lights_shed

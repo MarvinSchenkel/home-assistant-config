@@ -1,22 +1,22 @@
 ---
 # A binary indicator tracking whether it is light or dark in the room
 trigger:
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.pir_hall_downstairs_illuminance
-    above: 15
+    above: 10
     for:
       seconds: 5
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.pir_hall_downstairs_illuminance
     above: 35
     for:
       seconds: 5
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.pir_hall_downstairs_illuminance
-    below: 15
+    below: 10
     for:
       seconds: 5
 
@@ -26,7 +26,7 @@ binary_sensor:
     state: >
       {%-
         if (
-          states("sensor.pir_hall_downstairs_illuminance") | int > 15
+          states("sensor.pir_hall_downstairs_illuminance") | int > 10
           and is_state("light.wc", "off")
           and is_state("light.hall_downstairs", "off")
         )

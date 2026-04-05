@@ -13,3 +13,10 @@ use_blueprint:
     day_volume: 8
     evening_volume: 7
     sonos: media_player.mass_sonos_kitchen
+    mute_conditions:
+      - condition: state
+        entity_id:
+          - media_player.living_room_android
+        state: "on"
+    custom_state_triggers:
+      - media_player.living_room_android

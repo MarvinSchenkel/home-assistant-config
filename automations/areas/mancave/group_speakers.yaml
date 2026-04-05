@@ -19,31 +19,40 @@ variables:
         - "PS5 Game Console"
         - "Nintendo Switch Game Console"
 
+    - &condition_in_group
+      alias: "Check if the speaker is already part of the group"
+      condition: template
+      value_template: |-
+        {{
+          'media_player.mass_mancave_wiim_amp'
+          in state_attr(mass_entity, 'group_members')
+        }}
+
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_mancave
     to: "on"
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.mancave_room_mode
-      - binary_sensor.sonos_move_charging
-      - media_player.mass_all_devices
-      - media_player.mass_all_devices_beta
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.macbookwork_camera_in_use
     for:
       seconds: 1
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_mancave
     to: "off"
     for:
       seconds: 75
-  - platform: state
+  - trigger: state
     entity_id: media_player.mancave_tv
     attribute: source
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
+  - trigger: state
+    entity_id:
+      - input_boolean.setting_automatic_music
 
 action:
   - choose:
@@ -67,6 +76,8 @@ action:
                 state: "off"
               - not:
                   - *condition_tv_game
+              - not:
+                  - *condition_in_group
         sequence:
           - if:
               - not:
@@ -76,7 +87,7 @@ action:
                     state: playing
             then:
               - alias: Turn the child media player on
-                service: media_player.join
+                action: media_player.join
                 target:
                   entity_id: media_player.mass_sonos_kitchen
                 data:
@@ -95,9 +106,10 @@ action:
                 entity_id:
                   - media_player.mass_mancave_wiim_amp
                 state: "off"
+          - *condition_in_group
         sequence:
           - alias: Turn the child media player off
-            service: media_player.unjoin
+            action: media_player.unjoin
             data: {}
             target:
               entity_id: media_player.mass_mancave_wiim_amp
@@ -116,9 +128,12 @@ action:
                     state: "off"
                   - not:
                       - *condition_tv_game
+          - *condition_in_group
         sequence:
           - alias: Turn the child media player off
-            service: media_player.unjoin
+            action: media_player.unjoin
             data: {}
             target:
               entity_id: media_player.mass_mancave_wiim_amp
+
+    default: []

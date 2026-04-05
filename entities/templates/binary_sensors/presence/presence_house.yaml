@@ -12,4 +12,5 @@ binary_sensor:
           or is_state("binary_sensor.presence_mancave", "on")
           or is_state("binary_sensor.presence_hall_downstairs", "on")
           or is_state("binary_sensor.presence_wc", "on")
+          or is_state("binary_sensor.presence_bathroom", "on")
           or is_state("binary_sensor.presence_livingroom", "on") }}

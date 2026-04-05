@@ -142,7 +142,9 @@ action:
         conditions:
           - condition: state
             entity_id: input_select.livingroom_room_mode
-            state: "Wakker"
+            state:
+              - "Net wakker"
+              - "Wakker"
           - *windows_and_doors_closed
         sequence:
           - *turn_on

@@ -7,4 +7,5 @@ binary_sensor:
           or is_state("binary_sensor.presence_livingroom_fp2", "on")
           or is_state("binary_sensor.presence_garden_door", "on")
           or is_state("media_player.living_room_android", "on")
+          or is_state("hue_motion_livingroom", "on")
           or is_state("binary_sensor.presence_livingroom_door", "on") }}

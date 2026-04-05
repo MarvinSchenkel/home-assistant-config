@@ -1,0 +1,45 @@
+---
+description: >
+  Mute the music when the voice PE is listening
+alias: areas_livingroom_mute_voice_pe
+id: 646749e8-204c-4f2d-87a3-825603dc05e7
+mode: single
+
+triggers:
+  - trigger: state
+    entity_id:
+      - assist_satellite.livingroom
+    to: "listening"
+
+variables:
+  current_volume: '{{ state_attr("media_player.mass_woonkamer_nad", "volume_level") }}'
+
+conditions:
+  - condition: state
+    entity_id: media_player.mass_woonkamer_nad
+    state: playing
+
+actions:
+  - alias: "Mute the player"
+    action: media_player.volume_set
+    target:
+      entity_id: media_player.mass_woonkamer_nad
+    data:
+      volume_level: 0
+
+  - alias: "Wait for the Voice PE to become idle again"
+    wait_for_trigger:
+      - trigger: state
+        entity_id: 
+          - assist_satellite.livingroom
+        to: "idle"
+    timeout:
+      minutes: 2
+    continue_on_timeout: true
+
+  - alias: "Unmute the player"
+    action: media_player.volume_set
+    target:
+      entity_id: media_player.mass_woonkamer_nad
+    data:
+      volume_level: '{{ current_volume }}'

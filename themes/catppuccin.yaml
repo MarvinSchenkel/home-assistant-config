@@ -34,10 +34,20 @@ Catppuccin Latte:
   lavender: "#7287fd"
 
   ###########################
+  app-header-background-color: transparent
+  app-header-text-color: var(--primary-text-color)
+
+  card-mod-theme: "Catppuccin Latte"
+  card-mod-root-yaml: |
+    .: |
+      .toolbar > ha-tab-group {
+        pointer-events: none;
+        opacity: 0;
+      }
 
   # Header
-  app-header-background-color: var(--mantle)
-  app-header-text-color: var(--text)
+  # app-header-background-color: var(--mantle)
+  # app-header-text-color: var(--text)
 
   # Main Interface colors
   primary-color: var(--blue)
@@ -103,7 +113,7 @@ Catppuccin Latte:
   # Switches
   switch-checked-button-color: var(--green)
   switch-checked-track-color: var(--surface0)
-  switch-unchecked-button-color: rgb(--overlay0)
+  switch-unchecked-button-color: var(--overlay0)
   switch-unchecked-track-color: rgb(--surface0)
   # Toggles
   paper-toggle-button-checked-button-color: var(--switch-checked-button-color)
@@ -264,7 +274,7 @@ Catppuccin Frappe:
   # Switches
   switch-checked-button-color: var(--green)
   switch-checked-track-color: var(--surface2)
-  switch-unchecked-button-color: rgb(--overlay0)
+  switch-unchecked-button-color: var(--overlay0)
   switch-unchecked-track-color: rgb(--surface0)
 
   # Toggles
@@ -425,7 +435,7 @@ Catppuccin Macchiato:
   # Switches
   switch-checked-button-color: var(--green)
   switch-checked-track-color: var(--surface2)
-  switch-unchecked-button-color: rgb(--overlay0)
+  switch-unchecked-button-color: var(--overlay0)
   switch-unchecked-track-color: rgb(--surface0)
 
   # Toggles
@@ -484,19 +494,16 @@ Catppuccin Macchiato:
 
 ####################### MOCHA #######################
 Catppuccin Mocha:
-  card-mod-view-yaml: |
-    "*:first-child$": |
-      #columns .column > * {
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      #columns {
-        margin: 0 !important;
-      }
-    "hui-masonry-view": |
-      * {
-        padding: 0 !important;
-      }
+  # app-header-background-color: transparent
+  # app-header-text-color: var(--primary-text-color)
+
+  # card-mod-theme: your_theme
+  # card-mod-root-yaml: |
+  #   .: |
+  #     .toolbar > ha-tab-group {
+  #       pointer-events: none;
+  #       opacity: 0;
+  #     }
 
   # Colors
   modes:
@@ -566,68 +573,11 @@ Catppuccin Mocha:
       blue: "#89b4fa"
       lavender: "#b4befe"
 
-  # Move navbar
-  card-mod-theme: "Catppuccin Mocha"
-  header-height: "78px"
-  card-mod-root-yaml: |
-    ha-tabs$: |
-      #tabsContent {
-        width: 97%;
-      }
-      paper-icon-button {
-        display: none;
-      }
-    .: |
-      @media (orientation: portrait) {
-        a.menu-link[target="_blank"], ha-button-menu, ha-menu-button, [main-title] {
-          display: none !important;
-        }
-      div#view{
-        transform: initial;
-        padding: 0 0 var(--header-height) 0 !important;
-        margin: 0!important;
-        width: 100%;
-      }
-      .header {
-        top: auto !important;
-        bottom: 0px !important;
-        box-shadow: var(--footer-shadow);
-        height: var(--header-height) !important;
-      }
-      .toolbar {
-        height: var(--header-height) !important;
-        padding: 10px 0px !important;
-        background: var( --ha-card-background, var(--card-background-color) );
-      }
-      #view {
-        margin-top: calc(-1 * var(--header-height)) !important;
-        padding-bottom: var(--header-height) !important;
-      }
-      ha-tabs {
-        --paper-tabs-selection-bar-color: var(--header-tab-indicator-color) !important;
-        --mdc-icon-size: 26px;
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-        margin-top:15px;
-        height:var(--header-height) !important;
-      }
-      paper-tab[aria-selected=true] {
-        color: var(--header-active-tab-color);
-        background-color: var(--header-active-tab-bg-color);
-      }
-      paper-tab {
-        color: var(--header-all-tabs-color);
-        border-radius: 25px;
-        height:50px;
-        padding: 0 20px;
-      }
-
   ###########################
 
   # Header
-  app-header-background-color: var(--base)
-  app-header-text-color: var(--paper-item-icon-color)
+  app-header-background-color: transparent
+  app-header-text-color: var(--primary-text-color)
   header-active-tab-color: var(--base)
   header-active-tab-bg-color: var(--paper-item-icon-color)
   header-all-tabs-color: "var(--paper-item-icon-color)"
@@ -698,7 +648,7 @@ Catppuccin Mocha:
   # Switches
   switch-checked-button-color: var(--green)
   switch-checked-track-color: var(--surface2)
-  switch-unchecked-button-color: rgb(--overlay0)
+  switch-unchecked-button-color: var(--overlay0)
   switch-unchecked-track-color: rgb(--surface0)
 
   # Toggles

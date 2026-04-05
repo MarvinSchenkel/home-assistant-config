@@ -9,7 +9,7 @@ binary_sensor:
           and is_state("light.master_bedroom_ceiling", "off")
         )
         or (
-          states("sensor.pir_master_bedroom_illuminance") | int > 100
+          states("sensor.pir_master_bedroom_illuminance") | int > 60
         )
       -%}
         off

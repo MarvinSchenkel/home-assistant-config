@@ -12,40 +12,48 @@ variables:
       entity_id: binary_sensor.presence_wc
       state: "on"
 
+    - &condition_no_presence_detected
+      alias: "No presence has been detected for a while"
+      condition: state
+      entity_id: binary_sensor.presence_wc
+      state: "off"
+      for:
+        seconds: 90
+
     - &condition_light_schedule_change
       alias: "Check if the automation got triggered by a light schedule change"
       condition: trigger
       id: light_schedule_change
 
     - &turn_on
-      service: scene.turn_on
+      action: scene.turn_on
       alias: "Turn the wc lights on"
       data:
         transition: 1
 
     - &turn_off
-      service: light.turn_off
+      action: light.turn_off
       alias: "Turn the hall lights off"
       data:
         entity_id: light.wc
         transition: 5
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_wc
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_wc
     to: "off"
     for:
@@ -77,5 +85,10 @@ action:
             target:
               entity_id: "{{ current_light_scene }}"
 
-    default:
-      - *turn_off
+      - alias: "Turn the light off when presence is off for x-amount of minutes"
+        conditions:
+          - *condition_no_presence_detected
+        sequence:
+          - *turn_off
+
+    default: []

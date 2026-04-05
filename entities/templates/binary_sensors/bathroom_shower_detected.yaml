@@ -6,7 +6,7 @@ binary_sensor:
     minutes: 15
   state: >
     {%-
-      if states("sensor.bathroom_humidity_change_min") | float >= 6.0
+      if states("sensor.bathroom_humidity_change_min") | float >= 5.0
     -%}
       on
     {%- else -%}

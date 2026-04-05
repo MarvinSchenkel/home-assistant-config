@@ -20,7 +20,7 @@ trace:
 
 variables:
   current_light_scene: >-
-     scene.masterbedroom_lights_{{ states("input_select.current_light_schedule") }}
+    scene.masterbedroom_lights_{{ states("input_select.current_light_schedule") }}
   anchors:
     - &manual_control_on
       alias: "Set bedside left as manually controlled"
@@ -108,7 +108,9 @@ trigger:
   - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
-    to: "Slaap"
+    to:
+      - "Slaap"
+      - "Dutje"
     id: "house_mode_someone_asleep"
 
   - trigger: state
@@ -146,6 +148,14 @@ trigger:
     to: "off"
     id: "all_lights_off"
 
+  - trigger: state
+    entity_id:
+      - event.hue_switch_on
+      - event.hue_switch_off
+    attribute: event_type
+    to: short_release
+    id: hue_remote
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -170,7 +180,9 @@ action:
           - condition: state
             entity_id:
               - input_select.master_bedroom_room_mode
-            state: "Slaap"
+            state:
+              - "Slaap"
+              - "Dutje"
             for:
               seconds: 2
         sequence:
@@ -182,6 +194,21 @@ action:
               brightness_pct: 3
               transition: 2
 
+      - alias: "When Laura clicks the Hue button when she is already sleeping"
+        conditions:
+          - condition: trigger
+            id: "hue_remote"
+          - condition: state
+            entity_id:
+              - input_select.master_bedroom_room_mode
+            state:
+              - "Slaap"
+              - "Dutje"
+            for:
+              seconds: 2
+        sequence:
+          - *manual_control_on
+
       - alias: "When Laura clicks the button when she is already sleeping"
         conditions:
           - condition: trigger
@@ -189,7 +216,9 @@ action:
           - condition: state
             entity_id:
               - input_select.master_bedroom_room_mode
-            state: "Slaap"
+            state:
+              - "Slaap"
+              - "Dutje"
             for:
               seconds: 2
         sequence:

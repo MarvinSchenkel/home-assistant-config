@@ -5,11 +5,11 @@ mode: queued
 id: e18ffbe8-61c7-4a7c-a698-7b9beeb6ec12
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.g4_doorbell_motion
 
-  - platform: time
+  - trigger: time
     at:
       - "00:00:00"
       - "06:00:00"
@@ -22,7 +22,7 @@ action:
       - conditions:
           - "{{ now().month == 12 and now().day > 23 }}"
         sequence:
-          - service: text.set_value
+          - action: input_text.set_value
             target:
               entity_id: text.g4_doorbell_doorbell
             data:
@@ -32,7 +32,7 @@ action:
           - condition: time
             after: "18:00:00"
         sequence:
-          - service: text.set_value
+          - action: input_text.set_value
             target:
               entity_id: text.g4_doorbell_doorbell
             data:
@@ -42,7 +42,7 @@ action:
           - condition: time
             after: "12:00:00"
         sequence:
-          - service: text.set_value
+          - action: input_text.set_value
             target:
               entity_id: text.g4_doorbell_doorbell
             data:
@@ -52,7 +52,7 @@ action:
           - condition: time
             after: "06:00:00"
         sequence:
-          - service: text.set_value
+          - action: input_text.set_value
             target:
               entity_id: text.g4_doorbell_doorbell
             data:
@@ -62,14 +62,14 @@ action:
           - condition: time
             after: "00:00:00"
         sequence:
-          - service: text.set_value
+          - action: input_text.set_value
             target:
               entity_id: text.g4_doorbell_doorbell
             data:
               value: "GOEDENACHT!"
 
     default:
-      - service: text.set_value
+      - action: input_text.set_value
         target:
           entity_id: text.g4_doorbell_doorbell
         data:

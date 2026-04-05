@@ -4,33 +4,103 @@ description: Turns the frontdoor light on/off based on sunset and sunrise
 mode: single
 id: a2c1f562-ff56-43e8-a2bc-9fcaaaf490ed
 
+variables:
+  current_light_scene: >-
+    scene.frontdoor_lights_{{ states("input_select.current_light_schedule") }}
+  anchors:
+    - &condition_is_dark
+      condition: state
+      entity_id: binary_sensor.g4_doorbell_is_dark
+      state: "on"
+
+    - &condition_is_presence_detected
+      condition: state
+      entity_id: binary_sensor.g4_doorbell_motion
+      state: "on"
+
+    - &condition_no_presence_detected
+      alias: "No presence has been detected for a while"
+      condition: state
+      entity_id: binary_sensor.g4_doorbell_motion
+      state: "off"
+      for:
+        seconds: 60
+
+    - &condition_light_schedule_change
+      alias: "Check if the automation got triggered by a light schedule change"
+      condition: trigger
+      id: light_schedule_change
+
+    - &turn_on
+      action: scene.turn_on
+      alias: "Turn the hall lights on"
+      data:
+        transition: 1
+
+    - &turn_off
+      action: light.turn_off
+      alias: "Turn the hall lights off"
+      data:
+        entity_id: light.voordeur
+        transition: 5
+
 trigger:
-  - platform: numeric_state
+  - trigger: state
     entity_id:
-      - sensor.sun_elevation
-    below: 0
-  - platform: numeric_state
+      - binary_sensor.g4_doorbell_is_dark
+
+  - trigger: state
     entity_id:
-      - sensor.sun_elevation
-    above: 0
-  - platform: homeassistant
+      - binary_sensor.g4_doorbell_motion
+    to: "on"
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.g4_doorbell_motion
+    to: "off"
+    for:
+      seconds: 60
+
+  - trigger: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
+
+  - trigger: homeassistant
     event: start
-  - platform: event
+
+  - trigger: event
     event_type: automation_reloaded
 
 action:
   - choose:
-      conditions:
-        - condition: numeric_state
-          entity_id:
-            - sensor.sun_elevation
-          below: 0
-      sequence:
-        - service: switch.turn_on
-          data:
-            entity_id: switch.fibaro_frontdoor
+      - alias: "Very subtly change the lights when a light schedule change is detected."
+        conditions:
+          - *condition_is_dark
+          - *condition_light_schedule_change
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 120
+
+      - alias: "Turn the light to a dedicated brighter scene when presence has been detected."
+        conditions:
+          - *condition_is_presence_detected
+          - *condition_is_dark
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "scene.frontdoor_lights_lezen"
+
+      - alias: "Turn the light to the scheduled scene"
+        conditions:
+          - *condition_no_presence_detected
+          - *condition_is_dark
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: "{{ current_light_scene }}"
 
     default:
-      - service: switch.turn_off
-        data:
-          entity_id: switch.fibaro_frontdoor
+      - *turn_off

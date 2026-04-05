@@ -5,67 +5,72 @@ mode: queued
 id: C90E1ED3-EF56-4F15-A5C7-47F1D75B1F85
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.bathroom_shower_detected
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.bathroom_shower_detected
     to: "off"
     for:
       minutes: 15
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.bathroom_ble_humidity
     above: 80
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.bathroom_ble_humidity
     below: 75
 
-  - platform: state
+  - trigger: state
     entity_id:
       - light.wc
     to: "on"
     for:
       minutes: 4
 
-  - platform: state
+  - trigger: state
     entity_id:
       - light.wc
     to: "off"
     for:
       minutes: 10
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_boolean.house_mode_cooking
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sauna
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sauna
     to: "off"
     for:
       minutes: 15
 
+  - trigger: numeric_state
+    entity_id:
+      - sensor.weather_current_humidity
+    above: 80
+
 variables:
   anchors:
     - &turn_on
       alias: "Turns on the ventilation"
-      service: fan.set_percentage
+      action: fan.set_percentage
       data:
         percentage: 100
       target:
@@ -73,7 +78,7 @@ variables:
 
     - &turn_off
       alias: "Turns off the ventilation"
-      service: fan.set_percentage
+      action: fan.set_percentage
       data:
         percentage: 8
       target:
@@ -100,13 +105,18 @@ action:
 
     - conditions:
         - alias: "Someone is taking a shower or humidity is very high"
-          condition: or
+          condition: and
           conditions:
-            - *shower_on
-            - condition: numeric_state
-              entity_id:
-                - sensor.bathroom_ble_humidity
-              above: 80
+            - or:
+              - *shower_on
+              - condition: numeric_state
+                entity_id:
+                  - sensor.bathroom_ble_humidity
+                above: 80
+            # - condition: numeric_state
+            #   entity_id:
+            #     - sensor.weather_current_humidity
+            #   below: 80
       sequence:
         - *turn_on
 

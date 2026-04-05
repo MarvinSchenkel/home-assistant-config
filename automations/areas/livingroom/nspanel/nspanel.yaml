@@ -16,7 +16,7 @@ variables:
       alias: "Navigate to the home page"
       service: browser_mod.navigate
       target:
-        device_id: a03bdae8b392884e72a812662eae18c4
+        device_id: 3592045e4bb5ae83ef15433835cd13d2
       data:
         path: /dashboard-nspanel/home
 
@@ -24,7 +24,7 @@ variables:
       alias: "Navigate to the music page"
       service: browser_mod.navigate
       target:
-        device_id: a03bdae8b392884e72a812662eae18c4
+        device_id: 3592045e4bb5ae83ef15433835cd13d2
       data:
         path: /dashboard-nspanel/music
 

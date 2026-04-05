@@ -9,17 +9,16 @@ max_exceeded: silent
 id: c5bc22e2-4499-4fb6-9ff1-1985efa93118
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
       - binary_sensor.sun_at_south_windows
-      - media_player.mancave_tv
       - input_boolean.setting_manual_blinds
       - input_boolean.mancave_cover_manual_control
     from:
@@ -29,7 +28,11 @@ trigger:
       - "off"
       - "on"
 
-  - platform: state
+  - trigger: state
+    entity_id:
+      - media_player.mancave_tv
+
+  - trigger: state
     entity_id:
       - scene.mancave_cover_closed
       - scene.mancave_cover_halfclosed
@@ -38,58 +41,63 @@ trigger:
       - scene.mancave_cover_ventilatingnight
     id: mancave_blinds
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.marvin_is_working
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.marvin_is_working
     to: "off"
     for:
       minutes: 5
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_elevation
     below: 17.5
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.is_hot_day
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_azimuth
     above: 200
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.mancave_room_mode
     to: "Slaap"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.mancave_room_mode
     to: "Wakker"
     id: "reset"
 
+  - trigger: template
+    value_template: >-
+      '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+
 variables:
+  temperature_entity: "sensor.pir_mancave_temperature"
   anchors:
     - &manual_control_on
       alias: "Set manual control to on, so the blinds stay closed"
-      service: input_boolean.turn_on
+      action: input_boolean.turn_on
       target:
         entity_id: input_boolean.mancave_cover_manual_control
 
     - &manual_control_off
       alias: "Reset manual control to on, so the blinds are automated again"
-      service: input_boolean.turn_off
+      action: input_boolean.turn_off
       target:
         entity_id: input_boolean.mancave_cover_manual_control
 
     - &fully_closed
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.mancave_cover_closed
 
@@ -172,11 +180,15 @@ action:
                 entity_id:
                   - media_player.mancave_tv
                 state: "on"
-              - alias: Keep the heat out of the house on hot days
-                condition: state
-                entity_id:
-                  - binary_sensor.is_hot_day
-                state: "on"
+              - and:
+                  - alias: Keep the heat out of the house on hot days
+                    condition: state
+                    entity_id:
+                      - binary_sensor.is_hot_day
+                    state: "on"
+                  # But only when it's hotter outside than inside
+                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+
         sequence:
           - *fully_closed
 
@@ -203,7 +215,7 @@ action:
               - binary_sensor.sun_hot
             state: "on"
         sequence:
-          - service: scene.turn_on
+          - action: scene.turn_on
             target:
               entity_id: scene.mancave_cover_tophalfopen
 
@@ -220,12 +232,12 @@ action:
                   - binary_sensor.marvin_is_working
                 state: "on"
         sequence:
-          - service: scene.turn_on
+          - action: scene.turn_on
             target:
               entity_id: scene.mancave_cover_halfclosed
 
     # Otherwise -> Half open
     default:
-      - service: scene.turn_on
+      - action: scene.turn_on
         target:
           entity_id: scene.mancave_cover_halfopen

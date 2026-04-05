@@ -42,44 +42,51 @@ variables:
   target_media_player: !input target_media_player
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
-    - &turn_on
-      alias: "Turn the child media player on"
-      service: media_player.join
+    - &condition_in_group
+      alias: "Check if the speaker is already part of the group"
+      condition: template
+      value_template: |-
+        {{
+          target_media_player
+          in state_attr(mass_entity, 'group_members')
+        }}
+
+    - &group
+      alias: "Ungroup the speaker from the target"
+      action: media_player.join
       target:
         entity_id: media_player.mass_sonos_kitchen
       data:
         group_members:
           - !input target_media_player
 
-    - &turn_off
-      alias: "Turn the child media player off"
-      service: media_player.unjoin
+    - &ungroup
+      alias: "Group the speaker to the target"
+      action: media_player.unjoin
       data: {}
       target:
         entity_id: !input target_media_player
 
-    - &play_media
-      # Use a script with 'mode = single' to prevent race condition
-      alias: "Start playing music on the master group"
-      service: script.turn_on
-      data:
-        entity_id: script.turn_on_all_devices
-
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: !input presence_entity
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: !input custom_state_triggers
 
-  - platform: state
+  - trigger: state
     entity_id: !input presence_entity
     to: "off"
     for:
       seconds: !input no_presence_wait
 
-  - platform: homeassistant
+  - trigger: state
+    entity_id:
+      - media_player.mass_sonos_kitchen
+    to: "playing"
+
+  - trigger: homeassistant
     event: start
 
 action:
@@ -93,6 +100,8 @@ action:
           - "{{ is_state(mass_entity, 'playing') }}"
           - condition: and
             conditions: !input custom_conditions
+          - not:
+            - *condition_in_group
         sequence:
           - if:
               - not:
@@ -101,7 +110,7 @@ action:
                       - !input target_media_player
                     state: "playing"
             then:
-              - *turn_on
+              - *group
 
       - conditions:
           - condition: state
@@ -115,12 +124,16 @@ action:
                 entity_id:
                   - !input target_media_player
                 state: "off"
+          - *condition_in_group
         sequence:
-          - *turn_off
+          - *ungroup
 
       - conditions:
           - not:
               - and:
                   !input custom_conditions
+          - *condition_in_group
         sequence:
-          - *turn_off
+          - *ungroup
+
+    default: []

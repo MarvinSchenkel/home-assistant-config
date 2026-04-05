@@ -26,7 +26,7 @@ action:
           - alias: "Turn on dark mode"
             service: browser_mod.set_theme
             target:
-              device_id: a03bdae8b392884e72a812662eae18c4
+              device_id: 3592045e4bb5ae83ef15433835cd13d2
             data:
               theme: nspanel
               dark: dark
@@ -35,7 +35,7 @@ action:
       - alias: "Turn on light mode"
         service: browser_mod.set_theme
         target:
-          device_id: a03bdae8b392884e72a812662eae18c4
+          device_id: 3592045e4bb5ae83ef15433835cd13d2
         data:
           theme: nspanel
           dark: light

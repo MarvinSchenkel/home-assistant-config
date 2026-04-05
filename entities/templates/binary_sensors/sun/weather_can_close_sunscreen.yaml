@@ -5,8 +5,8 @@ binary_sensor:
   - name: weather_can_close_sunscreen
     unique_id: f266f85d-e254-4980-9f78-addc8b02675c
     state: >
-      {%- if is_state("weather.openweathermap", "rainy")
-          or states("sensor.openweathermap_wind_speed") | float > 6.0
+      {%- if is_state("binary_sensor.gw3000a_rain_state_piezo", "on")
+          or is_state("binary_sensor.is_strong_wind", "on")
       -%}
         off
       {%- else -%}

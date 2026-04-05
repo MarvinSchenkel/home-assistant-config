@@ -9,16 +9,17 @@ trace:
   stored_traces: 25
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
       - binary_sensor.is_hot_day
+      - input_boolean.setting_manual_blinds
     from:
       - "off"
       - "on"
@@ -26,14 +27,15 @@ trigger:
       - "off"
       - "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
     to:
       - "Slaap"
       - "Net wakker"
+      - "Dutje"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
     to: "Wakker"
@@ -43,18 +45,27 @@ variables:
   anchors:
     - &close
       alias: "Open the curtains"
-      service: cover.close_cover
+      action: cover.close_cover
       target:
         entity_id: cover.master_bedroom_curtains
 
     - &open
       alias: "Open the curtains"
-      service: cover.open_cover
+      action: cover.open_cover
       target:
         entity_id: cover.master_bedroom_curtains
 
 action:
   - choose:
+      - alias: "Stop automating the blinds when manual control is on"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.masterbedroom_cover_manual_control
+            state: "on"
+        sequence:
+          - stop: "Master bedroom blinds are manually controlled"
+
       - alias: "This fully closes the blinds on hot days"
         conditions:
           - condition: state
@@ -77,7 +88,9 @@ action:
         conditions:
           - condition: state
             entity_id: input_select.master_bedroom_room_mode
-            state: "Slaap"
+            state:
+              - "Slaap"
+              - "Dutje"
         sequence:
           - *close
 

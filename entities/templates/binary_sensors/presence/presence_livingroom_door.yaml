@@ -3,7 +3,7 @@
 # It triggers presence for 10sec, so that presence is not constantly
 # detected when someone does not close the door
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.livingroom_door_open
     to: "on"
 

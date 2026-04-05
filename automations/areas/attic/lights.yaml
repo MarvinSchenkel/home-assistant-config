@@ -22,15 +22,23 @@ variables:
       condition: trigger
       id: light_schedule_change
 
+    - &condition_no_presence_detected
+      alias: "No presence has been detected for a while"
+      condition: state
+      entity_id: binary_sensor.presence_attic
+      state: "off"
+      for:
+        seconds: 90
+
     - &turn_on
       alias: "Turn the lights on"
-      service: scene.turn_on
+      action: scene.turn_on
       data:
         transition: 1
 
     - &turn_off
       alias: "Turn the lights off"
-      service: light.turn_off
+      action: light.turn_off
       data:
         entity_id:
           - light.attic_spot_left
@@ -38,23 +46,23 @@ variables:
         transition: 5
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_attic
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_attic
     to: "off"
     for:
-      seconds: 60
+      seconds: 90
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.current_light_schedule
 
@@ -98,5 +106,10 @@ action:
             target:
               entity_id: "{{ current_light_scene }}"
 
-    default:
-      - *turn_off
+      - alias: "Turn the light off when presence is off for x-amount of minutes"
+        conditions:
+          - *condition_no_presence_detected
+        sequence:
+          - *turn_off
+
+    default: []
