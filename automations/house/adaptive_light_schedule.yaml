@@ -1,0 +1,77 @@
+---
+description: >
+  Adjust the light schedule based on outdoor lux measurements from the
+  Ecowitt sensor during daytime hours
+alias: house_adaptive_light_schedule
+id: 4f69193b-91e3-441e-b606-85570b69d72f
+mode: single
+
+trigger:
+  - platform: numeric_state
+    id: "lux_below_5000"
+    entity_id: sensor.gw3000a_solar_lux
+    below: 5000
+    for:
+      minutes: 10
+
+  - platform: numeric_state
+    id: "lux_below_1000"
+    entity_id: sensor.gw3000a_solar_lux
+    below: 1000
+    for:
+      minutes: 10
+
+  - platform: numeric_state
+    id: "lux_above_8000"
+    entity_id: sensor.gw3000a_solar_lux
+    above: 8000
+    for:
+      minutes: 10
+
+condition:
+  - condition: state
+    entity_id: sun.sun
+    state: "above_horizon"
+
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "lux_below_1000"
+        sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.current_light_schedule
+            data:
+              option: "lezen"
+
+      - conditions:
+          - condition: trigger
+            id: "lux_below_5000"
+          - condition: state
+            entity_id: input_select.current_light_schedule
+            state:
+              - "energie"
+              - "concentreren"
+        sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.current_light_schedule
+            data:
+              option: "ontspannen"
+
+      - conditions:
+          - condition: trigger
+            id: "lux_above_8000"
+        sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.current_light_schedule
+            data:
+              option: "{{ states('input_select.current_light_schedule_dynamic') }}"
+
+    default: []

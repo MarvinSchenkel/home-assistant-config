@@ -1,7 +1,7 @@
 ---
 alias: areas_hall_downstairs_frontdoor_lights
 description: Turns the frontdoor light on/off based on sunset and sunrise
-mode: single
+mode: restart
 id: a2c1f562-ff56-43e8-a2bc-9fcaaaf490ed
 
 variables:

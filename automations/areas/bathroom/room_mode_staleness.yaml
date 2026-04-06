@@ -1,0 +1,25 @@
+---
+alias: areas_bathroom_room_mode_staleness
+description: Reset stale room modes in the bathroom
+mode: single
+id: 62333f07-0bd3-442f-b180-d43667ba9462
+
+trigger:
+  - platform: time_pattern
+    minutes: "/30"
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.bathroom_room_mode
+            state: "Spa"
+            for:
+              minutes: 90
+        sequence:
+          - action: input_select.select_option
+            entity_id: input_select.bathroom_room_mode
+            data:
+              option: "{{ states('input_select.master_bedroom_room_mode') }}"
+
+    default: []

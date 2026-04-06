@@ -4,7 +4,7 @@ description: >
   Control the blinds in the kitchen by using
    - Sun elevation
    - Whenever we wake up
-mode: single
+mode: queued
 max_exceeded: silent
 id: 38622ce4-5865-45c4-8cb8-7b3b54801280
 

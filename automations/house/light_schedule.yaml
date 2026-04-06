@@ -4,7 +4,7 @@ description: >
   or time of day
 alias: house_light_schedule
 id: 5840c714-45b1-4f4a-b805-023a268d0813
-mode: single
+mode: restart
 
 trigger:
   - platform: state
