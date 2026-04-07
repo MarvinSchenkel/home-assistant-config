@@ -1,7 +1,7 @@
 ---
 description: >
-  Automatically select the light schedule that suits the situation
-  or time of day
+  Automatically select the light schedule that suits the situation,
+  time of day, or outdoor light conditions (Ecowitt lux sensor)
 alias: house_light_schedule
 id: 5840c714-45b1-4f4a-b805-023a268d0813
 mode: restart
@@ -27,6 +27,27 @@ trigger:
   - platform: event
     event_type: automation_reloaded
 
+  - platform: numeric_state
+    id: "lux_below_5000"
+    entity_id: sensor.gw3000a_solar_lux
+    below: 5000
+    for:
+      minutes: 10
+
+  - platform: numeric_state
+    id: "lux_below_1000"
+    entity_id: sensor.gw3000a_solar_lux
+    below: 1000
+    for:
+      minutes: 10
+
+  - platform: numeric_state
+    id: "lux_above_8000"
+    entity_id: sensor.gw3000a_solar_lux
+    above: 8000
+    for:
+      minutes: 10
+
 variables:
   anchors:
     - &select_schedule
@@ -42,6 +63,55 @@ variables:
 
 action:
   - choose:
+      # Lux-based overrides: only during daytime with manual lights off
+      - conditions:
+          - condition: trigger
+            id: "lux_below_1000"
+          - condition: state
+            entity_id: sun.sun
+            state: "above_horizon"
+          - condition: state
+            entity_id: input_boolean.setting_manual_lights
+            state: "off"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "lezen"
+
+      - conditions:
+          - condition: trigger
+            id: "lux_below_5000"
+          - condition: state
+            entity_id: sun.sun
+            state: "above_horizon"
+          - condition: state
+            entity_id: input_boolean.setting_manual_lights
+            state: "off"
+          - condition: state
+            entity_id: input_select.current_light_schedule
+            state:
+              - "energie"
+              - "concentreren"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "ontspannen"
+
+      - conditions:
+          - condition: trigger
+            id: "lux_above_8000"
+          - condition: state
+            entity_id: sun.sun
+            state: "above_horizon"
+          - condition: state
+            entity_id: input_boolean.setting_manual_lights
+            state: "off"
+        sequence:
+          - <<: *select_schedule
+            data:
+              option: "{{ states('input_select.current_light_schedule_dynamic') }}"
+
+      # Time/mode-based schedule
       - conditions:
           - condition: state
             entity_id:
