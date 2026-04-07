@@ -1,0 +1,57 @@
+---
+alias: areas_master_bedroom_room_mode_staleness
+description: Reset stale room modes in the master bedroom
+mode: single
+id: 3be82abc-8ff2-41e6-b103-ab4e59bc1304
+
+trigger:
+  - platform: time_pattern
+    minutes: "/30"
+
+variables:
+  anchors:
+    - &select_mode
+      action: input_select.select_option
+      entity_id: input_select.master_bedroom_room_mode
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state: "Slaap"
+          - condition: time
+            after: "10:00:00"
+          - condition: state
+            entity_id: binary_sensor.presence_master_bedroom
+            state: "off"
+            for:
+              minutes: 30
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Net wakker"
+
+      - conditions:
+          - condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state: "Net wakker"
+            for:
+              minutes: 60
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+      - conditions:
+          - condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state: "Dutje"
+            for:
+              minutes: 120
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+    default: []

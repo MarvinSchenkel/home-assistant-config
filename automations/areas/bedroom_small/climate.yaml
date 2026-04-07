@@ -5,18 +5,18 @@ id: 80741f39-9e04-408b-90bf-dcde194198bb
 mode: queued
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.everyone_left_home
     from: ~
 
-  - platform: time
+  - trigger: time
     at:
       - "18:00:00"
       - "06:00:00"

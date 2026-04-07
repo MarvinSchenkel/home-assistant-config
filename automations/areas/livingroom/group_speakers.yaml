@@ -3,7 +3,7 @@ description: >
   Automatically play music in the living room
 alias: areas_livingroom_group_speakers
 id: 4d2d47e5-cf61-40e3-966e-37806dcc2428
-mode: single
+mode: queued
 trace:
   stored_traces: 25
 

@@ -2,21 +2,21 @@
 alias: areas_bedroom_small_blinds
 description: >-
   Automate blinds in the small bedroom
-mode: single
+mode: queued
 max_exceeded: silent
 id: a63e7f88-b3fd-4628-a4d1-327070e0522b
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - event.hue_tap_dial_switch_small_bedroom_button_4
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.is_hot_day
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
     to: "on"

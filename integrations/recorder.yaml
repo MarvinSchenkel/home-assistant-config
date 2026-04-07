@@ -10,3 +10,18 @@ recorder:
 
   # Disable auto purging, I'm doing this using automations instead
   auto_purge: false
+
+  exclude:
+    domains:
+      - button
+      - update
+      - device_tracker
+    entity_globs:
+      - "*espresense_mancave*"
+      - "sensor.double_take_*"
+      - "*zigbee2mqtt_bridge*"
+      - "sensor.nspanel_*_infobar"
+  include:
+    entities:
+      - device_tracker.marvins_iphone_13_nieuw
+      - device_tracker.unifi_laura

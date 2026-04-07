@@ -1,0 +1,46 @@
+---
+alias: areas_mancave_room_mode_staleness
+description: Reset stale room modes in the mancave
+mode: single
+id: 89c8727d-ab33-45f0-aaf3-7efa6a5147f5
+
+trigger:
+  - platform: time_pattern
+    minutes: "/30"
+
+variables:
+  anchors:
+    - &select_mode
+      action: input_select.select_option
+      entity_id: input_select.mancave_room_mode
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.mancave_room_mode
+            state: "Slaap"
+          - condition: time
+            after: "10:00:00"
+          - condition: state
+            entity_id: binary_sensor.presence_mancave
+            state: "off"
+            for:
+              minutes: 30
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+      - conditions:
+          - condition: state
+            entity_id: input_select.mancave_room_mode
+            state: "Net wakker"
+            for:
+              minutes: 60
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+    default: []

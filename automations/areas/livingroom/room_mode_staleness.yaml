@@ -1,0 +1,41 @@
+---
+alias: areas_livingroom_room_mode_staleness
+description: Reset stale room modes in the livingroom
+mode: single
+id: 149004a9-a1a6-446d-b749-4d15af721b2c
+
+trigger:
+  - platform: time_pattern
+    minutes: "/30"
+
+variables:
+  anchors:
+    - &select_mode
+      action: input_select.select_option
+      entity_id: input_select.livingroom_room_mode
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.livingroom_room_mode
+            state: "Slaap"
+          - condition: time
+            after: "10:00:00"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Net wakker"
+
+      - conditions:
+          - condition: state
+            entity_id: input_select.livingroom_room_mode
+            state: "Net wakker"
+            for:
+              minutes: 60
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
+
+    default: []

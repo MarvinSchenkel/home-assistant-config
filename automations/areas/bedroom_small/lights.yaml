@@ -2,7 +2,7 @@
 alias: areas_bedroom_small_lights
 description: >-
   Automate light's brightness in the small bedroom
-mode: single
+mode: queued
 max_exceeded: silent
 id: ca30804b-41af-4ca6-8d00-869978d17810
 
