@@ -1,0 +1,11 @@
+---
+# Outdoor darkness based on Ecowitt lux sensor (threshold: 700 lx)
+binary_sensor:
+  - name: outside_is_dark
+    unique_id: 8b3f1a92-4c7e-4d1a-b8f3-6e2a91c0d5f7
+    delay_on:
+      seconds: 30
+    delay_off:
+      seconds: 30
+    state: >
+      {{ states("sensor.gw3000a_solar_lux") | float(0) < 700 }}
