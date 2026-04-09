@@ -28,6 +28,13 @@ trigger:
     event_type: automation_reloaded
 
   - platform: numeric_state
+    id: "lux_below_15000"
+    entity_id: sensor.gw3000a_solar_lux
+    below: 15000
+    for:
+      minutes: 10
+
+  - platform: numeric_state
     id: "lux_below_5000"
     entity_id: sensor.gw3000a_solar_lux
     below: 5000
@@ -35,16 +42,9 @@ trigger:
       minutes: 10
 
   - platform: numeric_state
-    id: "lux_below_1000"
+    id: "lux_above_25000"
     entity_id: sensor.gw3000a_solar_lux
-    below: 1000
-    for:
-      minutes: 10
-
-  - platform: numeric_state
-    id: "lux_above_8000"
-    entity_id: sensor.gw3000a_solar_lux
-    above: 8000
+    above: 25000
     for:
       minutes: 10
 
@@ -66,7 +66,7 @@ action:
       # Lux-based overrides: only during daytime with manual lights off
       - conditions:
           - condition: trigger
-            id: "lux_below_1000"
+            id: "lux_below_5000"
           - condition: state
             entity_id: sun.sun
             state: "above_horizon"
@@ -80,7 +80,7 @@ action:
 
       - conditions:
           - condition: trigger
-            id: "lux_below_5000"
+            id: "lux_below_15000"
           - condition: state
             entity_id: sun.sun
             state: "above_horizon"
@@ -99,7 +99,7 @@ action:
 
       - conditions:
           - condition: trigger
-            id: "lux_above_8000"
+            id: "lux_above_25000"
           - condition: state
             entity_id: sun.sun
             state: "above_horizon"
