@@ -3,7 +3,8 @@ alias: areas_garden_sunscreen
 description: >
   Control the sunscreen based on:
     - The sun angle / whether it's hot
-    - Heavy wind detected (todo)
+    - Heavy wind / rain detected (retracts the screen)
+    - A wind cooldown that blocks the sun-driven redeploy right after a gust
     - Manual override detected (todo)
 mode: queued
 max_exceeded: silent
@@ -30,6 +31,11 @@ trigger:
       - sensor.sun_azimuth
     above: 285
     id: "sun_gone"
+
+  - trigger: state
+    entity_id:
+      - timer.sunscreen_wind_cooldown
+    to: "idle"
 
 variables:
   anchors:
@@ -71,7 +77,17 @@ action:
                   - binary_sensor.weather_can_close_sunscreen
                 state: "off"
         sequence:
-          *sunscreen_up
+          - *sunscreen_up
+          - alias: "Start the wind cooldown when retracting because of wind / rain"
+            if:
+              - condition: state
+                entity_id:
+                  - binary_sensor.weather_can_close_sunscreen
+                state: "off"
+            then:
+              - action: timer.start
+                target:
+                  entity_id: timer.sunscreen_wind_cooldown
 
       - alias: "Keep the dinner state active"
         conditions:
@@ -81,12 +97,16 @@ action:
             state: "dinner"
         sequence: []
 
-      - alias: "Close the screen when it is hot"
+      - alias: "Close the screen when it is hot and no wind cooldown is active"
         conditions:
           - condition: state
             entity_id:
               - binary_sensor.sun_should_close_south_blinds
             state: "on"
+          - condition: state
+            entity_id:
+              - timer.sunscreen_wind_cooldown
+            state: "idle"
         sequence:
           - *sunscreen_down
 
