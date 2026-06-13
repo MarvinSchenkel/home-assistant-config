@@ -4,7 +4,8 @@ description: >
   Control the sunscreen based on:
     - The sun angle / whether it's hot
     - Heavy wind / rain detected (retracts the screen)
-    - A wind cooldown that blocks the sun-driven redeploy right after a gust
+    - Only redeploy for sun once the wind has been calm for 15 min, so a
+      gust does not bounce the screen down and straight back up
     - Manual override detected (todo)
 mode: queued
 max_exceeded: silent
@@ -32,10 +33,14 @@ trigger:
     above: 285
     id: "sun_gone"
 
+  # Re-evaluate once the wind has been calm for 15 min, so the screen can
+  # redeploy for the sun after a gust without us polling for it.
   - trigger: state
     entity_id:
-      - timer.sunscreen_wind_cooldown
-    to: "idle"
+      - binary_sensor.weather_can_close_sunscreen
+    to: "on"
+    for:
+      minutes: 15
 
 variables:
   anchors:
@@ -77,17 +82,7 @@ action:
                   - binary_sensor.weather_can_close_sunscreen
                 state: "off"
         sequence:
-          - *sunscreen_up
-          - alias: "Start the wind cooldown when retracting because of wind / rain"
-            if:
-              - condition: state
-                entity_id:
-                  - binary_sensor.weather_can_close_sunscreen
-                state: "off"
-            then:
-              - action: timer.start
-                target:
-                  entity_id: timer.sunscreen_wind_cooldown
+          *sunscreen_up
 
       - alias: "Keep the dinner state active"
         conditions:
@@ -97,7 +92,7 @@ action:
             state: "dinner"
         sequence: []
 
-      - alias: "Close the screen when it is hot and no wind cooldown is active"
+      - alias: "Close the screen when it is hot and the wind has been calm 15 min"
         conditions:
           - condition: state
             entity_id:
@@ -105,8 +100,10 @@ action:
             state: "on"
           - condition: state
             entity_id:
-              - timer.sunscreen_wind_cooldown
-            state: "idle"
+              - binary_sensor.weather_can_close_sunscreen
+            state: "on"
+            for:
+              minutes: 15
         sequence:
           - *sunscreen_down
 

@@ -1,7 +1,0 @@
----
-name: Zonnescherm wind cooldown
-icon: mdi:awning
-# After the sunscreen retracts for wind, block the sun-driven redeploy for this
-# long so brief lulls in the wind do not bounce the screen back down.
-duration: "00:15:00"
-restore: true
