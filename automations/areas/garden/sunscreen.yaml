@@ -3,7 +3,9 @@ alias: areas_garden_sunscreen
 description: >
   Control the sunscreen based on:
     - The sun angle / whether it's hot
-    - Heavy wind detected (todo)
+    - Heavy wind / rain detected (retracts the screen)
+    - Only redeploy for sun once the wind has been calm for 15 min, so a
+      gust does not bounce the screen down and straight back up
     - Manual override detected (todo)
 mode: queued
 max_exceeded: silent
@@ -30,6 +32,15 @@ trigger:
       - sensor.sun_azimuth
     above: 285
     id: "sun_gone"
+
+  # Re-evaluate once the wind has been calm for 15 min, so the screen can
+  # redeploy for the sun after a gust without us polling for it.
+  - trigger: state
+    entity_id:
+      - binary_sensor.weather_can_close_sunscreen
+    to: "on"
+    for:
+      minutes: 15
 
 variables:
   anchors:
@@ -81,12 +92,18 @@ action:
             state: "dinner"
         sequence: []
 
-      - alias: "Close the screen when it is hot"
+      - alias: "Close the screen when it is hot and the wind has been calm 15 min"
         conditions:
           - condition: state
             entity_id:
               - binary_sensor.sun_should_close_south_blinds
             state: "on"
+          - condition: state
+            entity_id:
+              - binary_sensor.weather_can_close_sunscreen
+            state: "on"
+            for:
+              minutes: 15
         sequence:
           - *sunscreen_down
 
