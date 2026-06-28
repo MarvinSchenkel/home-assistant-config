@@ -219,14 +219,6 @@ action:
       - alias: "Close the blinds a bit more a hot day"
         conditions:
           - or:
-              - and:
-                  - alias: Keep the heat out of the house on hot days
-                    condition: state
-                    entity_id:
-                      - binary_sensor.is_hot_day
-                    state: "on"
-                  # But only when it's hotter outside than inside
-                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
               # - and:
               #     - alias: It's hot but we cannot close the sunscreen
               #       condition: state
@@ -237,6 +229,14 @@ action:
               #       entity_id:
               #         - binary_sensor.sun_should_close_south_blinds
               #       state: "on"
+              - and:
+                  - alias: Keep the heat out of the house on hot days
+                    condition: state
+                    entity_id:
+                      - binary_sensor.is_hot_day
+                    state: "on"
+                  # But only when it's hotter outside than inside
+                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
         sequence:
           - *cover_sun
 
