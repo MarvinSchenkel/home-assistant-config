@@ -17,7 +17,7 @@ action:
       - conditions:
           - "{{ event_id is string }}"
         sequence:
-          - service: script.send_notification
+          - action: script.send_notification
             data:
               receivers:
                 - "marvin"
@@ -28,7 +28,7 @@ action:
                     + event_id }}"
 
     default:
-      - service: script.send_notification
+      - action: script.send_notification
         data:
           receivers:
             - "marvin"

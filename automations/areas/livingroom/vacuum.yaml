@@ -20,7 +20,7 @@ variables:
         entity_id: button.norby_deep_clean
 
 trigger:
-  - platform: time
+  - trigger: time
     at: "01:00:00"
 
 action:

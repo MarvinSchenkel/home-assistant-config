@@ -9,8 +9,8 @@ id: e7a84c9a-90fb-4cbf-bbbe-9bfbdd7e6c19
 mode: single
 
 trigger:
-  - platform: time_pattern
+  - trigger: time_pattern
     minutes: 12
 
 action:
-  - service: recorder.purge
+  - action: recorder.purge

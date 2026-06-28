@@ -5,18 +5,18 @@ mode: single
 id: 388b4902-87a3-4312-9f98-5a81fd720a9c
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: person.marvin
     from: "home"
     to: "not_home"
-  - platform: state
+  - trigger: state
     entity_id: person.laura
     from: "home"
     to: "not_home"
 
 action:
-  - service: input_select.select_option
-    data_template:
+  - action: input_select.select_option
+    data:
       entity_id: >
         {% if trigger.entity_id == 'person.marvin' %}
           input_select.marvin_status_dropdown

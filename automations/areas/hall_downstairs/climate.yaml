@@ -5,13 +5,13 @@ id: 9184d186-def2-431e-af58-1aabe0bce9a8
 mode: queued
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.everyone_left_home
       - binary_sensor.house_mode_everyone_at_home_working
@@ -19,7 +19,7 @@ trigger:
       - input_boolean.setting_guest_mode
     from: ~
 
-  - platform: time
+  - trigger: time
     at: "21:00:00"
 
 variables:
@@ -31,21 +31,21 @@ variables:
     - &turn_on
       <<: *target
       alias: "Turn on heating"
-      service: climate.set_hvac_mode
+      action: climate.set_hvac_mode
       data:
         hvac_mode: "heat"
 
     - &turn_down
       <<: *target
       alias: "Turn downcclimate"
-      service: climate.set_temperature
+      action: climate.set_temperature
       data:
         temperature: 15.0
 
     - &turn_up
       <<: *target
       alias: "Turn down climate"
-      service: climate.set_temperature
+      action: climate.set_temperature
       data:
         temperature: 19.0
 

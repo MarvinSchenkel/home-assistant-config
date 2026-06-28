@@ -5,13 +5,13 @@ alias: areas_livingroom_nspanel_brightness
 id: e6d6d7bc-5ad6-493a-878c-9209248e6ee3
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.livingroom_is_dark
       - input_select.livingroom_current_lights_scene
@@ -20,15 +20,15 @@ trigger:
 variables:
   anchors:
     - &set_brightness
-      service: number.set_value
+      action: number.set_value
       entity_id: number.nspanel_screen_brightness
 
     - &turn_off
-      service: switch.turn_on
+      action: switch.turn_on
       entity_id: switch.nspanel_screensaver
 
     - &turn_on
-      service: switch.turn_off
+      action: switch.turn_off
       entity_id: switch.nspanel_screensaver
 
 action:

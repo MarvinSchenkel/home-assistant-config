@@ -5,11 +5,11 @@ mode: single
 id: 19f54bfb-fae0-46a2-b72c-75cbf467dfd2
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - sensor.picnic_next_delivery_eta_start
       - sensor.picnic_next_delivery_eta_end
-  - platform: time
+  - trigger: time
     at: "08:30:00"
 
 variables:
@@ -32,7 +32,7 @@ condition:
   - "{{ eta_start > as_timestamp(now()) }}"
 
 action:
-  - service: script.send_notification
+  - action: script.send_notification
     data:
       receivers:
         - "marvin"

@@ -5,20 +5,20 @@ id: 0a71bc6d-3ba2-45b3-af71-5b8489f1665e
 mode: queued
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.master_bedroom_room_mode
       - binary_sensor.everyone_left_home
       - binary_sensor.house_mode_everyone_at_home_working
     from: ~
 
-  - platform: time
+  - trigger: time
     at: "21:00:00"
 
 variables:
@@ -30,21 +30,21 @@ variables:
     - &turn_on
       <<: *target
       alias: "Turn on heating"
-      service: climate.set_hvac_mode
+      action: climate.set_hvac_mode
       data:
         hvac_mode: "heat"
 
     - &turn_down
       <<: *target
       alias: "Turn down master bedroom climate"
-      service: climate.set_temperature
+      action: climate.set_temperature
       data:
         temperature: 15.0
 
     - &turn_up
       <<: *target
       alias: "Turn down master bedroom climate"
-      service: climate.set_temperature
+      action: climate.set_temperature
       data:
         temperature: 17.0
 

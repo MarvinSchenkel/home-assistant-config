@@ -5,18 +5,18 @@ mode: queued
 id: e72f181f-3840-472d-9529-db7a65ddd71b
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: person.marvin
     from: "not_home"
     to: "home"
-  - platform: state
+  - trigger: state
     entity_id: person.laura
     from: "not_home"
     to: "home"
 
 action:
-  - service: input_select.select_option
-    data_template:
+  - action: input_select.select_option
+    data:
       entity_id: >
         {% if trigger.entity_id == 'person.marvin' %}
           input_select.marvin_status_dropdown

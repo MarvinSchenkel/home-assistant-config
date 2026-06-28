@@ -9,42 +9,42 @@ max_exceeded: silent
 id: 38622ce4-5865-45c4-8cb8-7b3b54801280
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.livingroom_room_mode
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_boolean.setting_manual_blinds
       - input_boolean.kitchen_cover_manual_control
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     below: 0
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     above: 4
 
-  - platform: time
+  - trigger: time
     at: "20:45:00"
     id: "time_close_kitchen"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - scene.kitchen_cover_halfclosed
       - scene.kitchen_cover_halfopen
     id: kitchen_blinds
 
-  - platform: time
+  - trigger: time
     at: "03:00:00"
     id: "reset"
 
@@ -52,25 +52,25 @@ variables:
   anchors:
     - &halfclosed
       alias: "Close the blinds halfway"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.kitchen_cover_halfclosed
 
     - &halfopen
       alias: "Open the blinds halfway"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id: scene.kitchen_cover_halfopen
 
     - &manual_control_on
       alias: "Set manual control to on, so the blinds stay closed"
-      service: input_boolean.turn_on
+      action: input_boolean.turn_on
       target:
         entity_id: input_boolean.kitchen_cover_manual_control
 
     - &manual_control_off
       alias: "Reset manual control to on, so the blinds are automated again"
-      service: input_boolean.turn_off
+      action: input_boolean.turn_off
       target:
         entity_id: input_boolean.kitchen_cover_manual_control
 

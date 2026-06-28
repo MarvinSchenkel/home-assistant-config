@@ -50,7 +50,7 @@ sequence:
                 - "{{ receiver == 'marvin' }}"
                 - "{{ marvin_state in home_status }}"
               sequence:
-                - service: notify.mancave_tv
+                - action: notify.mancave_tv
                   continue_on_error: true
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
@@ -99,7 +99,7 @@ sequence:
                 (type == 'home_only' and marvin_state in home_status)
                 ) }}"
               sequence:
-                - service: notify.mobile_app_marvins_iphone_13_nieuw
+                - action: notify.mobile_app_marvins_iphone_13_nieuw
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ title }}"
@@ -113,7 +113,7 @@ sequence:
                 (type == 'home_only' and laura_state in home_status)
                 ) }}"
               sequence:
-                - service: notify.mobile_app_iphone_van_l_a
+                - action: notify.mobile_app_iphone_van_l_a
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ title }}"

@@ -14,13 +14,13 @@ trace:
   stored_traces: 25
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.sun_should_close_south_blinds
       - input_boolean.setting_manual_blinds
@@ -34,46 +34,46 @@ trigger:
       - "off"
       - "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.livingroom_room_mode
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     below: -9
 
-  - platform: state
+  - trigger: state
     entity_id: sensor.gw3000a_solar_lux
     to: "0"
 
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
     above: 4
 
-  - platform: state
+  - trigger: state
     entity_id: input_button.gardendoor_nspanel
     id: "garden_door_switch"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.garden_door_open
     to: "on"
     id: "garden_door_open"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.garden_door_open
     to: "off"
 
-  - platform: state
+  - trigger: state
     entity_id: media_player.living_room_android
     to: "off"
     for:
       minutes: 1
 
-  - platform: state
+  - trigger: state
     entity_id:
       - scene.gardendoor_cover_closed
       - scene.gardendoor_cover_halfclosed
@@ -82,7 +82,7 @@ trigger:
       - scene.gardendoor_cover_sun
     id: gardendoor_blinds
 
-  - platform: time
+  - trigger: time
     at: "00:03:00"
     id: "reset"
 
@@ -90,41 +90,41 @@ variables:
   anchors:
     - &cover_closed
       alias: "Close the blinds"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id:
           - scene.gardendoor_cover_closed
 
     - &cover_half_closed
       alias: "Close the blinds halfway"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id:
           - scene.gardendoor_cover_halfclosed
 
     - &cover_half_open
       alias: "Open the blinds half way"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id:
           - scene.gardendoor_cover_halfopen
 
     - &cover_sun
       alias: "Block out the sun on a hot day"
-      service: scene.turn_on
+      action: scene.turn_on
       target:
         entity_id:
           - scene.gardendoor_cover_sun
 
     - &manual_control_on
       alias: "Set manual control to on, so the blinds stay closed"
-      service: input_boolean.turn_on
+      action: input_boolean.turn_on
       target:
         entity_id: input_boolean.livingroom_cover_manual_control
 
     - &manual_control_off
       alias: "Reset manual control, so the blinds stay closed"
-      service: input_boolean.turn_off
+      action: input_boolean.turn_off
       target:
         entity_id: input_boolean.livingroom_cover_manual_control
 

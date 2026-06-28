@@ -10,7 +10,7 @@ sequence:
           - "off"
         for: "00:01:00"
     then:
-      - service: media_player.media_play
+      - action: media_player.media_play
         data: {}
         target:
           entity_id: '{{ states("sensor.mass_media_entity") }}'

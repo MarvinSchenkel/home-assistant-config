@@ -7,17 +7,17 @@ trace:
   stored_traces: 25
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_boolean.setting_manual_lights
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.livingroom_is_dark
     from: ~
@@ -25,34 +25,34 @@ trigger:
       seconds: 2
     id: light_dark_change
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.livingroom_is_media_playing
     for:
       seconds: 10
 
-  - platform: state
+  - trigger: state
     entity_id:
       - media_player.living_room_android
     to: "off"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_livingroom
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_livingroom
     to: "off"
     for:
       minutes: 10
 
-  - platform: time
+  - trigger: time
     at: "00:03:00"
     id: "reset"
 
@@ -94,7 +94,7 @@ variables:
 
     - &turn_off
       alias: "Turn the lights off"
-      service: light.turn_off
+      action: light.turn_off
       target:
         entity_id:
           - light.livingroom
@@ -106,7 +106,7 @@ variables:
 
     - &turn_on
       alias: "Turn on the lights"
-      service: scene.turn_on
+      action: scene.turn_on
       data:
         transition: 2
 

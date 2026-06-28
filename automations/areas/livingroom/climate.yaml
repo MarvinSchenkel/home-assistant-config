@@ -5,13 +5,13 @@ id: 1c012736-f49b-4da5-95f0-dd363369c64e
 mode: queued
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.livingroom_room_mode
       - binary_sensor.everyone_left_home
@@ -19,12 +19,12 @@ trigger:
       - input_boolean.setting_guest_mode
     from: ~
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.garden_door_open
     for:
       seconds: 10
 
-  - platform: time
+  - trigger: time
     at: "21:00:00"
 
 variables:
@@ -38,21 +38,21 @@ variables:
     - &turn_on
       <<: *target
       alias: "Turn on heating"
-      service: climate.set_hvac_mode
+      action: climate.set_hvac_mode
       data:
         hvac_mode: "heat"
 
     - &turn_down
       <<: *target
       alias: "Turn down living room climate"
-      service: climate.set_temperature
+      action: climate.set_temperature
       data:
         temperature: 15.0
 
     - &turn_up
       <<: *target
       alias: "Turn down living room climate"
-      service: climate.set_temperature
+      action: climate.set_temperature
       data:
         temperature: 20.0
 

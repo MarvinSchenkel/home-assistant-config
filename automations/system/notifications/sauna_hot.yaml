@@ -5,14 +5,14 @@ mode: single
 id: 1457f2ed-c313-4af4-9fdf-827596238980
 
 trigger:
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id: sensor.sauna_temperature
     above: 50
     for:
       minutes: 1
 
 action:
-  - service: script.send_notification
+  - action: script.send_notification
     data:
       receivers:
         - "marvin"
