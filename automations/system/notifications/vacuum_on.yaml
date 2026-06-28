@@ -5,12 +5,12 @@ mode: single
 id: 96522435-829f-419b-b3c0-adfafb88b209
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: vacuum.norby
     to: "cleaning"
 
 action:
-  - service: script.send_notification
+  - action: script.send_notification
     data:
       receivers:
         - "marvin"

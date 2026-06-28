@@ -5,13 +5,13 @@ mode: single
 id: 63b70abc-30bb-4db3-9bb9-eeccb8f2eed4
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.washing_machine
     from: "on"
     to: "off"
 
 action:
-  - service: script.send_notification
+  - action: script.send_notification
     data:
       receivers:
         - "marvin"

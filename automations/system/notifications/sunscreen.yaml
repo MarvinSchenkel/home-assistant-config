@@ -5,7 +5,7 @@ mode: single
 id: b14e125e-baa1-4aef-b6cc-e4baf74cceab
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: input_select.garden_current_cover_scene
 
 action:
@@ -15,7 +15,7 @@ action:
           - input_select.garden_current_cover_scene
         state: "sunblock"
     then:
-      - service: script.send_notification
+      - action: script.send_notification
         data:
           receivers:
             - "marvin"
@@ -29,7 +29,7 @@ action:
           - input_select.garden_current_cover_scene
         state: "open"
     then:
-      - service: script.send_notification
+      - action: script.send_notification
         data:
           receivers:
             - "marvin"

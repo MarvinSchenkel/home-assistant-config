@@ -5,13 +5,13 @@ alias: areas_livingroom_nspanel_theme
 id: c7e57828-e414-4247-b354-e17728544e5b
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.livingroom_is_dark
 
@@ -24,7 +24,7 @@ action:
             state: "on"
         sequence:
           - alias: "Turn on dark mode"
-            service: browser_mod.set_theme
+            action: browser_mod.set_theme
             target:
               device_id: 3592045e4bb5ae83ef15433835cd13d2
             data:
@@ -33,7 +33,7 @@ action:
 
     default:
       - alias: "Turn on light mode"
-        service: browser_mod.set_theme
+        action: browser_mod.set_theme
         target:
           device_id: 3592045e4bb5ae83ef15433835cd13d2
         data:

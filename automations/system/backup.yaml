@@ -5,10 +5,10 @@ mode: single
 id: 9dc7b1ff-cd5a-4186-baa8-6aa3e788abac
 
 trigger:
-  platform: time
+  trigger: time
   at: "02:00:00"
 
 action:
-  - service: hassio.backup_full
-    data_template:
+  - action: hassio.backup_full
+    data:
       name: Automated Backup {{ now().strftime('%Y-%m-%d') }}

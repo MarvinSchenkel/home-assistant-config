@@ -5,7 +5,7 @@ mode: queued
 id: f6759b16-37b1-4190-bec1-51f7f4bd3128
 
 trigger:
-  - platform: event
+  - trigger: event
     event_type: call_service
     event_data:
       domain: scene
@@ -31,7 +31,7 @@ action:
             scene_category: "{{ scene_full.replace('scene.', '').split('_')[1] }}"
             scene_name: "{{ scene_full.replace('scene.', '').split('_')[2] }}"
 
-        - service: input_select.select_option
+        - action: input_select.select_option
           target:
             entity_id: >
               input_select.{{ scene_room }}_current_{{ scene_category }}_scene

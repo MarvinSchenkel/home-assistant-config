@@ -5,7 +5,7 @@ mode: queued
 id: 775a9a3e-558d-4030-97a9-fe9f4eb24c99
 
 trigger:
-  - platform: state
+  - trigger: state
     id: "net_wakker_40m"
     entity_id:
       - input_select.livingroom_room_mode
@@ -13,7 +13,7 @@ trigger:
     for:
       minutes: 40
 
-  - platform: state
+  - trigger: state
     id: "presence_off_1h"
     entity_id:
       - binary_sensor.presence_livingroom
@@ -21,25 +21,25 @@ trigger:
     for:
       minutes: 60
 
-  - platform: state
+  - trigger: state
     id: "presence_detected"
     entity_id:
       - binary_sensor.presence_livingroom
     to: "on"
 
-  - platform: state
+  - trigger: state
     id: "front_door_open"
     entity_id: binary_sensor.presence_front_door
     to: "on"
 
-  - platform: time
+  - trigger: time
     id: "reset_holiday"
     at: "10:00:00"
 
 variables:
   anchors:
     - &select_mode
-      service: input_select.select_option
+      action: input_select.select_option
       entity_id: input_select.livingroom_room_mode
 
     - &is_sleep_mode_selected
@@ -69,7 +69,7 @@ action:
           - *is_sleep_mode_selected
         sequence:
           - wait_for_trigger:
-              - platform: state
+              - trigger: state
                 entity_id:
                   - binary_sensor.presence_livingroom
                 to: "on"

@@ -5,7 +5,7 @@ mode: single
 id: 62333f07-0bd3-442f-b180-d43667ba9462
 
 trigger:
-  - platform: time_pattern
+  - trigger: time_pattern
     minutes: "/30"
 
 action:

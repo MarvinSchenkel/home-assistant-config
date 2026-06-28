@@ -5,7 +5,7 @@ mode: queued
 id: 434c6fd5-646d-4ee3-85ff-3c162d246ff8
 
 trigger:
-  - platform: state
+  - trigger: state
     id: "net_wakker_40m"
     entity_id:
       - input_select.mancave_room_mode
@@ -16,7 +16,7 @@ trigger:
 variables:
   anchors:
     - &select_mode
-      service: input_select.select_option
+      action: input_select.select_option
       entity_id: input_select.mancave_room_mode
 
 action:

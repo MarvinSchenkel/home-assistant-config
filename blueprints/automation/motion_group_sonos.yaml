@@ -55,24 +55,24 @@ variables:
   group_on_tv: !input group_on_tv
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: !input presence_entity
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: !input presence_entity
     to: "off"
     for:
       seconds: !input no_presence_wait
 
-  - platform: state
+  - trigger: state
     entity_id: !input sonos_source
     to: "playing"
 
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
 action:
@@ -99,7 +99,7 @@ action:
           # since this would cause a 1 sec silence
           - '{{ sonos_target not in state_attr(sonos_source, "group_members") }}'
         sequence:
-          - service: media_player.join
+          - action: media_player.join
             data:
               group_members:
                 - !input sonos_target
@@ -114,7 +114,7 @@ action:
             for:
               seconds: !input no_presence_wait
         sequence:
-          - service: media_player.unjoin
+          - action: media_player.unjoin
             data:
               entity_id: !input sonos_target
 

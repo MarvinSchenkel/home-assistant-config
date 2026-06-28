@@ -7,39 +7,39 @@ trace:
   stored_traces: 25
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_kitchen
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_kitchen
     to: "off"
     for:
       seconds: 50
 
-  - platform: state
+  - trigger: state
     entity_id: binary_sensor.presence_kitchen
     to: "off"
     for:
       seconds: 5
     id: "presence_off_5s"
 
-  - platform: state
+  - trigger: state
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
-  - platform: state
+  - trigger: state
     entity_id: media_player.apple_tv
     to: "playing"
     id: "apple_tv_playing"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.kitchen_is_dark
       - input_boolean.house_mode_cooking
@@ -49,13 +49,13 @@ variables:
   anchors:
     - &turn_on
       alias: "Turn on the lights"
-      service: scene.turn_on
+      action: scene.turn_on
       data:
         transition: 1
 
     - &turn_off
       alias: "Turn the lights off"
-      service: light.turn_off
+      action: light.turn_off
       data:
         entity_id: light.led_kitchen
         transition: 3

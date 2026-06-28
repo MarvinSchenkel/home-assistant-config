@@ -5,20 +5,20 @@ mode: single
 id: b0a446d1-8dfe-40c0-8ff9-e0df04c469db
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id: input_select.marvin_status_dropdown
     to: "Weg"
     for:
       hours: 24
-  - platform: state
+  - trigger: state
     entity_id: input_select.laura_status_dropdown
     to: "Weg"
     for:
       hours: 24
 
 action:
-  - service: input_select.select_option
-    data_template:
+  - action: input_select.select_option
+    data:
       entity_id: >
         {% if trigger.entity_id == 'input_select.marvin_status_dropdown' %}
           input_select.marvin_status_dropdown

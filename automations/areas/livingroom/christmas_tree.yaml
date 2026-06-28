@@ -5,21 +5,21 @@ mode: queued
 id: 74468068-43d1-40a0-8eec-822a4235adfc
 
 trigger:
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
 
-  - platform: time
+  - trigger: time
     at: "20:00:00"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_livingroom
     to: "on"
 
-  - platform: state
+  - trigger: state
     entity_id:
       - binary_sensor.presence_livingroom
     to: "off"
@@ -40,13 +40,13 @@ variables:
 
     - &turn_off
       alias: "Turn the christmas tree off"
-      service: light.turn_off
+      action: light.turn_off
       target:
         entity_id: light.christmas_tree
 
     - &turn_on
       alias: "Turn on the lights on"
-      service: scene.turn_on
+      action: scene.turn_on
       data:
         transition: 2
 

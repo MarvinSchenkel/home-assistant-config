@@ -5,7 +5,7 @@ alias: areas_livingroom_nspanel
 id: 5b09a806-78d6-40bf-b463-06144cb5d2dd
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - media_player.mass_sonos_kitchen
 
@@ -14,7 +14,7 @@ variables:
   anchors:
     - &go_to_home_page
       alias: "Navigate to the home page"
-      service: browser_mod.navigate
+      action: browser_mod.navigate
       target:
         device_id: 3592045e4bb5ae83ef15433835cd13d2
       data:
@@ -22,7 +22,7 @@ variables:
 
     - &go_to_music_page
       alias: "Navigate to the music page"
-      service: browser_mod.navigate
+      action: browser_mod.navigate
       target:
         device_id: 3592045e4bb5ae83ef15433835cd13d2
       data:

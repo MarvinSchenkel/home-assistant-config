@@ -34,7 +34,7 @@ action:
             - input_select.smallbedroom_current_cover_scene
           state: "closed"
       sequence:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.smallbedroom_cover_open
 
@@ -53,7 +53,7 @@ action:
             - input_select.smallbedroom_current_cover_scene
           state: "open"
       sequence:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.smallbedroom_cover_closed
 
@@ -69,7 +69,7 @@ action:
                 - binary_sensor.is_hot_day
               state: "on"
       sequence:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.smallbedroom_cover_closed
 
