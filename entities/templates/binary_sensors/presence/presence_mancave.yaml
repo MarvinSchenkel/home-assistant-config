@@ -2,12 +2,18 @@
 binary_sensor:
   - name: presence_mancave
     unique_id: 1dc29348-5085-410a-9e76-0b67d26a220d
+    device_class: occupancy
+    # Motion/occupancy membership is label-driven: any sensor in the Mancave area
+    # carrying the 'included in automations' label counts. The TV, Apple Watch and
+    # door pulse cannot be expressed as a target, so they stay explicit.
     state: >
-      {{ is_state("binary_sensor.pir_mancave", "on")
-          or is_state("binary_sensor.presence_mancave_door", "on")
-          or is_state("media_player.mancave_tv", "on")
-          or (
-            is_state("sensor.apple_watch_marvin", "Mancave")
-            and states("sensor.apple_watch_marvin_distance") | int < 7
-          )
-      }}
+      {{ expand(area_entities("mancave"))
+           | selectattr("attributes.device_class", "in", ["motion", "occupancy"])
+           | selectattr("entity_id", "in", label_entities("included_in_automations"))
+           | selectattr("state", "eq", "on") | list | count > 0
+         or is_state("binary_sensor.presence_mancave_door", "on")
+         or is_state("media_player.mancave_tv", "on")
+         or (
+           is_state("sensor.apple_watch_marvin", "Mancave")
+           and states("sensor.apple_watch_marvin_distance") | int < 7
+         ) }}

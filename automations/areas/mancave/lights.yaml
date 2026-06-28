@@ -10,9 +10,9 @@ variables:
   anchors:
     - &condition_is_presence_detected
       alias: "Check if someone is in the mancave"
-      condition: state
-      entity_id: binary_sensor.presence_mancave
-      state: "on"
+      condition: occupancy.is_detected
+      target:
+        entity_id: binary_sensor.presence_mancave
 
     - &condition_is_dark
       alias: "Check if it's dark enough to turn on the light"
@@ -78,15 +78,15 @@ trigger:
   - trigger: event
     event_type: automation_reloaded
 
-  - trigger: state
-    entity_id: binary_sensor.presence_mancave
-    to: "on"
+  - trigger: occupancy.detected
+    target:
+      entity_id: binary_sensor.presence_mancave
 
-  - trigger: state
-    entity_id: binary_sensor.presence_mancave
-    to: "off"
-    for:
-      seconds: 300
+  - trigger: occupancy.cleared
+    target:
+      entity_id: binary_sensor.presence_mancave
+    options:
+      for: "00:05:00"
 
   - trigger: state
     entity_id: input_select.current_light_schedule

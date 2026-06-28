@@ -29,15 +29,15 @@ triggers:
     entity_id:
       - input_select.mancave_room_mode
 
-  - trigger: state
-    entity_id: binary_sensor.presence_mancave
-    to: "on"
+  - trigger: occupancy.detected
+    target:
+      entity_id: binary_sensor.presence_mancave
 
-  - trigger: state
-    entity_id: binary_sensor.presence_mancave
-    to: "off"
-    for:
-      seconds: 300
+  - trigger: occupancy.cleared
+    target:
+      entity_id: binary_sensor.presence_mancave
+    options:
+      for: "00:05:00"
 
 conditions:
   - alias: Only control the volume when we are automating the music
@@ -64,10 +64,9 @@ actions:
   - choose:
       - conditions:
           - or:
-              - condition: state
-                entity_id:
-                  - binary_sensor.presence_mancave
-                state: 'off'
+              - condition: occupancy.is_not_detected
+                target:
+                  entity_id: binary_sensor.presence_mancave
               - condition: state
                 entity_id:
                   - input_select.mancave_room_mode
