@@ -74,6 +74,12 @@ trigger:
       - scene.bedroom_cover_open
     id: bedroom_blinds
 
+  # Re-evaluate when it gets cooler outside than inside, so the blinds open up again
+  - trigger: template
+    value_template: >-
+      {{ (states("sensor.current_temperature") | float)
+         < (states("sensor.pir_master_bedroom_temperature") | float) }}
+
 variables:
   temperature_entity: "sensor.pir_master_bedroom_temperature"
   anchors:
