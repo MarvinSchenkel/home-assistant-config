@@ -101,7 +101,7 @@ action:
           - condition: and
             conditions: !input custom_conditions
           - not:
-            - *condition_in_group
+              - *condition_in_group
         sequence:
           - if:
               - not:

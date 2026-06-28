@@ -1,3 +1,4 @@
+---
 description: >
   Automatically run Norby's cleaning schedule every night at 1am,
   alternating between a standard daily clean and a Monday deep clean.

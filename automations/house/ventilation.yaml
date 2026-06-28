@@ -108,15 +108,15 @@ action:
           condition: and
           conditions:
             - or:
-              - *shower_on
-              - condition: numeric_state
-                entity_id:
-                  - sensor.bathroom_ble_humidity
-                above: 80
-            # - condition: numeric_state
-            #   entity_id:
-            #     - sensor.weather_current_humidity
-            #   below: 80
+                # - condition: numeric_state
+                #   entity_id:
+                #     - sensor.weather_current_humidity
+                #   below: 80
+                - *shower_on
+                - condition: numeric_state
+                  entity_id:
+                    - sensor.bathroom_ble_humidity
+                  above: 80
       sequence:
         - *turn_on
 

@@ -85,14 +85,6 @@ action:
             data:
               option: "Net wakker"
 
-      - conditions:
-          - condition: trigger
-            id: "net_wakker_40m"
-        sequence:
-          - <<: *select_mode
-            data:
-              option: "Wakker"
-
       # - conditions:
       #     - or:
       #         - and:
@@ -123,5 +115,13 @@ action:
       #     - <<: *select_mode
       #       data:
       #         option: "Net wakker"
+
+      - conditions:
+          - condition: trigger
+            id: "net_wakker_40m"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Wakker"
 
     default: []
