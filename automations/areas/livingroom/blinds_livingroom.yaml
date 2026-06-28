@@ -72,6 +72,7 @@ trigger:
     id: "reset"
 
 variables:
+  temperature_entity: "sensor.livingroom_temperature"
   anchors:
     - &cover_closed
       alias: "Close the blinds"
@@ -161,11 +162,14 @@ action:
         conditions:
           - condition: or
             conditions:
-              - alias: Keep the heat out of the house on hot days
-                condition: state
-                entity_id:
-                  - binary_sensor.is_hot_day
-                state: "on"
+              - and:
+                  - alias: Keep the heat out of the house on hot days
+                    condition: state
+                    entity_id:
+                      - binary_sensor.is_hot_day
+                    state: "on"
+                  # But only when it's hotter outside than inside
+                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
               # - and:
               #     - alias: It's hot but we cannot close the sunscreen
               #       condition: state
