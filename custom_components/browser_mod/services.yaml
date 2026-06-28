@@ -81,10 +81,25 @@ popup:
       description: "Popup title"
       selector:
         text:
+    adaptive:
+      name: Use adaptive dialog
+      description: "Use adaptive dialog instead of standard dialog."
+      selector:
+        boolean:
+    adaptive_allow_mode_change:
+      name: Allow adaptive mode change
+      description: "Allow adaptive dialog to continually change between standard and adaptive mode based on screen size instead of only on open. This can be used to make the popup responsive to screen size changes while open but may cause issues with content or styles."
+      selector:
+        boolean:
+    adaptive_force_bottom_sheet:
+      name: Force bottom sheet in adaptive mode
+      description: "Force the popup to always open as a bottom sheet when in adaptive mode."
+      selector:
+        boolean:
     content:
       name: Content
       required: true
-      description: "Popup content (Test or lovelace card configuration)"
+      description: "Popup content (Text or lovelace card configuration)"
       selector:
         object:
     initial_style:
@@ -302,6 +317,12 @@ more_info:
     ignore_popup_card:
       name: Ignore any active popup-card overrides
       description: ""
+      default: false
+      selector:
+        boolean:
+    close:
+      name: Close existing more-info dialog
+      description: Close the more-info dialog if open
       default: false
       selector:
         boolean:

@@ -48,12 +48,6 @@ variables:
           for:
             minutes: 10
 
-    - &condition_is_hue_not_syncing
-      alias: "Are the hue lights currently synced?"
-      condition: state
-      entity_id: switch.sync_box_light_sync
-      state: "off"
-
     - &condition_is_dark
       alias: "Is it dark in the living room?"
       condition: state

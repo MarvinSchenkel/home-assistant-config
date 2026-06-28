@@ -4,17 +4,97 @@ alias: areas_livingroom_speakers_set_volume
 mode: queued
 id: e483505d-49b0-4912-9152-11764858fd7c
 
-use_blueprint:
-  path: sonos_set_volume.yaml
-  input:
-    just_awake_volume: 6
-    early_morning_volume: 8
-    morning_volume: 9
-    day_volume: 11
-    evening_volume: 9
-    sonos: media_player.mass_woonkamer_nad
-    custom_conditions:
-      - '{{
-            state_attr("media_player.mass_woonkamer_nad", "media_title")
-            != "External Source"
-        }}'
+max_exceeded: silent
+variables:
+  just_awake_volume: 16
+  early_morning_volume: 18
+  morning_volume: 22
+  day_volume: 24
+  evening_volume: 22
+  sonos: media_player.mass_woonkamer_nad
+  mass_entity_suffix: |
+    {{ "" if is_state("media_player.mass_all_devices", "unavailable") else "" }}
+  mass_entity: "{{ sonos + mass_entity_suffix }}"
+  music_schedule: |
+    {{ states('input_select.current_music_schedule') }}
+triggers:
+  - trigger: state
+    entity_id:
+      - input_select.current_music_schedule
+      - input_boolean.setting_automatic_music
+  - trigger: state
+    entity_id: media_player.mass_woonkamer_wiim
+    to: playing
+  - trigger: state
+    entity_id:
+      - media_player.living_room_android
+    to:
+      - "on"
+      - "off"
+actions:
+  - variables:
+      schedule_volume: |
+        {% if music_schedule == "just_awake" %}
+          {{ just_awake_volume }}
+        {% elif music_schedule == "early_morning" %}
+          {{ early_morning_volume }}
+        {% elif music_schedule == "morning" %}
+          {{ morning_volume }}
+        {% elif music_schedule == "day" %}
+          {{ day_volume }}
+        {% elif music_schedule == "evening" %}
+          {{ evening_volume }}
+        {% else %}
+          0
+        {% endif %}
+  - choose:
+      - conditions:
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ false }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ \"is_volume_muted\" in states[mass_entity].attributes }}"
+            then:
+              - action: media_player.volume_mute
+                target:
+                  entity_id: "{{ mass_entity }}"
+                data:
+                  is_volume_muted: true
+            else:
+              - action: media_player.volume_set
+                target:
+                  entity_id: "{{ mass_entity }}"
+                data:
+                  volume_level: 0
+      - conditions:
+          - condition: template
+            value_template: "{{ schedule_volume | int > 0 }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ \"is_volume_muted\" in states[mass_entity].attributes }}"
+            then:
+              - action: media_player.volume_mute
+                target:
+                  entity_id: "{{ mass_entity }}"
+                data:
+                  is_volume_muted: false
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ mass_entity }}"
+            data:
+              volume_level: "{{ schedule_volume | int / 100.0 }}"
+conditions:
+  - alias: Only control the volume when we are automating the music
+    condition: state
+    entity_id: input_boolean.setting_automatic_music
+    state: "on"
+  - condition: and
+    conditions:
+      - not:
+          - condition: state
+            entity_id: media_player.living_room_android
+            state: "on"

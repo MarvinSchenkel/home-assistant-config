@@ -44,13 +44,16 @@ class XimmioCollector(WasteCollector):
     XIMMIO_URLS = {
         'avalex': "https://wasteprod2api.ximmio.com",
         'meerlanden': "https://wasteprod2api.ximmio.com",
+        'oostzaan': "https://wasteprod2api.ximmio.com",
         'rad': "https://wasteprod2api.ximmio.com",
         'westland': "https://wasteprod2api.ximmio.com",
         'woerden': "https://wasteprod2api.ximmio.com",
+        'blink': "https://wasteprod2api.ximmio.com",
     }
 
     def __init__(self, hass, waste_collector, postcode, street_number, suffix, custom_mapping, address_id, customer_id):
         super().__init__(hass, waste_collector, postcode, street_number, suffix, custom_mapping)
+        self.postcode = self.postcode.upper()
         if self.waste_collector in self.XIMMIO_URLS.keys():
             self.main_url = self.XIMMIO_URLS[self.waste_collector]
         else:

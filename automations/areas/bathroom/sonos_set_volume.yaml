@@ -7,9 +7,9 @@ id: aab41c28-0266-43b7-8e9d-bb74700b1343
 use_blueprint:
   path: sonos_set_volume.yaml
   input:
-    just_awake_volume: 6
-    early_morning_volume: 10
-    morning_volume: 14
-    day_volume: 16
-    evening_volume: 8
+    just_awake_volume: 4
+    early_morning_volume: 8
+    morning_volume: 12
+    day_volume: 14
+    evening_volume: 6
     sonos: media_player.mass_sonos_bathroom

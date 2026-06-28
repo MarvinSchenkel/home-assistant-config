@@ -47,7 +47,7 @@ binary_sensor:
           (states('sensor.current_temperature') | float > 19.0)
           or (
             states('sensor.current_temperature') | float > 16.0
-            and is_state('weather.openweathermap', 'sunny')
+            and is_state('weather.lokaal_weer', 'sunny')
           )
         )
       -%}

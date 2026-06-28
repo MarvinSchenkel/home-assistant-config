@@ -1,0 +1,9 @@
+platform: nad
+type: Telnet
+host: 192.168.1.177
+port: 23
+name: NAD T758
+sources:
+  1: "Apple TV"
+  4: "WiiM"
+  5: "Switch"

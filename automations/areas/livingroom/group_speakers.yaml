@@ -58,7 +58,7 @@ variables:
       condition: template
       value_template: |-
         {{
-          'media_player.mass_woonkamer_nad'
+          'media_player.mass_woonkamer_wiim'
           in state_attr(mass_entity, 'group_members')
         }}
 
@@ -69,14 +69,14 @@ variables:
         entity_id: "{{ mass_entity }}"
       data:
         group_members:
-          - media_player.mass_woonkamer_nad
+          - media_player.mass_woonkamer_wiim
 
     - &ungroup
       alias: "Ensure the media player is on"
       action: media_player.unjoin
       data: {}
       target:
-        entity_id: media_player.mass_woonkamer_nad
+        entity_id: media_player.mass_woonkamer_wiim
 
 conditions:
   - condition: state
@@ -95,7 +95,7 @@ action:
           - not:
             - condition: state
               entity_id:
-                - media_player.mass_woonkamer_nad
+                - media_player.mass_woonkamer_wiim
               state: playing
           - not:
               - condition: state
@@ -120,7 +120,7 @@ action:
           - not:
               - condition: state
                 entity_id:
-                  - media_player.mass_woonkamer_nad
+                  - media_player.mass_woonkamer_wiim
                 state: "off"
           - *condition_in_group
         sequence:

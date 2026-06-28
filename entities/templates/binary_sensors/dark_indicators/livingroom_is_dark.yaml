@@ -3,20 +3,20 @@
 trigger:
   - platform: numeric_state
     entity_id:
-      - sensor.fp2_livingroom_luminance
-    above: 6
+      - sensor.livingroom_luminance_fp300
+    above: 8
     for:
       seconds: 5
   - platform: numeric_state
     entity_id:
-      - sensor.fp2_livingroom_luminance
-    above: 45
+      - sensor.livingroom_luminance_fp300
+    above: 60
     for:
       seconds: 5
   - platform: numeric_state
     entity_id:
-      - sensor.fp2_livingroom_luminance
-    below: 6
+      - sensor.livingroom_luminance_fp300
+    below: 8
     for:
       seconds: 5
 
@@ -26,12 +26,12 @@ binary_sensor:
     state: >
       {%-
         if (
-          states("sensor.fp2_livingroom_luminance") | int > 6
+          states("sensor.livingroom_luminance_fp300") | int > 8
           and is_state("light.dinner_door", "off")
           and is_state("light.kitchen_spot", "off")
           and is_state("switch.sync_box_light_sync", "off")
         )
-        or states("sensor.fp2_livingroom_luminance") | int > 45
+        or states("sensor.livingroom_luminance_fp300") | int > 60
       -%}
         off
       {%- else -%}

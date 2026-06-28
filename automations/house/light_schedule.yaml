@@ -7,11 +7,11 @@ id: 5840c714-45b1-4f4a-b805-023a268d0813
 mode: restart
 
 trigger:
-  - platform: state
+  - trigger: state
     entity_id:
       - input_select.livingroom_room_mode
 
-  - platform: time
+  - trigger: time
     at:
       - "07:00:00"
       - "08:00:00"
@@ -21,97 +21,27 @@ trigger:
       - "22:00:00"
       - "00:00:00"
 
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
-
-  - platform: numeric_state
-    id: "lux_below_15000"
-    entity_id: sensor.gw3000a_solar_lux
-    below: 15000
-    for:
-      minutes: 10
-
-  - platform: numeric_state
-    id: "lux_below_5000"
-    entity_id: sensor.gw3000a_solar_lux
-    below: 5000
-    for:
-      minutes: 10
-
-  - platform: numeric_state
-    id: "lux_above_25000"
-    entity_id: sensor.gw3000a_solar_lux
-    above: 25000
-    for:
-      minutes: 10
 
 variables:
   anchors:
     - &select_schedule
       alias: "Select the schedule"
-      service: input_select.select_option
+      action: input_select.select_option
       target:
         entity_id: input_select.current_light_schedule
     - &select_schedule_dynamic
       alias: "Select the schedule"
-      service: input_select.select_option
+      action: input_select.select_option
       target:
         entity_id: input_select.current_light_schedule_dynamic
 
 action:
   - choose:
-      # Lux-based overrides: only during daytime with manual lights off
-      - conditions:
-          - condition: trigger
-            id: "lux_below_5000"
-          - condition: state
-            entity_id: sun.sun
-            state: "above_horizon"
-          - condition: state
-            entity_id: input_boolean.setting_manual_lights
-            state: "off"
-        sequence:
-          - <<: *select_schedule
-            data:
-              option: "lezen"
-
-      - conditions:
-          - condition: trigger
-            id: "lux_below_15000"
-          - condition: state
-            entity_id: sun.sun
-            state: "above_horizon"
-          - condition: state
-            entity_id: input_boolean.setting_manual_lights
-            state: "off"
-          - condition: state
-            entity_id: input_select.current_light_schedule
-            state:
-              - "energie"
-              - "concentreren"
-        sequence:
-          - <<: *select_schedule
-            data:
-              option: "ontspannen"
-
-      - conditions:
-          - condition: trigger
-            id: "lux_above_25000"
-          - condition: state
-            entity_id: sun.sun
-            state: "above_horizon"
-          - condition: state
-            entity_id: input_boolean.setting_manual_lights
-            state: "off"
-        sequence:
-          - <<: *select_schedule
-            data:
-              option: "{{ states('input_select.current_light_schedule_dynamic') }}"
-
-      # Time/mode-based schedule
       - conditions:
           - condition: state
             entity_id:

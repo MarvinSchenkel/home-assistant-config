@@ -10,26 +10,42 @@ from .const import (
     DOMAIN, CONF_ID, CONF_WASTE_COLLECTOR, CONF_POSTCODE, CONF_STREET_NUMBER, CONF_SUFFIX,
     CONF_RESOURCES, CONF_NAME_PREFIX, CONF_DATE_FORMAT, CONF_UPCOMING, CONF_DATE_ONLY,
     CONF_DATE_OBJECT, CONF_BUILT_IN_ICONS, CONF_BUILT_IN_ICONS_NEW, CONF_DISABLE_ICONS,
-    CONF_TRANSLATE_DAYS, CONF_DAY_OF_WEEK, CONF_DAY_OF_WEEK_ONLY, CONF_ALWAYS_SHOW_DAY,
+    CONF_TRANSLATE_DAYS, CONF_LANGUAGE, LANGUAGE_NL, LANGUAGE_EN, LANGUAGE_FR, LANGUAGE_EL,
+    CONF_DAY_OF_WEEK, CONF_DAY_OF_WEEK_ONLY, CONF_ALWAYS_SHOW_DAY,
     CONF_STREET_NAME, CONF_CITY_NAME, CONF_ADDRESS_ID, CONF_CUSTOMER_ID, CONF_UPDATE_INTERVAL,
-    CONF_CUSTOM_MAPPING, DEFAULT_CONFIG, XIMMIO_COLLECTOR_IDS
+    CONF_CUSTOM_MAPPING, DEFAULT_CONFIG, XIMMIO_COLLECTOR_IDS, CONF_EMAIL, CONF_PASSWORD
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 WASTE_COLLECTORS = [
     "ACV", "Afval3xBeter", "Afvalstoffendienstkalender", "AfvalAlert",
-    "Almere", "AlphenAanDenRijn", "AreaReiniging", "Assen", "Avalex", "Avri", "BAR",
+    "Almere", "AlphenAanDenRijn", "Amsterdam", "AreaReiniging", "Assen", "Avalex", "Avri", "BAR",
     "Berkelland", "Blink", "Circulus", "Cleanprofs", "Cranendonck",
     "Cyclus", "DAR", "DeAfvalApp", "DeFryskeMarren", "DenHaag", "Drimmelen", "GAD",
-    "Groningen", "Hellendoorn", "HVC", "Limburg.NET", "Lingewaard", "Meerlanden",
+    "Groningen", "Hellendoorn", "HVC", "Irado", "Limburg.NET", "Lingewaard", "Maassluis", "Meerlanden",
     "Middelburg-Vlissingen", "MijnAfvalwijzer", "Mijnafvalzaken", "Montferland",
-    "Montfoort", "Offalkalinder", "Omrin", "PeelEnMaas", "PreZero", "Purmerend",
-    "RAD", "RecycleApp", "RD4", "RWM", "Reinis", "ROVA", "RMN", "Saver",
-    "Schouwen-Duiveland", "Sliedrecht", "Spaarnelanden", "SudwestFryslan",
-    "TwenteMilieu", "Venray", "Voorschoten", "Waalre", "Waardlanden", "Westland",
+    "Montfoort", "Nijkerk", "Offalkalinder", "Omrin", "Oostzaan", "OudeIJsselstreek", "PeelEnMaas", "PreZero",
+    "Purmerend", "RAD", "RecycleApp", "RD4", "RWM", "Reinis", "ROVA", "RMN", "Saver",
+    "Schouwen-Duiveland", "Sliedrecht", "Spaarnelanden", "SudwestFryslan", "Tilburg",
+    "TwenteMilieu", "Uithoorn", "Venlo","Venray", "Voorschoten", "Waalre", "Waardlanden", "Westland",
     "Woerden", "ZRD"
 ]
+
+LANGUAGE_OPTIONS = [
+    {"value": LANGUAGE_NL, "label": "Nederlands"},
+    {"value": LANGUAGE_EN, "label": "English"},
+    {"value": LANGUAGE_FR, "label": "Français"},
+    {"value": LANGUAGE_EL, "label": "Ελληνικά"},
+]
+
+
+def _default_language(config):
+    language = config.get(CONF_LANGUAGE)
+    if language:
+        return language
+
+    return LANGUAGE_NL if config.get(CONF_TRANSLATE_DAYS, DEFAULT_CONFIG[CONF_TRANSLATE_DAYS]) else LANGUAGE_EN
 
 
 class AfvalbeheerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -40,6 +56,7 @@ class AfvalbeheerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         super().__init__()
         self._custom_mapping = {}
+        self._omrin_credentials = {}
     
 
     async def async_step_import(self, import_config):
@@ -134,6 +151,7 @@ class AfvalbeheerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         config_data[CONF_BUILT_IN_ICONS_NEW] = import_config.get(CONF_BUILT_IN_ICONS_NEW, DEFAULT_CONFIG[CONF_BUILT_IN_ICONS_NEW])
         config_data[CONF_DISABLE_ICONS] = import_config.get(CONF_DISABLE_ICONS, DEFAULT_CONFIG[CONF_DISABLE_ICONS])
         config_data[CONF_TRANSLATE_DAYS] = import_config.get(CONF_TRANSLATE_DAYS, DEFAULT_CONFIG[CONF_TRANSLATE_DAYS])
+        config_data[CONF_LANGUAGE] = import_config.get(CONF_LANGUAGE, _default_language(config_data))
         config_data[CONF_DAY_OF_WEEK] = import_config.get(CONF_DAY_OF_WEEK, DEFAULT_CONFIG[CONF_DAY_OF_WEEK])
         config_data[CONF_DAY_OF_WEEK_ONLY] = import_config.get(CONF_DAY_OF_WEEK_ONLY, DEFAULT_CONFIG[CONF_DAY_OF_WEEK_ONLY])
         config_data[CONF_ALWAYS_SHOW_DAY] = import_config.get(CONF_ALWAYS_SHOW_DAY, DEFAULT_CONFIG[CONF_ALWAYS_SHOW_DAY])
@@ -242,9 +260,33 @@ class AfvalbeheerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             self._address_input = {CONF_WASTE_COLLECTOR: self._collector, **user_input}
+            if self._collector == "Omrin":
+                return await self.async_step_omrin_credentials()
             return await self.async_step_mapping()
         return self.async_show_form(
             step_id="address",
+            data_schema=vol.Schema(schema_dict),
+            errors=errors,
+        )
+
+    async def async_step_omrin_credentials(self, user_input=None):
+        """Optional credentials step for Omrin users (enables diftar data)."""
+        errors = {}
+        if user_input is not None:
+            self._omrin_credentials = user_input
+            return await self.async_step_mapping()
+
+        schema_dict = {
+            vol.Optional(CONF_EMAIL, default=""): selector.TextSelector(
+                selector.TextSelectorConfig(type=selector.TextSelectorType.EMAIL)
+            ),
+            vol.Optional(CONF_PASSWORD, default=""): selector.TextSelector(
+                selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)
+            ),
+        }
+
+        return self.async_show_form(
+            step_id="omrin_credentials",
             data_schema=vol.Schema(schema_dict),
             errors=errors,
         )
@@ -348,6 +390,10 @@ class AfvalbeheerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data = {**self._address_input, **user_input}
                 # Add custom mapping to data
                 data[CONF_CUSTOM_MAPPING] = custom_mapping
+                # Add Omrin credentials if provided
+                omrin_creds = getattr(self, '_omrin_credentials', {})
+                if omrin_creds:
+                    data.update(omrin_creds)
                 # Generate unique ID for this configuration entry
                 data[CONF_ID] = str(uuid.uuid4())
                 return self.async_create_entry(
@@ -378,7 +424,12 @@ class AfvalbeheerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Optional(CONF_UPCOMING, default=DEFAULT_CONFIG[CONF_UPCOMING]): selector.BooleanSelector(),
             vol.Optional(CONF_DATE_ONLY, default=DEFAULT_CONFIG[CONF_DATE_ONLY]): selector.BooleanSelector(),
             vol.Optional(CONF_DATE_OBJECT, default=DEFAULT_CONFIG[CONF_DATE_OBJECT]): selector.BooleanSelector(),
-            vol.Optional(CONF_TRANSLATE_DAYS, default=DEFAULT_CONFIG[CONF_TRANSLATE_DAYS]): selector.BooleanSelector(),
+            vol.Optional(CONF_LANGUAGE, default=DEFAULT_CONFIG[CONF_LANGUAGE]): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=LANGUAGE_OPTIONS,
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                )
+            ),
             vol.Optional(CONF_DAY_OF_WEEK, default=DEFAULT_CONFIG[CONF_DAY_OF_WEEK]): selector.BooleanSelector(),
             vol.Optional(CONF_DAY_OF_WEEK_ONLY, default=DEFAULT_CONFIG[CONF_DAY_OF_WEEK_ONLY]): selector.BooleanSelector(),
             vol.Optional(CONF_ALWAYS_SHOW_DAY, default=DEFAULT_CONFIG[CONF_ALWAYS_SHOW_DAY]): selector.BooleanSelector(),
@@ -481,6 +532,7 @@ class AfvalbeheerOptionsFlowHandler(config_entries.OptionsFlow):
         self._collector = None
         self._address_input = {}
         self._custom_mapping = {}
+        self._omrin_credentials = {}
 
     @property
     def config_entry(self):
@@ -531,9 +583,35 @@ class AfvalbeheerOptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             self._address_input = {CONF_WASTE_COLLECTOR: self._collector, **user_input}
+            if self._collector == "Omrin":
+                return await self.async_step_omrin_credentials()
             return await self.async_step_mapping()
 
         return self.async_show_form(step_id="address", data_schema=vol.Schema(schema_dict))
+
+    async def async_step_omrin_credentials(self, user_input=None):
+        """Optional credentials step for Omrin users."""
+        errors = {}
+        current = {**self.config_entry.data, **self.config_entry.options}
+
+        if user_input is not None:
+            self._omrin_credentials = user_input
+            return await self.async_step_mapping()
+
+        schema_dict = {
+            vol.Optional(CONF_EMAIL, default=current.get(CONF_EMAIL, "")): selector.TextSelector(
+                selector.TextSelectorConfig(type=selector.TextSelectorType.EMAIL)
+            ),
+            vol.Optional(CONF_PASSWORD, default=current.get(CONF_PASSWORD, "")): selector.TextSelector(
+                selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)
+            ),
+        }
+
+        return self.async_show_form(
+            step_id="omrin_credentials",
+            data_schema=vol.Schema(schema_dict),
+            errors=errors,
+        )
 
     async def async_step_mapping(self, user_input=None):
         """Handle the custom mapping step for options flow."""
@@ -665,6 +743,10 @@ class AfvalbeheerOptionsFlowHandler(config_entries.OptionsFlow):
                 data = {**self._address_input, **user_input}
                 # Add custom mapping to data
                 data[CONF_CUSTOM_MAPPING] = custom_mapping
+                # Add Omrin credentials if provided
+                omrin_creds = getattr(self, '_omrin_credentials', {})
+                if omrin_creds:
+                    data.update(omrin_creds)
                 
                 # Check if custom mapping changed and clean up old entities if needed
                 old_mapping = self.config_entry.options.get(CONF_CUSTOM_MAPPING, self.config_entry.data.get(CONF_CUSTOM_MAPPING, {}))
@@ -692,7 +774,12 @@ class AfvalbeheerOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Optional(CONF_UPCOMING, default=current.get(CONF_UPCOMING, DEFAULT_CONFIG[CONF_UPCOMING])): selector.BooleanSelector(),
             vol.Optional(CONF_DATE_ONLY, default=current.get(CONF_DATE_ONLY, DEFAULT_CONFIG[CONF_DATE_ONLY])): selector.BooleanSelector(),
             vol.Optional(CONF_DATE_OBJECT, default=current.get(CONF_DATE_OBJECT, DEFAULT_CONFIG[CONF_DATE_OBJECT])): selector.BooleanSelector(),
-            vol.Optional(CONF_TRANSLATE_DAYS, default=current.get(CONF_TRANSLATE_DAYS, DEFAULT_CONFIG[CONF_TRANSLATE_DAYS])): selector.BooleanSelector(),
+            vol.Optional(CONF_LANGUAGE, default=_default_language(current)): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=LANGUAGE_OPTIONS,
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                )
+            ),
             vol.Optional(CONF_DAY_OF_WEEK, default=current.get(CONF_DAY_OF_WEEK, DEFAULT_CONFIG[CONF_DAY_OF_WEEK])): selector.BooleanSelector(),
             vol.Optional(CONF_DAY_OF_WEEK_ONLY, default=current.get(CONF_DAY_OF_WEEK_ONLY, DEFAULT_CONFIG[CONF_DAY_OF_WEEK_ONLY])): selector.BooleanSelector(),
             vol.Optional(CONF_ALWAYS_SHOW_DAY, default=current.get(CONF_ALWAYS_SHOW_DAY, DEFAULT_CONFIG[CONF_ALWAYS_SHOW_DAY])): selector.BooleanSelector(),

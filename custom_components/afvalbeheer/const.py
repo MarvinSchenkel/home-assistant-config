@@ -26,6 +26,14 @@ CONF_BUILT_IN_ICONS = 'builtinicons'
 CONF_BUILT_IN_ICONS_NEW = 'builtiniconsnew'
 CONF_DISABLE_ICONS = 'disableicons'
 CONF_TRANSLATE_DAYS = 'dutch'
+CONF_LANGUAGE = 'language'
+
+LANGUAGE_NL = 'nl'
+LANGUAGE_EN = 'en'
+LANGUAGE_FR = 'fr'
+LANGUAGE_EL = 'el'
+
+SUPPORTED_LANGUAGES = [LANGUAGE_NL, LANGUAGE_EN, LANGUAGE_FR, LANGUAGE_EL]
 CONF_DAY_OF_WEEK = 'dayofweek'
 CONF_DAY_OF_WEEK_ONLY = 'dayofweekonly'
 CONF_ALWAYS_SHOW_DAY = 'alwaysshowday'
@@ -34,6 +42,8 @@ CONF_PRINT_AVAILABLE_WASTE_TYPE_SLUGS = 'printwastetypeslugs'
 CONF_UPDATE_INTERVAL = 'updateinterval'
 CONF_CUSTOMER_ID = 'customerid'
 CONF_CUSTOM_MAPPING = 'custommapping'
+CONF_EMAIL = 'email'
+CONF_PASSWORD = 'password'
 CONF_ENTRY_ID = 'entry_id'
 
 PLATFORM_SCHEMA = vol.Schema(
@@ -56,6 +66,7 @@ PLATFORM_SCHEMA = vol.Schema(
         vol.Optional(CONF_BUILT_IN_ICONS_NEW, default=False): cv.boolean,
         vol.Optional(CONF_DISABLE_ICONS, default=False): cv.boolean,
         vol.Optional(CONF_TRANSLATE_DAYS, default=False): cv.boolean,
+        vol.Optional(CONF_LANGUAGE, default=LANGUAGE_NL): vol.In(SUPPORTED_LANGUAGES),
         vol.Optional(CONF_DAY_OF_WEEK, default=True): cv.boolean,
         vol.Optional(CONF_DAY_OF_WEEK_ONLY, default=False): cv.boolean,
         vol.Optional(CONF_ALWAYS_SHOW_DAY, default=False): cv.boolean,
@@ -88,6 +99,7 @@ DEFAULT_CONFIG = {
     CONF_BUILT_IN_ICONS_NEW: False,
     CONF_DISABLE_ICONS: False,
     CONF_TRANSLATE_DAYS: True,
+    CONF_LANGUAGE: LANGUAGE_NL,
     CONF_DAY_OF_WEEK: True,
     CONF_DAY_OF_WEEK_ONLY: False,
     CONF_ALWAYS_SHOW_DAY: False,
@@ -99,36 +111,37 @@ DEFAULT_CONFIG = {
 }
 
 OPZET_COLLECTOR_URLS = {
-    'alphenaandenrijn':         'https://afvalkalender.alphenaandenrijn.nl',
-    'afval3xbeter':             'https://afval3xbeter.nl',
-    'berkelland':               'https://afvalkalender.gemeenteberkelland.nl',
-    'blink':                    'https://mijnblink.nl',
-    'cranendonck':              'https://afvalkalender.cranendonck.nl',
-    'cyclus':                   'https://cyclusnv.nl',
-    'dar':                      'https://afvalkalender.dar.nl',
-    'defryskemarren':           'https://afvalkalender.defryskemarren.nl',
-    'denhaag':                  'https://huisvuilkalender.denhaag.nl',
-    'gad':                      'https://inzamelkalender.gad.nl',
-    'hvc':                      'https://inzamelkalender.hvcgroep.nl',
-    'lingewaard':               'https://afvalwijzer.lingewaard.nl',
-    'middelburg-vlissingen':    'https://afvalwijzer.middelburgvlissingen.nl',
-    'mijnafvalzaken':           'https://mijnafvalzaken.nl',
-    'montfoort':                'https://cyclusnv.nl',
-    'offalkalinder':            'https://www.offalkalinder.nl',
-    'peelenmaas':               'https://afvalkalender.peelenmaas.nl',
-    'prezero':                  'https://inzamelwijzer.prezero.nl',
-    'purmerend':                'https://afvalkalender.purmerend.nl',
-    'rwm':             	        'https://rwm.nl',
-    'saver':             	    'https://saver.nl',
-    'schouwen-duiveland':       'https://afvalkalender.schouwen-duiveland.nl',
-    'sliedrecht':               'https://afvalkalender.sliedrecht.nl',
-    'spaarnelanden':            'https://afvalwijzer.spaarnelanden.nl',
-    'sudwestfryslan':           'https://afvalkalender.sudwestfryslan.nl',
-    'suez':                     'https://inzamelwijzer.prezero.nl',
-    'venray':                   'https://afvalkalender.venray.nl',
-    'voorschoten':              'https://afvalkalender.voorschoten.nl',
-    'waalre':                   'https://afvalkalender.waalre.nl',
-    'zrd':                      'https://www.zrd.nl',
+    'alphenaandenrijn':             'https://afvalkalender.alphenaandenrijn.nl',
+    'afval3xbeter':                 'https://afval3xbeter.nl',
+    'afvalstoffendienstkalender':   'https://afvalstoffendienst.nl',
+    'berkelland':                   'https://afvalkalender.gemeenteberkelland.nl',
+    'cranendonck':                  'https://afvalkalender.cranendonck.nl',
+    'cyclus':                       'https://cyclusnv.nl',
+    'dar':                          'https://afvalkalender.dar.nl',
+    'defryskemarren':               'https://afvalkalender.defryskemarren.nl',
+    'denhaag':                      'https://huisvuilkalender.denhaag.nl',
+    'gad':                          'https://inzamelkalender.gad.nl',
+    'hvc':                          'https://inzamelkalender.hvcgroep.nl',
+    'lingewaard':                   'https://afvalwijzer.lingewaard.nl',
+    'middelburg-vlissingen':        'https://afvalwijzer.middelburgvlissingen.nl',
+    'mijnafvalzaken':               'https://mijnafvalzaken.nl',
+    'montfoort':                    'https://cyclusnv.nl',
+    'offalkalinder':                'https://www.offalkalinder.nl',
+    'peelenmaas':                   'https://afvalkalender.peelenmaas.nl',
+    'prezero':                      'https://inzamelwijzer.prezero.nl',
+    'purmerend':                    'https://afvalkalender.purmerend.nl',
+    'rwm':             	            'https://rwm.nl',
+    'saver':             	        'https://saver.nl',
+    'schouwen-duiveland':           'https://afvalkalender.schouwen-duiveland.nl',
+    'sliedrecht':                   'https://afvalkalender.sliedrecht.nl',
+    'spaarnelanden':                'https://afvalwijzer.spaarnelanden.nl',
+    'sudwestfryslan':               'https://afvalkalender.sudwestfryslan.nl',
+    'suez':                         'https://inzamelwijzer.prezero.nl',
+    'uithoorn':                     'https://cyclusnv.nl',
+    'venray':                       'https://afvalkalender.venray.nl',
+    'voorschoten':                  'https://afvalkalender.voorschoten.nl',
+    'waalre':                       'https://afvalkalender.waalre.nl',
+    'zrd':                          'https://www.zrd.nl',
 }
 
 XIMMIO_COLLECTOR_IDS = {
@@ -137,11 +150,14 @@ XIMMIO_COLLECTOR_IDS = {
     'areareiniging':    'adc418da-d19b-11e5-ab30-625662870761',
     'avalex':           'f7a74ad1-fdbf-4a43-9f91-44644f4d4222',
     'avri':             '78cd4156-394b-413d-8936-d407e334559a',
+    'blink':            '252d30d0-2e74-469c-8f1e-c0e2e434eb58',
     'hellendoorn':      '24434f5b-7244-412b-9306-3a2bd1e22bc1',
     'meerlanden':       '800bf8d7-6dd1-4490-ba9d-b419d6dc8a45',
+    'oostzaan':         '6eb81e8f-ca5a-4bad-af0a-667650325511',
     'ximmio':           '800bf8d7-6dd1-4490-ba9d-b419d6dc8a45',
     'rad':              '13a2cad9-36d0-4b01-b877-efcb421a864d',
     'twentemilieu':     '8d97bb56-5afd-4cbc-a651-b4f7314264b4',
+    "venlo":            '280affe9-1428-443b-895a-b90431b8ca31',    
     'waardlanden':      '942abcf6-3775-400d-ae5d-7380d728b23c',
     'westland':         '6fc75608-126a-4a50-9241-a002ce8c8a6c',
     'woerden':          '06856f74-6826-4c6a-aabf-69bc9d20b5a6',
@@ -154,9 +170,26 @@ BURGERPORTAAL_COLLECTOR_IDS = {
     'bar':              '138204213564933497',
     'groningen':        '452048812597326549',
     # 'maassluis':        '138204213564933097',
+    'nijkerk':          '138204213565304094',
     'rmn':              '138204213564933597',
     # 'saver':            '138204213565265087',
+    'tilburg':          '452048812597339353',
     # 'zaanstad':         '138204213564932198',
+}
+
+KLIKOGROEP_COLLECTOR_IDS = {
+    'oudeijsselstreek': {
+        'id': '454',
+        'url': 'cp-oudeijsselstreek.klikocontainermanager.com',
+    },
+    # 'uithoorn': {
+    #     'id': '474',
+    #     'url': 'cp-uithoorn.klikocontainermanager.com',
+    # },
+    'maassluis': {
+        'id': '505',
+        'url': 'cp-maassluis.klikocontainermanager.com',
+    },
 }
 
 DEPRECATED_AND_NEW_WASTECOLLECTORS = {
@@ -223,69 +256,5 @@ FRACTION_ICONS_NEW = {
     'grofvuil':         'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIyLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMiIgYmFzZVByb2ZpbGU9InRpbnkiIGlkPSJMYWFnXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiCgkgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIxNDEuN3B4IiBoZWlnaHQ9IjE0MS43cHgiIHZpZXdCb3g9IjAgMCAxNDEuNyAxNDEuNyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPGc+CgkJPHRpdGxlPndpbmdiYWNrLWNoYWlyPC90aXRsZT4KCQk8ZyBpZD0iYnVkaWNvbi13aW5nYmFjay1jaGFpcl8xXyI+CgkJCTxjaXJjbGUgZmlsbD0iIzFCMUQzQiIgY3g9IjY4LjUiIGN5PSI1Ny44IiByPSIxLjgiLz4KCQkJPHBhdGggZmlsbD0iIzFCMUQzQiIgZD0iTTYyLjYsMTAzLjRsMjcuNy01LjJsMyw1LjRjMC40LDAuNywxLjEsMSwxLjksMC45bDYuNy0xLjJjMC45LTAuMiwxLjYtMS4xLDEuNC0yYzAtMC4yLTAuMS0wLjQtMC4yLTAuNQoJCQkJbC0yLjgtNS4xYzYuOC0zLjUsMTAuNi0xMS4xLDkuMi0xOC43bC0wLjUtMi43YzMuNS00LjYsMi43LTExLjEtMS45LTE0LjdjLTIuNC0xLjgtNS40LTIuNi04LjQtMmMtMC41LDAuMS0xLDAuMy0xLjUsMC40CgkJCQlMOTAsMjguNmMtMC43LTIuNy0zLjMtNC40LTYuMS0zLjlsLTQxLjksNy44Yy0yLjcsMC41LTQuNiwzLjEtNC4yLDUuOGwzLjksMzBjLTAuNSwwLTEsMC4xLTEuNiwwLjFjLTUuNywxLTkuNCw2LjUtOC40LDEyLjIKCQkJCWMwLjUsMi45LDIuMyw1LjUsNC45LDcuMWwwLjUsMi43YzEuNCw3LjYsNy42LDEzLjMsMTUuMywxNC4xQzUyLjQsMTA0LjUsNTUsMTA1LDYyLjYsMTAzLjR6IE00MS4zLDM3LjgKCQkJCWMtMC4xLTAuOSwwLjUtMS44LDEuNC0xLjlsNDEuOS03LjhjMC45LTAuMiwxLjgsMC40LDIsMS4zTDk0LDU5LjdjLTMsMi40LTQuNCw2LjMtMy43LDEwbDEuMyw2LjljMC40LDEuOS0wLjksMy43LTIuOCw0LjEKCQkJCWwtMzEsNS44Yy0xLjksMC40LTMuNy0wLjktNC4xLTIuOGwtMS4zLTYuOWMtMC43LTMuOC0zLjQtNi45LTcuMS04TDQxLjMsMzcuOHogTTk3LjEsOTdsMS44LDMuMmwtMy4xLDAuNkw5NCw5Ny42TDk3LjEsOTd6CgkJCQkgTTEwNi4yLDcyLjFsLTAuOSwxLjJsMC44LDQuMmMxLjQsNy42LTMuNiwxNC45LTExLjIsMTYuM2wtMzcuOSw3LjFjLTcuNiwxLjQtMTQuOS0zLjYtMTYuMy0xMS4ybC0wLjgtNC4ybC0xLjMtMC44CgkJCQljLTEuNy0xLTIuOS0yLjctMy4yLTQuN2MtMC43LTMuOCwxLjgtNy41LDUuNi04LjJzNy41LDEuOCw4LjIsNS42bDEuMyw2LjljMC43LDMuOCw0LjQsNi4zLDguMiw1LjZsMzEtNS44CgkJCQljMy44LTAuNyw2LjMtNC40LDUuNi04LjJsLTEuMy02LjljLTAuNy0zLjgsMS44LTcuNSw1LjYtOC4yczcuNSwxLjgsOC4yLDUuNkMxMDcuOSw2OC41LDEwNy40LDcwLjUsMTA2LjIsNzIuMUwxMDYuMiw3Mi4xeiIvPgoJCTwvZz4KCTwvZz4KCQoJCTxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9IiMxQjFEM0IiIHN0cm9rZS13aWR0aD0iMy43IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgcG9pbnRzPSIKCQkzOSw4Ny44IDQ3LjcsODkgNTAuNiw5NSA1OC44LDk1LjkgNjAuNyw5OS44IAkiLz4KPC9nPgo8L3N2Zz4K',
     'tuinafval':        'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIyLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMiIgYmFzZVByb2ZpbGU9InRpbnkiIGlkPSJMYWFnXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiCgkgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIxNDEuN3B4IiBoZWlnaHQ9IjE0MS43cHgiIHZpZXdCb3g9IjAgMCAxNDEuNyAxNDEuNyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPGc+CgkJPHBhdGggZmlsbD0iIzgwNDcxYyIgZD0iTTkxLjUsMzguOEw5MS41LDM4LjggTTkxLjUsMzguOEw3Ny4yLDU3LjNjLTEsMS4yLTEuNywyLjYtMi4xLDQuMmwtOSwzMS41Yy0wLjYsMi4zLTIsNC4zLTMuOCw1LjgKCQkJbC0yNC4xLDE5LjRsMC40LTZjMC4xLTAuNy0wLjQtMS4zLTEuMS0xLjNsLTUuOC0wLjZsMjQuNS0xNy42YzEuMy0wLjksMi4yLTIuMiwyLjctMy42bDEwLjQtMjkuOGMwLjQtMS4yLDEuMi0yLjMsMi4yLTMuMgoJCQlMOTEuNSwzOC44IE05MS41LDM1LjFDOTEuNCwzNS4xLDkxLjQsMzUuMSw5MS41LDM1LjFMOTEuNSwzNS4xTDkxLjUsMzUuMWMtMSwwLTEuOCwwLjQtMi40LDAuOUw2OSw1My4yYy0xLjUsMS4zLTIuNiwyLjktMy4yLDQuOAoJCQlMNTUuNCw4Ny44Yy0wLjMsMC44LTAuNywxLjQtMS40LDEuOWwtMjQuNSwxNy42Yy0xLjIsMC45LTEuOCwyLjUtMS40LDRjMC40LDEuNSwxLjcsMi42LDMuMiwyLjdsMy40LDAuM2wtMC4zLDMuNgoJCQljLTAuMSwxLjUsMC43LDIuOSwyLDMuNWMwLjUsMC4zLDEuMSwwLjQsMS43LDAuNGMwLjgsMCwxLjctMC4zLDIuMy0wLjhsMjQuMS0xOS40YzIuNC0yLDQuMi00LjYsNS4xLTcuNmw5LTMxLjUKCQkJYzAuMy0xLjEsMC44LTIsMS41LTIuOWwxNC4yLTE4LjVjMC41LTAuNiwwLjgtMS40LDAuOC0yLjNDOTUuMiwzNi44LDkzLjUsMzUuMSw5MS41LDM1LjFMOTEuNSwzNS4xTDkxLjUsMzUuMUw5MS41LDM1LjF6CgkJCSBNOTEuNSw0Mi41TDkxLjUsNDIuNUw5MS41LDQyLjVMOTEuNSw0Mi41eiIvPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA0NzFjIiBzdHJva2Utd2lkdGg9IjMuNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIGQ9IgoJCU00OS40LDUzLjhsLTAuNiwxOWMwLDEuMiwwLjIsMi40LDAuOCwzLjRjMS45LDMuNSw2LjIsMTEuNCw2LjQsMTIuNyIvPgoJPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA0NzFjIiBzdHJva2Utd2lkdGg9IjMuNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIGQ9IgoJCU03Ny43LDYwLjlsMTcuMS0yLjhjMS0wLjIsMS45LTAuNiwyLjctMS4ybDkuOS04LjEiLz4KCTxwYXRoIGZpbGw9IiM4MDQ3MWMiIGQ9Ik05NCw1Ny4yQzkzLjksNTcuMiw5My45LDU3LjIsOTQsNTcuMmMtMC41LDAuMy0xLDAuNi0xLjUsMC45YzAuMiwwLjYsMC41LDEuMiwwLjgsMS44CgkJYzIsMy45LDUuNSw2LjksOS43LDguMmM0LjksMS40LDEwLjIsMC41LDE0LjMtMi40Yy0wLjItMC42LTAuNS0xLjItMC44LTEuOGMtMi0zLjktNS41LTYuOS05LjctOC4yYy0xLjgtMC42LTMuNy0wLjgtNS42LTAuNwoJCUMxMDEuMyw1NS4xLDk4LjEsNTUsOTQsNTcuMnogTTEwNS43LDU5LjNjMi43LDAuOSw1LDIuNiw2LjYsNC45Yy0yLjYsMS01LjUsMS4yLTguMiwwLjRjLTIuNy0wLjktNS0yLjYtNi42LTQuOQoJCUMxMDAuMSw1OC42LDEwMyw1OC41LDEwNS43LDU5LjN6Ii8+Cgk8cGF0aCBmaWxsPSIjODA0NzFjIiBkPSJNMjcuMiw2Ni4yQzI3LjIsNjYuMiwyNy4yLDY2LjIsMjcuMiw2Ni4yYy0wLjUsMC4zLTEsMC42LTEuNSwwLjljMC4yLDAuNiwwLjUsMS4yLDAuOCwxLjgKCQljMiwzLjksNS41LDYuOSw5LjcsOC4yYzQuOSwxLjQsMTAuMiwwLjUsMTQuMy0yLjRjLTAuMi0wLjYtMC41LTEuMi0wLjgtMS44Yy0yLTMuOS01LjUtNi45LTkuNy04LjJjLTEuOC0wLjYtMy43LTAuOC01LjYtMC43CgkJQzM0LjUsNjQuMSwzMS40LDY0LDI3LjIsNjYuMnogTTM5LDY4LjNjMi43LDAuOSw1LDIuNiw2LjYsNC45Yy0yLjYsMS01LjUsMS4yLTguMiwwLjRjLTIuNy0wLjktNS0yLjYtNi42LTQuOQoJCUMzMy40LDY3LjYsMzYuMyw2Ny41LDM5LDY4LjN6Ii8+Cgk8cGF0aCBmaWxsPSIjODA0NzFjIiBkPSJNOTIuNiwxNS40QzkyLjYsMTUuNCw5Mi41LDE1LjQsOTIuNiwxNS40Yy0wLjQtMC40LTAuOS0wLjgtMS4zLTEuMmMtMC41LDAuNC0xLjEsMC44LTEuNSwxLjMKCQljLTMuMiwzLTUuMSw3LjItNS4yLDExLjZjMCw1LjEsMi4zLDkuOSw2LjMsMTMuMWMwLjUtMC40LDEuMS0wLjgsMS41LTEuM2MzLjItMyw1LjEtNy4yLDUuMi0xMS42YzAtMS45LTAuMy0zLjgtMC45LTUuNQoJCUM5Ni42LDIxLjksOTUuOSwxOC44LDkyLjYsMTUuNHogTTkzLjgsMjcuM2MtMC4xLDIuOC0xLjEsNS42LTIuOSw3LjdjLTEuNy0yLjItMi43LTUtMi42LTcuOGMwLjEtMi44LDEuMS01LjYsMi45LTcuNwoJCUM5Mi45LDIxLjcsOTMuOSwyNC41LDkzLjgsMjcuM3oiLz4KCTxwYXRoIGZpbGw9IiM4MDQ3MWMiIGQ9Ik0xMTUuMywzNkMxMTUuMywzNiwxMTUuMywzNiwxMTUuMywzNmMwLjMtMC41LDAuNi0xLDAuOS0xLjVjLTAuNS0wLjQtMS0wLjktMS42LTEuMgoJCWMtMy42LTIuNi04LjEtMy42LTEyLjQtMi44Yy01LDEtOS4zLDQuMi0xMS42LDguN2MwLjUsMC40LDEsMC45LDEuNiwxLjJjMy42LDIuNiw4LjEsMy42LDEyLjQsMi44YzEuOS0wLjMsMy42LTEsNS4yLTIKCQlDMTA5LjgsNDEuMywxMTIuNiwzOS45LDExNS4zLDM2eiBNMTAzLjksMzkuNmMtMi44LDAuNS01LjcsMC04LjEtMS4zYzEuOS0yLjEsNC40LTMuNiw3LjItNC4xYzIuOC0wLjUsNS43LDAsOC4xLDEuNAoJCUMxMDkuMiwzNy42LDEwNi42LDM5LDEwMy45LDM5LjZ6Ii8+CjwvZz4KPC9zdmc+Cg==',
     'pmd-restafval':    'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIyLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMiIgYmFzZVByb2ZpbGU9InRpbnkiIGlkPSJMYWFnXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiCgkgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIxNDEuN3B4IiBoZWlnaHQ9IjE0MS43cHgiIHZpZXdCb3g9IjAgMCAxNDEuNyAxNDEuNyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFCMUQzQiIgc3Ryb2tlLXdpZHRoPSIzLjciIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgZD0iTTkxLjksMTEwLjlINTUuOWwtNC43LTczLjFoNDYuOGwtNC42LDcxLjYKCUM5My41LDExMC4yLDkyLjcsMTEwLjksOTEuOSwxMTAuOXoiLz4KPHBhdGggZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjMUIxRDNCIiBzdHJva2Utd2lkdGg9IjMuNyIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBkPSJNODkuMiwzNy42SDQ5LjdjLTMuMywwLTUuOS0yLjYtNS45LTUuN2wwLDAKCWMwLTMuMiwyLjctNS43LDUuOS01LjdoMzkuNWMzLjMsMCw1LjksMi42LDUuOSw1LjciLz4KPGNpcmNsZSBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMxQjFEM0IiIHN0cm9rZS13aWR0aD0iMy43IiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIGN4PSI1Ni41IiBjeT0iMTAyLjEiIHI9IjEwLjEiLz4KPGNpcmNsZSBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMxQjFEM0IiIHN0cm9rZS13aWR0aD0iMy43IiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIGN4PSI1Ni41IiBjeT0iMTAyLjEiIHI9IjMuNiIvPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMxQjFEM0IiIHN0cm9rZS13aWR0aD0iMy43IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgZD0iTTUwLjQsMzEuNGg1MC44CgljMS44LDAsMy4zLDEuNCwzLjMsMy4xbDAsMGMwLDEuNy0xLjUsMy4xLTMuMywzLjFINTAuNCIvPgo8L3N2Zz4K',
-}
-
-TODAY_STRING = {
-    'en': 'Today',
-    'nl': 'Vandaag',
-}
-
-TOMORROW_STRING = {
-    'en': 'Tomorrow',
-    'nl': 'Morgen',
-}
-
-NO_DATE_STRING = {
-    'en': 'None',
-    'nl': 'Geen',
-}
-
-DUTCH_TRANSLATION_DAYS = {
-    'Monday':       'Maandag',
-    'Tuesday':      'Dinsdag',
-    'Wednesday':    'Woensdag',
-    'Thursday':     'Donderdag',
-    'Friday':       'Vrijdag',
-    'Saturday':     'Zaterdag',
-    'Sunday':       'Zondag',
-}
-
-DUTCH_TRANSLATION_DAYS_SHORT = {
-    'Mon':  'Maa',
-    'Tue':  'Din',
-    'Wed':  'Woe',
-    'Thu':  'Don',
-    'Fri':  'Vri',
-    'Sat':  'Zat',
-    'Sun':  'Zon',
-}
-
-DUTCH_TRANSLATION_MONTHS = {
-    'January':      'januari',
-    'February':     'februari',
-    'March':        'maart',
-    'April':        'april',
-    'May':          'mei',
-    'June':         'juni',
-    'July':         'juli',
-    'August':       'augustus',
-    'September':    'september',
-    'October':      'oktober',
-    'November':     'november',
-    'December':     'december'
-}
-
-DUTCH_TRANSLATION_MONTHS_SHORT = {
-    'Jan':  'jan',
-    'Feb':  'feb',
-    'Mar':  'mrt',
-    'Apr':  'apr',
-    'May':  'mei',
-    'Jun':  'jun',
-    'Jul':  'jul',
-    'Aug':  'aug',
-    'Sept': 'sep',
-    'Oct':  'okt',
-    'Nov':  'nov',
-    'Dec':  'dec',
+    'takken':           'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIyLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMiIgYmFzZVByb2ZpbGU9InRpbnkiIGlkPSJMYWFnXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiCgkgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIxNDEuN3B4IiBoZWlnaHQ9IjE0MS43cHgiIHZpZXdCb3g9IjAgMCAxNDEuNyAxNDEuNyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPGc+CgkJPHBhdGggZmlsbD0iIzgwNDcxYyIgZD0iTTkxLjUsMzguOEw5MS41LDM4LjggTTkxLjUsMzguOEw3Ny4yLDU3LjNjLTEsMS4yLTEuNywyLjYtMi4xLDQuMmwtOSwzMS41Yy0wLjYsMi4zLTIsNC4zLTMuOCw1LjgKCQkJbC0yNC4xLDE5LjRsMC40LTZjMC4xLTAuNy0wLjQtMS4zLTEuMS0xLjNsLTUuOC0wLjZsMjQuNS0xNy42YzEuMy0wLjksMi4yLTIuMiwyLjctMy42bDEwLjQtMjkuOGMwLjQtMS4yLDEuMi0yLjMsMi4yLTMuMgoJCQlMOTEuNSwzOC44IE05MS41LDM1LjFDOTEuNCwzNS4xLDkxLjQsMzUuMSw5MS41LDM1LjFMOTEuNSwzNS4xTDkxLjUsMzUuMWMtMSwwLTEuOCwwLjQtMi40LDAuOUw2OSw1My4yYy0xLjUsMS4zLTIuNiwyLjktMy4yLDQuOAoJCQlMNTUuNCw4Ny44Yy0wLjMsMC44LTAuNywxLjQtMS40LDEuOWwtMjQuNSwxNy42Yy0xLjIsMC45LTEuOCwyLjUtMS40LDRjMC40LDEuNSwxLjcsMi42LDMuMiwyLjdsMy40LDAuM2wtMC4zLDMuNgoJCQljLTAuMSwxLjUsMC43LDIuOSwyLDMuNWMwLjUsMC4zLDEuMSwwLjQsMS43LDAuNGMwLjgsMCwxLjctMC4zLDIuMy0wLjhsMjQuMS0xOS40YzIuNC0yLDQuMi00LjYsNS4xLTcuNmw5LTMxLjUKCQkJYzAuMy0xLjEsMC44LTIsMS41LTIuOWwxNC4yLTE4LjVjMC41LTAuNiwwLjgtMS40LDAuOC0yLjNDOTUuMiwzNi44LDkzLjUsMzUuMSw5MS41LDM1LjFMOTEuNSwzNS4xTDkxLjUsMzUuMUw5MS41LDM1LjF6CgkJCSBNOTEuNSw0Mi41TDkxLjUsNDIuNUw5MS41LDQyLjVMOTEuNSw0Mi41eiIvPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA0NzFjIiBzdHJva2Utd2lkdGg9IjMuNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIGQ9IgoJCU00OS40LDUzLjhsLTAuNiwxOWMwLDEuMiwwLjIsMi40LDAuOCwzLjRjMS45LDMuNSw2LjIsMTEuNCw2LjQsMTIuNyIvPgoJPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA0NzFjIiBzdHJva2Utd2lkdGg9IjMuNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIGQ9IgoJCU03Ny43LDYwLjlsMTcuMS0yLjhjMS0wLjIsMS45LTAuNiwyLjctMS4ybDkuOS04LjEiLz4KCTxwYXRoIGZpbGw9IiM4MDQ3MWMiIGQ9Ik05NCw1Ny4yQzkzLjksNTcuMiw5My45LDU3LjIsOTQsNTcuMmMtMC41LDAuMy0xLDAuNi0xLjUsMC45YzAuMiwwLjYsMC41LDEuMiwwLjgsMS44CgkJYzIsMy45LDUuNSw2LjksOS43LDguMmM0LjksMS40LDEwLjIsMC41LDE0LjMtMi40Yy0wLjItMC42LTAuNS0xLjItMC44LTEuOGMtMi0zLjktNS41LTYuOS05LjctOC4yYy0xLjgtMC42LTMuNy0wLjgtNS42LTAuNwoJCUMxMDEuMyw1NS4xLDk4LjEsNTUsOTQsNTcuMnogTTEwNS43LDU5LjNjMi43LDAuOSw1LDIuNiw2LjYsNC45Yy0yLjYsMS01LjUsMS4yLTguMiwwLjRjLTIuNy0wLjktNS0yLjYtNi42LTQuOQoJCUMxMDAuMSw1OC42LDEwMyw1OC41LDEwNS43LDU5LjN6Ii8+Cgk8cGF0aCBmaWxsPSIjODA0NzFjIiBkPSJNMjcuMiw2Ni4yQzI3LjIsNjYuMiwyNy4yLDY2LjIsMjcuMiw2Ni4yYy0wLjUsMC4zLTEsMC42LTEuNSwwLjljMC4yLDAuNiwwLjUsMS4yLDAuOCwxLjgKCQljMiwzLjksNS41LDYuOSw5LjcsOC4yYzQuOSwxLjQsMTAuMiwwLjUsMTQuMy0yLjRjLTAuMi0wLjYtMC41LTEuMi0wLjgtMS44Yy0yLTMuOS01LjUtNi45LTkuNy04LjJjLTEuOC0wLjYtMy43LTAuOC01LjYtMC43CgkJQzM0LjUsNjQuMSwzMS40LDY0LDI3LjIsNjYuMnogTTM5LDY4LjNjMi43LDAuOSw1LDIuNiw2LjYsNC45Yy0yLjYsMS01LjUsMS4yLTguMiwwLjRjLTIuNy0wLjktNS0yLjYtNi42LTQuOQoJCUMzMy40LDY3LjYsMzYuMyw2Ny41LDM5LDY4LjN6Ii8+Cgk8cGF0aCBmaWxsPSIjODA0NzFjIiBkPSJNOTIuNiwxNS40QzkyLjYsMTUuNCw5Mi41LDE1LjQsOTIuNiwxNS40Yy0wLjQtMC40LTAuOS0wLjgtMS4zLTEuMmMtMC41LDAuNC0xLjEsMC44LTEuNSwxLjMKCQljLTMuMiwzLTUuMSw3LjItNS4yLDExLjZjMCw1LjEsMi4zLDkuOSw2LjMsMTMuMWMwLjUtMC40LDEuMS0wLjgsMS41LTEuM2MzLjItMyw1LjEtNy4yLDUuMi0xMS42YzAtMS45LTAuMy0zLjgtMC45LTUuNQoJCUM5Ni42LDIxLjksOTUuOSwxOC44LDkyLjYsMTUuNHogTTkzLjgsMjcuM2MtMC4xLDIuOC0xLjEsNS42LTIuOSw3LjdjLTEuNy0yLjItMi43LTUtMi42LTcuOGMwLjEtMi44LDEuMS01LjYsMi45LTcuNwoJCUM5Mi45LDIxLjcsOTMuOSwyNC41LDkzLjgsMjcuM3oiLz4KCTxwYXRoIGZpbGw9IiM4MDQ3MWMiIGQ9Ik0xMTUuMywzNkMxMTUuMywzNiwxMTUuMywzNiwxMTUuMywzNmMwLjMtMC41LDAuNi0xLDAuOS0xLjVjLTAuNS0wLjQtMS0wLjktMS42LTEuMgoJCWMtMy42LTIuNi04LjEtMy42LTEyLjQtMi44Yy01LDEtOS4zLDQuMi0xMS42LDguN2MwLjUsMC40LDEsMC45LDEuNiwxLjJjMy42LDIuNiw4LjEsMy42LDEyLjQsMi44YzEuOS0wLjMsMy42LTEsNS4yLTIKCQlDMTA5LjgsNDEuMywxMTIuNiwzOS45LDExNS4zLDM2eiBNMTAzLjksMzkuNmMtMi44LDAuNS01LjcsMC04LjEtMS4zYzEuOS0yLjEsNC40LTMuNiw3LjItNC4xYzIuOC0wLjUsNS43LDAsOC4xLDEuNAoJCUMxMDkuMiwzNy42LDEwNi42LDM5LDEwMy45LDM5LjZ6Ii8+CjwvZz4KPC9zdmc+Cg==',
 }

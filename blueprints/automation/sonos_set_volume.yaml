@@ -105,6 +105,9 @@ trigger:
 
   - trigger: state
     entity_id: !input custom_state_triggers
+    to:
+      - "on"
+      - "off"
 
 condition:
   - alias: "Only control the volume when we are automating the music"

@@ -1,0 +1,48 @@
+description: >
+  Automatically run Norby's cleaning schedule every night at 1am,
+  alternating between a standard daily clean and a Monday deep clean.
+alias: areas_livingroom_vacuum_on
+mode: queued
+id: 11f981e7-b67c-47c3-ba3b-f51ef83a9414
+
+variables:
+  anchors:
+    - &run_daily_clean
+      alias: "Trigger native daily clean routine"
+      action: button.press
+      target:
+        entity_id: button.norby_daily
+
+    - &run_deep_clean
+      alias: "Trigger native deep clean routine (vacuum THEN mop)"
+      action: button.press
+      target:
+        entity_id: button.norby_deep_clean
+
+trigger:
+  - platform: time
+    at: "01:00:00"
+
+action:
+  - choose:
+      - conditions:
+          - alias: "Do not automate when a guest is over"
+            condition: state
+            entity_id: input_boolean.setting_guest_mode
+            state: "off"
+          - alias: "Only start when the setting is enabled"
+            condition: state
+            entity_id: input_boolean.setting_automatic_vacuum
+            state: "on"
+        sequence:
+          - if:
+              - alias: "If it is Monday (Sunday into Monday night)"
+                condition: time
+                weekday:
+                  - mon
+            then:
+              - *run_deep_clean
+            else:
+              - *run_daily_clean
+
+    default: []

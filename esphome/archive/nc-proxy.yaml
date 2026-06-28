@@ -1,0 +1,32 @@
+esphome:
+  name: nc-proxy
+  friendly_name: nc proxy
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "cIgBrWWX4woMTnj0sEn5In2V/JlTNySqvbdqv3xsqII="
+
+ota:
+  - platform: esphome
+    password: "3708d01fb25983db82edff7856178eb3"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Nc-Proxy Fallback Hotspot"
+    password: "AULR9Moau0aP"
+
+captive_portal:
+    

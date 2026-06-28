@@ -1,9 +1,0 @@
----
-platform: template
-sensors:
-  monthly_energy_produced:
-    friendly_name: Monthly Energy Produced
-    unit_of_measurement: kWh
-    value_template: >
-      {{ states('sensor.monthly_energy_produced_offpeak') | float
-       + states('sensor.monthly_energy_produced_peak') | float }}

@@ -1,7 +1,7 @@
 ---
 description: >
   Automatically play music in the living room
-alias: areas_kitchen_play_music
+alias: areas_mancave_play_music
 id: bdbbd6e8-fb02-4777-980e-dffd9865995c
 mode: single
 trace:
@@ -110,7 +110,7 @@ action:
           - not:
               - condition: state
                 entity_id:
-                  - input_select.livingroom_room_mode
+                  - input_select.mancave_room_mode
                 state: "Slaap"
         sequence:
           - if:

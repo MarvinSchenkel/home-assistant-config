@@ -1,0 +1,36 @@
+---
+description: >
+  Switch to optical when WiiM is streaming
+alias: areas_livingroom_nad_source_select
+id: 079f367b-b45c-4ea3-871b-7211b9711b3a
+mode: single
+
+trigger:
+  - trigger: homeassistant
+    event: start
+
+  - trigger: event
+    event_type: automation_reloaded
+
+  - trigger: state
+    entity_id: media_player.mass_woonkamer_wiim
+    to: "playing"
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: media_player.mass_woonkamer_wiim
+            state: "playing"
+        sequence:
+          - action: media_player.select_source
+            data:
+              source: WiiM
+            target:
+              entity_id: media_player.nad_t758
+
+          - action: media_player.turn_on
+            target:
+              entity_id: media_player.nad_t758
+
+    default: []

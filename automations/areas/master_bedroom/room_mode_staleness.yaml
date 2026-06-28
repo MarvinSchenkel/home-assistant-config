@@ -22,6 +22,8 @@ action:
             state: "Slaap"
           - condition: time
             after: "10:00:00"
+          - condition: time
+            before: "18:00:00"
           - condition: state
             entity_id: binary_sensor.presence_master_bedroom
             state: "off"
@@ -38,6 +40,9 @@ action:
             state: "Net wakker"
             for:
               minutes: 60
+          - condition: time
+            after: "08:00:00"
+            before: "18:00:00"
         sequence:
           - <<: *select_mode
             data:
@@ -48,7 +53,9 @@ action:
             entity_id: input_select.master_bedroom_room_mode
             state: "Dutje"
             for:
-              minutes: 120
+              minutes: 180
+          - condition: time
+            before: "18:00:00"
         sequence:
           - <<: *select_mode
             data:

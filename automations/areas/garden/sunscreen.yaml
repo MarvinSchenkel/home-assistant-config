@@ -40,7 +40,7 @@ trigger:
       - binary_sensor.weather_can_close_sunscreen
     to: "on"
     for:
-      minutes: 15
+      minutes: 10
 
 variables:
   anchors:
@@ -103,7 +103,7 @@ action:
               - binary_sensor.weather_can_close_sunscreen
             state: "on"
             for:
-              minutes: 15
+              minutes: 10
         sequence:
           - *sunscreen_down
 

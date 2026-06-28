@@ -99,6 +99,8 @@ variables:
         entity_id:
           - light.livingroom
           - light.kitchen
+          - light.hue_play_left
+          - light.hue_play_right
       data:
         transition: 5
 

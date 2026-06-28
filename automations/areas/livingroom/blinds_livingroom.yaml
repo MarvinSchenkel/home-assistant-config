@@ -40,6 +40,10 @@ trigger:
       - sensor.sun_adjusted_elevation
     below: -9
 
+  - platform: state
+    entity_id: sensor.gw3000a_solar_lux
+    to: "0"
+
   - platform: numeric_state
     entity_id:
       - sensor.sun_adjusted_elevation
@@ -162,16 +166,16 @@ action:
                 entity_id:
                   - binary_sensor.is_hot_day
                 state: "on"
-              - and:
-                  - alias: It's hot but we cannot close the sunscreen
-                    condition: state
-                    entity_id:
-                      - binary_sensor.weather_can_close_sunscreen
-                    state: "off"
-                  - condition: state
-                    entity_id:
-                      - binary_sensor.sun_should_close_south_blinds
-                    state: "on"
+              # - and:
+              #     - alias: It's hot but we cannot close the sunscreen
+              #       condition: state
+              #       entity_id:
+              #         - binary_sensor.weather_can_close_sunscreen
+              #       state: "off"
+              #     - condition: state
+              #       entity_id:
+              #         - binary_sensor.sun_should_close_south_blinds
+              #       state: "on"
               - and:
                   - condition: state
                     entity_id:
@@ -188,10 +192,14 @@ action:
         conditions:
           - or:
               - and:
-                  - condition: numeric_state
-                    entity_id:
-                      - sensor.sun_adjusted_elevation
-                    below: -9
+                  - or:
+                      - condition: numeric_state
+                        entity_id:
+                          - sensor.sun_adjusted_elevation
+                        below: -9
+                      - condition: state
+                        entity_id: sensor.gw3000a_solar_lux
+                        state: "0"
                   - condition: time
                     after: "16:00:00"
               - and:

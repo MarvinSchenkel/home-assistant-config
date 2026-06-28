@@ -55,7 +55,7 @@ variables:
       alias: "Ungroup the speaker from the target"
       action: media_player.join
       target:
-        entity_id: media_player.mass_sonos_kitchen
+        entity_id: media_player.mass_mancave_wiim_amp
       data:
         group_members:
           - !input target_media_player
@@ -83,7 +83,7 @@ trigger:
 
   - trigger: state
     entity_id:
-      - media_player.mass_sonos_kitchen
+      - media_player.mass_mancave_wiim_amp
     to: "playing"
 
   - trigger: homeassistant
