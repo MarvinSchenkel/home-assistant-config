@@ -82,6 +82,12 @@ trigger:
       {{ (states("sensor.pir_mancave_temperature") | float)
          < (states("sensor.current_temperature") | float) }}
 
+  # Re-evaluate when it gets cooler outside than inside, so the blinds open up again
+  - trigger: template
+    value_template: >-
+      {{ (states("sensor.current_temperature") | float)
+         < (states("sensor.pir_mancave_temperature") | float) }}
+
 variables:
   temperature_entity: "sensor.pir_mancave_temperature"
   anchors:
