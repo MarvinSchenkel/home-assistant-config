@@ -1,3 +1,4 @@
+---
 esphome:
   name: nc-proxy
   friendly_name: nc proxy
@@ -29,4 +30,3 @@ wifi:
     password: "AULR9Moau0aP"
 
 captive_portal:
-    

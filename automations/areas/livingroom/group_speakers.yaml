@@ -93,10 +93,10 @@ action:
             state: "on"
           - not: *condition_watching_tv
           - not:
-            - condition: state
-              entity_id:
-                - media_player.mass_woonkamer_wiim
-              state: playing
+              - condition: state
+                entity_id:
+                  - media_player.mass_woonkamer_wiim
+                state: playing
           - not:
               - condition: state
                 entity_id:

@@ -30,7 +30,7 @@ actions:
   - alias: "Wait for the Voice PE to become idle again"
     wait_for_trigger:
       - trigger: state
-        entity_id: 
+        entity_id:
           - assist_satellite.livingroom
         to: "idle"
     timeout:

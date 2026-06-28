@@ -20,25 +20,25 @@ trigger:
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   just_awake_music: "smart_playlist://playlist/e97299f9-db7d-4052-90a5-9eae2f152f45"
-    # - "ytmusic://playlist/RDCLAK5uy_ldLj_raotpFCQGWiQ7L-Ag5GTbGOyjgRY" # Classical Meditation
-    # - "ytmusic://playlist/RDCLAK5uy_kjbesFvpAjQl3z_xUxMArIfRpubFn791o" # "Tranquil spa day"
-    # - "ytmusic://playlist/RDCLAK5uy_nZJzoZEBYRptA2XXskbxGTvKkevapT_F4"
+  # - "ytmusic://playlist/RDCLAK5uy_ldLj_raotpFCQGWiQ7L-Ag5GTbGOyjgRY" # Classical Meditation
+  # - "ytmusic://playlist/RDCLAK5uy_kjbesFvpAjQl3z_xUxMArIfRpubFn791o" # "Tranquil spa day"
+  # - "ytmusic://playlist/RDCLAK5uy_nZJzoZEBYRptA2XXskbxGTvKkevapT_F4"
   early_morning_music: "smart_playlist://playlist/bb867870-affc-47aa-8cdd-cc28725b7931"
-    # - "ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5"
-    # - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
-    # - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
+  # - "ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5"
+  # - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
+  # - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
   morning_music: "smart_playlist://playlist/a98762a1-32be-44e1-8afd-e548e06465c0"
-    # - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
-    # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
-    # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
+  # - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
+  # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
+  # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
   day_music: "smart_playlist://playlist/c7e0ae05-8c52-4354-8678-68fe3ae64611"
-    # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Reax
-    # - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM" # Anjuna
-    # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
-    # - "apple_music://playlist/p.06aW3O9sVkp4Pzr" # Anjuna
+  # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Reax
+  # - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM" # Anjuna
+  # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
+  # - "apple_music://playlist/p.06aW3O9sVkp4Pzr" # Anjuna
   evening_music: "smart_playlist://playlist/f2385f4f-67bf-4cb7-90a7-3adfd5de03fc"
-    # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
-    # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
+  # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
+  # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
   christmas_music:
     - "ytmusic://playlist/RDCLAK5uy_nwLjTxbhH7Ng3q4pCbUdtxascis5Adj5g"
 
