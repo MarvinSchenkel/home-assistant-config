@@ -22,11 +22,11 @@ action:
             state: "Slaap"
           - condition: time
             after: "10:00:00"
-          - condition: state
-            entity_id: binary_sensor.presence_mancave
-            state: "off"
-            for:
-              minutes: 30
+          - condition: occupancy.is_not_detected
+            target:
+              entity_id: binary_sensor.presence_mancave
+            options:
+              for: "00:30:00"
         sequence:
           - <<: *select_mode
             data:
