@@ -1,102 +1,15 @@
 ---
+description: Set volume of sonos based on the music schedule
 alias: areas_mancave_speakers_set_volume
-description: Set volume of the speakers based on the music schedule
-id: 891d1b19-0620-48ad-a442-b8816d9483b2
 mode: queued
-max_exceeded: silent
-variables:
-  just_awake_volume: 8
-  early_morning_volume: 10
-  morning_volume: 11
-  day_volume: 13
-  evening_volume: 8
-  sonos: media_player.mass_mancave_wiim_amp
-  mass_entity_suffix: |
-    {{ "" if is_state("media_player.mass_all_devices", "unavailable") else "" }}
-  mass_entity: '{{ sonos + mass_entity_suffix }}'
-  music_schedule: |
-    {{ states('input_select.current_music_schedule') }}
+id: 891d1b19-0620-48ad-a442-b8816d9483b2
 
-triggers:
-  - trigger: state
-    entity_id:
-      - input_select.current_music_schedule
-      - input_boolean.setting_automatic_music
-  - trigger: state
-    entity_id: media_player.mass_mancave_wiim_amp
-    to: playing
-  - trigger: state
-    entity_id:
-      - input_select.mancave_room_mode
-
-  - trigger: state
-    entity_id: binary_sensor.presence_mancave
-    to: "on"
-
-  - trigger: state
-    entity_id: binary_sensor.presence_mancave
-    to: "off"
-    for:
-      seconds: 300
-
-conditions:
-  - alias: Only control the volume when we are automating the music
-    condition: state
-    entity_id: input_boolean.setting_automatic_music
-    state: 'on'
-
-actions:
-  - variables:
-      schedule_volume: |
-        {% if music_schedule == "just_awake" %}
-          {{ just_awake_volume }}
-        {% elif music_schedule == "early_morning" %}
-          {{ early_morning_volume }}
-        {% elif music_schedule == "morning" %}
-          {{ morning_volume }}
-        {% elif music_schedule == "day" %}
-          {{ day_volume }}
-        {% elif music_schedule == "evening" %}
-          {{ evening_volume }}
-        {% else %}
-          0
-        {% endif %}
-  - choose:
-      - conditions:
-          - or:
-              - condition: state
-                entity_id:
-                  - binary_sensor.presence_mancave
-                state: 'off'
-              - condition: state
-                entity_id:
-                  - input_select.mancave_room_mode
-                state: Slaap
-        sequence:
-          - if: '{{ "is_volume_muted" in states[mass_entity].attributes }}'
-            then:
-              - action: media_player.volume_mute
-                target:
-                  entity_id: '{{ mass_entity }}'
-                data:
-                  is_volume_muted: true
-            else:
-              - action: media_player.volume_set
-                target:
-                  entity_id: '{{ mass_entity }}'
-                data:
-                  volume_level: 0
-      - conditions: '{{ schedule_volume | int > 0 }}'
-        sequence:
-          - if: '{{ "is_volume_muted" in states[mass_entity].attributes }}'
-            then:
-              - action: media_player.volume_mute
-                target:
-                  entity_id: '{{ mass_entity }}'
-                data:
-                  is_volume_muted: false
-          - action: media_player.volume_set
-            target:
-              entity_id: '{{ mass_entity }}'
-            data:
-              volume_level: '{{ schedule_volume | int / 100.0 }}'
+use_blueprint:
+  path: sonos_set_volume.yaml
+  input:
+    just_awake_volume: 8
+    early_morning_volume: 10
+    morning_volume: 11
+    day_volume: 13
+    evening_volume: 8
+    sonos: media_player.mass_mancave_wiim_amp

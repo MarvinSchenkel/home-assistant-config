@@ -1,7 +1,7 @@
 ---
 description: >
   Automatically play music in the living room
-alias: areas_mancave_play_music
+alias: areas_house_play_music
 id: bdbbd6e8-fb02-4777-980e-dffd9865995c
 mode: single
 trace:
@@ -63,14 +63,6 @@ variables:
       target:
         entity_id: "{{ mass_entity }}"
 
-    - &set_shuffle
-      alias: "Ensure shuffle is on"
-      action: media_player.shuffle_set
-      target:
-        entity_id: "{{ mass_entity }}"
-      data:
-        shuffle: true
-
     - &pause
       alias: "Pause the player"
       action: media_player.media_stop
@@ -107,11 +99,6 @@ action:
               - binary_sensor.presence_house
               - input_boolean.setting_automatic_music
             state: "on"
-          - not:
-              - condition: state
-                entity_id:
-                  - input_select.mancave_room_mode
-                state: "Slaap"
         sequence:
           - if:
               - '{{ is_state(mass_entity, "off") }}'

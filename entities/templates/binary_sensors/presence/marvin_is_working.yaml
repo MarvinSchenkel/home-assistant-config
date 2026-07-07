@@ -7,12 +7,12 @@ binary_sensor:
       {%
         if (
           not(
-            state_attr("binary_sensor.macbookwork_active", "Locked")
-            or state_attr("binary_sensor.macbookwork_active", "Screen Off")
-            or state_attr("binary_sensor.macbookwork_active", "Screensaver")
-            or state_attr("binary_sensor.macbookwork_active", "Sleeping")
-            or state_attr("binary_sensor.macbookwork_active", "Terminating")
-            or state_attr("binary_sensor.macbookwork_active", "Fast User Switched")
+            state_attr("binary_sensor.mac_studio_active", "Locked")
+            or state_attr("binary_sensor.mac_studio_active", "Screen Off")
+            or state_attr("binary_sensor.mac_studio_active", "Screensaver")
+            or state_attr("binary_sensor.mac_studio_active", "Sleeping")
+            or state_attr("binary_sensor.mac_studio_active", "Terminating")
+            or state_attr("binary_sensor.mac_studio_active", "Fast User Switched")
           )
         )
         and hour >=7

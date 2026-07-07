@@ -26,13 +26,26 @@ trigger:
       - input_boolean.setting_manual_blinds
       - input_boolean.livingroom_cover_manual_control
       - binary_sensor.is_hot_day
-      - binary_sensor.weather_can_close_sunscreen
     from:
       - "off"
       - "on"
     to:
       - "off"
       - "on"
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.weather_can_close_sunscreen
+    to: "off"
+
+  # Re-evaluate once the wind has been calm for 10 min, so the screen can
+  # redeploy for the sun after a gust without us polling for it.
+  - trigger: state
+    entity_id:
+      - binary_sensor.weather_can_close_sunscreen
+    to: "on"
+    for:
+      minutes: 10
 
   - trigger: state
     entity_id:
@@ -219,16 +232,18 @@ action:
       - alias: "Close the blinds a bit more a hot day"
         conditions:
           - or:
-              # - and:
-              #     - alias: It's hot but we cannot close the sunscreen
-              #       condition: state
-              #       entity_id:
-              #         - binary_sensor.weather_can_close_sunscreen
-              #       state: "off"
-              #     - condition: state
-              #       entity_id:
-              #         - binary_sensor.sun_should_close_south_blinds
-              #       state: "on"
+              - and:
+                  - not:
+                      - condition: state
+                        entity_id:
+                          - binary_sensor.weather_can_close_sunscreen
+                        state: "on"
+                        for:
+                          minutes: 10
+                  - condition: state
+                    entity_id:
+                      - binary_sensor.sun_should_close_south_blinds
+                    state: "on"
               - and:
                   - alias: Keep the heat out of the house on hot days
                     condition: state

@@ -1,4 +1,4 @@
 ---
 sensor:
   - name: mass_media_entity
-    state: "media_player.mass_mancave_wiim_amp"
+    state: "media_player.huis"

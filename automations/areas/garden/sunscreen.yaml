@@ -26,6 +26,7 @@ trigger:
   - trigger: state
     entity_id:
       - binary_sensor.weather_can_close_sunscreen
+    to: "off"
 
   - trigger: numeric_state
     entity_id:
@@ -33,7 +34,7 @@ trigger:
     above: 285
     id: "sun_gone"
 
-  # Re-evaluate once the wind has been calm for 15 min, so the screen can
+  # Re-evaluate once the wind has been calm for 10 min, so the screen can
   # redeploy for the sun after a gust without us polling for it.
   - trigger: state
     entity_id:
@@ -58,18 +59,6 @@ variables:
         entity_id:
           - scene.garden_cover_sunblock
 
-    - &manual_control_on
-      alias: "Set manual control to on, so the sunscreen stays closed"
-      action: input_boolean.turn_on
-      target:
-        entity_id: input_boolean.sunscreen_manual_control
-
-    - &manual_control_off
-      alias: "Reset manual control, so the sunscreen stay closed"
-      action: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.sunscreen_manual_control
-
 action:
   - choose:
       - alias: "Close sunscreen when sun is gone or wind / rain is detected"
@@ -81,8 +70,7 @@ action:
                 entity_id:
                   - binary_sensor.weather_can_close_sunscreen
                 state: "off"
-        sequence:
-          *sunscreen_up
+        sequence: *sunscreen_up
 
       - alias: "Keep the dinner state active"
         conditions:

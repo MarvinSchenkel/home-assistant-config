@@ -1,139 +1,138 @@
-# ---
-# alias: areas_mancave_group_speakers
-# id: 17d144c4-cb42-419b-a699-e3bf6d993cbe
-# description: >
-#   Group sonos to the living room when there is music playing and motion is
-#   detected
-# mode: queued
-# max_exceeded: silent
+---
+alias: areas_mancave_group_speakers
+id: 17d144c4-cb42-419b-a699-e3bf6d993cbe
+description: >
+  Group sonos to the living room when there is music playing and motion is
+  detected
+mode: queued
+max_exceeded: silent
 
-# variables:
-#   mass_entity: '{{ states("sensor.mass_media_entity") }}'
-#   anchors:
-#     - &condition_tv_game
-#       alias: "Check if we're playing a game"
-#       condition: state
-#       entity_id: media_player.mancave_tv
-#       attribute: "source"
-#       state:
-#         - "PS5 Game Console"
-#         - "Nintendo Switch Game Console"
+variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
+  anchors:
+    - &condition_tv_game
+      alias: "Check if we're playing a game"
+      condition: state
+      entity_id: media_player.mancave_tv
+      attribute: "source"
+      state:
+        - "PS5 Game Console"
+        - "Nintendo Switch Game Console"
 
-#     - &condition_in_group
-#       alias: "Check if the speaker is already part of the group"
-#       condition: template
-#       value_template: |-
-#         {{
-#           'media_player.mass_mancave_wiim_amp'
-#           in state_attr(mass_entity, 'group_members')
-#         }}
+    - &condition_in_group
+      alias: "Check if the speaker is already part of the group"
+      condition: template
+      value_template: |-
+        {{
+          'media_player.mass_mancave_wiim_amp'
+          in state_attr(mass_entity, 'group_members')
+        }}
 
-# trigger:
-#   - trigger: state
-#     entity_id: binary_sensor.presence_mancave
-#     to: "on"
-#   - trigger: state
-#     entity_id:
-#       - input_select.mancave_room_mode
-#   - trigger: state
-#     entity_id:
-#       - binary_sensor.macbookwork_camera_in_use
-#     for:
-#       seconds: 1
-#   - trigger: state
-#     entity_id: binary_sensor.presence_mancave
-#     to: "off"
-#     for:
-#       seconds: 75
-#   - trigger: state
-#     entity_id: media_player.mancave_tv
-#     attribute: source
-#   - trigger: homeassistant
-#     event: start
-#   - trigger: state
-#     entity_id:
-#       - input_boolean.setting_automatic_music
+trigger:
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "on"
+  - trigger: state
+    entity_id:
+      - input_select.mancave_room_mode
+  - trigger: state
+    entity_id:
+      - binary_sensor.mac_studio_camera_in_use
+    for:
+      seconds: 1
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      seconds: 75
+  - trigger: state
+    entity_id: media_player.mancave_tv
+    attribute: source
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id:
+      - input_boolean.setting_automatic_music
 
-# action:
-#   - choose:
-#       - conditions:
-#           - condition: state
-#             entity_id:
-#               - binary_sensor.presence_mancave
-#               - input_boolean.setting_automatic_music
-#             state: "on"
-#           - "{{ is_state(mass_entity, 'playing') }}"
-#           - condition: and
-#             conditions:
-#               - condition: state
-#                 entity_id:
-#                   - input_select.mancave_room_mode
-#                 state: Wakker
-#               - alias: When I am not in a call
-#                 condition: state
-#                 entity_id:
-#                   - binary_sensor.macbookwork_camera_in_use
-#                 state: "off"
-#               - not:
-#                   - *condition_tv_game
-#               - not:
-#                   - *condition_in_group
-#         sequence:
-#           - if:
-#               - not:
-#                   - condition: state
-#                     entity_id:
-#                       - media_player.mancave_wiim_amp
-#                     state: playing
-#             then:
-#               - alias: Turn the child media player on
-#                 action: media_player.join
-#                 target:
-#                   entity_id: media_player.mass_sonos_kitchen
-#                 data:
-#                   group_members:
-#                     - media_player.mass_mancave_wiim_amp
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_mancave
+              - input_boolean.setting_automatic_music
+            state: "on"
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id:
+                  - input_select.mancave_room_mode
+                state: Wakker
+              - alias: When I am not in a call
+                condition: state
+                entity_id:
+                  - binary_sensor.mac_studio_camera_in_use
+                state: "off"
+              - not:
+                  - *condition_tv_game
+              - not:
+                  - *condition_in_group
+        sequence:
+          - if:
+              - not:
+                  - condition: state
+                    entity_id:
+                      - media_player.mancave_wiim_amp
+                    state: playing
+            then:
+              - alias: Turn the child media player on
+                action: media_player.join
+                target:
+                  entity_id: '{{ mass_entity }}'
+                data:
+                  group_members:
+                    - media_player.mass_mancave_wiim_amp
 
-#       - conditions:
-#           - condition: state
-#             entity_id:
-#               - binary_sensor.presence_mancave
-#             state: "off"
-#             for:
-#               seconds: 75
-#           - not:
-#               - condition: state
-#                 entity_id:
-#                   - media_player.mass_mancave_wiim_amp
-#                 state: "off"
-#           - *condition_in_group
-#         sequence:
-#           - alias: Turn the child media player off
-#             action: media_player.unjoin
-#             data: {}
-#             target:
-#               entity_id: media_player.mass_mancave_wiim_amp
+      - conditions:
+          - condition: state
+            entity_id:
+              - binary_sensor.presence_mancave
+            state: "off"
+            for:
+              seconds: 75
+          - not:
+              - condition: state
+                entity_id:
+                  - media_player.mass_mancave_wiim_amp
+                state: "off"
+          - *condition_in_group
+        sequence:
+          - alias: Turn the child media player off
+            action: media_player.unjoin
+            data: {}
+            target:
+              entity_id: media_player.mass_mancave_wiim_amp
 
-#       - conditions:
-#           - not:
-#               - and:
-#                   - condition: state
-#                     entity_id:
-#                       - input_select.mancave_room_mode
-#                     state: Wakker
-#                   - alias: When I am not in a call
-#                     condition: state
-#                     entity_id:
-#                       - binary_sensor.macbookwork_camera_in_use
-#                     state: "off"
-#                   - not:
-#                       - *condition_tv_game
-#           - *condition_in_group
-#         sequence:
-#           - alias: Turn the child media player off
-#             action: media_player.unjoin
-#             data: {}
-#             target:
-#               entity_id: media_player.mass_mancave_wiim_amp
+      - conditions:
+          - not:
+              - and:
+                  - condition: state
+                    entity_id:
+                      - input_select.mancave_room_mode
+                    state: Wakker
+                  - alias: When I am not in a call
+                    condition: state
+                    entity_id:
+                      - binary_sensor.mac_studio_camera_in_use
+                    state: "off"
+                  - not:
+                      - *condition_tv_game
+          - *condition_in_group
+        sequence:
+          - alias: Turn the child media player off
+            action: media_player.unjoin
+            data: {}
+            target:
+              entity_id: media_player.mass_mancave_wiim_amp
 
-#     default: []
+    default: []
