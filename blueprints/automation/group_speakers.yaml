@@ -52,20 +52,18 @@ variables:
         }}
 
     - &group
-      alias: "Ungroup the speaker from the target"
-      action: media_player.join
-      target:
-        entity_id: media_player.huis
+      alias: "Join the speaker to the master group (serialized via script)"
+      action: script.speaker_group
       data:
-        group_members:
-          - !input target_media_player
+        operation: join
+        target_player: !input target_media_player
 
     - &ungroup
-      alias: "Group the speaker to the target"
-      action: media_player.unjoin
-      data: {}
-      target:
-        entity_id: !input target_media_player
+      alias: "Remove the speaker from the master group (serialized via script)"
+      action: script.speaker_group
+      data:
+        operation: unjoin
+        target_player: !input target_media_player
 
 trigger:
   - trigger: state
@@ -97,7 +95,6 @@ action:
               - !input presence_entity
               - input_boolean.setting_automatic_music
             state: "on"
-          - "{{ is_state(mass_entity, 'playing') }}"
           - condition: and
             conditions: !input custom_conditions
           - not:

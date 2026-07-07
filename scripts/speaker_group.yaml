@@ -1,0 +1,75 @@
+---
+alias: speaker_group
+description: >
+  Join or unjoin a speaker to/from the Music Assistant master group.
+  All group changes run through this single queued script, so rapid
+  join/unjoin commands from different automations are serialized and
+  no longer hit Music Assistant within milliseconds of each other
+  (which caused dissolve/reform races and stopped playback).
+  When the first speaker joins a group that is not playing, playback
+  is started automatically.
+mode: queued
+max: 25
+
+fields:
+  operation:
+    description: Either 'join' or 'unjoin'
+  target_player:
+    description: The mass media player entity to add/remove
+
+variables:
+  mass_entity: '{{ states("sensor.mass_media_entity") }}'
+
+sequence:
+  - choose:
+      - conditions: "{{ operation == 'join' }}"
+        sequence:
+          - alias: "Join the speaker to the master group"
+            action: media_player.join
+            target:
+              entity_id: "{{ mass_entity }}"
+            data:
+              group_members:
+                - "{{ target_player }}"
+
+          - alias: "Wait until MA confirms the member was added"
+            wait_template: >-
+              {{ target_player in (state_attr(mass_entity, 'group_members') or []) }}
+            timeout:
+              seconds: 10
+
+          - alias: "First member joined a silent group: start playback"
+            if:
+              - "{{ not is_state(mass_entity, 'playing') }}"
+              - condition: state
+                entity_id: input_boolean.setting_automatic_music
+                state: "on"
+              - condition: time
+                after: "07:00:00"
+                before: "21:30:00"
+            then:
+              - if:
+                  - '{{ is_state(mass_entity, "off") }}'
+                then:
+                  - action: media_player.turn_on
+                    data: {}
+                    target:
+                      entity_id: "{{ mass_entity }}"
+              - action: media_player.media_play
+                data: {}
+                target:
+                  entity_id: "{{ mass_entity }}"
+
+      - conditions: "{{ operation == 'unjoin' }}"
+        sequence:
+          - alias: "Remove the speaker from the master group"
+            action: media_player.unjoin
+            data: {}
+            target:
+              entity_id: "{{ target_player }}"
+
+          - alias: "Wait until MA confirms the member was removed"
+            wait_template: >-
+              {{ target_player not in (state_attr(mass_entity, 'group_members') or []) }}
+            timeout:
+              seconds: 10
