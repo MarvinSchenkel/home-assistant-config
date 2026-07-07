@@ -63,20 +63,18 @@ variables:
         }}
 
     - &group
-      alias: "Start playing music on the master group"
-      action: media_player.join
-      target:
-        entity_id: "{{ mass_entity }}"
+      alias: "Join the speaker to the master group (serialized via script)"
+      action: script.speaker_group
       data:
-        group_members:
-          - media_player.mass_woonkamer_wiim
+        operation: join
+        target_player: media_player.mass_woonkamer_wiim
 
     - &ungroup
-      alias: "Ensure the media player is on"
-      action: media_player.unjoin
-      data: {}
-      target:
-        entity_id: media_player.mass_woonkamer_wiim
+      alias: "Remove the speaker from the master group (serialized via script)"
+      action: script.speaker_group
+      data:
+        operation: unjoin
+        target_player: media_player.mass_woonkamer_wiim
 
 conditions:
   - condition: state

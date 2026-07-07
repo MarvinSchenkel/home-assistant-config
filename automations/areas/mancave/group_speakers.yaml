@@ -85,13 +85,11 @@ action:
                       - media_player.mancave_wiim_amp
                     state: playing
             then:
-              - alias: Turn the child media player on
-                action: media_player.join
-                target:
-                  entity_id: '{{ mass_entity }}'
+              - alias: "Join the speaker to the master group (serialized via script)"
+                action: script.speaker_group
                 data:
-                  group_members:
-                    - media_player.mass_mancave_wiim_amp
+                  operation: join
+                  target_player: media_player.mass_mancave_wiim_amp
 
       - conditions:
           - condition: state
@@ -107,11 +105,11 @@ action:
                 state: "off"
           - *condition_in_group
         sequence:
-          - alias: Turn the child media player off
-            action: media_player.unjoin
-            data: {}
-            target:
-              entity_id: media_player.mass_mancave_wiim_amp
+          - alias: "Remove the speaker from the master group (serialized via script)"
+            action: script.speaker_group
+            data:
+              operation: unjoin
+              target_player: media_player.mass_mancave_wiim_amp
 
       - conditions:
           - not:
@@ -129,10 +127,10 @@ action:
                       - *condition_tv_game
           - *condition_in_group
         sequence:
-          - alias: Turn the child media player off
-            action: media_player.unjoin
-            data: {}
-            target:
-              entity_id: media_player.mass_mancave_wiim_amp
+          - alias: "Remove the speaker from the master group (serialized via script)"
+            action: script.speaker_group
+            data:
+              operation: unjoin
+              target_player: media_player.mass_mancave_wiim_amp
 
     default: []
