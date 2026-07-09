@@ -45,10 +45,18 @@ variables:
   temperature_entity: "sensor.pir_master_bedroom_temperature"
   anchors:
     - &close
-      alias: "Open the curtains"
-      action: cover.close_cover
-      target:
-        entity_id: cover.master_bedroom_curtains
+      alias: "Close the curtains"
+      # Forest Shuttle S/L quirk: a close command while already closed makes it open
+      if:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: cover.master_bedroom_curtains
+              state: "closed"
+      then:
+        - action: cover.close_cover
+          target:
+            entity_id: cover.master_bedroom_curtains
 
     - &open
       alias: "Open the curtains"
@@ -83,7 +91,10 @@ action:
               - binary_sensor.is_hot_day
             state: "on"
           # But only when it's hotter outside than inside
-          - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+          - condition: template
+            value_template: >-
+              {{ (states(temperature_entity) | float)
+                 < (states("sensor.current_temperature") | float) }}
         sequence:
           - *close
 
