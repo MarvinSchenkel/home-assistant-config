@@ -45,10 +45,15 @@ variables:
   temperature_entity: "sensor.pir_master_bedroom_temperature"
   anchors:
     - &close
-      alias: "Open the curtains"
-      action: cover.close_cover
-      target:
-        entity_id: cover.master_bedroom_curtains
+      alias: "Close the curtains"
+      # Forest Shuttle S/L quirk: a close command while already closed makes it open
+      if:
+        - condition: template
+          value_template: "{{ not is_state('cover.master_bedroom_curtains', 'closed') }}"
+      then:
+        - action: cover.close_cover
+          target:
+            entity_id: cover.master_bedroom_curtains
 
     - &open
       alias: "Open the curtains"
