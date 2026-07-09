@@ -1,13 +1,26 @@
 ---
-# A binary sensor based on the current temperature
-# indicating whether it is a hot day. Blinds use this
-# sensor to keep the heat out of the house
+# A binary sensor based on the current temperature indicating whether it is a
+# hot day. Blinds use this sensor to keep the heat out of the house.
 binary_sensor:
   - name: is_hot_day
     unique_id: 698a47ec-cf7f-434f-b48e-a79c2f66d13c
+    # Short debounce on top of the value hysteresis below, so a brief spike
+    # across the threshold doesn't move all the blinds. delay_off is longer:
+    # reopening the blinds and letting heat back in, only to reclose minutes
+    # later, is the most disruptive outcome.
+    delay_on:
+      minutes: 2
+    delay_off:
+      minutes: 10
+    # Hysteresis: trip ON at 27, only release once it is clearly cooler again
+    # (< 26). In between (the dead-band) the previous state is kept, which stops
+    # the sensor oscillating when the temperature hovers around the threshold.
     state: >
-      {%- if states('sensor.current_temperature') | float > 27.0 -%}
+      {% set temp = states("sensor.current_temperature") | float(0) %}
+      {% if temp > 27.0 %}
         on
-      {%- else -%}
+      {% elif temp < 26.0 %}
         off
-      {%- endif -%}
+      {% else %}
+        {{ 'on' if is_state('binary_sensor.is_hot_day', 'on') else 'off' }}
+      {% endif %}
