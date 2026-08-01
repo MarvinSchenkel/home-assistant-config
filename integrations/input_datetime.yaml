@@ -1,2 +1,0 @@
----
-input_datetime: !include_dir_named ../entities/input_datetimes

@@ -57,11 +57,9 @@ trigger:
     for:
       minutes: 2
 
-  - trigger: time
-    at: input_datetime.master_bedroom_approx_target_sleep_time
-
   # Cheap re-evaluation heartbeat — the differing-state guards below make
-  # this free w.r.t. the airco's cloud API budget
+  # this free w.r.t. the airco's cloud API budget. Also what picks up the
+  # pre-bed window around approx_target_sleep_time
   - trigger: time_pattern
     minutes: "/15"
 
@@ -72,7 +70,7 @@ variables:
   airco_entity: climate.airco_master_bedroom
   radiator_entity: climate.master_bedroom
   room_mode_entity: input_select.master_bedroom_room_mode
-  sleep_time_entity: input_datetime.master_bedroom_approx_target_sleep_time
+  approx_target_sleep_time: "22:30"  # assumed to fall before midnight
   door_entity: binary_sensor.master_bedroom_door_open
   export_power_entity: sensor.power_production  # kW, grid export
 
@@ -102,9 +100,8 @@ variables:
     {{ precool_target_hot_day if is_state('binary_sensor.is_hot_day_predicted', 'on')
        else target_room_temperature }}
   airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry', 'heat', 'heat_cool'] }}"
-  # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
-    {% set sleep_parts = states(sleep_time_entity).split(':') %}
+    {% set sleep_parts = approx_target_sleep_time.split(':') %}
     {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
     {{ sleep_minutes - now().hour * 60 - now().minute }}
 

@@ -26,6 +26,9 @@ trigger:
   - trigger: time_pattern
     minutes: "/5"
 
+variables:
+  approx_target_sleep_time: "22:30"  # keep in sync with the climate automation
+
 condition:
   - condition: time
     after: "18:00:00"
@@ -77,8 +80,7 @@ action:
           - alias: "Roughly 30 minutes before the scheduled sleep time"
             condition: template
             value_template: >
-              {% set sleep_entity = "input_datetime.master_bedroom_approx_target_sleep_time" %}
-              {% set sleep_parts = states(sleep_entity).split(":") %}
+              {% set sleep_parts = approx_target_sleep_time.split(":") %}
               {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
               {% set now_minutes = now().hour * 60 + now().minute %}
               {{ 0 <= (sleep_minutes - now_minutes) <= 30 }}

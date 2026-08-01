@@ -30,6 +30,28 @@ action:
           {{ data.temperatures | average }}
         {%- endif -%}
 
+  - variables:
+      # Max instead of average: peak heat decides whether deeper solar
+      # pre-cooling pays off. Hours compared in local time (the forecast
+      # datetimes are UTC), window 9-21 to cover the full afternoon peak.
+      # -100 = sentinel for "no forecast hours left in the window".
+      max_temperature: >
+        {% set data = namespace(temperatures=[]) %}
+        {%- for item in hourly_forecast['weather.openweathermap'].forecast -%}
+            {%- if (as_timestamp(now()) | timestamp_custom("%Y-%m-%d"))
+                == (as_timestamp(item["datetime"]) | timestamp_custom("%Y-%m-%d"))
+                and (as_datetime(item["datetime"]) | as_local).hour >= 9
+                and (as_datetime(item["datetime"]) | as_local).hour <= 21
+            -%}
+              {% set data.temperatures = data.temperatures + [item["temperature"]] %}
+            {%- endif -%}
+        {% endfor %}
+        {%- if data.temperatures | length == 0 -%}
+          -100
+        {%- else -%}
+          {{ data.temperatures | max }}
+        {%- endif -%}
+
 binary_sensor:
   - name: warm_day_predicted
     unique_id: 5abe5eeb-15bf-4f91-9e77-59ca0fe838ee
@@ -39,6 +61,24 @@ binary_sensor:
       {%- if average_temperature == 0 -%}
         off
       {%- elif average_temperature > 20.0 -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}
+
+  # Forecast-driven counterpart to binary_sensor.is_hot_day: that one reacts
+  # to today's actual temperature, this one looks ahead so slower measures
+  # (e.g. deeper solar pre-cooling) can start before the heat arrives.
+  - name: is_hot_day_predicted
+    unique_id: 24ad7a45-e06d-4fbc-b437-2e73e273df72
+    attributes:
+      max_temperature_used: "{{ max_temperature }}"
+    state: >
+      {%- if max_temperature == -100 -%}
+        {# An evening reload leaves no window hours; keep the morning verdict
+           since the tropical-night notification still reads this at ~22:30 #}
+        {{ 'on' if is_state('binary_sensor.is_hot_day_predicted', 'on') else 'off' }}
+      {%- elif max_temperature >= 25.0 -%}
         on
       {%- else -%}
         off

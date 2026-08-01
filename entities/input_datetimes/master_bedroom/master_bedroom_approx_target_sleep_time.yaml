@@ -1,6 +1,0 @@
----
-name: Geplande slaaptijd
-has_date: false
-has_time: true
-initial: "22:30:00"
-icon: "mdi:bed-clock"
