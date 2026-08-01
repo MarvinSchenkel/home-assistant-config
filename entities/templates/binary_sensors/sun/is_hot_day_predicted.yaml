@@ -1,0 +1,31 @@
+---
+# Forecast-driven counterpart to binary_sensor.is_hot_day: that one reacts to
+# today's actual temperature, this one looks ahead so slower measures (e.g.
+# deeper solar pre-cooling) can start before the heat arrives.
+trigger:
+  - trigger: homeassistant
+    event: start
+  - trigger: event
+    event_type: event_template_reloaded
+  - trigger: time_pattern
+    hours: "/3"
+
+action:
+  - action: weather.get_forecasts
+    target:
+      entity_id: weather.buienradar
+    data:
+      type: daily
+    response_variable: forecast
+
+binary_sensor:
+  - name: is_hot_day_predicted
+    unique_id: 24ad7a45-e06d-4fbc-b437-2e73e273df72
+    attributes:
+      max_temp_today: >
+        {% set daily = forecast.get("weather.buienradar", {}).get("forecast", []) %}
+        {{ daily[0].temperature | float(0) if daily else 0 }}
+    state: >
+      {% set daily = forecast.get("weather.buienradar", {}).get("forecast", []) %}
+      {% set max_temp = daily[0].temperature | float(0) if daily else 0 %}
+      {{ 'on' if max_temp >= 25.0 else 'off' }}

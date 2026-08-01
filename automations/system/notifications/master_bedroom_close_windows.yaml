@@ -1,0 +1,53 @@
+---
+description: >
+  Send a morning notification to close the master bedroom windows once it
+  starts warming up outside and a hot day is predicted
+alias: system_notifications_masterbedroom_windows_close
+mode: single
+max_exceeded: silent
+id: f6f9b1ca-d484-4000-9af4-db4237ddf0cc
+
+trigger:
+  - alias: "Outdoor temperature crosses above room temperature"
+    trigger: template
+    value_template: >
+      {{ (states("sensor.current_temperature") | float)
+         > (states("sensor.pir_master_bedroom_temperature") | float) - 0.5 }}
+  # The template above only fires on the false->true edge, which can happen
+  # before 07:00 and would then be missed — this re-checks during the window
+  - trigger: time_pattern
+    minutes: "/15"
+
+condition:
+  - condition: time
+    after: "07:00:00"
+    before: "13:00:00"
+  - alias: "It is (getting) warmer outside than inside"
+    condition: template
+    value_template: >
+      {{ (states("sensor.current_temperature") | float)
+         > (states("sensor.pir_master_bedroom_temperature") | float) - 0.5 }}
+  - condition: state
+    entity_id: binary_sensor.is_hot_day_predicted
+    state: "on"
+  - alias: "Someone is home to act on it"
+    condition: state
+    entity_id: binary_sensor.everyone_left_home
+    state: "off"
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+        - "intercom"
+      type: "home_only"
+      emoji: "☀️"
+      message: >-
+        Het wordt warm vandaag. Sluit de ramen en gordijnen op de grote
+        slaapkamer om de koelte binnen te houden.
+
+  # Once-per-day debounce, since mode is single
+  - delay:
+      hours: 12
