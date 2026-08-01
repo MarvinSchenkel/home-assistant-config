@@ -45,18 +45,6 @@ trigger:
       - binary_sensor.is_hot_day_predicted
     from: ~
 
-  - trigger: state
-    entity_id: binary_sensor.master_bedroom_door_open
-    to: "on"
-    for:
-      minutes: 5
-
-  - trigger: state
-    entity_id: binary_sensor.master_bedroom_door_open
-    to: "off"
-    for:
-      minutes: 2
-
   # Cheap re-evaluation heartbeat — the differing-state guards below make
   # this free w.r.t. the airco's cloud API budget. Also what picks up the
   # pre-bed window around approx_target_sleep_time
@@ -71,7 +59,6 @@ variables:
   radiator_entity: climate.master_bedroom
   room_mode_entity: input_select.master_bedroom_room_mode
   approx_target_sleep_time: "22:30"  # assumed to fall before midnight
-  door_entity: binary_sensor.master_bedroom_door_open
   export_power_entity: sensor.power_production  # kW, grid export
 
   # --- temperatures (°C) ---
@@ -175,18 +162,6 @@ variables:
 
 action:
   - choose:
-      - alias: "Door interlock — don't cool the landing"
-        conditions:
-          - alias: "Bedroom door is open"
-            condition: template
-            value_template: "{{ is_state(door_entity, 'on') }}"
-          - alias: "Airco is actively running a compressor mode"
-            condition: template
-            value_template: "{{ airco_compressor_active }}"
-        sequence:
-          # Cooling the landing wastes the API budget and the coolth
-          - *airco_off
-
       - alias: "Away — no need to condition an empty room"
         conditions:
           - condition: state
@@ -289,9 +264,6 @@ action:
               - condition: state
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
-          - alias: "Door closed — don't cool the hallway"
-            condition: template
-            value_template: "{{ is_state(door_entity, 'off') }}"
           - condition: template
             value_template: "{{ room_temp > precool_target + temp_hysteresis }}"
         sequence:
