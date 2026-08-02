@@ -1,0 +1,112 @@
+---
+description: >
+  Send a notification when it is hot inside and it has cooled off outside to
+  open our windows for a bit of fresh air, or warn about a tropical night so
+  the windows stay shut instead
+alias: system_notifications_masterbedroom_windows_fresh_air
+mode: single
+max_exceeded: silent
+id: 95f2507a-3b67-4363-89f9-ba8551c95caf
+
+trigger:
+  - trigger: time
+    at: "18:00:01"
+  - trigger: numeric_state
+    entity_id:
+      - sensor.pir_master_bedroom_temperature
+    above: 21.5
+  - trigger: template
+    value_template: >
+      {{
+        (states("sensor.pir_master_bedroom_temperature") | float
+        - states("sensor.current_temperature") | float)
+        | round(2) > 1
+      }}
+  # Polls often enough to catch the ~30 minutes before bedtime window below
+  - trigger: time_pattern
+    minutes: "/5"
+
+condition:
+  - condition: time
+    after: "18:00:00"
+  # Don't ping people who are asleep or napping
+  - not:
+      - condition: state
+        entity_id: input_select.master_bedroom_room_mode
+        state:
+          - "Slaap"
+          - "Dutje"
+
+action:
+  - choose:
+      - alias: "Evening fresh-air reminder"
+        conditions:
+          - condition: template
+            value_template: >
+              {{
+                (states("sensor.pir_master_bedroom_temperature") | float
+                - states("sensor.current_temperature") | float)
+                | round(2) > 1
+              }}
+          - condition: numeric_state
+            entity_id: sensor.pir_master_bedroom_temperature
+            above: 21.5
+          - condition: time
+            after: "18:00:00"
+            before: "23:00:00"
+        sequence:
+          - action: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+                - "laura"
+                - "intercom"
+              type: "home_only"
+              emoji: "🍃"
+              message: >-
+                Het is op de grote slaapkamer warmer dan buiten.
+                Open de ramen voor wat frisse lucht!
+          # Debounce: mode is single, so this blocks re-notifying for 6h. It
+          # sits inside the branch so unmatched evaluations exit instantly
+          - delay:
+              hours: 6
+
+      - alias: "Tropical night heads-up — keep the windows shut"
+        conditions:
+          - alias: "Roughly 30 minutes before the scheduled sleep time"
+            condition: template
+            value_template: >
+              {% set sleep_entity = "input_datetime.master_bedroom_approx_target_sleep_time" %}
+              {% set sleep_parts = states(sleep_entity).split(":") %}
+              {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
+              {% set now_minutes = now().hour * 60 + now().minute %}
+              {{ 0 <= (sleep_minutes - now_minutes) <= 30 }}
+          - alias: "It isn't cooling off outside"
+            condition: template
+            value_template: >
+              {{ (states("sensor.current_temperature") | float)
+                 >= (states("sensor.pir_master_bedroom_temperature") | float) - 1 }}
+          # It has been (or is predicted to be) a hot day
+          - or:
+              - condition: state
+                entity_id: binary_sensor.is_hot_day
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.is_hot_day_predicted
+                state: "on"
+        sequence:
+          - action: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+                - "laura"
+                - "intercom"
+              type: "home_only"
+              emoji: "🌡️"
+              message: >-
+                Het wordt een tropische nacht. Laat de ramen dicht,
+                de airco houdt de kamer koel.
+          # Debounce: mode is single, so this blocks re-notifying for 6h. It
+          # sits inside the branch so unmatched evaluations exit instantly
+          - delay:
+              hours: 6

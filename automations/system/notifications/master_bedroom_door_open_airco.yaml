@@ -1,0 +1,56 @@
+---
+description: >
+  Nudge us to close the master bedroom door when it has been open for a while
+  with the airco running — the automation deliberately does not turn the airco
+  off itself, that would flip-flop modes and flood the Onecta API
+alias: system_notifications_masterbedroom_door_open_airco
+mode: single
+max_exceeded: silent
+id: 3f8f0b6e-9a41-47f5-8c47-2f4f2e6f1a90
+
+trigger:
+  - alias: "Door has been open for a while"
+    trigger: state
+    entity_id: binary_sensor.master_bedroom_door_open
+    to: "on"
+    for:
+      minutes: 5
+  # Covers the airco starting while the door was already open
+  - trigger: state
+    entity_id: climate.airco_master_bedroom
+    to:
+      - "cool"
+      - "dry"
+      - "heat"
+      - "heat_cool"
+    for:
+      minutes: 5
+
+condition:
+  - alias: "Door is (still) open"
+    condition: state
+    entity_id: binary_sensor.master_bedroom_door_open
+    state: "on"
+    for:
+      minutes: 5
+  - alias: "Airco is actively running a compressor mode"
+    condition: template
+    value_template: >
+      {{ states("climate.airco_master_bedroom")
+         in ["cool", "dry", "heat", "heat_cool"] }}
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+      type: "home_only"
+      emoji: "🚪"
+      message: >-
+        De airco op de grote slaapkamer draait, maar de deur staat open.
+        Doe de deur dicht om de koelte binnen te houden.
+
+  # Debounce: mode is single, so this blocks re-notifying for an hour
+  - delay:
+      hours: 1
