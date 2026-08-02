@@ -220,9 +220,8 @@ action:
           - alias: "Exporting solar to the grid"
             condition: template
             value_template: "{{ states(export_power_entity) | float(0) >= export_start_kw }}"
-          - alias: "A hot day, reactive or predicted"
-            condition: or
-            conditions:
+          # A hot day, reactive or predicted
+          - or:
               - condition: state
                 entity_id: binary_sensor.is_hot_day
                 state: "on"
@@ -261,15 +260,13 @@ action:
           - alias: "Airco is running a mode we can safely stop"
             condition: template
             value_template: "{{ airco_compressor_active }}"
-          - condition: or
-            conditions:
+          - or:
               - alias: "Evening crossover — free cooling beats the compressor"
                 condition: template
                 value_template: "{{ outdoor_temp < room_temp - 1 }}"
               # Export below the *start* threshold isn't enough: pre-cooling
               # should ride out short cloud dips (the 0.2-1.0 kW dead-band)
-              - condition: and
-                conditions:
+              - and:
                   - alias: "Solar export has genuinely stopped"
                     condition: template
                     value_template: "{{ states(export_power_entity) | float(0) < export_stop_kw }}"

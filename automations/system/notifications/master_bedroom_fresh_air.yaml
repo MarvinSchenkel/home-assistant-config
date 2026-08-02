@@ -29,9 +29,8 @@ trigger:
 condition:
   - condition: time
     after: "18:00:00"
-  - alias: "Don't ping people who are asleep or napping"
-    condition: not
-    conditions:
+  # Don't ping people who are asleep or napping
+  - not:
       - condition: state
         entity_id: input_select.master_bedroom_room_mode
         state:
@@ -87,9 +86,8 @@ action:
             value_template: >
               {{ (states("sensor.current_temperature") | float)
                  >= (states("sensor.pir_master_bedroom_temperature") | float) - 1 }}
-          - alias: "It has been (or is predicted to be) a hot day"
-            condition: or
-            conditions:
+          # It has been (or is predicted to be) a hot day
+          - or:
               - condition: state
                 entity_id: binary_sensor.is_hot_day
                 state: "on"
