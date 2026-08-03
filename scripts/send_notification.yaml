@@ -75,20 +75,35 @@ sequence:
                           state: "on"
                   then:
                     - action: conversation.process
+                      continue_on_error: true
                       data:
-                        agent_id: conversation.chatgpt
+                        agent_id: conversation.chatgpt_4omini
                         text: >-
                           Herschrijf de content van de volgende smart home notificatie en geef er
                            je eigen draai aan. Antwoord alleen met de content tussen " ":
                           {{ message }}
                       response_variable: response
+                    # Fall back to the plain message when the agent is broken or
+                    # out of credits — its error text comes back as a normal
+                    # response and would otherwise be spoken through the house
+                    - variables:
+                        speech_message: >-
+                          {% if response is defined
+                             and response.response.response_type != 'error'
+                             and 'insufficient funds' not in
+                                 response.response.speech.plain.speech | lower %}
+                            {{ response.response.speech.plain.speech }}
+                          {% else %}
+                            {{ message }}
+                          {% endif %}
                     - action: tts.speak
+                      continue_on_error: true
                       target:
-                        entity_id: tts.openai_gpt_4o_mini_tts
+                        entity_id: tts.home_assistant_cloud
                       data:
                         cache: true
-                        language: nl
-                        message: "{{ response.response.speech.plain.speech.lower() }}"
+                        language: nl-NL
+                        message: "{{ speech_message | trim | lower }}"
                         media_player_entity_id: '{{ states("sensor.mass_media_entity") }}'
 
         # Send mobile notifications
