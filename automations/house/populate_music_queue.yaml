@@ -19,26 +19,23 @@ trigger:
 
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
-  just_awake_music: "smart_playlist://playlist/e97299f9-db7d-4052-90a5-9eae2f152f45"
-  # - "ytmusic://playlist/RDCLAK5uy_ldLj_raotpFCQGWiQ7L-Ag5GTbGOyjgRY" # Classical Meditation
-  # - "ytmusic://playlist/RDCLAK5uy_kjbesFvpAjQl3z_xUxMArIfRpubFn791o" # "Tranquil spa day"
-  # - "ytmusic://playlist/RDCLAK5uy_nZJzoZEBYRptA2XXskbxGTvKkevapT_F4"
-  early_morning_music: "smart_playlist://playlist/bb867870-affc-47aa-8cdd-cc28725b7931"
-  # - "ytmusic://playlist/PLN_V7YvbzWCrFWD1vnmiXxsQPxnTyouT5"
-  # - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
-  # - "ytmusic://playlist/PLDKkQBH8I6JCwku89bRRI-Aq1IkXr4jIA"
-  morning_music: "smart_playlist://playlist/a98762a1-32be-44e1-8afd-e548e06465c0"
-  # - "ytmusic://playlist/PLN_V7YvbzWCrr4ChmL43IHe-b-U_e1Ork"
-  # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
-  # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
-  day_music: "smart_playlist://playlist/c7e0ae05-8c52-4354-8678-68fe3ae64611"
-  # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Reax
-  # - "ytmusic://playlist/PLN_V7YvbzWCrUeyO9haUxgUTo2jDDjDVM" # Anjuna
-  # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
-  # - "apple_music://playlist/p.06aW3O9sVkp4Pzr" # Anjuna
-  evening_music: "smart_playlist://playlist/f2385f4f-67bf-4cb7-90a7-3adfd5de03fc"
-  # - "ytmusic://playlist/PLN_V7YvbzWCpHsXNr6wKjwo_jRi-yx1Ye" # Ambient / Relax
-  # - "apple_music://playlist/p.9oDKl0XuN1q9LEd" # Ambient / Relax
+  just_awake_music:
+    - "radio_playlist://playlist/library://playlist/38" # Classical Meditation
+    - "radio_playlist://playlist/library://playlist/37" # Tranquil spa day
+    - "radio_playlist://playlist/library://playlist/28" # Lofi
+  early_morning_music:
+    - "radio_playlist://playlist/library://playlist/35" # Reflections
+    - "radio_playlist://playlist/library://playlist/31" # Chill
+    - "radio_playlist://playlist/library://playlist/29" # Chill step
+  morning_music:
+    - "radio_playlist://playlist/library://playlist/31" # Chill
+    - "radio_playlist://playlist/library://playlist/32" # Ambient / Relax
+  day_music:
+    - "radio_playlist://playlist/library://playlist/32" # Ambient / Relax
+    - "radio_playlist://playlist/library://playlist/30" # Anjuna
+    - "ytmusic--RDQFfKiS://playlist/VLPLC800B9699743BD19" # Top 40
+  evening_music:
+    - "radio_playlist://playlist/library://playlist/32" # Ambient / Relax
   christmas_music:
     - "ytmusic://playlist/RDCLAK5uy_nwLjTxbhH7Ng3q4pCbUdtxascis5Adj5g"
 
@@ -55,19 +52,12 @@ variables:
     {% elif active_schedule == "evening" %}
       {{ evening_music }}
     {% endif %}
-  radio_mode: >-
-    {% if active_schedule == "just_awake" %}
-      {{ false }}
-    {% else %}
-      {{ false }}
-    {% endif %}
   anchors:
     - &replace_music
       action: music_assistant.play_media
       data:
         media_id: "{{ music_to_play }}"
         enqueue: replace
-        radio_mode: "{{ radio_mode }}"
       target:
         entity_id: "{{ mass_entity }}"
     - &replace_next_music
@@ -75,7 +65,6 @@ variables:
       data:
         media_id: "{{ music_to_play }}"
         enqueue: replace_next
-        radio_mode: "{{ radio_mode }}"
       target:
         entity_id: "{{ mass_entity }}"
     - &add_music
@@ -83,7 +72,6 @@ variables:
       data:
         media_id: "{{ music_to_play }}"
         enqueue: add
-        radio_mode: "{{ radio_mode }}"
       target:
         entity_id: "{{ mass_entity }}"
 

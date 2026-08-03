@@ -8,6 +8,7 @@ binary_sensor:
       {%-
         if is_state("input_select.master_bedroom_room_mode", "Slaap")
         or is_state("input_select.mancave_room_mode", "Slaap")
+        or is_state("input_select.master_bedroom_room_mode", "Dutje")
       -%}
         on
       {%- else -%}
