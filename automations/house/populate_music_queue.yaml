@@ -20,22 +20,22 @@ trigger:
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   just_awake_music:
-    - "radio_playlist://playlist/library://playlist/38" # Classical Meditation
-    - "radio_playlist://playlist/library://playlist/37" # Tranquil spa day
-    - "radio_playlist://playlist/library://playlist/28" # Lofi
+    - "radio_playlist://playlist/library://playlist/38"  # Classical Meditation
+    - "radio_playlist://playlist/library://playlist/37"  # Tranquil spa day
+    - "radio_playlist://playlist/library://playlist/28"  # Lofi
   early_morning_music:
-    - "radio_playlist://playlist/library://playlist/35" # Reflections
-    - "radio_playlist://playlist/library://playlist/31" # Chill
-    - "radio_playlist://playlist/library://playlist/29" # Chill step
+    - "radio_playlist://playlist/library://playlist/35"  # Reflections
+    - "radio_playlist://playlist/library://playlist/31"  # Chill
+    - "radio_playlist://playlist/library://playlist/29"  # Chill step
   morning_music:
-    - "radio_playlist://playlist/library://playlist/31" # Chill
-    - "radio_playlist://playlist/library://playlist/32" # Ambient / Relax
+    - "radio_playlist://playlist/library://playlist/31"  # Chill
+    - "radio_playlist://playlist/library://playlist/32"  # Ambient / Relax
   day_music:
-    - "radio_playlist://playlist/library://playlist/32" # Ambient / Relax
-    - "radio_playlist://playlist/library://playlist/30" # Anjuna
-    - "ytmusic--RDQFfKiS://playlist/VLPLC800B9699743BD19" # Top 40
+    - "radio_playlist://playlist/library://playlist/32"  # Ambient / Relax
+    - "radio_playlist://playlist/library://playlist/30"  # Anjuna
+    - "ytmusic--RDQFfKiS://playlist/VLPLC800B9699743BD19"  # Top 40
   evening_music:
-    - "radio_playlist://playlist/library://playlist/32" # Ambient / Relax
+    - "radio_playlist://playlist/library://playlist/32"  # Ambient / Relax
   christmas_music:
     - "ytmusic://playlist/RDCLAK5uy_nwLjTxbhH7Ng3q4pCbUdtxascis5Adj5g"
 
