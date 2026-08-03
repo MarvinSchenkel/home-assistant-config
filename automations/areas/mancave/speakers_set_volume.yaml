@@ -1,5 +1,10 @@
-description: Set volume of sonos based on the music schedule
+---
+description: >
+  Set the volume of the Mancave WiiM Amp based on the music schedule. The amp is
+  the static leader of the house group and can therefore never be unjoined, so
+  it is muted instead whenever the Mancave should be silent.
 alias: areas_mancave_speakers_set_volume
+id: 891d1b19-0620-48ad-a442-b8816d9483b2
 mode: queued
 max_exceeded: silent
 
@@ -9,12 +14,8 @@ variables:
   morning_volume: 11
   day_volume: 13
   evening_volume: 8
-  sonos: media_player.mass_mancave_wiim_amp
-  mass_entity_suffix: |
-    {{ "" if is_state("media_player.mass_all_devices", "unavailable") else "" }}
-  mass_entity: "{{ sonos + mass_entity_suffix }}"
-  music_schedule: |
-    {{ states('input_select.current_music_schedule') }}
+  mass_entity: media_player.mass_mancave_wiim_amp
+  music_schedule: "{{ states('input_select.current_music_schedule') }}"
 
 triggers:
   - trigger: state
@@ -22,17 +23,38 @@ triggers:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
 
+  - trigger: state
+    entity_id: media_player.mass_mancave_wiim_amp
+    to: "playing"
+
+  - trigger: state
+    entity_id:
+      - input_select.mancave_room_mode
+      - binary_sensor.mac_studio_camera_in_use
+
+  - trigger: state
+    entity_id: media_player.mancave_tv
+    attribute: source
+
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "on"
+
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      seconds: 300
+
 conditions:
-  - alias: Only control the volume when we are automating the music
+  - alias: "Only control the volume when we are automating the music"
     condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
-  - condition: and
-    conditions: []
 
 actions:
   - variables:
-      schedule_volume: |
+      schedule_volume: >
         {% if music_schedule == "just_awake" %}
           {{ just_awake_volume }}
         {% elif music_schedule == "early_morning" %}
@@ -46,16 +68,34 @@ actions:
         {% else %}
           0
         {% endif %}
+
   - choose:
-      - conditions:
-          - condition: and
-            conditions:
-              - condition: template
-                value_template: "{{ false }}"
+      - alias: "Silence the amp while the Mancave is unused"
+        conditions:
+          - or:
+              - alias: "Nobody in the Mancave"
+                condition: state
+                entity_id: binary_sensor.presence_mancave
+                state: "off"
+                for:
+                  seconds: 300
+              - alias: "The Mancave is asleep"
+                condition: state
+                entity_id: input_select.mancave_room_mode
+                state: "Slaap"
+              - alias: "I am in a call"
+                condition: state
+                entity_id: binary_sensor.mac_studio_camera_in_use
+                state: "on"
+              - alias: "We're playing a game"
+                condition: state
+                entity_id: media_player.mancave_tv
+                attribute: "source"
+                state:
+                  - "PS5 Game Console"
+                  - "Nintendo Switch Game Console"
         sequence:
-          - if:
-              - condition: template
-                value_template: "{{ \"is_volume_muted\" in states[mass_entity].attributes }}"
+          - if: '{{ "is_volume_muted" in states[mass_entity].attributes }}'
             then:
               - action: media_player.volume_mute
                 target:
@@ -68,19 +108,17 @@ actions:
                   entity_id: "{{ mass_entity }}"
                 data:
                   volume_level: 0
-      - conditions:
-          - condition: template
-            value_template: "{{ schedule_volume | int > 0 }}"
+
+      - conditions: "{{ schedule_volume | int > 0 }}"
         sequence:
-          - if:
-              - condition: template
-                value_template: "{{ \"is_volume_muted\" in states[mass_entity].attributes }}"
+          - if: '{{ "is_volume_muted" in states[mass_entity].attributes }}'
             then:
               - action: media_player.volume_mute
                 target:
                   entity_id: "{{ mass_entity }}"
                 data:
                   is_volume_muted: false
+
           - action: media_player.volume_set
             target:
               entity_id: "{{ mass_entity }}"

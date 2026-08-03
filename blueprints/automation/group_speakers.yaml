@@ -81,7 +81,7 @@ trigger:
 
   - trigger: state
     entity_id:
-      - media_player.huis
+      - media_player.mass_mancave_wiim_amp
     to: "playing"
 
   - trigger: homeassistant
