@@ -1,14 +1,8 @@
 ---
-# Predicts whether the COMING night stays too warm for open-window cooling
-# (Dutch "tropische nacht" ~ minimum >= 20°C; 19 here for forecast margin).
-# Drives the bedtime windows-open-or-closed verdict and lets the sleep hold
-# own the night when windows were advised shut. Separate file on purpose:
-# it must also refresh at 18:00, and sharing a trigger block with the
-# daytime sensors would re-evaluate them after their forecast hours are gone.
-# Refreshes at 18:00 only: the value must stay frozen while people sleep —
-# an early-morning refresh would describe the NEXT night while the sleep
-# hold is still consuming the verdict for the current one
+# Predicts whether the coming night stays too warm for open-window cooling
+# (Dutch "tropische nacht" ~ minimum >= 20°C; 19 here for forecast margin)
 trigger:
+  # 18:00 only: overnight consumers need the value frozen for the current night
   - trigger: time
     at: "18:00:00"
   - trigger: event
@@ -23,8 +17,7 @@ action:
     response_variable: hourly_forecast
 
   - variables:
-      # Minimum forecast temp for tonight: today 21:00 -> tomorrow 09:00,
-      # compared in local time (forecast datetimes are UTC)
+      # Tonight = today 21:00 -> tomorrow 09:00, in local time (forecast is UTC)
       night_min_temperature: >
         {% set night_start = today_at("21:00") %}
         {% set night_end = night_start + timedelta(hours=12) %}

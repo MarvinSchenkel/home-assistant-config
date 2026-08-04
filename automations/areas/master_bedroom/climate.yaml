@@ -59,8 +59,7 @@ variables:
   airco_entity: climate.airco_master_bedroom
   room_mode_entity: input_select.master_bedroom_room_mode
   sleep_time_entity: input_datetime.master_bedroom_approx_target_sleep_time
-  # DSMR P1 meter, kW in both directions — own solar consumption is already
-  # subtracted, so exporting genuinely means surplus
+  # DSMR P1 net flow — own solar consumption is already subtracted
   export_power_entity: sensor.power_production
   import_power_entity: sensor.power_consumption
 
@@ -79,9 +78,7 @@ variables:
   # --- solar export thresholds (kW on the P1 meter) ---
   export_start_kw: 1.0
   export_stop_kw: 0.2
-  # Rough compressor draw, credited back to the surplus while cooling — the
-  # airco eats the very export that justifies its running, and without this
-  # credit it suppresses itself and flip-flops around the thresholds
+  # Credited back while cooling, else the airco's own draw ends its own surplus
   airco_draw_kw: 0.6
 
   # --- computed each run ---
@@ -92,8 +89,6 @@ variables:
     {{ precool_target_hot_day if is_state('binary_sensor.is_hot_day_predicted', 'on')
        else target_room_temperature }}
   airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry', 'heat', 'heat_cool'] }}"
-  # Surplus available *for the airco*: net grid flow plus its own draw when
-  # it is the one consuming it
   available_surplus: >-
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
@@ -178,13 +173,10 @@ action:
                       - "{{ outdoor_temp > tropical_night_threshold }}"
                       - "{{ room_temp > sleep_hold_temperature }}"
                       - or:
-                          # On a predicted tropical night the bedtime verdict
-                          # said "windows shut" — the hold owns the night
+                          # Predicted tropical night: windows advised shut, hold owns the night
                           - condition: state
                             entity_id: binary_sensor.is_tropical_night_predicted
                             state: "on"
-                          # Otherwise the window is presumed open, so only
-                          # step in once free cooling has no headroom left
                           - alias: "No free-cooling headroom left outside"
                             condition: template
                             value_template: "{{ outdoor_temp > room_temp - 2 }}"
@@ -233,9 +225,6 @@ action:
             after: "11:00:00"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
-          # Full start threshold to kick in, only the stop threshold to keep
-          # running — the hysteresis the 15-min triggers alone can't provide
-          # because the heartbeat re-evaluates with instantaneous values
           - alias: "Enough solar surplus (lower bar while already cooling)"
             condition: template
             value_template: >-
