@@ -84,9 +84,10 @@ variables:
   work_break_debounce: 45  # minutes; a short break must not flip the AC
 
   # --- temperatures (°C) ---
-  target_room_temperature: 22.0  # comfortable working/bedtime temperature
+  # 23.5 at the ceiling-mounted sensor is ~22.5 at desk height
+  target_room_temperature: 23.5
   # No deep tier: occupied as office all day, held at target instead of charged colder
-  precool_target_hot_day: 22.0
+  precool_target_hot_day: 23.5
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
   sleep_hold_temperature: 24.0
