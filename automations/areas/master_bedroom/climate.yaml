@@ -64,6 +64,10 @@ variables:
   export_power_entity: sensor.power_production
   import_power_entity: sensor.power_consumption
 
+  # Sealed and unoccupied in the morning — pre-cooling earlier than this
+  # wastes coolth to the morning flush
+  precool_not_before: "11:00"
+
   # --- temperatures (°C) ---
   target_room_temperature: 22.5  # awake comfort / normal pre-cool target
   # Deeper pre-cool when a hot day is predicted: thermal mass buys ~2-4h of night coasting
@@ -83,6 +87,9 @@ variables:
   # airco eats the very export that justifies its running, and without this
   # credit it suppresses itself and flip-flops around the thresholds
   airco_draw_kw: 0.6
+  # Headroom kept free for the mancave while someone works there in a warm
+  # room — the occupied office outranks this room's (deadline-free) pre-cool
+  office_reserve_kw: 0.6
 
   # --- computed each run ---
   room_temp: "{{ states(room_temp_entity) | float(0) }}"
@@ -97,6 +104,12 @@ variables:
   available_surplus: >-
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
+  # Mancave comfort is fleet priority 1 (occupied during work hours). When
+  # this room sleeps or naps (Slaap/Dutje) its own cascade never reaches
+  # pre-cool, so the office automatically gets the full surplus
+  mancave_needs_comfort: >-
+    {{ is_state('climate.mancave_room_temperature', 'off')
+       and states('sensor.pir_mancave_temperature') | float(0) > 22.5 }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -228,19 +241,22 @@ action:
             condition: state
             entity_id: binary_sensor.everyone_left_home
             state: "off"
-          - alias: "After 11:00 and before the scheduled sleep time"
-            condition: time
-            after: "11:00:00"
+          - alias: "Not before the sealed-house window, not after bedtime"
+            condition: template
+            value_template: "{{ now() >= today_at(precool_not_before) }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
           # Full start threshold to kick in, only the stop threshold to keep
           # running — the hysteresis the 15-min triggers alone can't provide
-          # because the heartbeat re-evaluates with instantaneous values
-          - alias: "Enough solar surplus (lower bar while already cooling)"
+          # because the heartbeat re-evaluates with instantaneous values.
+          # Plus the office's reserve while someone works there in the warmth
+          - alias: "Enough solar surplus, the occupied office gets first claim"
             condition: template
             value_template: >-
               {{ available_surplus >=
-                 (export_stop_kw if is_state(airco_entity, 'cool') else export_start_kw) }}
+                 (export_stop_kw if is_state(airco_entity, 'cool')
+                  else export_start_kw
+                       + (office_reserve_kw if mancave_needs_comfort else 0)) }}
           # A hot day, reactive or predicted
           - or:
               - condition: state

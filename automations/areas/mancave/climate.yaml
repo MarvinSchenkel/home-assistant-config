@@ -66,6 +66,10 @@ variables:
   export_power_entity: sensor.power_production
   import_power_entity: sensor.power_consumption
 
+  # Work starts early in this room — solar comfort hold may kick in from
+  # this time (the bedroom waits until 11:00)
+  precool_not_before: "08:00"
+
   # --- temperatures (°C) ---
   target_room_temperature: 22.0  # comfortable working/bedtime temperature
   # No deep pre-cool tier: the room is occupied as a home office all day,
@@ -86,10 +90,6 @@ variables:
   # airco eats the very export that justifies its running, and without this
   # credit it suppresses itself and flip-flops around the thresholds
   airco_draw_kw: 0.6
-  # Headroom kept free for the master bedroom while that room still needs
-  # its pre-cool — the bedroom has the harder deadline, so it claims the
-  # surplus first
-  master_reserve_kw: 0.6
 
   # --- computed each run ---
   room_temp: "{{ states(room_temp_entity) | float(0) }}"
@@ -104,9 +104,6 @@ variables:
   available_surplus: >-
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
-  master_bedroom_needs_precool: >-
-    {{ is_state('climate.airco_master_bedroom', 'off')
-       and states('sensor.pir_master_bedroom_temperature') | float(0) > 23.0 }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -236,21 +233,20 @@ action:
             condition: state
             entity_id: binary_sensor.everyone_left_home
             state: "off"
-          - alias: "After 11:00 and before the scheduled sleep time"
-            condition: time
-            after: "11:00:00"
+          - alias: "Work hours have started, bedtime hasn't"
+            condition: template
+            value_template: "{{ now() >= today_at(precool_not_before) }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
           # Full start threshold to kick in, only the stop threshold to keep
-          # running — plus the master bedroom's reserve while that room still
-          # needs its (deeper, deadline-bound) pre-cool
-          - alias: "Enough solar surplus, bedroom gets first claim"
+          # running. No reserve for other rooms: this room is occupied all
+          # day, so its comfort is the fleet's first claim on the surplus —
+          # the bedroom holds back for the office, not the other way around
+          - alias: "Enough solar surplus (lower bar while already cooling)"
             condition: template
             value_template: >-
               {{ available_surplus >=
-                 (export_stop_kw if is_state(airco_entity, 'cool')
-                  else export_start_kw
-                       + (master_reserve_kw if master_bedroom_needs_precool else 0)) }}
+                 (export_stop_kw if is_state(airco_entity, 'cool') else export_start_kw) }}
           # A hot day, reactive or predicted
           - or:
               - condition: state
