@@ -66,6 +66,10 @@ trigger:
       - sensor.weather_current_humidity
     above: 80
 
+  # Hourly re-evaluation for the hot-day night purge window
+  - trigger: time_pattern
+    minutes: "0"
+
 variables:
   anchors:
     - &turn_on
@@ -139,6 +143,29 @@ action:
           state: "on"
       sequence:
         - *turn_on
+
+    - alias: "Night purge — flush out a hot day with cool night air"
+      conditions:
+        - condition: time
+          after: "21:00:00"
+          before: "08:00:00"
+        - alias: "It is meaningfully cooler outside than in the hallway"
+          condition: template
+          value_template: >-
+            {{ (states("sensor.current_temperature") | float(0))
+               < (states("sensor.pir_hall_upstairs_temperature") | float(0)) - 1 }}
+        - alias: "The house is still holding the day's heat"
+          condition: numeric_state
+          entity_id: sensor.pir_hall_upstairs_temperature
+          above: 22.5
+      sequence:
+        # 70 instead of 100: enough draft to purge, quiet enough to sleep near
+        - alias: "Run the ventilation at purge speed"
+          action: fan.set_percentage
+          data:
+            percentage: 70
+          target:
+            entity_id: fan.itho
 
   default:
     - *turn_off

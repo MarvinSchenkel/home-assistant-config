@@ -24,6 +24,19 @@ trigger:
       - binary_sensor.everyone_left_home
     from: ~
 
+  - trigger: state
+    entity_id: binary_sensor.marvin_is_working
+    to: "on"
+    for:
+      minutes: 3
+
+  # Matches work_break_debounce below, so the end-of-break is re-evaluated
+  - trigger: state
+    entity_id: binary_sensor.marvin_is_working
+    to: "off"
+    for:
+      minutes: 45
+
   # 20-min debounce (bedroom: 15) so both units never react to the same swing
   - trigger: numeric_state
     entity_id: sensor.power_production
@@ -68,6 +81,7 @@ variables:
 
   # Work starts early in this room — the bedroom waits until 11:00
   precool_not_before: "08:00"
+  work_break_debounce: 45  # minutes; a short break must not flip the AC
 
   # --- temperatures (°C) ---
   target_room_temperature: 22.0  # comfortable working/bedtime temperature
@@ -98,6 +112,10 @@ variables:
   available_surplus: >-
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
+  marvin_working: >-
+    {{ is_state('binary_sensor.marvin_is_working', 'on')
+       or now() - states.binary_sensor.marvin_is_working.last_changed
+          < timedelta(minutes=work_break_debounce) }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -197,6 +215,9 @@ action:
           - alias: "Work hours have started, bedtime hasn't"
             condition: template
             value_template: "{{ now() >= today_at(precool_not_before) }}"
+          - alias: "Someone is (or was just) working here"
+            condition: template
+            value_template: "{{ marvin_working }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
           # No reserve: the occupied office is the fleet's first claim on surplus
