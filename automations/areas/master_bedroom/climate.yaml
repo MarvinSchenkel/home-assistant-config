@@ -203,13 +203,14 @@ action:
             value_template: "{{ now() >= today_at(precool_not_before) }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
+          # A hungry office raises the bar even mid-run, so this room also yields
           - alias: "Enough solar surplus, the occupied office gets first claim"
             condition: template
             value_template: >-
               {{ available_surplus >=
-                 (export_stop_kw if is_state(airco_entity, 'cool')
-                  else export_start_kw
-                       + (office_reserve_kw if mancave_needs_comfort else 0)) }}
+                 (export_start_kw + office_reserve_kw if mancave_needs_comfort
+                  else (export_stop_kw if is_state(airco_entity, 'cool')
+                        else export_start_kw)) }}
           # A hot day, reactive or predicted
           - or:
               - condition: state
@@ -281,8 +282,7 @@ action:
               - alias: "Evening crossover — free cooling beats the compressor"
                 condition: template
                 value_template: "{{ outdoor_temp < room_temp - 1 }}"
-              # Export below the *start* threshold isn't enough: pre-cooling
-              # should ride out short cloud dips (the 0.2-1.0 kW dead-band)
+              # Stop bar, not start bar: pre-cooling rides out short cloud dips
               - and:
                   - alias: "Solar surplus has genuinely stopped"
                     condition: template
@@ -290,5 +290,12 @@ action:
                   - alias: "Comfortably at (or below) target"
                     condition: template
                     value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
+              - and:
+                  - alias: "Yield — the office is warm and there isn't surplus for both"
+                    condition: template
+                    value_template: "{{ mancave_needs_comfort }}"
+                  - condition: template
+                    value_template: >-
+                      {{ available_surplus < export_start_kw + office_reserve_kw }}
         sequence:
           - *airco_off
