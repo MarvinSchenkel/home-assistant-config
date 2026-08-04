@@ -48,7 +48,13 @@ trigger:
 
   # Heartbeat, offset from the bedroom's quarter-hours to avoid herd starts
   - trigger: time_pattern
-    minutes: "5/15"
+    minutes: "5"
+  - trigger: time_pattern
+    minutes: "20"
+  - trigger: time_pattern
+    minutes: "35"
+  - trigger: time_pattern
+    minutes: "50"
 
 variables:
   room_temp_entity: sensor.pir_mancave_temperature
