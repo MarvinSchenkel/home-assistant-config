@@ -72,7 +72,7 @@ trigger:
 variables:
   room_temp_entity: sensor.pir_mancave_temperature
   outdoor_temp_entity: sensor.current_temperature
-  airco_entity: climate.mancave_room_temperature
+  airco_entity: climate.ac_mancave
   room_mode_entity: input_select.mancave_room_mode
   sleep_time_entity: input_datetime.mancave_approx_target_sleep_time
   # DSMR P1 net flow — own solar consumption is already subtracted
