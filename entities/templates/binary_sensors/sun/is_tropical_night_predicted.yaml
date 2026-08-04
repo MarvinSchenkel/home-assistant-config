@@ -1,0 +1,49 @@
+---
+# Predicts whether the coming night stays too warm for open-window cooling
+# (Dutch "tropische nacht" ~ minimum >= 20°C; 19 here for forecast margin)
+trigger:
+  # 18:00 only: overnight consumers need the value frozen for the current night
+  - trigger: time
+    at: "18:00:00"
+  - trigger: event
+    event_type: event_template_reloaded
+
+action:
+  - action: weather.get_forecasts
+    data:
+      type: hourly
+    target:
+      entity_id: weather.openweathermap
+    response_variable: hourly_forecast
+
+  - variables:
+      # Tonight = today 21:00 -> tomorrow 09:00, in local time (forecast is UTC)
+      night_min_temperature: >
+        {% set night_start = today_at("21:00") %}
+        {% set night_end = night_start + timedelta(hours=12) %}
+        {% set data = namespace(temperatures=[]) %}
+        {%- for item in hourly_forecast['weather.openweathermap'].forecast -%}
+            {%- set dt = as_datetime(item["datetime"]) | as_local -%}
+            {%- if night_start <= dt <= night_end -%}
+              {% set data.temperatures = data.temperatures + [item["temperature"]] %}
+            {%- endif -%}
+        {% endfor %}
+        {%- if data.temperatures | length == 0 -%}
+          -100
+        {%- else -%}
+          {{ data.temperatures | min }}
+        {%- endif -%}
+
+binary_sensor:
+  - name: is_tropical_night_predicted
+    unique_id: 8c1f4b02-6a4e-4a53-9b8f-1d2f9f6c7e21
+    attributes:
+      night_min_temperature_used: "{{ night_min_temperature }}"
+    state: >
+      {%- if night_min_temperature == -100 -%}
+        {{ 'on' if is_state('binary_sensor.is_tropical_night_predicted', 'on') else 'off' }}
+      {%- elif night_min_temperature >= 19.0 -%}
+        on
+      {%- else -%}
+        off
+      {%- endif -%}

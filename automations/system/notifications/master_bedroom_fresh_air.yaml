@@ -81,19 +81,10 @@ action:
               {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
               {% set now_minutes = now().hour * 60 + now().minute %}
               {{ 0 <= (sleep_minutes - now_minutes) <= 30 }}
-          - alias: "It isn't cooling off outside"
-            condition: template
-            value_template: >
-              {{ (states("sensor.current_temperature") | float)
-                 >= (states("sensor.pir_master_bedroom_temperature") | float) - 1 }}
-          # It has been (or is predicted to be) a hot day
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
+          - alias: "Tonight stays too warm for open windows"
+            condition: state
+            entity_id: binary_sensor.is_tropical_night_predicted
+            state: "on"
         sequence:
           - action: script.send_notification
             data:

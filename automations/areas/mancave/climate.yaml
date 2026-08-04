@@ -1,10 +1,11 @@
 ---
-alias: areas_master_bedroom_climate
+alias: areas_mancave_climate
 description: >
-  Manages the Daikin airco in our master bedroom: room mode, presence, solar
-  export and forecast all feed into one idempotent decision cascade.
-  Cooling only — we never heat the bedroom
-id: 0a71bc6d-3ba2-45b3-af71-5b8489f1665e
+  Manages the Daikin airco in the mancave: room mode, presence, solar export
+  and forecast all feed into one idempotent decision cascade. Cooling only.
+  The room doubles as a home office, so instead of a deep solar pre-cool it
+  holds a steady comfortable temperature during the day
+id: 1e3d7018-7208-4ee2-8b26-a2ecdca902f5
 mode: queued
 max_exceeded: silent
 trace:
@@ -19,24 +20,22 @@ trigger:
 
   - trigger: state
     entity_id:
-      - input_select.master_bedroom_room_mode
+      - input_select.mancave_room_mode
       - binary_sensor.everyone_left_home
     from: ~
 
-  # Trigger platforms can't reference the variables block below, so entity
-  # ids and the export thresholds (export_start_kw / export_stop_kw) are
-  # repeated here literally
+  # 20-min debounce (bedroom: 15) so both units never react to the same swing
   - trigger: numeric_state
     entity_id: sensor.power_production
     above: 1.0
     for:
-      minutes: 15
+      minutes: 20
 
   - trigger: numeric_state
     entity_id: sensor.power_production
     below: 0.2
     for:
-      minutes: 15
+      minutes: 20
 
   - trigger: state
     entity_id:
@@ -45,31 +44,29 @@ trigger:
     from: ~
 
   - trigger: time
-    at: input_datetime.master_bedroom_approx_target_sleep_time
+    at: input_datetime.mancave_approx_target_sleep_time
 
-  # Cheap re-evaluation heartbeat — the differing-state guards below make
-  # this free w.r.t. the airco's cloud API budget. Also what picks up the
-  # pre-bed window before the scheduled sleep time
+  # Heartbeat, offset from the bedroom's quarter-hours to avoid herd starts
   - trigger: time_pattern
-    minutes: "/15"
+    minutes: "5/15"
 
 variables:
-  room_temp_entity: sensor.pir_master_bedroom_temperature
+  room_temp_entity: sensor.pir_mancave_temperature
   outdoor_temp_entity: sensor.current_temperature
-  airco_entity: climate.airco_master_bedroom
-  room_mode_entity: input_select.master_bedroom_room_mode
-  sleep_time_entity: input_datetime.master_bedroom_approx_target_sleep_time
+  airco_entity: climate.mancave_room_temperature
+  room_mode_entity: input_select.mancave_room_mode
+  sleep_time_entity: input_datetime.mancave_approx_target_sleep_time
   # DSMR P1 net flow — own solar consumption is already subtracted
   export_power_entity: sensor.power_production
   import_power_entity: sensor.power_consumption
 
-  # Earlier pre-cooling wastes coolth to the morning flush
-  precool_not_before: "11:00"
+  # Work starts early in this room — the bedroom waits until 11:00
+  precool_not_before: "08:00"
 
   # --- temperatures (°C) ---
-  target_room_temperature: 22.5  # awake comfort / normal pre-cool target
-  # Deeper pre-cool when a hot day is predicted: thermal mass buys ~2-4h of night coasting
-  precool_target_hot_day: 20.5
+  target_room_temperature: 22.0  # comfortable working/bedtime temperature
+  # No deep tier: occupied as office all day, held at target instead of charged colder
+  precool_target_hot_day: 22.0
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
   sleep_hold_temperature: 24.0
@@ -83,8 +80,6 @@ variables:
   export_stop_kw: 0.2
   # Credited back while cooling, else the airco's own draw ends its own surplus
   airco_draw_kw: 0.6
-  # The occupied office outranks this room's deadline-free pre-cool
-  office_reserve_kw: 0.6
 
   # --- computed each run ---
   room_temp: "{{ states(room_temp_entity) | float(0) }}"
@@ -97,10 +92,6 @@ variables:
   available_surplus: >-
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
-  # During Slaap/Dutje this cascade stops before pre-cool — office gets everything
-  mancave_needs_comfort: >-
-    {{ is_state('climate.mancave_room_temperature', 'off')
-       and states('sensor.pir_mancave_temperature') | float(0) > 22.5 }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -156,10 +147,9 @@ action:
   - choose:
       - alias: "Sleep — comfort priority is silence and stability"
         conditions:
-          - alias: "Room is winding down or napping"
+          - alias: "Room is winding down"
             condition: template
-            value_template: >-
-              {{ is_state(room_mode_entity, 'Slaap') or is_state(room_mode_entity, 'Dutje') }}
+            value_template: "{{ is_state(room_mode_entity, 'Slaap') }}"
         sequence:
           - if:
               - alias: "Respect a manual fan_only override — never touch it"
@@ -196,21 +186,19 @@ action:
                       - *airco_off
 
       # Above away on purpose: an empty house is fine to cool on free power
-      - alias: "Solar pre-cool — cheap cooling window while exporting to the grid"
+      - alias: "Solar comfort hold — keep the office pleasant while exporting"
         conditions:
-          - alias: "Not before the sealed-house window, not after bedtime"
+          - alias: "Work hours have started, bedtime hasn't"
             condition: template
             value_template: "{{ now() >= today_at(precool_not_before) }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
-          # A hungry office raises the bar even mid-run, so this room also yields
-          - alias: "Enough solar surplus, the occupied office gets first claim"
+          # No reserve: the occupied office is the fleet's first claim on surplus
+          - alias: "Enough solar surplus (lower bar while already cooling)"
             condition: template
             value_template: >-
               {{ available_surplus >=
-                 (export_start_kw + office_reserve_kw if mancave_needs_comfort
-                  else (export_stop_kw if is_state(airco_entity, 'cool')
-                        else export_start_kw)) }}
+                 (export_stop_kw if is_state(airco_entity, 'cool') else export_start_kw) }}
           # A hot day, reactive or predicted
           - or:
               - condition: state
@@ -222,8 +210,6 @@ action:
           - condition: template
             value_template: "{{ room_temp > precool_target + temp_hysteresis }}"
         sequence:
-          # Early-afternoon cooling is doubly cheap — exported solar + mild
-          # outdoor temperatures mean high COP — and the room's mass stores it
           - variables:
               desired_temp: "{{ precool_target }}"
               desired_fan: "auto"
@@ -245,10 +231,10 @@ action:
             condition: template
             value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
         sequence:
-          # On a day the pre-cool worked, this is a no-op — that's the design goal
+          # On a day the daytime hold worked, this is a no-op — that's the design goal
           - if:
               - "{{ room_temp > target_sleep_temperature + temp_hysteresis }}"
-              # When it's cooler outside the window is the tool, not the compressor
+              # When it's cooler outside, opening a window beats the compressor
               - "{{ outdoor_temp >= room_temp - 1 }}"
             then:
               - variables:
@@ -266,8 +252,7 @@ action:
           - condition: template
             value_template: "{{ room_temp > awake_target + temp_hysteresis }}"
         sequence:
-          # Adaptive comfort: acclimatized bodies are comfortable closer to
-          # outdoor temperature, and every extra degree of delta costs ~7% more energy
+          # Acclimatized comfort sits closer to outdoor; extra delta costs ~7%/degree
           - variables:
               desired_temp: "{{ awake_target }}"
               desired_fan: "auto"
@@ -282,7 +267,7 @@ action:
               - alias: "Evening crossover — free cooling beats the compressor"
                 condition: template
                 value_template: "{{ outdoor_temp < room_temp - 1 }}"
-              # Stop bar, not start bar: pre-cooling rides out short cloud dips
+              # Stop bar, not start bar: the hold rides out short cloud dips
               - and:
                   - alias: "Solar surplus has genuinely stopped"
                     condition: template
@@ -290,12 +275,5 @@ action:
                   - alias: "Comfortably at (or below) target"
                     condition: template
                     value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
-              - and:
-                  - alias: "Yield — the office is warm and there isn't surplus for both"
-                    condition: template
-                    value_template: "{{ mancave_needs_comfort }}"
-                  - condition: template
-                    value_template: >-
-                      {{ available_surplus < export_start_kw + office_reserve_kw }}
         sequence:
           - *airco_off
