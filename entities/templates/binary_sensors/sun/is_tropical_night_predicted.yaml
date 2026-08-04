@@ -5,9 +5,10 @@
 # own the night when windows were advised shut. Separate file on purpose:
 # it must also refresh at 18:00, and sharing a trigger block with the
 # daytime sensors would re-evaluate them after their forecast hours are gone.
+# Refreshes at 18:00 only: the value must stay frozen while people sleep —
+# an early-morning refresh would describe the NEXT night while the sleep
+# hold is still consuming the verdict for the current one
 trigger:
-  - trigger: time
-    at: "06:00:00"
   - trigger: time
     at: "18:00:00"
   - trigger: event
