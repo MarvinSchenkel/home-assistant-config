@@ -1,0 +1,306 @@
+---
+alias: areas_mancave_climate
+description: >
+  Manages the Daikin airco in the mancave: room mode, presence, solar export
+  and forecast all feed into one idempotent decision cascade. Cooling only.
+  The room doubles as a home office, so instead of a deep solar pre-cool it
+  holds a steady comfortable temperature during the day
+id: 1e3d7018-7208-4ee2-8b26-a2ecdca902f5
+mode: queued
+max_exceeded: silent
+trace:
+  stored_traces: 25
+
+trigger:
+  - trigger: homeassistant
+    event: start
+
+  - trigger: event
+    event_type: automation_reloaded
+
+  - trigger: state
+    entity_id:
+      - input_select.mancave_room_mode
+      - binary_sensor.everyone_left_home
+    from: ~
+
+  # Trigger platforms can't reference the variables block below, so entity
+  # ids and the export thresholds (export_start_kw / export_stop_kw) are
+  # repeated here literally. Debounce is 20 min instead of the bedroom's 15
+  # so the two automations never react to the same export swing together
+  - trigger: numeric_state
+    entity_id: sensor.power_production
+    above: 1.0
+    for:
+      minutes: 20
+
+  - trigger: numeric_state
+    entity_id: sensor.power_production
+    below: 0.2
+    for:
+      minutes: 20
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.is_hot_day
+      - binary_sensor.is_hot_day_predicted
+    from: ~
+
+  - trigger: time
+    at: input_datetime.mancave_approx_target_sleep_time
+
+  # Cheap re-evaluation heartbeat — the differing-state guards below make
+  # this free w.r.t. the airco's cloud API budget. Offset from the bedroom's
+  # quarter-hour ticks so both units never herd-start on the same evaluation
+  - trigger: time_pattern
+    minutes: "5/15"
+
+variables:
+  room_temp_entity: sensor.pir_mancave_temperature
+  outdoor_temp_entity: sensor.current_temperature
+  airco_entity: climate.mancave_room_temperature
+  room_mode_entity: input_select.mancave_room_mode
+  sleep_time_entity: input_datetime.mancave_approx_target_sleep_time
+  # DSMR P1 meter, kW in both directions — own solar consumption is already
+  # subtracted, so exporting genuinely means surplus
+  export_power_entity: sensor.power_production
+  import_power_entity: sensor.power_consumption
+
+  # --- temperatures (°C) ---
+  target_room_temperature: 22.0  # comfortable working/bedtime temperature
+  # No deep pre-cool tier: the room is occupied as a home office all day,
+  # so it is held at the comfortable target instead of charged colder
+  precool_target_hot_day: 22.0
+  target_sleep_temperature: 22.0  # bedtime top-up target
+  # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
+  sleep_hold_temperature: 24.0
+  tropical_night_threshold: 20.0  # outdoor stays above this -> coasting alone fails
+  # Adaptive comfort: awake target never more than this below outdoor
+  max_diff_with_outdoor: 7.0
+  temp_hysteresis: 0.5
+
+  # --- solar export thresholds (kW on the P1 meter) ---
+  export_start_kw: 1.0
+  export_stop_kw: 0.2
+  # Rough compressor draw, credited back to the surplus while cooling — the
+  # airco eats the very export that justifies its running, and without this
+  # credit it suppresses itself and flip-flops around the thresholds
+  airco_draw_kw: 0.6
+  # Headroom kept free for the master bedroom while that room still needs
+  # its pre-cool — the bedroom has the harder deadline, so it claims the
+  # surplus first
+  master_reserve_kw: 0.6
+
+  # --- computed each run ---
+  room_temp: "{{ states(room_temp_entity) | float(0) }}"
+  outdoor_temp: "{{ states(outdoor_temp_entity) | float(0) }}"
+  awake_target: "{{ [target_room_temperature, outdoor_temp - max_diff_with_outdoor] | max }}"
+  precool_target: >-
+    {{ precool_target_hot_day if is_state('binary_sensor.is_hot_day_predicted', 'on')
+       else target_room_temperature }}
+  airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry', 'heat', 'heat_cool'] }}"
+  # Surplus available *for this airco*: net grid flow plus its own draw when
+  # it is the one consuming it
+  available_surplus: >-
+    {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
+       + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
+  master_bedroom_needs_precool: >-
+    {{ is_state('climate.airco_master_bedroom', 'off')
+       and states('sensor.pir_master_bedroom_temperature') | float(0) > 23.0 }}
+  # Assumes the sleep time falls before midnight
+  minutes_until_sleep: >-
+    {% set sleep_parts = states(sleep_time_entity).split(':') %}
+    {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
+    {{ sleep_minutes - now().hour * 60 - now().minute }}
+
+  anchors:
+    - &airco_off
+      alias: "Turn off the airco (skipped when already off — every call burns API budget)"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ states(airco_entity) != 'off' }}"
+          then:
+            - action: climate.set_hvac_mode
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                hvac_mode: "off"
+
+    - &airco_cool
+      alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ states(airco_entity) != 'cool' }}"
+          then:
+            - action: climate.set_hvac_mode
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                hvac_mode: "cool"
+        - if:
+            - condition: template
+              value_template: "{{ state_attr(airco_entity, 'temperature') != desired_temp }}"
+          then:
+            - action: climate.set_temperature
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                temperature: "{{ desired_temp }}"
+        - if:
+            - condition: template
+              value_template: "{{ state_attr(airco_entity, 'fan_mode') != desired_fan }}"
+          then:
+            - action: climate.set_fan_mode
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                fan_mode: "{{ desired_fan }}"
+
+action:
+  - choose:
+      - alias: "Away — no need to condition an empty room"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.everyone_left_home
+            state: "on"
+        sequence:
+          - *airco_off
+
+      - alias: "Sleep — comfort priority is silence and stability"
+        conditions:
+          - alias: "Room is winding down"
+            condition: template
+            value_template: "{{ is_state(room_mode_entity, 'Slaap') }}"
+        sequence:
+          - if:
+              - alias: "Respect a manual fan_only override — never touch it"
+                condition: template
+                value_template: "{{ not is_state(airco_entity, 'fan_only') }}"
+            then:
+              - choose:
+                  - alias: >-
+                      Tropical night — a steady quiet hold disturbs sleep less
+                      than the 4am heat drift
+                    conditions:
+                      - "{{ outdoor_temp > tropical_night_threshold }}"
+                      - "{{ room_temp > sleep_hold_temperature }}"
+                      - or:
+                          # On a predicted tropical night the bedtime verdict
+                          # said "windows shut" — the hold owns the night
+                          - condition: state
+                            entity_id: binary_sensor.is_tropical_night_predicted
+                            state: "on"
+                          # Otherwise the window is presumed open, so only
+                          # step in once free cooling has no headroom left
+                          - alias: "No free-cooling headroom left outside"
+                            condition: template
+                            value_template: "{{ outdoor_temp > room_temp - 2 }}"
+                    sequence:
+                      - variables:
+                          desired_temp: "{{ sleep_hold_temperature }}"
+                          desired_fan: "quiet"
+                      - *airco_cool
+
+                  - alias: "Room has cooled back down — release the compressor"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ airco_compressor_active }}"
+                      - "{{ room_temp <= sleep_hold_temperature - temp_hysteresis }}"
+                    sequence:
+                      - *airco_off
+
+      - alias: "Pre-bed window — within an hour of the scheduled sleep time"
+        conditions:
+          - condition: template
+            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
+          - alias: "Within 60 minutes of the scheduled sleep time"
+            condition: template
+            value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
+        sequence:
+          # On a day the daytime hold worked, this is a no-op — that's the design goal
+          - if:
+              - "{{ room_temp > target_sleep_temperature + temp_hysteresis }}"
+              # When it's cooler outside, opening a window beats the compressor
+              - "{{ outdoor_temp >= room_temp - 1 }}"
+            then:
+              - variables:
+                  desired_temp: "{{ target_sleep_temperature }}"
+                  desired_fan: "auto"
+              - *airco_cool
+
+      - alias: "Solar comfort hold — keep the office pleasant while exporting"
+        conditions:
+          - alias: "Someone is home"
+            condition: state
+            entity_id: binary_sensor.everyone_left_home
+            state: "off"
+          - alias: "After 11:00 and before the scheduled sleep time"
+            condition: time
+            after: "11:00:00"
+          - condition: template
+            value_template: "{{ minutes_until_sleep > 0 }}"
+          # Full start threshold to kick in, only the stop threshold to keep
+          # running — plus the master bedroom's reserve while that room still
+          # needs its (deeper, deadline-bound) pre-cool
+          - alias: "Enough solar surplus, bedroom gets first claim"
+            condition: template
+            value_template: >-
+              {{ available_surplus >=
+                 (export_stop_kw if is_state(airco_entity, 'cool')
+                  else export_start_kw
+                       + (master_reserve_kw if master_bedroom_needs_precool else 0)) }}
+          # A hot day, reactive or predicted
+          - or:
+              - condition: state
+                entity_id: binary_sensor.is_hot_day
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.is_hot_day_predicted
+                state: "on"
+          - condition: template
+            value_template: "{{ room_temp > precool_target + temp_hysteresis }}"
+        sequence:
+          - variables:
+              desired_temp: "{{ precool_target }}"
+              desired_fan: "auto"
+          - *airco_cool
+
+      - alias: "Hot-day comfort cooling — adaptive comfort while awake"
+        conditions:
+          - condition: template
+            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
+          - condition: state
+            entity_id: binary_sensor.is_hot_day
+            state: "on"
+          - condition: template
+            value_template: "{{ room_temp > awake_target + temp_hysteresis }}"
+        sequence:
+          # Adaptive comfort: acclimatized bodies are comfortable closer to
+          # outdoor temperature, and every extra degree of delta costs ~7% more energy
+          - variables:
+              desired_temp: "{{ awake_target }}"
+              desired_fan: "auto"
+          - *airco_cool
+
+      - alias: "Cool-down / release — stop the compressor once its job is done"
+        conditions:
+          - alias: "Airco is running a mode we can safely stop"
+            condition: template
+            value_template: "{{ airco_compressor_active }}"
+          - or:
+              - alias: "Evening crossover — free cooling beats the compressor"
+                condition: template
+                value_template: "{{ outdoor_temp < room_temp - 1 }}"
+              # Export below the *start* threshold isn't enough: the hold
+              # should ride out short cloud dips (the 0.2-1.0 kW dead-band)
+              - and:
+                  - alias: "Solar surplus has genuinely stopped"
+                    condition: template
+                    value_template: "{{ available_surplus < export_stop_kw }}"
+                  - alias: "Comfortably at (or below) target"
+                    condition: template
+                    value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
+        sequence:
+          - *airco_off

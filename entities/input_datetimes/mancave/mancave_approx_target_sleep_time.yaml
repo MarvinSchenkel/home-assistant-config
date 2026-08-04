@@ -1,0 +1,6 @@
+---
+name: Geplande slaaptijd
+has_date: false
+has_time: true
+initial: "23:00:00"
+icon: "mdi:bed-clock"
