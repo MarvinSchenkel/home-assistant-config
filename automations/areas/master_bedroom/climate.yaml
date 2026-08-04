@@ -261,23 +261,6 @@ action:
                   desired_fan: "auto"
               - *airco_cool
 
-      - alias: "Hot-day comfort cooling — adaptive comfort while awake"
-        conditions:
-          - condition: template
-            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
-          - condition: state
-            entity_id: binary_sensor.is_hot_day
-            state: "on"
-          - condition: template
-            value_template: "{{ room_temp > awake_target + temp_hysteresis }}"
-        sequence:
-          # Adaptive comfort: acclimatized bodies are comfortable closer to
-          # outdoor temperature, and every extra degree of delta costs ~7% more energy
-          - variables:
-              desired_temp: "{{ awake_target }}"
-              desired_fan: "auto"
-          - *airco_cool
-
       - alias: "Cool-down / release — stop the compressor once its job is done"
         conditions:
           - alias: "Airco is running a mode we can safely stop"
