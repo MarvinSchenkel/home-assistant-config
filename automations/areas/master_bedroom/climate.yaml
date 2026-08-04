@@ -163,14 +163,6 @@ variables:
 
 action:
   - choose:
-      - alias: "Away — no need to condition an empty room"
-        conditions:
-          - condition: state
-            entity_id: binary_sensor.everyone_left_home
-            state: "on"
-        sequence:
-          - *airco_off
-
       - alias: "Sleep — comfort priority is silence and stability"
         conditions:
           - alias: "Room is winding down or napping"
@@ -215,32 +207,11 @@ action:
                     sequence:
                       - *airco_off
 
-      - alias: "Pre-bed window — within an hour of the scheduled sleep time"
-        conditions:
-          - condition: template
-            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
-          - alias: "Within 60 minutes of the scheduled sleep time"
-            condition: template
-            value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
-        sequence:
-          # On a day the pre-cool worked, this is a no-op — that's the design goal
-          - if:
-              - "{{ room_temp > target_sleep_temperature + temp_hysteresis }}"
-              # When it's cooler outside, the fresh-air notification already
-              # suggested opening the windows — don't run the compressor too
-              - "{{ outdoor_temp >= room_temp - 1 }}"
-            then:
-              - variables:
-                  desired_temp: "{{ target_sleep_temperature }}"
-                  desired_fan: "auto"
-              - *airco_cool
-
+      # Above the away branch on purpose: pre-cooling is charging a thermal
+      # battery for tonight with free power — an empty house is the perfect
+      # time for it
       - alias: "Solar pre-cool — cheap cooling window while exporting to the grid"
         conditions:
-          - alias: "Someone is home"
-            condition: state
-            entity_id: binary_sensor.everyone_left_home
-            state: "off"
           - alias: "Not before the sealed-house window, not after bedtime"
             condition: template
             value_template: "{{ now() >= today_at(precool_not_before) }}"
@@ -274,6 +245,34 @@ action:
               desired_temp: "{{ precool_target }}"
               desired_fan: "auto"
           - *airco_cool
+
+      - alias: "Away — no comfort cooling for an empty room"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.everyone_left_home
+            state: "on"
+        sequence:
+          - *airco_off
+
+      - alias: "Pre-bed window — within an hour of the scheduled sleep time"
+        conditions:
+          - condition: template
+            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
+          - alias: "Within 60 minutes of the scheduled sleep time"
+            condition: template
+            value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
+        sequence:
+          # On a day the pre-cool worked, this is a no-op — that's the design goal
+          - if:
+              - "{{ room_temp > target_sleep_temperature + temp_hysteresis }}"
+              # When it's cooler outside, the fresh-air notification already
+              # suggested opening the windows — don't run the compressor too
+              - "{{ outdoor_temp >= room_temp - 1 }}"
+            then:
+              - variables:
+                  desired_temp: "{{ target_sleep_temperature }}"
+                  desired_fan: "auto"
+              - *airco_cool
 
       - alias: "Hot-day comfort cooling — adaptive comfort while awake"
         conditions:
