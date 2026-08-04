@@ -96,7 +96,7 @@ trigger:
     id: gardendoor_blinds
 
   - trigger: time
-    at: "00:03:00"
+    at: "03:00:00"
     id: "reset"
 
 variables:
@@ -251,7 +251,9 @@ action:
                       - binary_sensor.is_hot_day
                     state: "on"
                   # But only when it's hotter outside than inside
-                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+                  - >-
+                    {{ (states(temperature_entity) | float)
+                       < (states("sensor.current_temperature") | float) }}
         sequence:
           - *cover_sun
 

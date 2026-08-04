@@ -13,13 +13,13 @@ action:
       entity_id: weather.openweathermap
     response_variable: hourly_forecast
   - variables:
+      # Hours and dates compared in local time (the forecast datetimes are UTC)
       average_temperature: >
         {% set data = namespace(temperatures=[]) %}
         {%- for item in hourly_forecast['weather.openweathermap'].forecast -%}
-            {%- if (as_timestamp(now()) | timestamp_custom("%Y-%m-%d"))
-                == (as_timestamp(item["datetime"]) | timestamp_custom("%Y-%m-%d"))
-                and as_datetime(item["datetime"]).hour >= 9
-                and as_datetime(item["datetime"]).hour <= 15
+            {%- set dt = as_datetime(item["datetime"]) | as_local -%}
+            {%- if dt.date() == now().date()
+                and 9 <= dt.hour <= 15
             -%}
               {% set data.temperatures = data.temperatures + [item["temperature"]] %}
             {%- endif -%}
