@@ -86,8 +86,6 @@ variables:
   # --- temperatures (°C) ---
   # The ceiling-mounted sensor reads ~1°C above desk height
   target_room_temperature: 23.0
-  # Shallow tier only: occupied as office all day, half a degree of charge at most
-  precool_target_hot_day: 22.5
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
   sleep_hold_temperature: 24.0
@@ -106,9 +104,6 @@ variables:
   room_temp: "{{ states(room_temp_entity) | float(0) }}"
   outdoor_temp: "{{ states(outdoor_temp_entity) | float(0) }}"
   awake_target: "{{ [target_room_temperature, outdoor_temp - max_diff_with_outdoor] | max }}"
-  precool_target: >-
-    {{ precool_target_hot_day if is_state('binary_sensor.is_hot_day_predicted', 'on')
-       else target_room_temperature }}
   # heat excluded on purpose: a manual heat choice is never ours to stop
   airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry'] }}"
   available_surplus: >-
@@ -242,10 +237,10 @@ action:
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
           - condition: template
-            value_template: "{{ room_temp > precool_target + temp_hysteresis }}"
+            value_template: "{{ room_temp > target_room_temperature + temp_hysteresis }}"
         sequence:
           - variables:
-              desired_temp: "{{ precool_target }}"
+              desired_temp: "{{ target_room_temperature }}"
               desired_fan: "auto"
           - *airco_cool
 
