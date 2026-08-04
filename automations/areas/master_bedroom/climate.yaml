@@ -102,7 +102,7 @@ variables:
   # 45-min last_changed window = the office's own work-break debounce, keep in sync
   mancave_needs_comfort: >-
     {{ is_state('climate.ac_mancave', 'off')
-       and states('sensor.pir_mancave_temperature') | float(0) > 24.0
+       and states('sensor.pir_mancave_temperature') | float(0) > 23.5
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
                < timedelta(minutes=45)) }}

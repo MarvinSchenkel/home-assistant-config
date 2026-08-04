@@ -85,9 +85,9 @@ variables:
 
   # --- temperatures (°C) ---
   # 23.5 at the ceiling-mounted sensor is ~22.5 at desk height
-  target_room_temperature: 23.5
+  target_room_temperature: 23.0
   # Shallow tier only: occupied as office all day, half a degree of charge at most
-  precool_target_hot_day: 23.0
+  precool_target_hot_day: 22.5
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
   sleep_hold_temperature: 24.0
