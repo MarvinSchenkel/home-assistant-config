@@ -68,8 +68,8 @@ variables:
 
   # --- temperatures (°C) ---
   target_room_temperature: 22.5  # awake comfort / normal pre-cool target
-  # Deeper pre-cool when a hot day is predicted: thermal mass buys ~2-4h of night coasting
-  precool_target_hot_day: 20.5
+  # Deeper pre-cool on predicted hot days; 21.5 keeps daytime naps comfortable
+  precool_target_hot_day: 21.5
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
   sleep_hold_temperature: 24.0
