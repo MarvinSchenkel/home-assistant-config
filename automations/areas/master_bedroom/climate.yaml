@@ -177,7 +177,12 @@ action:
                       than the 4am heat drift
                     conditions:
                       - "{{ outdoor_temp > tropical_night_threshold }}"
-                      - "{{ room_temp > sleep_hold_temperature }}"
+                      # Start above the ceiling, keep re-asserting down to the
+                      # release point — also retries commands the cloud drops
+                      - >-
+                        {{ room_temp > sleep_hold_temperature
+                           or (airco_compressor_active
+                               and room_temp > sleep_hold_temperature - temp_hysteresis) }}
                       - or:
                           # Predicted tropical night: windows advised shut, hold owns the night
                           - condition: state
