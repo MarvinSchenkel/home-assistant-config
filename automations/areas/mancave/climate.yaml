@@ -24,10 +24,7 @@ trigger:
       - binary_sensor.everyone_left_home
     from: ~
 
-  # Trigger platforms can't reference the variables block below, so entity
-  # ids and the export thresholds (export_start_kw / export_stop_kw) are
-  # repeated here literally. Debounce is 20 min instead of the bedroom's 15
-  # so the two automations never react to the same export swing together
+  # 20-min debounce (bedroom: 15) so both units never react to the same swing
   - trigger: numeric_state
     entity_id: sensor.power_production
     above: 1.0
@@ -49,9 +46,7 @@ trigger:
   - trigger: time
     at: input_datetime.mancave_approx_target_sleep_time
 
-  # Cheap re-evaluation heartbeat — the differing-state guards below make
-  # this free w.r.t. the airco's cloud API budget. Offset from the bedroom's
-  # quarter-hour ticks so both units never herd-start on the same evaluation
+  # Heartbeat, offset from the bedroom's quarter-hours to avoid herd starts
   - trigger: time_pattern
     minutes: "5/15"
 
@@ -61,19 +56,16 @@ variables:
   airco_entity: climate.mancave_room_temperature
   room_mode_entity: input_select.mancave_room_mode
   sleep_time_entity: input_datetime.mancave_approx_target_sleep_time
-  # DSMR P1 meter, kW in both directions — own solar consumption is already
-  # subtracted, so exporting genuinely means surplus
+  # DSMR P1 net flow — own solar consumption is already subtracted
   export_power_entity: sensor.power_production
   import_power_entity: sensor.power_consumption
 
-  # Work starts early in this room — solar comfort hold may kick in from
-  # this time (the bedroom waits until 11:00)
+  # Work starts early in this room — the bedroom waits until 11:00
   precool_not_before: "08:00"
 
   # --- temperatures (°C) ---
   target_room_temperature: 22.0  # comfortable working/bedtime temperature
-  # No deep pre-cool tier: the room is occupied as a home office all day,
-  # so it is held at the comfortable target instead of charged colder
+  # No deep tier: occupied as office all day, held at target instead of charged colder
   precool_target_hot_day: 22.0
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
@@ -86,9 +78,7 @@ variables:
   # --- solar export thresholds (kW on the P1 meter) ---
   export_start_kw: 1.0
   export_stop_kw: 0.2
-  # Rough compressor draw, credited back to the surplus while cooling — the
-  # airco eats the very export that justifies its running, and without this
-  # credit it suppresses itself and flip-flops around the thresholds
+  # Credited back while cooling, else the airco's own draw ends its own surplus
   airco_draw_kw: 0.6
 
   # --- computed each run ---
@@ -99,8 +89,6 @@ variables:
     {{ precool_target_hot_day if is_state('binary_sensor.is_hot_day_predicted', 'on')
        else target_room_temperature }}
   airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry', 'heat', 'heat_cool'] }}"
-  # Surplus available *for this airco*: net grid flow plus its own draw when
-  # it is the one consuming it
   available_surplus: >-
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
@@ -176,13 +164,10 @@ action:
                       - "{{ outdoor_temp > tropical_night_threshold }}"
                       - "{{ room_temp > sleep_hold_temperature }}"
                       - or:
-                          # On a predicted tropical night the bedtime verdict
-                          # said "windows shut" — the hold owns the night
+                          # Predicted tropical night: windows advised shut, hold owns the night
                           - condition: state
                             entity_id: binary_sensor.is_tropical_night_predicted
                             state: "on"
-                          # Otherwise the window is presumed open, so only
-                          # step in once free cooling has no headroom left
                           - alias: "No free-cooling headroom left outside"
                             condition: template
                             value_template: "{{ outdoor_temp > room_temp - 2 }}"
@@ -200,8 +185,7 @@ action:
                     sequence:
                       - *airco_off
 
-      # Above the away branch on purpose: solar-powered cooling is charging
-      # a thermal battery for tonight — an empty house is fine to cool for free
+      # Above away on purpose: an empty house is fine to cool on free power
       - alias: "Solar comfort hold — keep the office pleasant while exporting"
         conditions:
           - alias: "Work hours have started, bedtime hasn't"
@@ -209,10 +193,7 @@ action:
             value_template: "{{ now() >= today_at(precool_not_before) }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
-          # Full start threshold to kick in, only the stop threshold to keep
-          # running. No reserve for other rooms: this room is occupied all
-          # day, so its comfort is the fleet's first claim on the surplus —
-          # the bedroom holds back for the office, not the other way around
+          # No reserve: the occupied office is the fleet's first claim on surplus
           - alias: "Enough solar surplus (lower bar while already cooling)"
             condition: template
             value_template: >-
@@ -271,8 +252,7 @@ action:
           - condition: template
             value_template: "{{ room_temp > awake_target + temp_hysteresis }}"
         sequence:
-          # Adaptive comfort: acclimatized bodies are comfortable closer to
-          # outdoor temperature, and every extra degree of delta costs ~7% more energy
+          # Acclimatized comfort sits closer to outdoor; extra delta costs ~7%/degree
           - variables:
               desired_temp: "{{ awake_target }}"
               desired_fan: "auto"
@@ -287,8 +267,7 @@ action:
               - alias: "Evening crossover — free cooling beats the compressor"
                 condition: template
                 value_template: "{{ outdoor_temp < room_temp - 1 }}"
-              # Export below the *start* threshold isn't enough: the hold
-              # should ride out short cloud dips (the 0.2-1.0 kW dead-band)
+              # Stop bar, not start bar: the hold rides out short cloud dips
               - and:
                   - alias: "Solar surplus has genuinely stopped"
                     condition: template
