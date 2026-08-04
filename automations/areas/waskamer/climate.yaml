@@ -1,0 +1,190 @@
+---
+alias: areas_waskamer_climate
+description: >
+  Uses the waskamer Daikin head as the whole-house cooler: with its door open
+  the cold air pools on the top landing and falls down the stairwell, so the
+  hallways are the product. Solar surplus only, lowest fleet priority
+id: 7c2e91d4-3b6a-4f2e-9a41-56de8a20c7b3
+mode: queued
+max_exceeded: silent
+trace:
+  stored_traces: 25
+
+trigger:
+  - trigger: homeassistant
+    event: start
+
+  - trigger: event
+    event_type: automation_reloaded
+
+  # 25-min debounce (bedroom: 15, mancave: 20) so the fleet never reacts together
+  - trigger: numeric_state
+    entity_id: sensor.power_production
+    above: 1.0
+    for:
+      minutes: 25
+
+  - trigger: numeric_state
+    entity_id: sensor.power_production
+    below: 0.2
+    for:
+      minutes: 25
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.is_hot_day
+      - binary_sensor.is_hot_day_predicted
+    from: ~
+
+  # Heartbeat, offset from the other rooms' ticks to avoid herd starts
+  - trigger: time_pattern
+    minutes: "10"
+  - trigger: time_pattern
+    minutes: "25"
+  - trigger: time_pattern
+    minutes: "40"
+  - trigger: time_pattern
+    minutes: "55"
+
+variables:
+  # The hallway is what this unit conditions — its own room is just the source
+  demand_temp_entity: sensor.pir_hall_upstairs_temperature
+  outdoor_temp_entity: sensor.current_temperature
+  airco_entity: climate.waskamer_room_temperature
+  # DSMR P1 net flow — own solar consumption is already subtracted
+  export_power_entity: sensor.power_production
+  import_power_entity: sensor.power_consumption
+
+  precool_not_before: "09:00"
+
+  # --- temperatures (°C) ---
+  hall_target: 24.0  # comfortable hallway / flattened gradient goal
+  # Unit setpoint it should never reach — with the door open, runtime is the product
+  house_cool_setpoint: 18.0
+  temp_hysteresis: 0.5
+
+  # --- solar export thresholds (kW on the P1 meter) ---
+  export_start_kw: 1.0
+  export_stop_kw: 0.2
+  # Credited back while cooling, else the airco's own draw ends its own surplus
+  airco_draw_kw: 0.6
+  office_reserve_kw: 0.6
+  bedroom_reserve_kw: 0.6
+
+  # --- computed each run ---
+  hall_temp: "{{ states(demand_temp_entity) | float(0) }}"
+  outdoor_temp: "{{ states(outdoor_temp_entity) | float(0) }}"
+  airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry', 'heat', 'heat_cool'] }}"
+  available_surplus: >-
+    {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
+       + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
+  # Lowest fleet priority: reserve headroom for both the office and the bedroom.
+  # The office check also keeps both multi-split heads from competing for capacity
+  mancave_hungry: >-
+    {{ is_state('climate.mancave_room_temperature', 'off')
+       and states('sensor.pir_mancave_temperature') | float(0) > 22.5 }}
+  bedroom_hungry: >-
+    {{ is_state('climate.airco_master_bedroom', 'off')
+       and states('sensor.pir_master_bedroom_temperature') | float(0) > 23.0 }}
+  reserved_kw: >-
+    {{ (office_reserve_kw if mancave_hungry else 0)
+       + (bedroom_reserve_kw if bedroom_hungry else 0) }}
+
+  anchors:
+    - &airco_off
+      alias: "Turn off the airco (skipped when already off — every call burns API budget)"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ states(airco_entity) != 'off' }}"
+          then:
+            - action: climate.set_hvac_mode
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                hvac_mode: "off"
+
+    - &airco_cool
+      alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ states(airco_entity) != 'cool' }}"
+          then:
+            - action: climate.set_hvac_mode
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                hvac_mode: "cool"
+        - if:
+            - condition: template
+              value_template: "{{ state_attr(airco_entity, 'temperature') != desired_temp }}"
+          then:
+            - action: climate.set_temperature
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                temperature: "{{ desired_temp }}"
+        - if:
+            - condition: template
+              value_template: "{{ state_attr(airco_entity, 'fan_mode') != desired_fan }}"
+          then:
+            - action: climate.set_fan_mode
+              target:
+                entity_id: "{{ airco_entity }}"
+              data:
+                fan_mode: "{{ desired_fan }}"
+
+action:
+  - choose:
+      - alias: "House-cool — pour surplus coolth down the stairwell"
+        conditions:
+          - alias: "Late enough in the morning"
+            condition: template
+            value_template: "{{ now() >= today_at(precool_not_before) }}"
+          # A hot day, reactive or predicted
+          - or:
+              - condition: state
+                entity_id: binary_sensor.is_hot_day
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.is_hot_day_predicted
+                state: "on"
+          - alias: "The hallway still wants cooling"
+            condition: template
+            value_template: "{{ hall_temp > hall_target + temp_hysteresis }}"
+          # A hungry higher-priority room raises the bar even mid-run
+          - alias: "Enough solar surplus after the office and bedroom reserves"
+            condition: template
+            value_template: >-
+              {{ available_surplus >=
+                 (export_start_kw + reserved_kw if reserved_kw > 0
+                  else (export_stop_kw if is_state(airco_entity, 'cool')
+                        else export_start_kw)) }}
+        sequence:
+          - variables:
+              desired_temp: "{{ house_cool_setpoint }}"
+              desired_fan: "3"
+          - *airco_cool
+
+      - alias: "Release — stop once the sun, the hallway or a hungrier room says so"
+        conditions:
+          - condition: template
+            value_template: "{{ airco_compressor_active }}"
+          - or:
+              - alias: "Evening crossover — free cooling beats the compressor"
+                condition: template
+                value_template: "{{ outdoor_temp < hall_temp - 1 }}"
+              - alias: "Solar surplus has genuinely stopped"
+                condition: template
+                value_template: "{{ available_surplus < export_stop_kw }}"
+              - alias: "Hallway is at target"
+                condition: template
+                value_template: "{{ hall_temp <= hall_target - temp_hysteresis }}"
+              - alias: "Yield — a hungrier room needs the surplus"
+                condition: template
+                value_template: >-
+                  {{ reserved_kw > 0
+                     and available_surplus < export_start_kw + reserved_kw }}
+        sequence:
+          - *airco_off
