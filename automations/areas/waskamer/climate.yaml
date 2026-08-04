@@ -92,9 +92,11 @@ variables:
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
                < timedelta(minutes=45)) }}
+  # No reserve while the bedroom sleeps/naps — its cascade can't claim then
   bedroom_hungry: >-
     {{ is_state('climate.airco_master_bedroom', 'off')
-       and states('sensor.pir_master_bedroom_temperature') | float(0) > 23.0 }}
+       and states('sensor.pir_master_bedroom_temperature') | float(0) > 23.0
+       and states('input_select.master_bedroom_room_mode') in ['Wakker', 'Net wakker'] }}
   reserved_kw: >-
     {{ (office_reserve_kw if mancave_hungry else 0)
        + (bedroom_reserve_kw if bedroom_hungry else 0) }}
