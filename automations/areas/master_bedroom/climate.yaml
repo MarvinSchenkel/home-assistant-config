@@ -177,11 +177,17 @@ action:
                     conditions:
                       - "{{ outdoor_temp > tropical_night_threshold }}"
                       - "{{ room_temp > sleep_hold_temperature }}"
-                      # Without this, the hold would fight an open window on
-                      # nights where free cooling is clearly the better tool
-                      - alias: "No free-cooling headroom left outside"
-                        condition: template
-                        value_template: "{{ outdoor_temp > room_temp - 2 }}"
+                      - or:
+                          # On a predicted tropical night the bedtime verdict
+                          # said "windows shut" — the hold owns the night
+                          - condition: state
+                            entity_id: binary_sensor.is_tropical_night_predicted
+                            state: "on"
+                          # Otherwise the window is presumed open, so only
+                          # step in once free cooling has no headroom left
+                          - alias: "No free-cooling headroom left outside"
+                            condition: template
+                            value_template: "{{ outdoor_temp > room_temp - 2 }}"
                     sequence:
                       - variables:
                           desired_temp: "{{ sleep_hold_temperature }}"

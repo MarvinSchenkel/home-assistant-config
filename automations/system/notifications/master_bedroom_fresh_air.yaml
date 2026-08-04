@@ -71,7 +71,7 @@ action:
           - delay:
               hours: 6
 
-      - alias: "Tropical night heads-up — keep the windows shut"
+      - alias: "Bedtime verdict — do the windows stay open or closed tonight"
         conditions:
           - alias: "Roughly 30 minutes before the scheduled sleep time"
             condition: template
@@ -81,31 +81,48 @@ action:
               {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
               {% set now_minutes = now().hour * 60 + now().minute %}
               {{ 0 <= (sleep_minutes - now_minutes) <= 30 }}
-          - alias: "It isn't cooling off outside"
+          # Keeps this quiet outside the cooling season — a winter bedroom
+          # never gets this warm
+          - alias: "Only relevant when the bedroom is actually warm"
+            condition: numeric_state
+            entity_id: sensor.pir_master_bedroom_temperature
+            above: 21.5
+          - alias: "Outside isn't cooler (else the fresh-air branch above already said open)"
             condition: template
             value_template: >
               {{ (states("sensor.current_temperature") | float)
                  >= (states("sensor.pir_master_bedroom_temperature") | float) - 1 }}
-          # It has been (or is predicted to be) a hot day
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
         sequence:
-          - action: script.send_notification
-            data:
-              receivers:
-                - "marvin"
-                - "laura"
-                - "intercom"
-              type: "home_only"
-              emoji: "🌡️"
-              message: >-
-                Het wordt een tropische nacht. Laat de ramen dicht,
-                de airco houdt de kamer koel.
+          - choose:
+              - alias: "Tonight stays warm — the airco owns the night"
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.is_tropical_night_predicted
+                    state: "on"
+                sequence:
+                  - action: script.send_notification
+                    data:
+                      receivers:
+                        - "marvin"
+                        - "laura"
+                        - "intercom"
+                      type: "home_only"
+                      emoji: "🌡️"
+                      message: >-
+                        Het wordt een tropische nacht. Laat de ramen dicht,
+                        de airco houdt de kamer koel.
+            default:
+              - action: script.send_notification
+                data:
+                  receivers:
+                    - "marvin"
+                    - "laura"
+                    - "intercom"
+                  type: "home_only"
+                  emoji: "🌙"
+                  message: >-
+                    Laat de ramen voorlopig dicht — het koelt vannacht
+                    vanzelf af buiten.
           # Debounce: mode is single, so this blocks re-notifying for 6h. It
           # sits inside the branch so unmatched evaluations exit instantly
           - delay:
