@@ -85,6 +85,28 @@ condition:
 
 action:
   - choose:
+      - alias: "Turn on bright lights when cooking"
+        conditions:
+          - *is_presence_detected
+          - *is_dark
+          - condition: state
+            entity_id:
+              - input_boolean.house_mode_cooking
+            state: "on"
+        sequence:
+          - <<: *turn_on
+            target:
+              entity_id: scene.kitchen_lights_concentreren
+
+      - alias: "Leave the lights alone when they are manually controlled"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.livingroom_manual_control
+            state: "on"
+          - *is_presence_detected
+        sequence:
+          - stop: "Lights are manually controlled"
+
       - alias: "Turn the lights off faster when we are watching TV."
         conditions:
           - or:
@@ -101,19 +123,6 @@ action:
             state: "off"
         sequence:
           - *turn_off
-
-      - alias: "Turn on bright lights when cooking"
-        conditions:
-          - *is_presence_detected
-          - *is_dark
-          - condition: state
-            entity_id:
-              - input_boolean.house_mode_cooking
-            state: "on"
-        sequence:
-          - <<: *turn_on
-            target:
-              entity_id: scene.kitchen_lights_concentreren
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:

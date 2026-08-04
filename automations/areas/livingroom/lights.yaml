@@ -117,6 +117,15 @@ condition:
 
 action:
   - choose:
+      - alias: "Leave the lights alone when they are manually controlled"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.livingroom_manual_control
+            state: "on"
+          - *condition_is_presence_detected
+        sequence:
+          - stop: "Lights are manually controlled"
+
       - alias: >
           "Toggle movie scene when somethings starts playing"
         conditions:
