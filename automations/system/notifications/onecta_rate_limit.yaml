@@ -1,0 +1,32 @@
+---
+description: >
+  Warn when a Daikin gateway is close to its daily Onecta API limit — a
+  climate automation is misbehaving and commands will soon silently fail
+alias: system_notifications_onecta_rate_limit
+mode: single
+max_exceeded: silent
+id: 5b7a3e19-4c8d-4b2a-9f6e-2d1c8a90e4f7
+
+trigger:
+  - trigger: numeric_state
+    entity_id:
+      - sensor.grote_slaapkamer_gateway_resterend_per_dag
+      - sensor.mancave_gateway_resterend_per_dag
+      - sensor.waskamer_gateway_resterend_per_dag
+    below: 30
+    for:
+      minutes: 5
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+      message: >-
+        ⚠️ De Daikin API limiet is bijna bereikt
+        ({{ trigger.to_state.name }}: nog {{ trigger.to_state.state }} calls
+        vandaag). Check de climate automations op flip-flop gedrag.
+
+  # Once per day is enough, the counter resets at midnight anyway
+  - delay:
+      hours: 12

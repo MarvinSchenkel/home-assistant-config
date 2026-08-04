@@ -4,9 +4,9 @@ description: >
   Control the sunscreen based on:
     - The sun angle / whether it's hot
     - Heavy wind / rain detected (retracts the screen)
-    - Only redeploy for sun once the wind has been calm for 15 min, so a
+    - Only redeploy for sun once the wind has been calm for 10 min, so a
       gust does not bounce the screen down and straight back up
-    - Manual override detected (todo)
+    - Manual override detected (weather retract always wins over it)
 mode: queued
 max_exceeded: silent
 id: 028db081-471a-4fee-8373-844eca4943a9
@@ -43,6 +43,16 @@ trigger:
     for:
       minutes: 10
 
+  - trigger: state
+    entity_id:
+      - scene.garden_cover_open
+      - scene.garden_cover_sunblock
+    id: garden_screen
+
+  - trigger: time
+    at: "03:00:00"
+    id: "reset"
+
 variables:
   anchors:
     - &sunscreen_up
@@ -61,6 +71,7 @@ variables:
 
 action:
   - choose:
+      # Safety first: weather retract outranks the manual override below
       - alias: "Close sunscreen when sun is gone or wind / rain is detected"
         conditions:
           - or:
@@ -71,6 +82,37 @@ action:
                   - binary_sensor.weather_can_close_sunscreen
                 state: "off"
         sequence: *sunscreen_up
+
+      - alias: "Check if the screen was manually changed"
+        conditions:
+          - condition: trigger
+            id: garden_screen
+          - alias: "It was changed by a user"
+            condition: template
+            value_template: "{{ trigger.to_state.context.user_id != None }}"
+        sequence:
+          - alias: "Set manual control, so the screen stays where it was put"
+            action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.sunscreen_manual_control
+
+      - alias: "Reset manual override before the new day starts"
+        conditions:
+          - condition: trigger
+            id: "reset"
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.sunscreen_manual_control
+
+      - alias: "Stop automating the screen when manual control is on"
+        conditions:
+          - condition: state
+            entity_id:
+              - input_boolean.sunscreen_manual_control
+            state: "on"
+        sequence:
+          - stop: "Sunscreen is manually controlled"
 
       - alias: "Keep the dinner state active"
         conditions:
