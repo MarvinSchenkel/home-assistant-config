@@ -47,9 +47,10 @@ trigger:
     minutes: "55"
 
 variables:
-  # The hallways are what this unit conditions — its own room is just the source
-  hall_up_temp_entity: sensor.pir_hall_upstairs_temperature
+  # The downstairs hall is the product; the top-floor landing is where the
+  # cold pools first, so it guards against saturating the stairwell
   hall_down_temp_entity: sensor.pir_hall_downstairs_temperature
+  landing_temp_entity: sensor.pir_zolder_air_temperature
   outdoor_temp_entity: sensor.current_temperature
   airco_entity: climate.waskamer_room_temperature
   # DSMR P1 net flow — own solar consumption is already subtracted
@@ -75,7 +76,7 @@ variables:
   bedroom_reserve_kw: 0.6
 
   # --- computed each run ---
-  hall_up_temp: "{{ states(hall_up_temp_entity) | float(0) }}"
+  landing_temp: "{{ states(landing_temp_entity) | float(0) }}"
   hall_down_temp: "{{ states(hall_down_temp_entity) | float(0) }}"
   outdoor_temp: "{{ states(outdoor_temp_entity) | float(0) }}"
   # heat excluded on purpose: a manual heat choice is never ours to stop
@@ -164,7 +165,7 @@ action:
           # A frozen landing while downstairs stays warm = gravity is maxed out
           - alias: "Gravity transfer is not saturated yet"
             condition: template
-            value_template: "{{ hall_up_temp > landing_floor_temperature }}"
+            value_template: "{{ landing_temp > landing_floor_temperature }}"
           # A hungry higher-priority room raises the bar even mid-run
           - alias: "Enough solar surplus after the office and bedroom reserves"
             condition: template
@@ -196,7 +197,7 @@ action:
               - alias: "Landing saturated — the stairwell can't absorb more"
                 condition: template
                 value_template: >-
-                  {{ hall_up_temp <= landing_floor_temperature - temp_hysteresis }}
+                  {{ landing_temp <= landing_floor_temperature - temp_hysteresis }}
               - alias: "Yield — a hungrier room needs the surplus"
                 condition: template
                 value_template: >-
