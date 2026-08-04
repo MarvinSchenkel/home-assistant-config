@@ -158,13 +158,10 @@ action:
               - condition: state
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
-          - alias: "A hallway on any floor still wants cooling"
+          - alias: "The downstairs hall still wants cooling"
             condition: template
-            value_template: >-
-              {{ hall_up_temp > hall_target + temp_hysteresis
-                 or hall_down_temp > hall_target + temp_hysteresis }}
-          # Keep pouring for the ground floor only while the landing shows the
-          # cascade is still absorbing it
+            value_template: "{{ hall_down_temp > hall_target + temp_hysteresis }}"
+          # A frozen landing while downstairs stays warm = gravity is maxed out
           - alias: "Gravity transfer is not saturated yet"
             condition: template
             value_template: "{{ hall_up_temp > landing_floor_temperature }}"
@@ -193,11 +190,9 @@ action:
               - alias: "Solar surplus has genuinely stopped"
                 condition: template
                 value_template: "{{ available_surplus < export_stop_kw }}"
-              - alias: "Both hallways are at target"
+              - alias: "Downstairs hall is at target"
                 condition: template
-                value_template: >-
-                  {{ hall_up_temp <= hall_target - temp_hysteresis
-                     and hall_down_temp <= hall_target - temp_hysteresis }}
+                value_template: "{{ hall_down_temp <= hall_target - temp_hysteresis }}"
               - alias: "Landing saturated — the stairwell can't absorb more"
                 condition: template
                 value_template: >-
