@@ -60,7 +60,7 @@ variables:
   precool_not_before: "09:00"
 
   # --- temperatures (°C) ---
-  hall_target: 24.0  # comfortable hallway / flattened gradient goal
+  hall_target: 22.0  # comfortable hallway / flattened gradient goal
   # Landing colder than this = gravity transfer is saturated, more runtime is waste
   landing_floor_temperature: 21.0
   # Unit setpoint it should never reach — with the door open, runtime is the product
