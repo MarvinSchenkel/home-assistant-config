@@ -79,7 +79,7 @@ variables:
   # --- solar export thresholds (kW on the P1 meter) ---
   export_start_kw: 1.0
   export_stop_kw: 0.2
-  # Credited back while cooling, else the airco's own draw ends its own surplus
+  # Credited back while cooling, capped at real import so an idle unit can't fake it
   airco_draw_kw: 0.6
   # The occupied office outranks this room's deadline-free pre-cool
   office_reserve_kw: 0.6
@@ -91,8 +91,10 @@ variables:
   # heat excluded on purpose: a manual heat choice is never ours to stop
   airco_compressor_active: "{{ states(airco_entity) in ['cool', 'dry'] }}"
   available_surplus: >-
-    {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
-       + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
+    {% set import_kw = states(import_power_entity) | float(0) %}
+    {% set own_draw = [airco_draw_kw, import_kw] | min %}
+    {{ states(export_power_entity) | float(0) - import_kw
+       + (own_draw if is_state(airco_entity, 'cool') else 0) }}
   # During Slaap/Dutje this cascade stops before pre-cool — office gets everything.
   # 10-min last_changed window = the office's own work-break debounce, keep in sync
   mancave_needs_comfort: >-
