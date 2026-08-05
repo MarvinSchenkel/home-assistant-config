@@ -226,8 +226,11 @@ action:
               - condition: state
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
-          - condition: template
-            value_template: "{{ room_temp > target_room_temperature + temp_hysteresis }}"
+          # Keeps matching while running, so a changed target reaches the unit
+          - >-
+            {{ room_temp > target_room_temperature + temp_hysteresis
+               or (airco_compressor_active
+                   and room_temp > target_room_temperature - temp_hysteresis) }}
         sequence:
           # Early-afternoon cooling is doubly cheap — exported solar + mild
           # outdoor temperatures mean high COP — and the room's mass stores it
@@ -272,14 +275,13 @@ action:
               - alias: "Evening crossover — free cooling beats the compressor"
                 condition: template
                 value_template: "{{ outdoor_temp < room_temp - 1 }}"
-              # Stop bar, not start bar: pre-cooling rides out short cloud dips
-              - and:
-                  - alias: "Solar surplus has genuinely stopped"
-                    condition: template
-                    value_template: "{{ available_surplus < export_stop_kw }}"
-                  - alias: "Comfortably at (or below) target"
-                    condition: template
-                    value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
+              # Stop bar, not start bar: a run rides out short cloud dips
+              - alias: "Solar surplus has genuinely stopped"
+                condition: template
+                value_template: "{{ available_surplus < export_stop_kw }}"
+              - alias: "Comfortably at (or below) target"
+                condition: template
+                value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
               - and:
                   - alias: "Yield — the office is warm and there isn't surplus for both"
                     condition: template

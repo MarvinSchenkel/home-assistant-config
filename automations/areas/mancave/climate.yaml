@@ -238,8 +238,10 @@ action:
               - condition: state
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
-          - condition: template
-            value_template: "{{ room_temp > target_room_temperature + temp_hysteresis }}"
+          - >-
+            {{ room_temp > target_room_temperature + temp_hysteresis
+               or (airco_compressor_active
+                   and room_temp > target_room_temperature - temp_hysteresis) }}
         sequence:
           - variables:
               desired_temp: "{{ target_room_temperature }}"
@@ -280,8 +282,11 @@ action:
           - alias: "Someone is (or was just) working here"
             condition: template
             value_template: "{{ marvin_working }}"
-          - condition: template
-            value_template: "{{ room_temp > awake_target + temp_hysteresis }}"
+          # Keeps matching while running, so a changed target reaches the unit
+          - >-
+            {{ room_temp > awake_target + temp_hysteresis
+               or (airco_compressor_active
+                   and room_temp > awake_target - temp_hysteresis) }}
         sequence:
           # Acclimatized comfort sits closer to outdoor; extra delta costs ~7%/degree
           - variables:
@@ -302,13 +307,12 @@ action:
               - alias: "Evening crossover — free cooling beats the compressor"
                 condition: template
                 value_template: "{{ outdoor_temp < room_temp - 1 }}"
-              # Stop bar, not start bar: the hold rides out short cloud dips
-              - and:
-                  - alias: "Solar surplus has genuinely stopped"
-                    condition: template
-                    value_template: "{{ available_surplus < export_stop_kw }}"
-                  - alias: "Comfortably at (or below) target"
-                    condition: template
-                    value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
+              # Stop bar, not start bar: a run rides out short cloud dips
+              - alias: "Solar surplus has genuinely stopped"
+                condition: template
+                value_template: "{{ available_surplus < export_stop_kw }}"
+              - alias: "Comfortably at (or below) target"
+                condition: template
+                value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
         sequence:
           - *airco_off

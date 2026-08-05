@@ -163,9 +163,13 @@ action:
               - condition: state
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
+          # Keeps matching while running, so a changed target reaches the unit
           - alias: "The downstairs hall still wants cooling"
             condition: template
-            value_template: "{{ hall_down_temp > hall_target + temp_hysteresis }}"
+            value_template: >-
+              {{ hall_down_temp > hall_target + temp_hysteresis
+                 or (airco_compressor_active
+                     and hall_down_temp > hall_target - temp_hysteresis) }}
           # A frozen landing while downstairs stays warm = gravity is maxed out
           - alias: "Gravity transfer is not saturated yet"
             condition: template
