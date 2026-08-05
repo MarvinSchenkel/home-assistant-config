@@ -84,8 +84,8 @@ variables:
   work_break_debounce: 10  # minutes; a short break must not flip the AC
 
   # --- temperatures (°C) ---
-  # The ceiling-mounted sensor reads ~1°C above desk height
-  target_room_temperature: 23.0
+  # Sensor hangs at the ceiling across the room, well above desk temperature
+  target_room_temperature: 24.0
   target_sleep_temperature: 22.0  # bedtime top-up target
   # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
   sleep_hold_temperature: 24.0
