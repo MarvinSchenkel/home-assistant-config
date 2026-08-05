@@ -13,10 +13,3 @@ use_blueprint:
     day_volume: 11
     evening_volume: 9
     sonos: media_player.mass_wiim_keuken
-    mute_conditions:
-      - condition: state
-        entity_id:
-          - media_player.living_room_android
-        state: "on"
-    custom_state_triggers:
-      - media_player.living_room_android

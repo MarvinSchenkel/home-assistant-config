@@ -10,3 +10,12 @@ use_blueprint:
     presence_entity: binary_sensor.presence_livingroom
     target_media_player: media_player.mass_wiim_keuken
     no_presence_wait: 900
+    custom_conditions:
+      - alias: "We're not watching TV in the living room"
+        not:
+          - condition: state
+            entity_id:
+              - media_player.living_room_android
+            state: "on"
+    custom_state_triggers:
+      - media_player.living_room_android
