@@ -94,13 +94,13 @@ variables:
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
   # During Slaap/Dutje this cascade stops before pre-cool — office gets everything.
-  # 45-min last_changed window = the office's own work-break debounce, keep in sync
+  # 10-min last_changed window = the office's own work-break debounce, keep in sync
   mancave_needs_comfort: >-
     {{ is_state('climate.ac_mancave', 'off')
        and states('sensor.pir_mancave_temperature') | float(0) > 23.5
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
-               < timedelta(minutes=45)) }}
+               < timedelta(minutes=10)) }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}

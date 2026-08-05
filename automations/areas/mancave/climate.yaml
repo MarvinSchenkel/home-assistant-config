@@ -35,7 +35,7 @@ trigger:
     entity_id: binary_sensor.marvin_is_working
     to: "off"
     for:
-      minutes: 45
+      minutes: 10
 
   # 20-min debounce (bedroom: 15) so both units never react to the same swing
   - trigger: numeric_state
@@ -81,7 +81,7 @@ variables:
 
   # Work starts early in this room — the bedroom waits until 11:00
   precool_not_before: "08:00"
-  work_break_debounce: 45  # minutes; a short break must not flip the AC
+  work_break_debounce: 10  # minutes; a short break must not flip the AC
 
   # --- temperatures (°C) ---
   # The ceiling-mounted sensor reads ~1°C above desk height
