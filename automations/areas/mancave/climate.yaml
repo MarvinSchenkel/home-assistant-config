@@ -271,8 +271,6 @@ action:
                   desired_fan: "auto"
               - *airco_cool
 
-      # No weather gate: the office is comfortable whenever someone works
-      # there — sun pays when it can, the grid covers the rest
       - alias: "Working comfort — adaptive cooling regardless of forecast"
         conditions:
           - condition: template
