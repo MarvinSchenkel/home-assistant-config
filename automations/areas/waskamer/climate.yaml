@@ -179,7 +179,7 @@ action:
         sequence:
           - variables:
               desired_temp: "{{ house_cool_setpoint }}"
-              desired_fan: "3"
+              desired_fan: "5"
           - *airco_cool
 
       - alias: "Release — stop once the sun, the hallway or a hungrier room says so"
