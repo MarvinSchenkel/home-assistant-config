@@ -271,13 +271,13 @@ action:
                   desired_fan: "auto"
               - *airco_cool
 
-      - alias: "Hot-day comfort cooling — adaptive comfort while awake"
+      - alias: "Working comfort — adaptive cooling regardless of forecast"
         conditions:
           - condition: template
             value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
-          - condition: state
-            entity_id: binary_sensor.is_hot_day
-            state: "on"
+          - alias: "Someone is (or was just) working here"
+            condition: template
+            value_template: "{{ marvin_working }}"
           - condition: template
             value_template: "{{ room_temp > awake_target + temp_hysteresis }}"
         sequence:
