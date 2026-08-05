@@ -85,13 +85,13 @@ variables:
     {{ states(export_power_entity) | float(0) - states(import_power_entity) | float(0)
        + (airco_draw_kw if is_state(airco_entity, 'cool') else 0) }}
   # Lowest fleet priority: reserve headroom for both the office and the bedroom.
-  # 45-min last_changed window = the office's own work-break debounce, keep in sync
+  # 10-min last_changed window = the office's own work-break debounce, keep in sync
   mancave_hungry: >-
     {{ is_state('climate.ac_mancave', 'off')
-       and states('sensor.pir_mancave_temperature') | float(0) > 22.5
+       and states('sensor.pir_mancave_temperature') | float(0) > 23.5
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
-               < timedelta(minutes=45)) }}
+               < timedelta(minutes=10)) }}
   # No reserve while the bedroom sleeps/naps — its cascade can't claim then
   bedroom_hungry: >-
     {{ is_state('climate.airco_master_bedroom', 'off')
