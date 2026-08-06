@@ -50,12 +50,6 @@ trigger:
     for:
       minutes: 20
 
-  - trigger: state
-    entity_id:
-      - binary_sensor.is_hot_day
-      - binary_sensor.is_hot_day_predicted
-    from: ~
-
   - trigger: time
     at: input_datetime.mancave_approx_target_sleep_time
 
@@ -230,14 +224,9 @@ action:
             value_template: >-
               {{ available_surplus >=
                  (export_stop_kw if is_state(airco_entity, 'cool') else export_start_kw) }}
-          # A hot day, reactive or predicted
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
+          - alias: "Free cooling has no headroom — a window would beat the compressor"
+            condition: template
+            value_template: "{{ outdoor_temp >= room_temp - 1 }}"
           - condition: template
             value_template: "{{ room_temp > target_room_temperature + temp_hysteresis }}"
         sequence:

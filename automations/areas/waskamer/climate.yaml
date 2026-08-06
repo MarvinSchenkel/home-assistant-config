@@ -30,12 +30,6 @@ trigger:
     for:
       minutes: 25
 
-  - trigger: state
-    entity_id:
-      - binary_sensor.is_hot_day
-      - binary_sensor.is_hot_day_predicted
-    from: ~
-
   # Heartbeat, offset from the other rooms' ticks to avoid herd starts
   - trigger: time_pattern
     minutes: "10"
@@ -155,14 +149,9 @@ action:
           - alias: "Late enough in the morning"
             condition: template
             value_template: "{{ now() >= today_at(precool_not_before) }}"
-          # A hot day, reactive or predicted
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
+          - alias: "Free cooling has no headroom — a window would beat the compressor"
+            condition: template
+            value_template: "{{ outdoor_temp >= hall_down_temp - 1 }}"
           - alias: "The downstairs hall still wants cooling"
             condition: template
             value_template: "{{ hall_down_temp > hall_target + temp_hysteresis }}"
