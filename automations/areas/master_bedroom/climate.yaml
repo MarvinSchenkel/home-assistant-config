@@ -38,12 +38,6 @@ trigger:
     for:
       minutes: 15
 
-  - trigger: state
-    entity_id:
-      - binary_sensor.is_hot_day
-      - binary_sensor.is_hot_day_predicted
-    from: ~
-
   - trigger: time
     at: input_datetime.master_bedroom_approx_target_sleep_time
 
@@ -81,8 +75,9 @@ variables:
   export_stop_kw: 0.2
   # Credited back while cooling, capped at real import so an idle unit can't fake it
   airco_draw_kw: 0.6
-  # The occupied office outranks this room's deadline-free pre-cool
+  # Both outrank this room's deadline-free pre-cool
   office_reserve_kw: 0.6
+  house_reserve_kw: 0.6
 
   # --- computed each run ---
   room_temp: "{{ states(room_temp_entity) | float(0) }}"
@@ -103,6 +98,13 @@ variables:
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
                < timedelta(minutes=10)) }}
+  # The hallways serve the whole house, this room only serves tonight
+  house_cooling_wanted: >-
+    {{ is_state('climate.ac_waskamer', 'off')
+       and states('sensor.pir_hall_downstairs_temperature') | float(0) > 22.5 }}
+  reserved_kw: >-
+    {{ (office_reserve_kw if mancave_needs_comfort else 0)
+       + (house_reserve_kw if house_cooling_wanted else 0) }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -210,22 +212,17 @@ action:
             value_template: "{{ now() >= today_at(precool_not_before) }}"
           - condition: template
             value_template: "{{ minutes_until_sleep > 0 }}"
-          # A hungry office raises the bar even mid-run, so this room also yields
-          - alias: "Enough solar surplus, the occupied office gets first claim"
+          # A hungrier room raises the bar even mid-run, so this room also yields
+          - alias: "Enough solar surplus after the office and hallway reserves"
             condition: template
             value_template: >-
               {{ available_surplus >=
-                 (export_start_kw + office_reserve_kw if mancave_needs_comfort
+                 (export_start_kw + reserved_kw if reserved_kw > 0
                   else (export_stop_kw if is_state(airco_entity, 'cool')
                         else export_start_kw)) }}
-          # A hot day, reactive or predicted
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
+          - alias: "Free cooling has no headroom — a window would beat the compressor"
+            condition: template
+            value_template: "{{ outdoor_temp >= room_temp - 1 }}"
           - condition: template
             value_template: "{{ room_temp > target_room_temperature + temp_hysteresis }}"
         sequence:
@@ -281,11 +278,11 @@ action:
                     condition: template
                     value_template: "{{ room_temp <= awake_target - temp_hysteresis }}"
               - and:
-                  - alias: "Yield — the office is warm and there isn't surplus for both"
+                  - alias: "Yield — a higher-priority room needs the surplus"
                     condition: template
-                    value_template: "{{ mancave_needs_comfort }}"
+                    value_template: "{{ reserved_kw > 0 }}"
                   - condition: template
                     value_template: >-
-                      {{ available_surplus < export_start_kw + office_reserve_kw }}
+                      {{ available_surplus < export_start_kw + reserved_kw }}
         sequence:
           - *airco_off

@@ -3,7 +3,7 @@ alias: areas_waskamer_climate
 description: >
   Uses the waskamer Daikin head as the whole-house cooler: with its door open
   the cold air pools on the top landing and falls down the stairwell, so the
-  hallways are the product. Solar surplus only, lowest fleet priority
+  hallways are the product. Solar surplus only, yields to the office
 id: 7c2e91d4-3b6a-4f2e-9a41-56de8a20c7b3
 mode: queued
 max_exceeded: silent
@@ -29,12 +29,6 @@ trigger:
     below: 0.2
     for:
       minutes: 25
-
-  - trigger: state
-    entity_id:
-      - binary_sensor.is_hot_day
-      - binary_sensor.is_hot_day_predicted
-    from: ~
 
   # Heartbeat, offset from the other rooms' ticks to avoid herd starts
   - trigger: time_pattern
@@ -73,7 +67,6 @@ variables:
   # Credited back while cooling, capped at real import so an idle unit can't fake it
   airco_draw_kw: 0.6
   office_reserve_kw: 0.6
-  bedroom_reserve_kw: 0.6
 
   # --- computed each run ---
   landing_temp: "{{ states(landing_temp_entity) | float(0) }}"
@@ -86,7 +79,7 @@ variables:
     {% set own_draw = [airco_draw_kw, import_kw] | min %}
     {{ states(export_power_entity) | float(0) - import_kw
        + (own_draw if is_state(airco_entity, 'cool') else 0) }}
-  # Lowest fleet priority: reserve headroom for both the office and the bedroom.
+  # Only the occupied office outranks whole-house cooling.
   # 10-min last_changed window = the office's own work-break debounce, keep in sync
   mancave_hungry: >-
     {{ is_state('climate.ac_mancave', 'off')
@@ -94,14 +87,7 @@ variables:
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
                < timedelta(minutes=10)) }}
-  # No reserve while the bedroom sleeps/naps — its cascade can't claim then
-  bedroom_hungry: >-
-    {{ is_state('climate.airco_master_bedroom', 'off')
-       and states('sensor.pir_master_bedroom_temperature') | float(0) > 23.0
-       and states('input_select.master_bedroom_room_mode') in ['Wakker', 'Net wakker'] }}
-  reserved_kw: >-
-    {{ (office_reserve_kw if mancave_hungry else 0)
-       + (bedroom_reserve_kw if bedroom_hungry else 0) }}
+  reserved_kw: "{{ office_reserve_kw if mancave_hungry else 0 }}"
 
   anchors:
     - &airco_off
@@ -155,14 +141,9 @@ action:
           - alias: "Late enough in the morning"
             condition: template
             value_template: "{{ now() >= today_at(precool_not_before) }}"
-          # A hot day, reactive or predicted
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
+          - alias: "Free cooling has no headroom — a window would beat the compressor"
+            condition: template
+            value_template: "{{ outdoor_temp >= hall_down_temp - 1 }}"
           - alias: "The downstairs hall still wants cooling"
             condition: template
             value_template: "{{ hall_down_temp > hall_target + temp_hysteresis }}"
@@ -171,7 +152,7 @@ action:
             condition: template
             value_template: "{{ landing_temp > landing_floor_temperature }}"
           # A hungry higher-priority room raises the bar even mid-run
-          - alias: "Enough solar surplus after the office and bedroom reserves"
+          - alias: "Enough solar surplus after the office reserve"
             condition: template
             value_template: >-
               {{ available_surplus >=
