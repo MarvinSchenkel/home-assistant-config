@@ -169,11 +169,15 @@ action:
             value_template: >-
               {{ hall_down_temp > hall_target + temp_hysteresis
                  or (airco_compressor_active
-                     and hall_down_temp > hall_target - temp_hysteresis) }}
+                     and hall_down_temp > hall_target - temp_hysteresis
+                     and outdoor_temp >= hall_down_temp - 1) }}
           # A frozen landing while downstairs stays warm = gravity is maxed out
           - alias: "Gravity transfer is not saturated yet"
             condition: template
-            value_template: "{{ landing_temp > landing_floor_temperature }}"
+            value_template: >-
+              {{ landing_temp > landing_floor_temperature
+                 or (airco_compressor_active
+                     and landing_temp > landing_floor_temperature - temp_hysteresis) }}
           # A hungry higher-priority room raises the bar even mid-run
           - alias: "Enough solar surplus after the office and bedroom reserves"
             condition: template

@@ -238,10 +238,14 @@ action:
               - condition: state
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
-          - >-
-            {{ room_temp > target_room_temperature + temp_hysteresis
-               or (airco_compressor_active
-                   and room_temp > target_room_temperature - temp_hysteresis) }}
+          # Keeps matching while running, so a changed target reaches the unit
+          - alias: "The office is still above its comfort target"
+            condition: template
+            value_template: >-
+              {{ room_temp > target_room_temperature + temp_hysteresis
+                 or (airco_compressor_active
+                     and room_temp > target_room_temperature - temp_hysteresis
+                     and outdoor_temp >= room_temp - 1) }}
         sequence:
           - variables:
               desired_temp: "{{ target_room_temperature }}"
@@ -266,7 +270,11 @@ action:
         sequence:
           # On a day the daytime hold worked, this is a no-op — that's the design goal
           - if:
-              - "{{ room_temp > target_sleep_temperature + temp_hysteresis }}"
+              # Keeps matching while running, so a dropped command is retried
+              - >-
+                {{ room_temp > target_sleep_temperature + temp_hysteresis
+                   or (airco_compressor_active
+                       and room_temp > target_sleep_temperature - temp_hysteresis) }}
               # When it's cooler outside, opening a window beats the compressor
               - "{{ outdoor_temp >= room_temp - 1 }}"
             then:
@@ -283,10 +291,13 @@ action:
             condition: template
             value_template: "{{ marvin_working }}"
           # Keeps matching while running, so a changed target reaches the unit
-          - >-
-            {{ room_temp > awake_target + temp_hysteresis
-               or (airco_compressor_active
-                   and room_temp > awake_target - temp_hysteresis) }}
+          - alias: "The office is still above its adaptive target"
+            condition: template
+            value_template: >-
+              {{ room_temp > awake_target + temp_hysteresis
+                 or (airco_compressor_active
+                     and room_temp > awake_target - temp_hysteresis
+                     and outdoor_temp >= room_temp - 1) }}
         sequence:
           # Acclimatized comfort sits closer to outdoor; extra delta costs ~7%/degree
           - variables:
