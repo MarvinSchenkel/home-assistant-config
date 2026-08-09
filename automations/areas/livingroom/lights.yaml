@@ -56,6 +56,11 @@ trigger:
     at: "00:03:00"
     id: "reset"
 
+  - trigger: state
+    entity_id:
+      - input_boolean.livingroom_manual_control
+    to: "off"
+
 variables:
   current_light_scene: >
     scene.livingroom_lights_{{ states("input_select.current_light_schedule") }}

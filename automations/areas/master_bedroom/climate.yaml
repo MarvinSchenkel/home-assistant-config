@@ -54,40 +54,8 @@ trigger:
     minutes: "/15"
 
   - trigger: state
-    entity_id: climate.airco_master_bedroom
-    not_from:
-      - unavailable
-      - unknown
-    not_to:
-      - unavailable
-      - unknown
-    id: ac_changed
-
-  - trigger: state
-    entity_id: climate.airco_master_bedroom
-    attribute: temperature
-    id: ac_changed
-
-  - trigger: state
-    entity_id: climate.airco_master_bedroom
-    attribute: fan_mode
-    id: ac_changed
-
-  - trigger: state
-    entity_id: input_boolean.masterbedroom_climate_manual_control
-    to: "on"
-    id: manual_on
-
-  - trigger: state
     entity_id: input_boolean.masterbedroom_climate_manual_control
     to: "off"
-    id: manual_off
-
-  - trigger: event
-    event_type: timer.finished
-    event_data:
-      entity_id: timer.masterbedroom_climate_manual_control
-    id: manual_expired
 
 variables:
   room_temp_entity: sensor.pir_master_bedroom_temperature
@@ -205,48 +173,6 @@ variables:
 
 action:
   - choose:
-      - alias: "Mark manual control when the airco is changed outside this automation"
-        conditions:
-          - condition: trigger
-            id: ac_changed
-          - condition: template
-            value_template: >-
-              {{ trigger.from_state.state not in ['unavailable', 'unknown']
-                 and trigger.to_state.state not in ['unavailable', 'unknown']
-                 and trigger.to_state.context.id
-                     != states('input_text.masterbedroom_climate_write_ctx') }}
-        sequence:
-          - action: script.manual_control_activate
-            data:
-              helper: masterbedroom_climate_manual_control
-
-      - alias: "Start the expiry timer when manual control turns on"
-        conditions:
-          - condition: trigger
-            id: manual_on
-        sequence:
-          - action: script.manual_control_activate
-            data:
-              helper: masterbedroom_climate_manual_control
-
-      - alias: "Cancel the expiry timer when manual control turns off"
-        conditions:
-          - condition: trigger
-            id: manual_off
-        sequence:
-          - action: script.manual_control_deactivate
-            data:
-              helper: masterbedroom_climate_manual_control
-
-      - alias: "Release manual control when the expiry timer finishes"
-        conditions:
-          - condition: trigger
-            id: manual_expired
-        sequence:
-          - action: script.manual_control_deactivate
-            data:
-              helper: masterbedroom_climate_manual_control
-
       - alias: "Away — no comfort cooling for an empty room"
         conditions:
           - condition: state
