@@ -13,7 +13,7 @@ description: >-
 
   - Manual control is used to disable automation when we override the default behaviour
 
-mode: restart
+mode: queued
 id: e1d01b47-8989-4d64-b7c1-c1f069f622f5
 trace:
   stored_traces: 25
