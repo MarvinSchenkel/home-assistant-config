@@ -61,10 +61,11 @@ action:
             id: ac_changed
           - condition: template
             value_template: >-
+              {% set last_run = state_attr('automation.areas_mancave_climate', 'last_triggered') %}
               {{ trigger.from_state.state not in ['unavailable', 'unknown']
                  and trigger.to_state.state not in ['unavailable', 'unknown']
-                 and trigger.to_state.context.id
-                     != states('input_text.mancave_climate_write_ctx') }}
+                 and (last_run is none
+                      or now() - last_run > timedelta(seconds=30)) }}
         sequence:
           - action: script.manual_control_activate
             data:
