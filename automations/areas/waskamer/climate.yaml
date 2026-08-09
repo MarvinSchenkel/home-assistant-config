@@ -46,6 +46,10 @@ trigger:
   - trigger: time_pattern
     minutes: "55"
 
+  - trigger: state
+    entity_id: input_boolean.waskamer_climate_manual_control
+    to: "off"
+
 variables:
   # The downstairs hall is the product; the top-floor landing is where the
   # cold pools first, so it guards against saturating the stairwell
@@ -104,9 +108,18 @@ variables:
        + (bedroom_reserve_kw if bedroom_hungry else 0) }}
 
   anchors:
+    - &mark_write
+      alias: "Record this run's context so self-writes are not detected as manual"
+      action: input_text.set_value
+      target:
+        entity_id: input_text.waskamer_climate_write_ctx
+      data:
+        value: "{{ this.context.id }}"
+
     - &airco_off
       alias: "Turn off the airco (skipped when already off — every call burns API budget)"
       sequence:
+        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'off' }}"
@@ -120,6 +133,7 @@ variables:
     - &airco_cool
       alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
       sequence:
+        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'cool' }}"
@@ -150,6 +164,14 @@ variables:
 
 action:
   - choose:
+      - alias: "Leave the airco alone while it is manually controlled"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.waskamer_climate_manual_control
+            state: "on"
+        sequence:
+          - stop: "Airco is manually controlled"
+
       - alias: "House-cool — pour surplus coolth down the stairwell"
         conditions:
           - alias: "Late enough in the morning"

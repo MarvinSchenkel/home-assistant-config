@@ -1,0 +1,116 @@
+---
+alias: areas_livingroom_lights_manual_control
+description: >-
+  Marks the livingroom and kitchen lights as manually controlled when one of
+  the tap dial switches is used, so the lights automations leave them alone.
+  Resets when both rooms have been empty for a while or when the expiry timer
+  finishes.
+mode: queued
+id: 2ca5abab-72d9-4770-9b29-f60f4e02aaa5
+trace:
+  stored_traces: 25
+
+trigger:
+  - trigger: state
+    entity_id:
+      - event.hue_tap_dial_switch_17_button_1
+      - event.hue_tap_dial_switch_17_button_2
+      - event.hue_tap_dial_switch_17_button_3
+      - event.hue_tap_dial_switch_17_button_4
+      - event.hue_tap_dial_switch_17_rotary
+      - event.hue_tap_dial_switch_19_button_1
+      - event.hue_tap_dial_switch_19_button_2
+      - event.hue_tap_dial_switch_19_button_3
+      - event.hue_tap_dial_switch_19_button_4
+      - event.hue_tap_dial_switch_19_rotary
+    not_from:
+      - unavailable
+      - unknown
+    id: dial_used
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+      - binary_sensor.presence_kitchen
+    to: "off"
+    for:
+      minutes: 10
+    id: rooms_empty
+
+  - trigger: state
+    entity_id: input_boolean.livingroom_manual_control
+    to: "on"
+    id: manual_on
+
+  - trigger: state
+    entity_id: input_boolean.livingroom_manual_control
+    to: "off"
+    id: manual_off
+
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.livingroom_manual_control
+    id: manual_expired
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+
+action:
+  - choose:
+      - alias: "Mark the lights as manually controlled when a dial is used"
+        conditions:
+          - condition: trigger
+            id: dial_used
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Reset manual control when both rooms have been empty for a while"
+        conditions:
+          - condition: trigger
+            id: rooms_empty
+          - condition: state
+            entity_id: binary_sensor.presence_livingroom
+            state: "off"
+            for:
+              minutes: 10
+          - condition: state
+            entity_id: binary_sensor.presence_kitchen
+            state: "off"
+            for:
+              minutes: 10
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Start the expiry timer when manual control turns on"
+        conditions:
+          - condition: trigger
+            id: manual_on
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Cancel the expiry timer when manual control turns off"
+        conditions:
+          - condition: trigger
+            id: manual_off
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Release manual control when the expiry timer finishes"
+        conditions:
+          - condition: trigger
+            id: manual_expired
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control

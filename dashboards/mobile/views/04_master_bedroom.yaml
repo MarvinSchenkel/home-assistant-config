@@ -58,6 +58,20 @@ cards:
 
       - type: horizontal-stack
         cards:
+          - type: tile
+            entity: input_boolean.masterbedroom_climate_manual_control
+            icon: "mdi:air-conditioner"
+            name: Handmatig airco
+            tap_action:
+              action: toggle
+            icon_tap_action:
+              action: more-info
+          - type: tile
+            entity: timer.masterbedroom_climate_manual_control
+            name: Verloopt over
+
+      - type: horizontal-stack
+        cards:
             - type: tile
               entity: cover.master_bedroom_curtains
               features:

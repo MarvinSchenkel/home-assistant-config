@@ -56,6 +56,11 @@ trigger:
     at: "00:03:00"
     id: "reset"
 
+  - trigger: state
+    entity_id:
+      - input_boolean.livingroom_manual_control
+    to: "off"
+
 variables:
   current_light_scene: >
     scene.livingroom_lights_{{ states("input_select.current_light_schedule") }}
@@ -117,6 +122,15 @@ condition:
 
 action:
   - choose:
+      - alias: "Leave the lights alone when they are manually controlled"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.livingroom_manual_control
+            state: "on"
+          - *condition_is_presence_detected
+        sequence:
+          - stop: "Lights are manually controlled"
+
       - alias: >
           "Toggle movie scene when somethings starts playing"
         conditions:

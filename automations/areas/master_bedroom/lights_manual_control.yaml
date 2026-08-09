@@ -1,0 +1,99 @@
+---
+alias: areas_master_bedroom_lights_manual_control
+description: >-
+  Marks the master bedroom lights as manually controlled when a bedside button
+  is used during sleep, so the lights automation leaves them alone. Resets on
+  waking up, when all lights are turned off or when the expiry timer finishes.
+mode: queued
+id: c25ab48d-d46a-4339-979f-8fb58f54f784
+trace:
+  stored_traces: 25
+
+trigger:
+  - trigger: event
+    event_type: "zha_event"
+    event_data:
+      device_id: "5256a27d772442b3a6065b595fc4a327"
+      command: "single"
+    id: "button_laura_single"
+
+  - trigger: state
+    entity_id:
+      - event.hue_switch_on
+      - event.hue_switch_off
+    attribute: event_type
+    to: short_release
+    id: hue_remote
+
+  - trigger: state
+    entity_id:
+      - input_select.master_bedroom_room_mode
+    to: "Wakker"
+    id: "house_mode_awake"
+
+  - trigger: state
+    entity_id:
+      - light.master_bedroom_lights
+    from: "on"
+    to: "off"
+    id: "all_lights_off"
+
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.masterbedroom_manual_control
+    id: manual_expired
+
+condition:
+  - condition: state
+    entity_id: input_boolean.setting_manual_lights
+    state: "off"
+
+action:
+  - choose:
+      - alias: "Mark as manually controlled when a bedside button is used during sleep"
+        conditions:
+          - or:
+              - condition: trigger
+                id: "button_laura_single"
+              - condition: trigger
+                id: "hue_remote"
+          - condition: state
+            entity_id:
+              - input_select.master_bedroom_room_mode
+            state:
+              - "Slaap"
+              - "Dutje"
+            for:
+              seconds: 2
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: masterbedroom_manual_control
+
+      - alias: "Reset manual control at the start of the day"
+        conditions:
+          - condition: trigger
+            id: "house_mode_awake"
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: masterbedroom_manual_control
+
+      - alias: "Reset manual control when all lights are turned off"
+        conditions:
+          - condition: trigger
+            id: "all_lights_off"
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: masterbedroom_manual_control
+
+      - alias: "Release manual control when the expiry timer finishes"
+        conditions:
+          - condition: trigger
+            id: manual_expired
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: masterbedroom_manual_control

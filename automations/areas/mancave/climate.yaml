@@ -69,6 +69,10 @@ trigger:
   - trigger: time_pattern
     minutes: "50"
 
+  - trigger: state
+    entity_id: input_boolean.mancave_climate_manual_control
+    to: "off"
+
 variables:
   room_temp_entity: sensor.pir_mancave_temperature
   outdoor_temp_entity: sensor.current_temperature
@@ -122,9 +126,18 @@ variables:
     {{ sleep_minutes - now().hour * 60 - now().minute }}
 
   anchors:
+    - &mark_write
+      alias: "Record this run's context so self-writes are not detected as manual"
+      action: input_text.set_value
+      target:
+        entity_id: input_text.mancave_climate_write_ctx
+      data:
+        value: "{{ this.context.id }}"
+
     - &airco_off
       alias: "Turn off the airco (skipped when already off — every call burns API budget)"
       sequence:
+        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'off' }}"
@@ -138,6 +151,7 @@ variables:
     - &airco_cool
       alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
       sequence:
+        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'cool' }}"
@@ -168,6 +182,22 @@ variables:
 
 action:
   - choose:
+      - alias: "Away — no comfort cooling for an empty room"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.everyone_left_home
+            state: "on"
+        sequence:
+          - *airco_off
+
+      - alias: "Leave the airco alone while it is manually controlled"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.mancave_climate_manual_control
+            state: "on"
+        sequence:
+          - stop: "Airco is manually controlled"
+
       - alias: "Sleep — comfort priority is silence and stability"
         conditions:
           - alias: "Room is winding down"
@@ -251,14 +281,6 @@ action:
               desired_temp: "{{ target_room_temperature }}"
               desired_fan: "auto"
           - *airco_cool
-
-      - alias: "Away — no comfort cooling for an empty room"
-        conditions:
-          - condition: state
-            entity_id: binary_sensor.everyone_left_home
-            state: "on"
-        sequence:
-          - *airco_off
 
       - alias: "Pre-bed window — within an hour of the scheduled sleep time"
         conditions:

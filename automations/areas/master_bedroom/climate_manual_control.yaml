@@ -1,0 +1,91 @@
+---
+alias: areas_master_bedroom_climate_manual_control
+description: >-
+  Marks the master bedroom airco as manually controlled when it is changed
+  outside the climate automation, so that automation leaves it alone. Resets
+  when the expiry timer finishes.
+mode: queued
+id: b46346fb-41cc-4752-b685-c352f17cefa8
+trace:
+  stored_traces: 25
+
+trigger:
+  - trigger: state
+    entity_id: climate.airco_master_bedroom
+    not_from:
+      - unavailable
+      - unknown
+    not_to:
+      - unavailable
+      - unknown
+    id: ac_changed
+
+  - trigger: state
+    entity_id: climate.airco_master_bedroom
+    attribute: temperature
+    id: ac_changed
+
+  - trigger: state
+    entity_id: climate.airco_master_bedroom
+    attribute: fan_mode
+    id: ac_changed
+
+  - trigger: state
+    entity_id: input_boolean.masterbedroom_climate_manual_control
+    to: "on"
+    id: manual_on
+
+  - trigger: state
+    entity_id: input_boolean.masterbedroom_climate_manual_control
+    to: "off"
+    id: manual_off
+
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.masterbedroom_climate_manual_control
+    id: manual_expired
+
+action:
+  - choose:
+      - alias: "Mark manual control when the airco is changed outside the climate automation"
+        conditions:
+          - condition: trigger
+            id: ac_changed
+          - condition: template
+            value_template: >-
+              {{ trigger.from_state.state not in ['unavailable', 'unknown']
+                 and trigger.to_state.state not in ['unavailable', 'unknown']
+                 and trigger.to_state.context.id
+                     != states('input_text.masterbedroom_climate_write_ctx') }}
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: masterbedroom_climate_manual_control
+
+      - alias: "Start the expiry timer when manual control turns on"
+        conditions:
+          - condition: trigger
+            id: manual_on
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: masterbedroom_climate_manual_control
+
+      - alias: "Cancel the expiry timer when manual control turns off"
+        conditions:
+          - condition: trigger
+            id: manual_off
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: masterbedroom_climate_manual_control
+
+      - alias: "Release manual control when the expiry timer finishes"
+        conditions:
+          - condition: trigger
+            id: manual_expired
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: masterbedroom_climate_manual_control

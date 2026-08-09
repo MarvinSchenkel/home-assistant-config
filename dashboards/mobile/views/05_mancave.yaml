@@ -86,3 +86,17 @@ cards:
             entity: sensor.pir_mancave_air_temperature
           - type: vertical-stack
             cards: []
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_boolean.mancave_climate_manual_control
+            icon: "mdi:air-conditioner"
+            name: Handmatig airco
+            tap_action:
+              action: toggle
+            icon_tap_action:
+              action: more-info
+          - type: tile
+            entity: timer.mancave_climate_manual_control
+            name: Verloopt over

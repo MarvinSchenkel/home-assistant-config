@@ -98,3 +98,17 @@ cards:
               action: toggle
             icon_tap_action:
               action: more-info
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_boolean.livingroom_manual_control
+            icon: "mdi:ceiling-light"
+            name: Handmatig licht
+            tap_action:
+              action: toggle
+            icon_tap_action:
+              action: more-info
+          - type: tile
+            entity: timer.livingroom_manual_control
+            name: Verloopt over
