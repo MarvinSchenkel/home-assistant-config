@@ -3,8 +3,8 @@ alias: areas_livingroom_lights_manual_control
 description: >-
   Marks the livingroom and kitchen lights as manually controlled when one of
   the tap dial switches is used, so the lights automations leave them alone.
-  Resets when both rooms have been empty for a while or at the start of a new
-  day.
+  Resets when both rooms have been empty for a while or when the expiry timer
+  finishes.
 mode: queued
 id: 2ca5abab-72d9-4770-9b29-f60f4e02aaa5
 trace:
@@ -37,9 +37,21 @@ trigger:
       minutes: 10
     id: rooms_empty
 
-  - trigger: time
-    at: "00:02:00"
-    id: reset
+  - trigger: state
+    entity_id: input_boolean.livingroom_manual_control
+    to: "on"
+    id: manual_on
+
+  - trigger: state
+    entity_id: input_boolean.livingroom_manual_control
+    to: "off"
+    id: manual_off
+
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.livingroom_manual_control
+    id: manual_expired
 
 condition:
   - condition: state
@@ -53,9 +65,9 @@ action:
           - condition: trigger
             id: dial_used
         sequence:
-          - action: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.livingroom_manual_control
+          - action: script.manual_control_activate
+            data:
+              helper: livingroom_manual_control
 
       - alias: "Reset manual control when both rooms have been empty for a while"
         conditions:
@@ -72,15 +84,33 @@ action:
             for:
               minutes: 10
         sequence:
-          - action: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.livingroom_manual_control
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control
 
-      - alias: "Reset manual control at the start of a new day"
+      - alias: "Start the expiry timer when manual control turns on"
         conditions:
           - condition: trigger
-            id: reset
+            id: manual_on
         sequence:
-          - action: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.livingroom_manual_control
+          - action: script.manual_control_activate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Cancel the expiry timer when manual control turns off"
+        conditions:
+          - condition: trigger
+            id: manual_off
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Release manual control when the expiry timer finishes"
+        conditions:
+          - condition: trigger
+            id: manual_expired
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control

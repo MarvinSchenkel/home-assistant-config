@@ -1,0 +1,5 @@
+---
+name: Handmatig verloopt
+icon: "mdi:timer-outline"
+duration: "04:00:00"
+restore: true

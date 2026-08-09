@@ -24,15 +24,15 @@ variables:
   anchors:
     - &manual_control_on
       alias: "Set bedside left as manually controlled"
-      action: input_boolean.turn_on
-      target:
-        entity_id: input_boolean.masterbedroom_manual_control
+      action: script.manual_control_activate
+      data:
+        helper: masterbedroom_manual_control
 
     - &manual_control_off
       alias: "Turn manual control off"
-      action: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.masterbedroom_manual_control
+      action: script.manual_control_deactivate
+      data:
+        helper: masterbedroom_manual_control
 
     - &turn_off
       alias: "Turn the lights off"
@@ -156,6 +156,12 @@ trigger:
     to: short_release
     id: hue_remote
 
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.masterbedroom_manual_control
+    id: manual_expired
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
@@ -163,6 +169,13 @@ condition:
 
 action:
   - choose:
+      - alias: "Release manual control when the expiry timer finishes"
+        conditions:
+          - condition: trigger
+            id: manual_expired
+        sequence:
+          - *manual_control_off
+
       - alias: "Reset manual control at the start of the day"
         conditions:
           - or:

@@ -69,6 +69,49 @@ trigger:
   - trigger: time_pattern
     minutes: "50"
 
+  - trigger: state
+    entity_id: climate.ac_mancave
+    not_from:
+      - unavailable
+      - unknown
+    not_to:
+      - unavailable
+      - unknown
+    id: ac_changed
+
+  - trigger: state
+    entity_id: climate.ac_mancave
+    attribute: temperature
+    id: ac_changed
+
+  - trigger: state
+    entity_id: climate.ac_mancave
+    attribute: fan_mode
+    id: ac_changed
+
+  - trigger: state
+    entity_id: input_boolean.mancave_climate_manual_control
+    to: "on"
+    id: manual_on
+
+  - trigger: state
+    entity_id: input_boolean.mancave_climate_manual_control
+    to: "off"
+    id: manual_off
+
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.mancave_climate_manual_control
+    id: manual_expired
+
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      minutes: 10
+    id: room_vacated
+
 variables:
   room_temp_entity: sensor.pir_mancave_temperature
   outdoor_temp_entity: sensor.current_temperature
@@ -124,9 +167,18 @@ variables:
     {{ sleep_minutes - now().hour * 60 - now().minute }}
 
   anchors:
+    - &mark_write
+      alias: "Record this run's context so self-writes are not detected as manual"
+      action: input_text.set_value
+      target:
+        entity_id: input_text.mancave_climate_write_ctx
+      data:
+        value: "{{ this.context.id }}"
+
     - &airco_off
       alias: "Turn off the airco (skipped when already off — every call burns API budget)"
       sequence:
+        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'off' }}"
@@ -140,6 +192,7 @@ variables:
     - &airco_cool
       alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
       sequence:
+        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'cool' }}"
@@ -170,6 +223,73 @@ variables:
 
 action:
   - choose:
+      - alias: "Mark manual control when the airco is changed outside this automation"
+        conditions:
+          - condition: trigger
+            id: ac_changed
+          - condition: template
+            value_template: >-
+              {{ trigger.from_state.state not in ['unavailable', 'unknown']
+                 and trigger.to_state.state not in ['unavailable', 'unknown']
+                 and trigger.to_state.context.id
+                     != states('input_text.mancave_climate_write_ctx') }}
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: mancave_climate_manual_control
+
+      - alias: "Start the expiry timer when manual control turns on"
+        conditions:
+          - condition: trigger
+            id: manual_on
+        sequence:
+          - action: script.manual_control_activate
+            data:
+              helper: mancave_climate_manual_control
+
+      - alias: "Cancel the expiry timer when manual control turns off"
+        conditions:
+          - condition: trigger
+            id: manual_off
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: mancave_climate_manual_control
+
+      - alias: "Release manual control when the expiry timer finishes"
+        conditions:
+          - condition: trigger
+            id: manual_expired
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: mancave_climate_manual_control
+
+      - alias: "Release manual control when the room has been empty for a while"
+        conditions:
+          - condition: trigger
+            id: room_vacated
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: mancave_climate_manual_control
+
+      - alias: "Away — no comfort cooling for an empty room"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.everyone_left_home
+            state: "on"
+        sequence:
+          - *airco_off
+
+      - alias: "Leave the airco alone while it is manually controlled"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.mancave_climate_manual_control
+            state: "on"
+        sequence:
+          - stop: "Airco is manually controlled"
+
       - alias: "Sleep — comfort priority is silence and stability"
         conditions:
           - alias: "Room is winding down"
@@ -247,14 +367,6 @@ action:
               desired_temp: "{{ precool_target }}"
               desired_fan: "auto"
           - *airco_cool
-
-      - alias: "Away — no comfort cooling for an empty room"
-        conditions:
-          - condition: state
-            entity_id: binary_sensor.everyone_left_home
-            state: "on"
-        sequence:
-          - *airco_off
 
       - alias: "Pre-bed window — within an hour of the scheduled sleep time"
         conditions:

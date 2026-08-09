@@ -1,0 +1,20 @@
+---
+alias: manual_control_deactivate
+description: >
+  Turns off a manual control boolean and cancels its expiry timer. The
+  boolean and timer must share the same object id.
+mode: parallel
+max: 10
+
+fields:
+  helper:
+    description: Object id shared by the input_boolean and the timer
+    required: true
+
+sequence:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: "input_boolean.{{ helper }}"
+  - action: timer.cancel
+    target:
+      entity_id: "timer.{{ helper }}"
