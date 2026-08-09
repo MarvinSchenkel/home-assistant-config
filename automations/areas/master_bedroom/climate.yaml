@@ -117,18 +117,9 @@ variables:
     {{ sleep_minutes - now().hour * 60 - now().minute }}
 
   anchors:
-    - &mark_write
-      alias: "Record this run's context so self-writes are not detected as manual"
-      action: input_text.set_value
-      target:
-        entity_id: input_text.masterbedroom_climate_write_ctx
-      data:
-        value: "{{ this.context.id }}"
-
     - &airco_off
       alias: "Turn off the airco (skipped when already off — every call burns API budget)"
       sequence:
-        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'off' }}"
@@ -142,7 +133,6 @@ variables:
     - &airco_cool
       alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
       sequence:
-        - *mark_write
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'cool' }}"
