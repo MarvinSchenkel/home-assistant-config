@@ -52,14 +52,20 @@ action:
         conditions:
           - condition: trigger
             id: ac_changed
+          # Before the airco echoes our command back, a differing report is cloud lag
           - condition: template
             value_template: >-
-              {% set last_run =
-                   state_attr('automation.areas_master_bedroom_climate', 'last_triggered') %}
+              {% set intent = states('input_text.masterbedroom_climate_write_ctx').split('|') %}
+              {% set reported = trigger.to_state %}
+              {% set differs = intent | count != 4
+                   or reported.state != intent[0]
+                   or reported.attributes.temperature | float(-1) != intent[1] | float(-2)
+                   or reported.attributes.fan_mode != intent[2] %}
               {{ trigger.from_state.state not in ['unavailable', 'unknown']
-                 and trigger.to_state.state not in ['unavailable', 'unknown']
-                 and (last_run is none
-                      or now() - last_run > timedelta(seconds=30)) }}
+                 and reported.state not in ['unavailable', 'unknown']
+                 and differs
+                 and ((intent | count == 4 and intent[3] == 'ok')
+                      or reported.context.user_id is not none) }}
         sequence:
           - action: script.manual_control_activate
             data:

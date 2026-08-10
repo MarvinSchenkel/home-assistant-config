@@ -125,6 +125,16 @@ variables:
     {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
     {{ sleep_minutes - now().hour * 60 - now().minute }}
 
+  # "<mode>|<temperature>|<fan>|<phase>", pending until the airco echoes it back
+  intent_entity: input_text.mancave_climate_write_ctx
+  intent: "{{ states(intent_entity).split('|') }}"
+  # Onecta reports the setpoint as 24 where we sent 24.0, so compare numerically
+  airco_matches_intent: >-
+    {{ intent | count == 4
+       and states(airco_entity) == intent[0]
+       and state_attr(airco_entity, 'temperature') | float(-1) == intent[1] | float(-2)
+       and state_attr(airco_entity, 'fan_mode') == intent[2] }}
+
   anchors:
     - &airco_off
       alias: "Turn off the airco (skipped when already off — every call burns API budget)"
@@ -133,6 +143,14 @@ variables:
             - condition: template
               value_template: "{{ states(airco_entity) != 'off' }}"
           then:
+            - alias: "Record the command before sending it"
+              action: input_text.set_value
+              target:
+                entity_id: "{{ intent_entity }}"
+              data:
+                value: >-
+                  off|{{ state_attr(airco_entity, 'temperature') }}|{{
+                     state_attr(airco_entity, 'fan_mode') }}|pending
             - action: climate.set_hvac_mode
               target:
                 entity_id: "{{ airco_entity }}"
@@ -142,6 +160,19 @@ variables:
     - &airco_cool
       alias: "Start/adjust airco cooling toward desired_temp with desired_fan (idempotent)"
       sequence:
+        - alias: "Record the command before sending it"
+          if:
+            - condition: template
+              value_template: >-
+                {{ states(airco_entity) != 'cool'
+                   or state_attr(airco_entity, 'temperature') != desired_temp
+                   or state_attr(airco_entity, 'fan_mode') != desired_fan }}
+          then:
+            - action: input_text.set_value
+              target:
+                entity_id: "{{ intent_entity }}"
+              data:
+                value: "cool|{{ desired_temp }}|{{ desired_fan }}|pending"
         - if:
             - condition: template
               value_template: "{{ states(airco_entity) != 'cool' }}"
@@ -171,6 +202,19 @@ variables:
                 fan_mode: "{{ desired_fan }}"
 
 action:
+  - alias: "Confirm the last command once the airco reports it back"
+    if:
+      - condition: template
+        value_template: >-
+          {{ intent | count == 4 and intent[3] == 'pending'
+             and airco_matches_intent }}
+    then:
+      - action: input_text.set_value
+        target:
+          entity_id: "{{ intent_entity }}"
+        data:
+          value: "{{ intent[:3] | join('|') }}|ok"
+
   - choose:
       - alias: "Away — no comfort cooling for an empty room"
         conditions:
