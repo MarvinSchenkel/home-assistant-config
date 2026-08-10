@@ -103,7 +103,7 @@ variables:
   # 10-min last_changed window = the office's own work-break debounce, keep in sync
   mancave_needs_comfort: >-
     {{ is_state('climate.ac_mancave', 'off')
-       and states('sensor.pir_mancave_temperature') | float(0) > 24.5
+       and states('sensor.pir_mancave_temperature') | float(0) >= 24.5
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
                < timedelta(minutes=10)) }}
@@ -250,7 +250,7 @@ action:
           - alias: "The room is still above its pre-cool target"
             condition: template
             value_template: >-
-              {{ room_temp > target_room_temperature + temp_hysteresis
+              {{ room_temp >= target_room_temperature + temp_hysteresis
                  or (airco_compressor_active
                      and room_temp > target_room_temperature - temp_hysteresis
                      and outdoor_temp >= room_temp - 1) }}
@@ -274,7 +274,7 @@ action:
           - if:
               # Keeps matching while running, so a dropped command is retried
               - >-
-                {{ room_temp > target_sleep_temperature + temp_hysteresis
+                {{ room_temp >= target_sleep_temperature + temp_hysteresis
                    or (airco_compressor_active
                        and room_temp > target_sleep_temperature - temp_hysteresis) }}
               # When it's cooler outside the window is the tool, not the compressor
