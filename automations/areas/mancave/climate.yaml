@@ -306,7 +306,7 @@ action:
           - alias: "The office is still above its comfort target"
             condition: template
             value_template: >-
-              {{ room_temp > target_room_temperature + temp_hysteresis
+              {{ room_temp >= target_room_temperature + temp_hysteresis
                  or (airco_compressor_active
                      and room_temp > target_room_temperature - temp_hysteresis
                      and outdoor_temp >= room_temp - 1) }}
@@ -328,7 +328,7 @@ action:
           - if:
               # Keeps matching while running, so a dropped command is retried
               - >-
-                {{ room_temp > target_sleep_temperature + temp_hysteresis
+                {{ room_temp >= target_sleep_temperature + temp_hysteresis
                    or (airco_compressor_active
                        and room_temp > target_sleep_temperature - temp_hysteresis) }}
               # When it's cooler outside, opening a window beats the compressor
@@ -350,7 +350,7 @@ action:
           - alias: "The office is still above its adaptive target"
             condition: template
             value_template: >-
-              {{ room_temp > awake_target + temp_hysteresis
+              {{ room_temp >= awake_target + temp_hysteresis
                  or (airco_compressor_active
                      and room_temp > awake_target - temp_hysteresis
                      and outdoor_temp >= room_temp - 1) }}
