@@ -23,6 +23,10 @@ trigger:
       - binary_sensor.everyone_left_home
     from: ~
 
+  - trigger: state
+    entity_id: input_number.master_bedroom_sleep_hold_temperature
+    from: ~
+
   # Trigger platforms can't reference the variables block below, so entity
   # ids and the export thresholds (export_start_kw / export_stop_kw) are
   # repeated here literally
@@ -73,8 +77,9 @@ variables:
   # --- temperatures (°C) ---
   target_room_temperature: 22.5  # awake comfort / pre-cool target
   target_sleep_temperature: 22.0  # bedtime top-up target
-  # Tropical-night quiet hold; 24 + moving air sleeps like 21-22 still air
-  sleep_hold_temperature: 24.0
+  # Tropical-night quiet hold; 23.5 + moving air sleeps like 21 still air
+  sleep_hold_temperature: >-
+    {{ states('input_number.master_bedroom_sleep_hold_temperature') | float(23.5) }}
   tropical_night_threshold: 20.0  # outdoor stays above this -> coasting alone fails
   # Adaptive comfort: awake target never more than this below outdoor
   max_diff_with_outdoor: 7.0
