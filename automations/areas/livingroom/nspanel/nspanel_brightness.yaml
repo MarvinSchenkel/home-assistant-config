@@ -15,10 +15,27 @@ trigger:
     entity_id:
       - binary_sensor.livingroom_is_dark
       - input_select.livingroom_current_lights_scene
-      - binary_sensor.presence_livingroom_gardendoor
+
+  - trigger: state
+    entity_id: binary_sensor.presence_livingroom
+    to: "on"
+
+  - trigger: state
+    entity_id: binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      minutes: 10
 
 variables:
   anchors:
+    - &condition_no_presence
+      alias: "Nobody has been in the living room for a while"
+      condition: state
+      entity_id: binary_sensor.presence_livingroom
+      state: "off"
+      for:
+        minutes: 10
+
     - &set_brightness
       action: number.set_value
       entity_id: number.nspanel_screen_brightness
@@ -42,15 +59,17 @@ action:
         sequence:
           - *turn_off
 
+      - alias: "Turn the panel off when the living room is empty"
+        conditions:
+          - *condition_no_presence
+        sequence:
+          - *turn_off
+
       - alias: "Turn the brightness down when it gets dark"
         conditions:
           - condition: state
             entity_id:
               - binary_sensor.livingroom_is_dark
-            state: "on"
-          - condition: state
-            entity_id:
-              - binary_sensor.presence_livingroom_gardendoor
             state: "on"
         sequence:
           - *turn_on
@@ -58,21 +77,9 @@ action:
             data:
               value: 30
 
-      - alias: "Turn the brightness down when it gets dark"
-        conditions:
-          - condition: state
-            entity_id:
-              - binary_sensor.presence_livingroom_gardendoor
-            state: "on"
-        sequence:
-          - *turn_on
-          - <<: *set_brightness
-            data:
-              value: 255
-
     default:
       - *turn_on
       - alias: "Else, full brightness"
         <<: *set_brightness
         data:
-          value: 0
+          value: 255
