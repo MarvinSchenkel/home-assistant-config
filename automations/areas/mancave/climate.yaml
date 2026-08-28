@@ -22,6 +22,7 @@ trigger:
     entity_id:
       - input_select.mancave_room_mode
       - binary_sensor.everyone_left_home
+      - binary_sensor.marvin_likely_home_tonight
     from: ~
 
   - trigger: state
@@ -323,6 +324,10 @@ action:
           - alias: "Within 60 minutes of the scheduled sleep time"
             condition: template
             value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
+          - alias: "Likely sleeping in this bed tonight, so the top-up is worth it"
+            condition: state
+            entity_id: binary_sensor.marvin_likely_home_tonight
+            state: "on"
         sequence:
           # On a day the daytime hold worked, this is a no-op — that's the design goal
           - if:

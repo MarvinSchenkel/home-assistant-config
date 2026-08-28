@@ -21,6 +21,8 @@ trigger:
     entity_id:
       - input_select.master_bedroom_room_mode
       - binary_sensor.everyone_left_home
+      - binary_sensor.marvin_likely_home_tonight
+      - binary_sensor.laura_likely_home_tonight
     from: ~
 
   - trigger: state
@@ -112,6 +114,9 @@ variables:
        and (is_state('binary_sensor.marvin_is_working', 'on')
             or now() - states.binary_sensor.marvin_is_working.last_changed
                < timedelta(minutes=10)) }}
+  anyone_likely_home_tonight: >-
+    {{ is_state('binary_sensor.marvin_likely_home_tonight', 'on')
+       or is_state('binary_sensor.laura_likely_home_tonight', 'on') }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -209,6 +214,83 @@ action:
           value: "{{ intent[:3] | join('|') }}|ok"
 
   - choose:
+      # Above away on purpose: an empty house is fine to cool on free power
+      - alias: "Solar pre-cool — cheap cooling window while exporting to the grid"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.masterbedroom_climate_manual_control
+            state: "off"
+          - alias: "The sleep hold owns the room once it is winding down"
+            condition: template
+            value_template: >-
+              {{ not (is_state(room_mode_entity, 'Slaap')
+                      or is_state(room_mode_entity, 'Dutje')) }}
+          - alias: "Not before the sealed-house window, not after bedtime"
+            condition: template
+            value_template: "{{ now() >= today_at(precool_not_before) }}"
+          - condition: template
+            value_template: "{{ minutes_until_sleep > 0 }}"
+          # A hungry office raises the bar even mid-run, so this room also yields
+          - alias: "Enough solar surplus, the occupied office gets first claim"
+            condition: template
+            value_template: >-
+              {{ available_surplus >=
+                 (export_start_kw + office_reserve_kw if mancave_needs_comfort
+                  else (export_stop_kw if is_state(airco_entity, 'cool')
+                        else export_start_kw)) }}
+          # A hot day, reactive or predicted
+          - or:
+              - condition: state
+                entity_id: binary_sensor.is_hot_day
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.is_hot_day_predicted
+                state: "on"
+          # Keeps matching while running, so a changed target reaches the unit
+          - alias: "The room is still above its pre-cool target"
+            condition: template
+            value_template: >-
+              {{ room_temp >= target_room_temperature + temp_hysteresis
+                 or (airco_compressor_active
+                     and room_temp > target_room_temperature - temp_hysteresis
+                     and outdoor_temp >= room_temp - 1) }}
+        sequence:
+          # Early-afternoon cooling is doubly cheap — exported solar + mild
+          # outdoor temperatures mean high COP — and the room's mass stores it
+          - variables:
+              desired_temp: "{{ target_room_temperature }}"
+              desired_fan: "auto"
+          - *airco_cool
+
+      - alias: "Pre-bed window — within an hour of the scheduled sleep time"
+        conditions:
+          - condition: state
+            entity_id: input_boolean.masterbedroom_climate_manual_control
+            state: "off"
+          - condition: template
+            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
+          - alias: "Within 60 minutes of the scheduled sleep time"
+            condition: template
+            value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
+          - alias: "At least one of us is likely sleeping here tonight"
+            condition: template
+            value_template: "{{ anyone_likely_home_tonight }}"
+        sequence:
+          # On a day the pre-cool worked, this is a no-op — that's the design goal
+          - if:
+              # Keeps matching while running, so a dropped command is retried
+              - >-
+                {{ room_temp >= target_sleep_temperature + temp_hysteresis
+                   or (airco_compressor_active
+                       and room_temp > target_sleep_temperature - temp_hysteresis) }}
+              # When it's cooler outside the window is the tool, not the compressor
+              - "{{ outdoor_temp >= room_temp - 1 }}"
+            then:
+              - variables:
+                  desired_temp: "{{ target_sleep_temperature }}"
+                  desired_fan: "auto"
+              - *airco_cool
+
       - alias: "Away — no comfort cooling for an empty room"
         conditions:
           - condition: state
@@ -270,69 +352,6 @@ action:
                       - "{{ room_temp <= sleep_hold_temperature - temp_hysteresis }}"
                     sequence:
                       - *airco_off
-
-      # Above away on purpose: an empty house is fine to cool on free power
-      - alias: "Solar pre-cool — cheap cooling window while exporting to the grid"
-        conditions:
-          - alias: "Not before the sealed-house window, not after bedtime"
-            condition: template
-            value_template: "{{ now() >= today_at(precool_not_before) }}"
-          - condition: template
-            value_template: "{{ minutes_until_sleep > 0 }}"
-          # A hungry office raises the bar even mid-run, so this room also yields
-          - alias: "Enough solar surplus, the occupied office gets first claim"
-            condition: template
-            value_template: >-
-              {{ available_surplus >=
-                 (export_start_kw + office_reserve_kw if mancave_needs_comfort
-                  else (export_stop_kw if is_state(airco_entity, 'cool')
-                        else export_start_kw)) }}
-          # A hot day, reactive or predicted
-          - or:
-              - condition: state
-                entity_id: binary_sensor.is_hot_day
-                state: "on"
-              - condition: state
-                entity_id: binary_sensor.is_hot_day_predicted
-                state: "on"
-          # Keeps matching while running, so a changed target reaches the unit
-          - alias: "The room is still above its pre-cool target"
-            condition: template
-            value_template: >-
-              {{ room_temp >= target_room_temperature + temp_hysteresis
-                 or (airco_compressor_active
-                     and room_temp > target_room_temperature - temp_hysteresis
-                     and outdoor_temp >= room_temp - 1) }}
-        sequence:
-          # Early-afternoon cooling is doubly cheap — exported solar + mild
-          # outdoor temperatures mean high COP — and the room's mass stores it
-          - variables:
-              desired_temp: "{{ target_room_temperature }}"
-              desired_fan: "auto"
-          - *airco_cool
-
-      - alias: "Pre-bed window — within an hour of the scheduled sleep time"
-        conditions:
-          - condition: template
-            value_template: "{{ is_state(room_mode_entity, 'Wakker') }}"
-          - alias: "Within 60 minutes of the scheduled sleep time"
-            condition: template
-            value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
-        sequence:
-          # On a day the pre-cool worked, this is a no-op — that's the design goal
-          - if:
-              # Keeps matching while running, so a dropped command is retried
-              - >-
-                {{ room_temp >= target_sleep_temperature + temp_hysteresis
-                   or (airco_compressor_active
-                       and room_temp > target_sleep_temperature - temp_hysteresis) }}
-              # When it's cooler outside the window is the tool, not the compressor
-              - "{{ outdoor_temp >= room_temp - 1 }}"
-            then:
-              - variables:
-                  desired_temp: "{{ target_sleep_temperature }}"
-                  desired_fan: "auto"
-              - *airco_cool
 
       - alias: "Cool-down / release — stop the compressor once its job is done"
         conditions:
