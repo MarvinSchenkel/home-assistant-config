@@ -1,0 +1,16 @@
+---
+rest_command:
+  # Generic Music Assistant JSON-RPC API call, until the HA integration
+  # ships native dashboard actions. The secret must hold the full header
+  # value: "Bearer <long-lived MA token>".
+  ma_api:
+    url: http://192.168.1.80:8095/api
+    method: post
+    content_type: application/json
+    timeout: 30
+    headers:
+      authorization: !secret ma_bearer_token
+    payload: >-
+      {"message_id": "ha",
+       "command": "{{ command }}",
+       "args": {{ args | default({}) | to_json }}}
