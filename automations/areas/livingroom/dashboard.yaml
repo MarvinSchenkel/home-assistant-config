@@ -1,0 +1,126 @@
+---
+description: >
+  Automatically cast the MA now playing dashboard to the living room kiosk
+alias: areas_livingroom_dashboard
+id: 3af0619d-cbf0-4844-99c9-c44e46d1d351
+mode: queued
+max_exceeded: silent
+trace:
+  stored_traces: 25
+
+triggers:
+  - trigger: homeassistant
+    event: start
+
+  - trigger: state
+    entity_id: binary_sensor.presence_livingroom
+    to: "on"
+
+  - trigger: state
+    entity_id: binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      seconds: 900
+
+  - trigger: state
+    entity_id: media_player.living_room_android
+    to: "on"
+
+  - trigger: state
+    entity_id: media_player.living_room_android
+    to: "off"
+    for:
+      minutes: 2
+
+  - trigger: state
+    entity_id: input_select.livingroom_room_mode
+    for:
+      seconds: 15
+
+variables:
+  # MA player id of media_player.mass_woonkamer_wiim
+  now_playing_player_id: "wiim_uuid:FF98F7F4-EEC9-70AF-5264-1F82FF98F7F4"
+  anchors:
+    - &condition_watching_tv
+      alias: "We're watching TV"
+      condition: state
+      entity_id: media_player.living_room_android
+      state: "on"
+
+    - &condition_asleep
+      alias: "The living room is asleep"
+      condition: state
+      entity_id: input_select.livingroom_room_mode
+      state: "Slaap"
+
+actions:
+  - alias: "Look up the kiosk dashboard endpoint in MA"
+    action: rest_command.ma_api
+    data:
+      command: dashboard/dashboards
+      args:
+        dashboard: now_playing
+    response_variable: dashboards_response
+
+  - alias: "Look up the active dashboard sessions in MA"
+    action: rest_command.ma_api
+    data:
+      command: dashboard/sessions
+    response_variable: sessions_response
+
+  - variables:
+      dashboard_id: >-
+        {{ dashboards_response.content | default([], true)
+           | selectattr('provider_domain_hint', 'eq', 'fully_kiosk')
+           | map(attribute='dashboard_id') | first | default('') }}
+      is_showing: >-
+        {{ dashboard_id in (sessions_response.content | default([], true)
+           | map(attribute='dashboard_id') | list) }}
+
+  - alias: "Stop when the endpoint is not registered in MA"
+    condition: '{{ dashboard_id != "" }}'
+
+  - choose:
+      - alias: "Show the dashboard when someone is in the living room"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.presence_livingroom
+            state: "on"
+          - not:
+              - *condition_watching_tv
+          - not:
+              - *condition_asleep
+          - alias: "And it is not already showing"
+            condition: template
+            value_template: "{{ not is_showing }}"
+        sequence:
+          - action: rest_command.ma_api
+            data:
+              command: dashboard/show
+              args:
+                dashboard_id: "{{ dashboard_id }}"
+                dashboard: now_playing
+                player_id: "{{ now_playing_player_id }}"
+
+      - alias: "Hide the dashboard while the living room is unused"
+        conditions:
+          - or:
+              - alias: "No presence is detected"
+                condition: state
+                entity_id: binary_sensor.presence_livingroom
+                state: "off"
+                for:
+                  seconds: 900
+              - *condition_watching_tv
+              - *condition_asleep
+          - alias: "And it is currently showing"
+            condition: template
+            value_template: "{{ is_showing }}"
+        sequence:
+          - action: rest_command.ma_api
+            data:
+              command: dashboard/hide
+              args:
+                dashboard_id: "{{ dashboard_id }}"
+
+    default: []

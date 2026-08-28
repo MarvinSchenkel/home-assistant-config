@@ -1,0 +1,107 @@
+---
+description: >
+  Automatically cast the MA now playing dashboard to the Kantoor Nest Hub
+alias: areas_mancave_dashboard
+id: 4a452f15-31b5-499b-a882-9b0460c26aad
+mode: queued
+max_exceeded: silent
+trace:
+  stored_traces: 25
+
+triggers:
+  - trigger: homeassistant
+    event: start
+
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "on"
+
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      seconds: 300
+
+  - trigger: state
+    entity_id: input_select.mancave_room_mode
+
+variables:
+  dashboard_device_name: "Kantoor"
+  # MA player id of media_player.mass_mancave_wiim_amp
+  now_playing_player_id: "wiim_uuid:FF98F359-098B-8366-2F7A-94C5FF98F359"
+  anchors:
+    - &condition_asleep
+      alias: "The Mancave is asleep"
+      condition: state
+      entity_id: input_select.mancave_room_mode
+      state: "Slaap"
+
+actions:
+  - alias: "Look up the Nest Hub dashboard endpoint in MA"
+    action: rest_command.ma_api
+    data:
+      command: dashboard/dashboards
+      args:
+        dashboard: now_playing
+    response_variable: dashboards_response
+
+  - alias: "Look up the active dashboard sessions in MA"
+    action: rest_command.ma_api
+    data:
+      command: dashboard/sessions
+    response_variable: sessions_response
+
+  - variables:
+      dashboard_id: >-
+        {{ dashboards_response.content | default([], true)
+           | selectattr('provider_domain_hint', 'eq', 'chromecast')
+           | selectattr('name', 'eq', dashboard_device_name)
+           | map(attribute='dashboard_id') | first | default('') }}
+      is_showing: >-
+        {{ dashboard_id in (sessions_response.content | default([], true)
+           | map(attribute='dashboard_id') | list) }}
+
+  - alias: "Stop when the endpoint is not registered in MA"
+    condition: '{{ dashboard_id != "" }}'
+
+  - choose:
+      - alias: "Show the dashboard when someone is in the Mancave"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.presence_mancave
+            state: "on"
+          - not:
+              - *condition_asleep
+          - alias: "And it is not already showing"
+            condition: template
+            value_template: "{{ not is_showing }}"
+        sequence:
+          - action: rest_command.ma_api
+            data:
+              command: dashboard/show
+              args:
+                dashboard_id: "{{ dashboard_id }}"
+                dashboard: now_playing
+                player_id: "{{ now_playing_player_id }}"
+
+      - alias: "Hide the dashboard while the Mancave is unused"
+        conditions:
+          - or:
+              - alias: "Nobody in the Mancave"
+                condition: state
+                entity_id: binary_sensor.presence_mancave
+                state: "off"
+                for:
+                  seconds: 300
+              - *condition_asleep
+          - alias: "And it is currently showing"
+            condition: template
+            value_template: "{{ is_showing }}"
+        sequence:
+          - action: rest_command.ma_api
+            data:
+              command: dashboard/hide
+              args:
+                dashboard_id: "{{ dashboard_id }}"
+
+    default: []
