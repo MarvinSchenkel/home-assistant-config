@@ -22,7 +22,7 @@ trigger:
     entity_id:
       - input_select.mancave_room_mode
       - binary_sensor.everyone_left_home
-      - input_select.marvin_status_dropdown
+      - binary_sensor.marvin_likely_home_tonight
     from: ~
 
   - trigger: state
@@ -80,7 +80,6 @@ variables:
   airco_entity: climate.ac_mancave
   room_mode_entity: input_select.mancave_room_mode
   sleep_time_entity: input_datetime.mancave_approx_target_sleep_time
-  marvin_status_entity: input_select.marvin_status_dropdown
   # DSMR P1 net flow — own solar consumption is already subtracted
   export_power_entity: sensor.power_production
   import_power_entity: sensor.power_consumption
@@ -88,8 +87,6 @@ variables:
   # Work starts early in this room — the bedroom waits until 11:00
   precool_not_before: "08:00"
   work_break_debounce: 10  # minutes; a short break must not flip the AC
-  # A workday out still ends in this bed; beyond this the odds flip
-  long_away_hours: 6
 
   # --- temperatures (°C) ---
   # Sensor hangs at the ceiling across the room, well above desk temperature
@@ -123,13 +120,6 @@ variables:
     {{ is_state('binary_sensor.marvin_is_working', 'on')
        or now() - states.binary_sensor.marvin_is_working.last_changed
           < timedelta(minutes=work_break_debounce) }}
-  # Note: an HA restart resets last_changed, so a long absence reads as fresh
-  marvin_likely_sleeping_here: >-
-    {% set status = states(marvin_status_entity) %}
-    {{ status != 'Lang weg'
-       and not (status == 'Weg'
-                and now() - states[marvin_status_entity].last_changed
-                    > timedelta(hours=long_away_hours)) }}
   # Assumes the sleep time falls before midnight
   minutes_until_sleep: >-
     {% set sleep_parts = states(sleep_time_entity).split(':') %}
@@ -334,9 +324,10 @@ action:
           - alias: "Within 60 minutes of the scheduled sleep time"
             condition: template
             value_template: "{{ 0 <= minutes_until_sleep <= 60 }}"
-          - alias: "Away long enough that this bed is probably empty tonight"
-            condition: template
-            value_template: "{{ marvin_likely_sleeping_here }}"
+          - alias: "Likely sleeping in this bed tonight, so the top-up is worth it"
+            condition: state
+            entity_id: binary_sensor.marvin_likely_home_tonight
+            state: "on"
         sequence:
           # On a day the daytime hold worked, this is a no-op — that's the design goal
           - if:

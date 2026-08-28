@@ -1,0 +1,26 @@
+---
+# Whether someone is likely to sleep at home tonight, so the bedroom aircos
+# can skip a bedtime cool-down that would only chill an empty bed.
+# A workday out still ends at home; past 8 hours the odds flip.
+# Caveat: an HA restart resets last_changed, so a long absence reads as fresh
+
+binary_sensor:
+  - name: marvin_likely_home_tonight
+    unique_id: ba05e84f-193a-4315-a48b-423cf96ab66e
+    state: >
+      {% set long_away_hours = 8 %}
+      {% set status = states("input_select.marvin_status_dropdown") %}
+      {{ status != "Lang weg"
+         and not (status == "Weg"
+                  and now() - states.input_select.marvin_status_dropdown.last_changed
+                      > timedelta(hours=long_away_hours)) }}
+
+  - name: laura_likely_home_tonight
+    unique_id: ed5cbaf7-33cb-441a-9743-074903fc7801
+    state: >
+      {% set long_away_hours = 8 %}
+      {% set status = states("input_select.laura_status_dropdown") %}
+      {{ status != "Lang weg"
+         and not (status == "Weg"
+                  and now() - states.input_select.laura_status_dropdown.last_changed
+                      > timedelta(hours=long_away_hours)) }}
