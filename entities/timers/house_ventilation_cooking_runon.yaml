@@ -1,0 +1,5 @@
+---
+name: Ventilation cooking run-on
+icon: "mdi:timer-outline"
+duration: "00:20:00"
+restore: true
