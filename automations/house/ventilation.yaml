@@ -7,21 +7,9 @@ id: C90E1ED3-EF56-4F15-A5C7-47F1D75B1F85
 trigger:
   - trigger: homeassistant
     event: start
-    id: initialize
 
   - trigger: event
     event_type: automation_reloaded
-    id: initialize
-
-  - trigger: state
-    entity_id: binary_sensor.bathroom_shower_detected
-    to: "on"
-    id: shower_on
-
-  - trigger: state
-    entity_id: binary_sensor.bathroom_shower_detected
-    to: "off"
-    id: shower_off
 
   - trigger: state
     entity_id: input_boolean.house_mode_cooking
@@ -44,32 +32,25 @@ trigger:
     id: sauna_off
 
   - trigger: state
-    entity_id: light.wc
+    entity_id: binary_sensor.wc_ventilation_demand
     to: "on"
     id: wc_on
 
   - trigger: state
-    entity_id: light.wc
+    entity_id: binary_sensor.wc_ventilation_demand
     to: "off"
     id: wc_off
 
   - trigger: state
     entity_id:
+      - binary_sensor.bathroom_shower_detected
+      - binary_sensor.bathroom_humidity_high
       - binary_sensor.everyone_left_home
       - input_boolean.setting_guest_mode
-      - binary_sensor.bathroom_humidity_high
       - binary_sensor.ventilation_night_purge
-      - input_boolean.house_ventilation_wc_boost_active
       - timer.house_ventilation_cooking_runon
-      - timer.house_ventilation_shower_runon
       - timer.house_ventilation_sauna_runon
       - timer.house_ventilation_wc_runon
-
-  - trigger: event
-    event_type: timer.finished
-    event_data:
-      entity_id: timer.house_ventilation_wc_qualification
-    id: wc_qualification_finished
 
   - trigger: time_pattern
     minutes: "/15"
@@ -109,187 +90,30 @@ variables:
         entity_id: fan.itho
 
 action:
+  # Trigger ids follow the <source>_on / <source>_off convention, which maps
+  # onto timer.house_ventilation_<source>_runon. Home Assistant falls back to
+  # the numeric trigger index for triggers without an id, so the endswith
+  # checks are what actually select the run-on triggers here.
   - choose:
-      - alias: "Reconcile restored run-on timers"
+      - alias: "Cancel the run-on timer when a boost source activates"
         conditions:
-          - condition: trigger
-            id: initialize
-        sequence:
-          - if:
-              - condition: state
-                entity_id: input_boolean.house_mode_cooking
-                state: "on"
-            then:
-              - action: timer.cancel
-                target:
-                  entity_id: timer.house_ventilation_cooking_runon
-          - if:
-              - condition: state
-                entity_id: binary_sensor.bathroom_shower_detected
-                state: "on"
-            then:
-              - action: timer.cancel
-                target:
-                  entity_id: timer.house_ventilation_shower_runon
-          - if:
-              - condition: state
-                entity_id: binary_sensor.sauna
-                state: "on"
-            then:
-              - action: timer.cancel
-                target:
-                  entity_id: timer.house_ventilation_sauna_runon
-
-      - alias: "Cancel the cooking run-on timer when cooking turns on"
-        conditions:
-          - condition: trigger
-            id: cooking_on
+          - condition: template
+            value_template: "{{ trigger.id is defined and trigger.id.endswith('_on') }}"
         sequence:
           - action: timer.cancel
             target:
-              entity_id: timer.house_ventilation_cooking_runon
+              entity_id: "timer.house_ventilation_{{ trigger.id[:-3] }}_runon"
 
-      - alias: "Start the cooking run-on timer when cooking turns off"
+      - alias: "Start the run-on timer when a boost source deactivates"
         conditions:
-          - condition: trigger
-            id: cooking_off
           - condition: template
-            value_template: "{{ trigger.from_state.state == 'on' }}"
+            value_template: >
+              {{ trigger.id is defined and trigger.id.endswith('_off')
+              and trigger.from_state.state == 'on' }}
         sequence:
           - action: timer.start
             target:
-              entity_id: timer.house_ventilation_cooking_runon
-
-      - alias: "Cancel the shower run-on timer when shower starts"
-        conditions:
-          - condition: trigger
-            id: shower_on
-        sequence:
-          - action: timer.cancel
-            target:
-              entity_id: timer.house_ventilation_shower_runon
-
-      - alias: "Start the shower run-on timer when shower stops"
-        conditions:
-          - condition: trigger
-            id: shower_off
-          - condition: template
-            value_template: "{{ trigger.from_state.state == 'on' }}"
-        sequence:
-          - action: timer.start
-            target:
-              entity_id: timer.house_ventilation_shower_runon
-
-      - alias: "Cancel the sauna run-on timer when sauna starts"
-        conditions:
-          - condition: trigger
-            id: sauna_on
-        sequence:
-          - action: timer.cancel
-            target:
-              entity_id: timer.house_ventilation_sauna_runon
-
-      - alias: "Start the sauna run-on timer when sauna stops"
-        conditions:
-          - condition: trigger
-            id: sauna_off
-          - condition: template
-            value_template: "{{ trigger.from_state.state == 'on' }}"
-        sequence:
-          - action: timer.start
-            target:
-              entity_id: timer.house_ventilation_sauna_runon
-
-      - alias: "Handle the WC light turning on"
-        conditions:
-          - condition: trigger
-            id: wc_on
-          - condition: template
-            value_template: "{{ trigger.from_state.state == 'off' }}"
-        sequence:
-          - action: timer.cancel
-            target:
-              entity_id:
-                - timer.house_ventilation_wc_qualification
-                - timer.house_ventilation_wc_runon
-          - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: input_boolean.house_ventilation_wc_boost_active
-                    state: "off"
-                sequence:
-                  - action: timer.start
-                    target:
-                      entity_id: timer.house_ventilation_wc_qualification
-
-      - alias: "Handle the WC light turning off"
-        conditions:
-          - condition: trigger
-            id: wc_off
-          - condition: template
-            value_template: "{{ trigger.from_state.state == 'on' }}"
-        sequence:
-          - action: timer.cancel
-            target:
-              entity_id:
-                - timer.house_ventilation_wc_qualification
-                - timer.house_ventilation_wc_runon
-          - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: input_boolean.house_ventilation_wc_boost_active
-                    state: "on"
-                sequence:
-                  - action: timer.start
-                    target:
-                      entity_id: timer.house_ventilation_wc_runon
-
-      - alias: "Activate the WC boost once the qualification timer finishes"
-        conditions:
-          - condition: trigger
-            id: wc_qualification_finished
-          - condition: state
-            entity_id: light.wc
-            state: "on"
-        sequence:
-          - action: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.house_ventilation_wc_boost_active
-
-  - if:
-      - condition: state
-        entity_id: light.wc
-        state: "on"
-    then:
-      - action: timer.cancel
-        target:
-          entity_id: timer.house_ventilation_wc_runon
-      - if:
-          - condition: state
-            entity_id: input_boolean.house_ventilation_wc_boost_active
-            state: "off"
-          - condition: state
-            entity_id: timer.house_ventilation_wc_qualification
-            state: idle
-        then:
-          - action: timer.start
-            target:
-              entity_id: timer.house_ventilation_wc_qualification
-    else:
-      - action: timer.cancel
-        target:
-          entity_id: timer.house_ventilation_wc_qualification
-      - if:
-          - condition: state
-            entity_id: input_boolean.house_ventilation_wc_boost_active
-            state: "on"
-          - condition: state
-            entity_id: timer.house_ventilation_wc_runon
-            state: idle
-        then:
-          - action: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.house_ventilation_wc_boost_active
+              entity_id: "timer.house_ventilation_{{ trigger.id[:-4] }}_runon"
 
   - choose:
       - alias: "Keep the ventilation at full speed for active demand"
@@ -308,16 +132,13 @@ action:
                 entity_id: binary_sensor.bathroom_humidity_high
                 state: "on"
               - condition: state
-                entity_id: timer.house_ventilation_shower_runon
-                state: active
-              - condition: state
                 entity_id: binary_sensor.sauna
                 state: "on"
               - condition: state
                 entity_id: timer.house_ventilation_sauna_runon
                 state: active
               - condition: state
-                entity_id: input_boolean.house_ventilation_wc_boost_active
+                entity_id: binary_sensor.wc_ventilation_demand
                 state: "on"
               - condition: state
                 entity_id: timer.house_ventilation_wc_runon

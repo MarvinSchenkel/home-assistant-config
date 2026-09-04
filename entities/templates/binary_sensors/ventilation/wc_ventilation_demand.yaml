@@ -1,0 +1,9 @@
+---
+binary_sensor:
+  - name: wc_ventilation_demand
+    unique_id: 20ac6f2c-11e9-475a-96e5-3bdbb718f50a
+    state: >
+      {{ is_state('light.wc', 'on') }}
+    # Short WC visits do not need boost ventilation, only longer ones do
+    delay_on:
+      minutes: 2
