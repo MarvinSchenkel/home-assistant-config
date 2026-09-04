@@ -3,11 +3,19 @@ binary_sensor:
   - name: bathroom_humidity_high
     unique_id: f38b9a1d-51a3-43c8-bec2-670857321e88
     state: >
-      {% set humidity = states('sensor.bathroom_ble_humidity') | float(none) %}
-      {% if humidity is none %}
+      {% set bathroom = states('sensor.bathroom_ble_humidity') | float(none) %}
+      {% set reference = states('sensor.livingroom_humidity') | float(none) %}
+      {# Comparing against a reference room keeps the latch weather-independent. #}
+      {% if bathroom is none %}
         off
+      {% elif reference is none %}
+        {% if this.state == 'on' %}
+          {{ bathroom >= 75 }}
+        {% else %}
+          {{ bathroom > 80 }}
+        {% endif %}
       {% elif this.state == 'on' %}
-        {{ humidity >= 75 }}
+        {{ bathroom - reference >= 7 }}
       {% else %}
-        {{ humidity > 80 }}
+        {{ bathroom - reference > 12 }}
       {% endif %}
