@@ -1,0 +1,5 @@
+---
+name: Ventilation wc run-on
+icon: "mdi:timer-outline"
+duration: "00:10:00"
+restore: true

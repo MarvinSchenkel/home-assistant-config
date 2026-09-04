@@ -1,0 +1,20 @@
+---
+binary_sensor:
+  - name: ventilation_night_purge
+    unique_id: 0ff4d1f2-bf0d-4ed4-8f42-bc8f4ad7e1b7
+    state: >
+      {% set in_window = now().hour >= 21 or now().hour < 8 %}
+      {% set outside = states('sensor.current_temperature') | float(none) %}
+      {% set hall = states('sensor.pir_hall_upstairs_temperature') | float(none) %}
+      {% if in_window and outside is not none and hall is not none %}
+        {% set active = this.state == 'on' %}
+        {% set hall_threshold = 22.0 if active else 22.5 %}
+        {% set diff_threshold = 1 if active else 2 %}
+        {% if outside > 15 and hall > hall_threshold and outside <= hall - diff_threshold %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      {% else %}
+        off
+      {% endif %}
