@@ -1,0 +1,62 @@
+---
+alias: home_security_auto_arm_home
+description: Automatically arm night mode when a sleep cycle starts
+mode: queued
+id: a7f0d7b3-64fd-4ed9-bd7e-9b1f0d89b102
+trigger:
+  - trigger: time
+    id: new_cycle
+    at: "18:00:00"
+  - trigger: state
+    id: new_cycle
+    entity_id:
+      - input_select.mancave_room_mode
+      - input_select.master_bedroom_room_mode
+    to: Slaap
+  - trigger: state
+    id: retry
+    entity_id: binary_sensor.home_security_night_perimeter_ready
+    to: "on"
+  - trigger: state
+    id: enabled
+    entity_id: input_boolean.home_security_enabled
+    to: "on"
+  - trigger: homeassistant
+    id: delayed_reconcile
+    event: start
+  - trigger: event
+    id: delayed_reconcile
+    event_type: automation_reloaded
+action:
+  - if:
+      - condition: trigger
+        id: new_cycle
+      - condition: state
+        entity_id:
+          - input_select.mancave_room_mode
+          - input_select.master_bedroom_room_mode
+        state: Slaap
+    then:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.home_security_night_manual_suppressed
+  - if:
+      - condition: trigger
+        id: delayed_reconcile
+    then:
+      - delay:
+          seconds: 5
+  - condition: or
+    conditions:
+      - condition: trigger
+        id:
+          - new_cycle
+          - enabled
+          - delayed_reconcile
+      - condition: state
+        entity_id: input_boolean.home_security_night_arm_pending
+        state: "on"
+  - action: script.home_security_arm
+    data:
+      mode: home
+      automatic: true

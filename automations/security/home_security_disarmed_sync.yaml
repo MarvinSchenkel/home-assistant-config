@@ -1,0 +1,43 @@
+---
+alias: home_security_disarmed_sync
+description: Reset arming bookkeeping whenever the panel disarms
+mode: queued
+id: 9b7dcf72-0b63-4fd4-bc18-8c7be4c7f501
+trigger:
+  - trigger: state
+    entity_id: alarm_control_panel.home_security
+    to: disarmed
+action:
+  # A disarm straight from the panel card carries a user context and skips
+  # script.home_security_disarm, so apply the manual suppression here too
+  - if:
+      - condition: template
+        value_template: >-
+          {{ trigger.to_state.context.user_id is not none
+             and trigger.from_state.state in ['armed_away', 'pending', 'triggered'] }}
+    then:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.home_security_away_manual_suppressed
+  - if:
+      - condition: template
+        value_template: >-
+          {{ trigger.to_state.context.user_id is not none
+             and trigger.from_state.state in ['armed_home', 'triggered'] }}
+    then:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.home_security_night_manual_suppressed
+  - action: input_boolean.turn_off
+    target:
+      entity_id:
+        - input_boolean.home_security_automatic_arm
+        - input_boolean.home_security_away_arm_pending
+        - input_boolean.home_security_night_arm_pending
+  - action: input_text.set_value
+    target:
+      entity_id:
+        - input_text.home_security_pending_source
+        - input_text.home_security_pending_details
+    data:
+      value: ""

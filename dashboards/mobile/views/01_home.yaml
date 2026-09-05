@@ -143,6 +143,39 @@ cards:
                   - return_home
                   - locate
 
+      - type: markdown
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              background-color: transparent;
+              box-shadow: none;
+            }
+        content: >
+          ## Beveiliging
+
+      - type: alarm-panel
+        entity: alarm_control_panel.home_security
+
+      - type: entities
+        entities:
+          - entity: input_boolean.home_security_enabled
+          - entity: sensor.home_security_readiness
+          - entity: sensor.home_security_last_incident
+          - entity: sensor.home_security_open_zones
+          - entity: sensor.home_security_degraded_sensors
+
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: sensor.home_security_readiness
+            state: blocked
+        card:
+          type: entities
+          entities:
+            - entity: sensor.home_security_away_blockers
+            - entity: sensor.home_security_night_blockers
+
       - type: "horizontal-stack"
         cards:
           - type: conditional

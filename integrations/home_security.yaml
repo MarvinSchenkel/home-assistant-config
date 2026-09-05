@@ -1,0 +1,240 @@
+---
+group:
+  home_security_indoor_motion:
+    name: Home Security Indoor Motion
+    entities:
+      - binary_sensor.pir_bathroom
+      - binary_sensor.pir_hall_downstairs
+      - binary_sensor.pir_hall_upstairs
+      - binary_sensor.pir_kitchen
+      - binary_sensor.pir_mancave
+      - binary_sensor.pir_master_bedroom
+      - binary_sensor.pir_third_floor_stairs
+      - binary_sensor.pir_wc
+      - binary_sensor.hue_motion_bathroom
+      - binary_sensor.hue_motion_livingroom
+      - binary_sensor.presence_livingroom_fp300
+
+  home_security_perimeter_contacts:
+    name: Home Security Perimeter Contacts
+    entities:
+      - binary_sensor.front_door_open
+      - binary_sensor.garden_door_open
+      - binary_sensor.mancave_window_open
+
+  home_security_night_contacts:
+    name: Home Security Night Contacts
+    entities:
+      - binary_sensor.front_door_open
+      - binary_sensor.garden_door_open
+
+input_boolean:
+  home_security_enabled:
+    name: Home Security Enabled
+    icon: mdi:shield-lock-outline
+
+  home_security_away_manual_suppressed:
+    name: Home Security Away Manual Suppressed
+    icon: mdi:account-cancel-outline
+
+  home_security_night_manual_suppressed:
+    name: Home Security Night Manual Suppressed
+    icon: mdi:weather-night-off
+
+  home_security_away_arm_pending:
+    name: Home Security Away Arm Pending
+    icon: mdi:timer-sand
+
+  home_security_night_arm_pending:
+    name: Home Security Night Arm Pending
+    icon: mdi:timer-sand
+
+  home_security_automatic_arm:
+    name: Home Security Automatic Arm
+    icon: mdi:shield-sync-outline
+
+input_datetime:
+  home_security_last_incident_at:
+    name: Home Security Last Incident At
+    has_date: true
+    has_time: true
+    icon: mdi:alarm-light
+
+  home_security_camera_context_at:
+    name: Home Security Camera Context At
+    has_date: true
+    has_time: true
+    icon: mdi:cctv
+
+input_text:
+  home_security_incident_source:
+    name: Home Security Incident Source
+    icon: mdi:shield-alert-outline
+    max: 255
+
+  home_security_incident_details:
+    name: Home Security Incident Details
+    icon: mdi:text-box-outline
+    max: 255
+
+  home_security_pending_source:
+    name: Home Security Pending Source
+    icon: mdi:door-open
+    max: 255
+
+  home_security_pending_details:
+    name: Home Security Pending Details
+    icon: mdi:text-box-outline
+    max: 255
+
+  home_security_camera_context:
+    name: Home Security Camera Context
+    icon: mdi:cctv
+    max: 255
+
+  home_security_camera_event_id:
+    name: Home Security Camera Event Id
+    icon: mdi:identifier
+    max: 255
+
+timer:
+  home_security_vacuum_grace:
+    name: Home Security Vacuum Grace
+    icon: mdi:timer-outline
+    duration: "00:02:00"
+    restore: true
+
+alarm_control_panel:
+  - platform: manual
+    name: Home Security
+    unique_id: home_security
+    code_arm_required: false
+    arming_time: 0
+    delay_time: 0
+    # Triggered state doubles as the future siren duration
+    trigger_time: 300
+    disarm_after_trigger: false
+    armed_away:
+      # Entry delay so a legitimate arrival can disarm before the alarm fires
+      delay_time: 60
+    disarmed:
+      # No panic triggering while disarmed
+      trigger_time: 0
+
+template:
+  - binary_sensor:
+      - name: Home Security Away Perimeter Ready
+        unique_id: home_security_away_perimeter_ready
+        state: >-
+          {{ expand('group.home_security_perimeter_contacts')
+             | selectattr('state', 'ne', 'off') | list | count == 0 }}
+
+      - name: Home Security Night Perimeter Ready
+        unique_id: home_security_night_perimeter_ready
+        state: >-
+          {{ expand('group.home_security_night_contacts')
+             | selectattr('state', 'ne', 'off') | list | count == 0 }}
+
+      - name: Home Security Vacuum Suppression Active
+        unique_id: home_security_vacuum_suppression_active
+        device_class: running
+        state: >-
+          {{ is_state('vacuum.norby', 'cleaning')
+             or is_state('vacuum.norby', 'returning')
+             or is_state('timer.home_security_vacuum_grace', 'active') }}
+
+    sensor:
+      - name: Home Security Open Zones
+        unique_id: home_security_open_zones
+        state: >-
+          {{ expand('group.home_security_perimeter_contacts')
+             | selectattr('state', 'eq', 'on')
+             | map(attribute='name') | unique | join(', ') or 'Geen' }}
+
+      - name: Home Security Away Blockers
+        unique_id: home_security_away_blockers
+        state: >-
+          {{ expand('group.home_security_perimeter_contacts')
+             | selectattr('state', 'in', ['on', 'unknown', 'unavailable'])
+             | map(attribute='name') | unique | join(', ') or 'Geen' }}
+
+      - name: Home Security Night Blockers
+        unique_id: home_security_night_blockers
+        state: >-
+          {{ expand('group.home_security_night_contacts')
+             | selectattr('state', 'in', ['on', 'unknown', 'unavailable'])
+             | map(attribute='name') | unique | join(', ') or 'Geen' }}
+
+      - name: Home Security Unavailable Sensors
+        unique_id: home_security_unavailable_sensors
+        state: >-
+          {% set names = (expand('group.home_security_indoor_motion')
+                          + expand('group.home_security_perimeter_contacts'))
+             | selectattr('state', 'in', ['unknown', 'unavailable'])
+             | map(attribute='name') | list %}
+          {% if states('vacuum.norby') in ['unknown', 'unavailable'] %}
+            {% set names = names + ['Norby'] %}
+          {% endif %}
+          {{ names | unique | join(', ') or 'Geen' }}
+
+      - name: Home Security Degraded Sensors
+        unique_id: home_security_degraded_sensors
+        state: >-
+          {% set names = expand('group.home_security_indoor_motion')
+             | selectattr('state', 'in', ['unknown', 'unavailable'])
+             | map(attribute='name') | list %}
+          {% if states('vacuum.norby') in ['unknown', 'unavailable'] %}
+            {% set names = names + ['Norby'] %}
+          {% endif %}
+          {{ names | unique | join(', ') or 'Geen' }}
+
+      - name: Home Security Last Incident
+        unique_id: home_security_last_incident
+        state: >-
+          {% if not has_value('input_datetime.home_security_last_incident_at') %}
+            Geen
+          {% else %}
+            {% set occurred_at = as_local(
+              as_datetime(states('input_datetime.home_security_last_incident_at'))
+            ) %}
+            {% set incident_source = states('input_text.home_security_incident_source')
+               or 'Onbekend' %}
+            {{ occurred_at.strftime('%d-%m %H:%M') }} · {{ incident_source }}
+          {% endif %}
+        attributes:
+          details: "{{ states('input_text.home_security_incident_details') }}"
+          active: "{{ is_state('alarm_control_panel.home_security', 'triggered') }}"
+
+      - name: Home Security Readiness
+        unique_id: home_security_readiness
+        state: >-
+          {% set panel = states('alarm_control_panel.home_security') %}
+          {% if is_state('input_boolean.home_security_enabled', 'off') %}
+            disabled
+          {% elif panel == 'triggered' %}
+            incident
+          {% elif panel in ['armed_away', 'armed_home', 'pending'] %}
+            {{ panel }}
+          {% elif states('sensor.home_security_away_blockers') != 'Geen'
+                or states('sensor.home_security_night_blockers') != 'Geen' %}
+            blocked
+          {% elif is_state('input_boolean.home_security_away_arm_pending', 'on')
+                or is_state('input_boolean.home_security_night_arm_pending', 'on') %}
+            arming
+          {% elif states('sensor.home_security_degraded_sensors') != 'Geen' %}
+            degraded
+          {% else %}
+            ready
+          {% endif %}
+        attributes:
+          away_manual_suppressed: >-
+            {{ is_state('input_boolean.home_security_away_manual_suppressed', 'on') }}
+          night_manual_suppressed: >-
+            {{ is_state('input_boolean.home_security_night_manual_suppressed', 'on') }}
+          automatic_arm: >-
+            {{ is_state('input_boolean.home_security_automatic_arm', 'on') }}
+          away_blockers: "{{ states('sensor.home_security_away_blockers') }}"
+          night_blockers: "{{ states('sensor.home_security_night_blockers') }}"
+          open_zones: "{{ states('sensor.home_security_open_zones') }}"
+          degraded_sensors: "{{ states('sensor.home_security_degraded_sensors') }}"
+          unavailable_sensors: "{{ states('sensor.home_security_unavailable_sensors') }}"

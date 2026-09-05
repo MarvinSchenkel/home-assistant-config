@@ -1,0 +1,41 @@
+---
+alias: home_security_trigger
+description: Record the intrusion source and trigger the alarm panel
+mode: single
+fields:
+  trigger_name:
+    description: Friendly trigger name
+    required: true
+  trigger_entity:
+    description: Entity that caused the incident
+  details:
+    description: Additional details
+sequence:
+  - variables:
+      source: >-
+        {{ trigger_name ~ (
+          ' (' ~ trigger_entity ~ ')'
+          if trigger_entity | default('') | trim != ''
+          else ''
+        ) }}
+  - condition: state
+    entity_id: input_boolean.home_security_enabled
+    state: "on"
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state:
+      - armed_away
+      - armed_home
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_pending_source
+    data:
+      value: "{{ source }}"
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_pending_details
+    data:
+      value: "{{ details | default('') }}"
+  - action: alarm_control_panel.alarm_trigger
+    target:
+      entity_id: alarm_control_panel.home_security

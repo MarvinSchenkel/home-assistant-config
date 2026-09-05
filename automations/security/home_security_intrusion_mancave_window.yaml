@@ -1,0 +1,25 @@
+---
+alias: home_security_intrusion_mancave_window
+description: Handle the mancave window as an away-only intrusion
+mode: queued
+id: 6d8f8e47-3a9e-4764-a0f5-56b6f7357107
+trigger:
+  - trigger: state
+    entity_id: binary_sensor.mancave_window_open
+    to: "on"
+    not_from:
+      - unavailable
+      - unknown
+action:
+  - variables:
+      trigger_label: >-
+        {{ state_attr(trigger.entity_id, 'friendly_name')
+           or trigger.entity_id }}
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state: armed_away
+  - action: script.home_security_trigger
+    data:
+      trigger_name: "{{ trigger_label }}"
+      trigger_entity: "{{ trigger.entity_id }}"
+      details: "Raam geopend: {{ trigger_label }}"

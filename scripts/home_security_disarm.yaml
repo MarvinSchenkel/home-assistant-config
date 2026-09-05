@@ -1,0 +1,32 @@
+---
+alias: home_security_disarm
+description: Disarm home security, optionally suppressing automatic rearming
+mode: single
+fields:
+  manual:
+    description: Suppress automatic rearming for the current cycle
+sequence:
+  - variables:
+      panel_state: "{{ states('alarm_control_panel.home_security') }}"
+      manual_request: "{{ manual | default(false) }}"
+  # Triggered hides which mode was armed, so a manual disarm suppresses both cycles
+  - if:
+      - condition: template
+        value_template: >-
+          {{ manual_request
+             and panel_state in ['armed_away', 'pending', 'triggered'] }}
+    then:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.home_security_away_manual_suppressed
+  - if:
+      - condition: template
+        value_template: >-
+          {{ manual_request and panel_state in ['armed_home', 'triggered'] }}
+    then:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.home_security_night_manual_suppressed
+  - action: alarm_control_panel.alarm_disarm
+    target:
+      entity_id: alarm_control_panel.home_security

@@ -1,0 +1,20 @@
+---
+alias: home_security_notification_actions
+description: Handle home security notification actions
+mode: queued
+id: f0c72d6b-2a89-49d9-a09f-3ce0d2d47109
+trigger:
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: HOME_SECURITY_DISARM
+condition:
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.home_security
+        state: disarmed
+action:
+  - action: script.home_security_disarm
+    data:
+      manual: true

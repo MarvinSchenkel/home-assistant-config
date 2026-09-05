@@ -1,0 +1,93 @@
+---
+alias: home_security_notify
+description: Send a home security notification to Marvin
+mode: parallel
+max: 20
+fields:
+  kind:
+    description: alert, blocked or fault
+    required: true
+  mode:
+    description: away or home, used for blocked notifications
+  trigger_name:
+    description: Friendly trigger name
+  details:
+    description: Additional details
+sequence:
+  - variables:
+      notify_service: notify.mobile_app_marvins_iphone_13_nieuw
+      mode_label: "{{ 'Weg' if mode | default('') == 'away' else 'Nacht' }}"
+      trigger_label: >-
+        {% set label = trigger_name | default('') %}
+        {{ label | trim if label | trim != '' else 'Onbekende bron' }}
+      camera_fresh: >-
+        {{ has_value('input_datetime.home_security_camera_context_at')
+           and (as_timestamp(now())
+                - as_timestamp(states('input_datetime.home_security_camera_context_at')))
+               <= 120 }}
+      camera_event_id: >-
+        {{ states('input_text.home_security_camera_event_id') if camera_fresh else '' }}
+      camera_context: >-
+        {{ states('input_text.home_security_camera_context') if camera_fresh else '' }}
+      alert_data: >-
+        {% set payload = {
+          'tag': 'home-security-alert',
+          'push': {'interruption-level': 'time-sensitive'},
+          'actions': [
+            {
+              'action': 'HOME_SECURITY_DISARM',
+              'title': 'Uitschakelen',
+              'authenticationRequired': true,
+              'destructive': true
+            }
+          ]
+        } %}
+        {% if camera_event_id | trim != '' %}
+          {# UniFi Protect NVR id #}
+          {{ dict(
+            payload,
+            image='/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/'
+              ~ camera_event_id
+          ) }}
+        {% else %}
+          {{ payload }}
+        {% endif %}
+  - choose:
+      - conditions: "{{ kind == 'alert' }}"
+        sequence:
+          - action: "{{ notify_service }}"
+            data:
+              title: Beveiliging
+              message: |-
+                🚨 {{ trigger_label }}
+                Tijd: {{ now().strftime('%H:%M') }}
+                Open zones: {{ states('sensor.home_security_open_zones') }}
+                {%- if camera_context | trim != '' %}
+                Camera: {{ camera_context }}
+                {%- endif %}
+                {%- if details | default('') | trim != '' %}
+                {{ details }}
+                {%- endif %}
+              data: "{{ alert_data }}"
+
+      - conditions: "{{ kind == 'blocked' }}"
+        sequence:
+          - action: "{{ notify_service }}"
+            data:
+              title: Beveiliging
+              message: |-
+                {{ mode_label }}-modus niet ingeschakeld.
+                Wacht op: {{ details | default('') }}
+              data:
+                tag: home-security-blocked
+
+      - conditions: "{{ kind == 'fault' }}"
+        sequence:
+          - action: "{{ notify_service }}"
+            data:
+              title: Beveiliging
+              message: |-
+                ⚠️ {{ details | default('Sensorstoring.') }}
+                Niet beschikbaar: {{ states('sensor.home_security_unavailable_sensors') }}
+              data:
+                tag: home-security-fault

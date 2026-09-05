@@ -1,0 +1,29 @@
+---
+alias: home_security_entry_open
+description: Trigger the alarm when an entry door opens while armed
+mode: queued
+id: f18e1a40-6c44-4cbe-8e87-2d3c6a6d7105
+trigger:
+  - trigger: state
+    entity_id:
+      - binary_sensor.front_door_open
+      - binary_sensor.garden_door_open
+    to: "on"
+    not_from:
+      - unavailable
+      - unknown
+action:
+  - variables:
+      trigger_label: >-
+        {{ state_attr(trigger.entity_id, 'friendly_name')
+           or trigger.entity_id }}
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state:
+      - armed_away
+      - armed_home
+  - action: script.home_security_trigger
+    data:
+      trigger_name: "{{ trigger_label }}"
+      trigger_entity: "{{ trigger.entity_id }}"
+      details: "Deur geopend: {{ trigger_label }}"

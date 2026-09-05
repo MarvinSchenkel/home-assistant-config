@@ -1,0 +1,39 @@
+---
+alias: home_security_intrusion_indoor_motion
+description: Handle indoor motion as an away-only intrusion
+mode: queued
+id: 8e2e6c55-7e52-4e5d-8c7d-47cf8e4f7108
+trigger:
+  - trigger: state
+    entity_id:
+      - binary_sensor.pir_bathroom
+      - binary_sensor.pir_hall_downstairs
+      - binary_sensor.pir_hall_upstairs
+      - binary_sensor.pir_kitchen
+      - binary_sensor.pir_mancave
+      - binary_sensor.pir_master_bedroom
+      - binary_sensor.pir_third_floor_stairs
+      - binary_sensor.pir_wc
+      - binary_sensor.hue_motion_bathroom
+      - binary_sensor.hue_motion_livingroom
+      - binary_sensor.presence_livingroom_fp300
+    to: "on"
+    not_from:
+      - unavailable
+      - unknown
+action:
+  - variables:
+      trigger_label: >-
+        {{ state_attr(trigger.entity_id, 'friendly_name')
+           or trigger.entity_id }}
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state: armed_away
+  - condition: state
+    entity_id: binary_sensor.home_security_vacuum_suppression_active
+    state: "off"
+  - action: script.home_security_trigger
+    data:
+      trigger_name: "{{ trigger_label }}"
+      trigger_entity: "{{ trigger.entity_id }}"
+      details: "Beweging gedetecteerd: {{ trigger_label }}"
