@@ -1,0 +1,69 @@
+---
+alias: home_security_trigger
+description: Raise a home security incident
+mode: single
+fields:
+  mode:
+    description: away, home or manual
+    required: true
+  trigger_name:
+    description: Friendly trigger name
+    required: true
+  trigger_entity:
+    description: Entity that caused the incident
+  details:
+    description: Additional details
+sequence:
+  - variables:
+      incident_id: "{{ now().strftime('%Y%m%d%H%M%S%f') }}"
+      incident_source: >-
+        {{ trigger_name ~ (
+          ' (' ~ trigger_entity ~ ')'
+          if trigger_entity is defined and trigger_entity | trim != ''
+          else ''
+        ) }}
+  - if:
+      - condition: state
+        entity_id: input_boolean.home_security_enabled
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.home_security_incident_active
+        state: "off"
+    then:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.home_security_incident_active
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.home_security_last_incident_at
+        data:
+          datetime: "{{ now().isoformat() }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.home_security_incident_id
+        data:
+          value: "{{ incident_id }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.home_security_incident_source
+        data:
+          value: "{{ incident_source }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.home_security_incident_details
+        data:
+          value: "{{ details if details is defined else '' }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.home_security_pending_entry_source
+        data:
+          value: ""
+      - action: script.home_security_notify
+        data:
+          kind: alert
+          mode: "{{ mode }}"
+          trigger_name: "{{ trigger_name }}"
+          trigger_entity: >-
+            {{ trigger_entity if trigger_entity is defined else '' }}
+          incident_id: "{{ incident_id }}"
+          details: "{{ details if details is defined else '' }}"

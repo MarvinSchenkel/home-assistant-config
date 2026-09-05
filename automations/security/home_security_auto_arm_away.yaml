@@ -1,0 +1,66 @@
+---
+alias: home_security_auto_arm_away
+description: Automatically arm away when everyone leaves
+mode: queued
+id: c1b7a4df-7d7f-48d0-8bf0-58f4e4d22101
+trigger:
+  - trigger: state
+    id: new_cycle
+    entity_id: binary_sensor.everyone_left_home
+    to: "on"
+    for:
+      minutes: 2
+  - trigger: state
+    id: retry
+    entity_id: binary_sensor.home_security_away_perimeter_ready
+    to: "on"
+  - trigger: state
+    id: guest_cleared
+    entity_id: input_boolean.setting_guest_mode
+    to: "off"
+    for:
+      minutes: 2
+  - trigger: state
+    id: delayed_reconcile
+    entity_id: input_boolean.home_security_enabled
+    to: "on"
+  - trigger: homeassistant
+    id: delayed_reconcile
+    event: start
+  - trigger: event
+    id: delayed_reconcile
+    event_type: automation_reloaded
+  - trigger: time
+    id: morning
+    at: "07:00:00"
+action:
+  - if:
+      - condition: trigger
+        id: new_cycle
+    then:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.home_security_away_manual_suppressed
+  - if:
+      - condition: trigger
+        id:
+          - delayed_reconcile
+          - morning
+    then:
+      - delay:
+          seconds: "{{ 120 if trigger.id == 'delayed_reconcile' else 5 }}"
+  - condition: or
+    conditions:
+      - condition: trigger
+        id:
+          - new_cycle
+          - guest_cleared
+          - delayed_reconcile
+          - morning
+      - condition: state
+        entity_id: input_boolean.home_security_away_arm_pending
+        state: "on"
+  - action: script.home_security_arm
+    data:
+      mode: away
+      automatic: true

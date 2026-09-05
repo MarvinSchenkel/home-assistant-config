@@ -1,0 +1,122 @@
+---
+alias: home_security_notify
+description: Send a home security notification to Marvin
+mode: parallel
+max: 20
+fields:
+  kind:
+    description: alert, blocked or fault
+    required: true
+  mode:
+    description: away, home or manual
+    required: true
+  trigger_name:
+    description: Friendly trigger name
+  trigger_entity:
+    description: Trigger entity
+  incident_id:
+    description: Current incident identifier
+  details:
+    description: Additional details
+sequence:
+  - variables:
+      mode_label: >-
+        {% if mode == 'away' %}
+          Away
+        {% elif mode == 'home' %}
+          Night
+        {% else %}
+          Manual
+        {% endif %}
+      trigger_label: >-
+        {% set label = trigger_name | default('') %}
+        {{ label | trim if label | trim != '' else 'Onbekende bron' }}
+      current_incident_id: "{{ incident_id | default('') }}"
+      camera_event_id: >-
+        {% if has_value('input_datetime.home_security_camera_context_at')
+           and states('input_text.home_security_camera_event_id') | length > 0 %}
+          {% set captured = states('input_datetime.home_security_camera_context_at') %}
+          {% set age_seconds = as_timestamp(now()) - as_timestamp(captured) %}
+          {% if age_seconds <= 120 %}
+            {{ states('input_text.home_security_camera_event_id') }}
+          {% endif %}
+        {% endif %}
+      camera_context: >-
+        {% if has_value('input_datetime.home_security_camera_context_at')
+           and states('input_text.home_security_camera_context') | length > 0 %}
+          {% set captured = states('input_datetime.home_security_camera_context_at') %}
+          {% set age_seconds = as_timestamp(now()) - as_timestamp(captured) %}
+          {% if age_seconds <= 120 %}
+            {{ states('input_text.home_security_camera_context') }}
+          {% endif %}
+        {% endif %}
+      alert_data: >-
+        {% set payload = {
+          'tag': 'home-security-alert',
+          'push': {'interruption-level': 'time-sensitive'},
+          'actions': [
+            {
+              'action': 'HOME_SECURITY_ACK_' ~ current_incident_id,
+              'title': 'Acknowledge'
+            },
+            {
+              'action': 'HOME_SECURITY_FALSE_POSITIVE_' ~ current_incident_id,
+              'title': 'False positive',
+              'destructive': true
+            },
+            {
+              'action': 'HOME_SECURITY_DISARM_' ~ current_incident_id,
+              'title': 'Disarm',
+              'authenticationRequired': true,
+              'destructive': true
+            }
+          ]
+        } %}
+        {% if camera_event_id | trim != '' %}
+          {{ dict(
+            payload,
+            image='/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/'
+              ~ camera_event_id
+          ) }}
+        {% else %}
+          {{ payload }}
+        {% endif %}
+  - choose:
+      - conditions: "{{ kind == 'alert' }}"
+        sequence:
+          - action: notify.mobile_app_marvins_iphone_13_nieuw
+            data:
+              title: Home Security
+              message: >-
+                🚨 {{ mode_label }} — {{ trigger_label }}
+                Time: {{ now().strftime('%H:%M') }}
+                Entity: {{ trigger_entity | default('unknown') }}
+                Open zones: {{ states('sensor.home_security_open_zones') }}
+                Degraded: {{ states('sensor.home_security_degraded_sensors') }}
+                {% if camera_context | trim != '' %}Camera: {{ camera_context }}{% endif %}
+                {% if details is defined and details | trim != '' %}{{ details }}{% endif %}
+              data: "{{ alert_data }}"
+
+      - conditions: "{{ kind == 'blocked' }}"
+        sequence:
+          - action: notify.mobile_app_marvins_iphone_13_nieuw
+            data:
+              title: Home Security
+              message: >-
+                {{ mode_label }} arming blocked.
+                Open zones: {{ states('sensor.home_security_open_zones') }}
+                {{ details if details is defined and details | trim != '' else '' }}
+              data:
+                tag: home-security-blocked
+
+      - conditions: "{{ kind == 'fault' }}"
+        sequence:
+          - action: notify.mobile_app_marvins_iphone_13_nieuw
+            data:
+              title: Home Security
+              message: >-
+                Home security sensor fault.
+                Degraded: {{ states('sensor.home_security_degraded_sensors') }}
+                {{ details if details is defined and details | trim != '' else '' }}
+              data:
+                tag: home-security-fault

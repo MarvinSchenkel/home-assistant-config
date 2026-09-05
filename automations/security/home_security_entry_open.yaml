@@ -1,0 +1,56 @@
+---
+alias: home_security_entry_open
+description: Handle perimeter openings for the home security panel
+mode: queued
+id: f18e1a40-6c44-4cbe-8e87-2d3c6a6d7105
+trigger:
+  - trigger: state
+    id: entry_open
+    entity_id:
+      - binary_sensor.front_door_open
+      - binary_sensor.garden_door_open
+    to: "on"
+    not_from:
+      - unavailable
+      - unknown
+action:
+  - variables:
+      trigger_label: >-
+        {{ state_attr(trigger.entity_id, 'friendly_name')
+           or state_attr(trigger.entity_id, 'name')
+           or trigger.entity_id }}
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.home_security_armed_mode
+            state: armed_away
+          - condition: state
+            entity_id: input_boolean.home_security_incident_active
+            state: "off"
+          - condition: state
+            entity_id: timer.home_security_entry_delay
+            state: idle
+        sequence:
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.home_security_pending_entry_source
+            data:
+              value: "{{ trigger_label }} ({{ trigger.entity_id }})"
+          - action: timer.start
+            target:
+              entity_id: timer.home_security_entry_delay
+
+      - conditions:
+          - condition: state
+            entity_id: input_select.home_security_armed_mode
+            state: armed_home
+          - condition: state
+            entity_id: input_boolean.home_security_incident_active
+            state: "off"
+        sequence:
+          - action: script.home_security_trigger
+            data:
+              mode: home
+              trigger_name: "{{ trigger_label }}"
+              trigger_entity: "{{ trigger.entity_id }}"
+              details: "Night intrusion from {{ trigger_label }}"

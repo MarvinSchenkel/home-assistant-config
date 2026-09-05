@@ -1,0 +1,28 @@
+---
+alias: home_security_capture_camera_context
+description: Record recent doorbell or person detection context
+mode: single
+fields:
+  context:
+    description: Human readable context
+    required: true
+  event_id:
+    description: Camera event id
+  event_type:
+    description: Event type
+sequence:
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_camera_context
+    data:
+      value: "{{ context }}"
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_camera_event_id
+    data:
+      value: "{{ event_id if event_id is defined else '' }}"
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.home_security_camera_context_at
+    data:
+      datetime: "{{ now().isoformat() }}"

@@ -1,0 +1,21 @@
+---
+alias: home_security_clear_incident
+description: Clear an active home security incident
+mode: single
+fields:
+  reset_observation_clock:
+    description: Reset the observation clock to now
+    required: false
+sequence:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.home_security_incident_active
+  - if:
+      - condition: template
+        value_template: "{{ reset_observation_clock | default(false) }}"
+    then:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.home_security_observation_start
+        data:
+          datetime: "{{ now().isoformat() }}"

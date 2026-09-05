@@ -1,0 +1,36 @@
+---
+alias: home_security_camera_context
+description: Record recent camera and doorbell context for alerts
+mode: queued
+id: b23b91f9-39ad-47b3-9cc8-9ed9fb3d7110
+trigger:
+  - trigger: state
+    entity_id:
+      - event.hal_g4_doorbell_smart_detection
+      - event.g4_doorbell_doorbell
+action:
+  - variables:
+      camera_context: >-
+        {% if trigger.entity_id == 'event.g4_doorbell_doorbell' %}
+          Doorbell
+        {% else %}
+          {% set kind = (state_attr(trigger.entity_id, 'smart_detection_type')
+                         or state_attr(trigger.entity_id, 'detection_type')
+                         or state_attr(trigger.entity_id, 'event_type')
+                         or trigger.to_state.state
+                         or '') | lower %}
+          {% if 'person' in kind %}
+            Person detected
+          {% else %}
+            {{ '' }}
+          {% endif %}
+        {% endif %}
+  - condition: template
+    value_template: "{{ camera_context | trim != '' }}"
+  - action: script.home_security_capture_camera_context
+    data:
+      context: "{{ camera_context }}"
+      event_id: >-
+        {{ state_attr(trigger.entity_id, 'event_id') or '' }}
+      event_type: >-
+        {{ state_attr(trigger.entity_id, 'event_type') or '' }}

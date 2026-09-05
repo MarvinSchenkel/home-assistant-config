@@ -1,0 +1,53 @@
+---
+alias: home_security_sensor_fault
+description: Notify when an active security sensor becomes unavailable
+mode: queued
+id: 7d40f493-6117-4cb0-a547-f40e64ed940d
+trigger:
+  - trigger: state
+    entity_id: &security_entities
+      - binary_sensor.front_door_open
+      - binary_sensor.garden_door_open
+      - binary_sensor.mancave_window_open
+      - binary_sensor.pir_bathroom
+      - binary_sensor.pir_hall_downstairs
+      - binary_sensor.pir_hall_upstairs
+      - binary_sensor.pir_kitchen
+      - binary_sensor.pir_mancave
+      - binary_sensor.pir_master_bedroom
+      - binary_sensor.pir_third_floor_stairs
+      - binary_sensor.pir_wc
+      - binary_sensor.hue_motion_bathroom
+      - binary_sensor.hue_motion_livingroom
+      - binary_sensor.presence_livingroom_fp300
+      - vacuum.norby
+    to: unavailable
+    not_from:
+      - unknown
+      - unavailable
+    for:
+      minutes: 5
+  - trigger: state
+    entity_id: *security_entities
+    to: unknown
+    not_from:
+      - unknown
+      - unavailable
+    for:
+      minutes: 5
+condition:
+  - condition: state
+    entity_id: input_boolean.home_security_enabled
+    state: "on"
+action:
+  - variables:
+      sensor_name: >-
+        {{ state_attr(trigger.entity_id, 'friendly_name') or trigger.entity_id }}
+      current_mode: "{{ states('input_select.home_security_armed_mode') }}"
+  - action: script.home_security_notify
+    data:
+      kind: fault
+      mode: >-
+        {{ 'away' if current_mode == 'armed_away' else 'home' }}
+      trigger_name: "{{ sensor_name }}"
+      details: "{{ sensor_name }} is unavailable."
