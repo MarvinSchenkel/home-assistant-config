@@ -25,7 +25,7 @@ sequence:
     entity_id: alarm_control_panel.home_security
     state:
       - armed_away
-      - armed_home
+      - armed_night
   - action: input_text.set_value
     target:
       entity_id: input_text.home_security_pending_source
