@@ -21,7 +21,7 @@ action:
     entity_id: alarm_control_panel.home_security
     state:
       - armed_away
-      - armed_home
+      - armed_night
   - action: script.home_security_trigger
     data:
       trigger_name: "{{ trigger_label }}"

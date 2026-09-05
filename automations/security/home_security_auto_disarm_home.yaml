@@ -19,12 +19,12 @@ trigger:
       - input_select.mancave_room_mode
       - input_select.master_bedroom_room_mode
     from: Slaap
-  # Re-check the sleep cycle once an alarm window expires back into armed_home
+  # Re-check the sleep cycle once an alarm window expires back into armed_night
   - trigger: state
     id: cycle_end
     entity_id: alarm_control_panel.home_security
     from: triggered
-    to: armed_home
+    to: armed_night
   - trigger: state
     id: disabled
     entity_id: input_boolean.home_security_enabled
@@ -33,7 +33,7 @@ condition:
   - or:
       - condition: state
         entity_id: alarm_control_panel.home_security
-        state: armed_home
+        state: armed_night
       - condition: state
         entity_id: input_boolean.home_security_night_arm_pending
         state: "on"
