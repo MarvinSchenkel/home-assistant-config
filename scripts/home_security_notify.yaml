@@ -8,7 +8,7 @@ fields:
     description: alert, blocked or fault
     required: true
   mode:
-    description: away or home, used for blocked notifications
+    description: away or night, used for blocked notifications
   trigger_name:
     description: Friendly trigger name
   details:

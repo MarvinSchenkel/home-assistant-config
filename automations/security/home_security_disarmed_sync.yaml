@@ -23,7 +23,7 @@ action:
       - condition: template
         value_template: >-
           {{ trigger.to_state.context.user_id is not none
-             and trigger.from_state.state in ['armed_home', 'triggered'] }}
+             and trigger.from_state.state in ['armed_night', 'triggered'] }}
     then:
       - action: input_boolean.turn_on
         target:

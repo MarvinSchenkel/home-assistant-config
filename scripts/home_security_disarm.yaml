@@ -22,7 +22,7 @@ sequence:
   - if:
       - condition: template
         value_template: >-
-          {{ manual_request and panel_state in ['armed_home', 'triggered'] }}
+          {{ manual_request and panel_state in ['armed_night', 'triggered'] }}
     then:
       - action: input_boolean.turn_on
         target:

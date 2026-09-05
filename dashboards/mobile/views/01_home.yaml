@@ -156,6 +156,9 @@ cards:
 
       - type: alarm-panel
         entity: alarm_control_panel.home_security
+        states:
+          - arm_away
+          - arm_night
 
       - type: entities
         entities:

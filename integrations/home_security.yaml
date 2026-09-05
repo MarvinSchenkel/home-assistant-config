@@ -109,6 +109,9 @@ alarm_control_panel:
     name: Home Security
     unique_id: home_security
     code_arm_required: false
+    arming_states:
+      - armed_away
+      - armed_night
     arming_time: 0
     delay_time: 0
     # Triggered state doubles as the future siren duration
@@ -213,7 +216,7 @@ template:
             disabled
           {% elif panel == 'triggered' %}
             incident
-          {% elif panel in ['armed_away', 'armed_home', 'pending'] %}
+          {% elif panel in ['armed_away', 'armed_night', 'pending'] %}
             {{ panel }}
           {% elif states('sensor.home_security_away_blockers') != 'Geen'
                 or states('sensor.home_security_night_blockers') != 'Geen' %}
