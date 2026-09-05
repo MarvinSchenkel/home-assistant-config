@@ -1,11 +1,8 @@
 ---
 alias: home_security_trigger
-description: Raise a home security incident
+description: Record the intrusion source and trigger the alarm panel
 mode: single
 fields:
-  mode:
-    description: away, home or manual
-    required: true
   trigger_name:
     description: Friendly trigger name
     required: true
@@ -15,55 +12,30 @@ fields:
     description: Additional details
 sequence:
   - variables:
-      incident_id: "{{ now().strftime('%Y%m%d%H%M%S%f') }}"
-      incident_source: >-
+      source: >-
         {{ trigger_name ~ (
           ' (' ~ trigger_entity ~ ')'
-          if trigger_entity is defined and trigger_entity | trim != ''
+          if trigger_entity | default('') | trim != ''
           else ''
         ) }}
-  - if:
-      - condition: state
-        entity_id: input_boolean.home_security_enabled
-        state: "on"
-      - condition: state
-        entity_id: input_boolean.home_security_incident_active
-        state: "off"
-    then:
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.home_security_incident_active
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.home_security_last_incident_at
-        data:
-          datetime: "{{ now().isoformat() }}"
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.home_security_incident_id
-        data:
-          value: "{{ incident_id }}"
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.home_security_incident_source
-        data:
-          value: "{{ incident_source }}"
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.home_security_incident_details
-        data:
-          value: "{{ details if details is defined else '' }}"
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.home_security_pending_entry_source
-        data:
-          value: ""
-      - action: script.home_security_notify
-        data:
-          kind: alert
-          mode: "{{ mode }}"
-          trigger_name: "{{ trigger_name }}"
-          trigger_entity: >-
-            {{ trigger_entity if trigger_entity is defined else '' }}
-          incident_id: "{{ incident_id }}"
-          details: "{{ details if details is defined else '' }}"
+  - condition: state
+    entity_id: input_boolean.home_security_enabled
+    state: "on"
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state:
+      - armed_away
+      - armed_home
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_pending_source
+    data:
+      value: "{{ source }}"
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_pending_details
+    data:
+      value: "{{ details | default('') }}"
+  - action: alarm_control_panel.alarm_trigger
+    target:
+      entity_id: alarm_control_panel.home_security

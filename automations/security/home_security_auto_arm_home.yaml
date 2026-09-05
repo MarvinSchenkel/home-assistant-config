@@ -18,7 +18,7 @@ trigger:
     entity_id: binary_sensor.home_security_night_perimeter_ready
     to: "on"
   - trigger: state
-    id: reconcile
+    id: enabled
     entity_id: input_boolean.home_security_enabled
     to: "on"
   - trigger: homeassistant
@@ -51,7 +51,7 @@ action:
       - condition: trigger
         id:
           - new_cycle
-          - reconcile
+          - enabled
           - delayed_reconcile
       - condition: state
         entity_id: input_boolean.home_security_night_arm_pending

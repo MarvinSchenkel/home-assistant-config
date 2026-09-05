@@ -14,20 +14,12 @@ action:
   - variables:
       trigger_label: >-
         {{ state_attr(trigger.entity_id, 'friendly_name')
-           or state_attr(trigger.entity_id, 'name')
            or trigger.entity_id }}
-  - choose:
-      - conditions:
-          - condition: state
-            entity_id: input_select.home_security_armed_mode
-            state: armed_away
-          - condition: state
-            entity_id: input_boolean.home_security_incident_active
-            state: "off"
-        sequence:
-          - action: script.home_security_trigger
-            data:
-              mode: away
-              trigger_name: "{{ trigger_label }}"
-              trigger_entity: "{{ trigger.entity_id }}"
-              details: "Away intrusion from {{ trigger_label }}"
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state: armed_away
+  - action: script.home_security_trigger
+    data:
+      trigger_name: "{{ trigger_label }}"
+      trigger_entity: "{{ trigger.entity_id }}"
+      details: "Raam geopend: {{ trigger_label }}"

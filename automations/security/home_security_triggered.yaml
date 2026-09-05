@@ -1,0 +1,41 @@
+---
+alias: home_security_triggered
+description: Record the incident and send the alert when the alarm triggers
+mode: queued
+id: 4f0df919-9c16-4b63-9f3f-2fb4e2d57106
+trigger:
+  - trigger: state
+    entity_id: alarm_control_panel.home_security
+    to: triggered
+action:
+  - variables:
+      source: >-
+        {{ states('input_text.home_security_pending_source') or 'Onbekende bron' }}
+      details: "{{ states('input_text.home_security_pending_details') }}"
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_incident_source
+    data:
+      value: "{{ source }}"
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.home_security_incident_details
+    data:
+      value: "{{ details }}"
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.home_security_last_incident_at
+    data:
+      datetime: "{{ now().isoformat() }}"
+  - action: script.home_security_notify
+    data:
+      kind: alert
+      trigger_name: "{{ source }}"
+      details: "{{ details }}"
+  - action: input_text.set_value
+    target:
+      entity_id:
+        - input_text.home_security_pending_source
+        - input_text.home_security_pending_details
+    data:
+      value: ""

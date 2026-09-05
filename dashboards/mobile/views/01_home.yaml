@@ -164,7 +164,6 @@ cards:
           - entity: sensor.home_security_last_incident
           - entity: sensor.home_security_open_zones
           - entity: sensor.home_security_degraded_sensors
-          - entity: binary_sensor.home_security_v11_eligible
 
       - type: conditional
         conditions:

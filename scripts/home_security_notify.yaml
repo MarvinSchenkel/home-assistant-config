@@ -8,71 +8,42 @@ fields:
     description: alert, blocked or fault
     required: true
   mode:
-    description: away, home or manual
-    required: true
+    description: away or home, used for blocked notifications
   trigger_name:
     description: Friendly trigger name
-  trigger_entity:
-    description: Trigger entity
-  incident_id:
-    description: Current incident identifier
   details:
     description: Additional details
 sequence:
   - variables:
-      mode_label: >-
-        {% if mode == 'away' %}
-          Away
-        {% elif mode == 'home' %}
-          Night
-        {% else %}
-          Manual
-        {% endif %}
+      notify_service: notify.mobile_app_marvins_iphone_13_nieuw
+      mode_label: "{{ 'Weg' if mode | default('') == 'away' else 'Nacht' }}"
       trigger_label: >-
         {% set label = trigger_name | default('') %}
         {{ label | trim if label | trim != '' else 'Onbekende bron' }}
-      current_incident_id: "{{ incident_id | default('') }}"
+      camera_fresh: >-
+        {{ has_value('input_datetime.home_security_camera_context_at')
+           and (as_timestamp(now())
+                - as_timestamp(states('input_datetime.home_security_camera_context_at')))
+               <= 120 }}
       camera_event_id: >-
-        {% if has_value('input_datetime.home_security_camera_context_at')
-           and states('input_text.home_security_camera_event_id') | length > 0 %}
-          {% set captured = states('input_datetime.home_security_camera_context_at') %}
-          {% set age_seconds = as_timestamp(now()) - as_timestamp(captured) %}
-          {% if age_seconds <= 120 %}
-            {{ states('input_text.home_security_camera_event_id') }}
-          {% endif %}
-        {% endif %}
+        {{ states('input_text.home_security_camera_event_id') if camera_fresh else '' }}
       camera_context: >-
-        {% if has_value('input_datetime.home_security_camera_context_at')
-           and states('input_text.home_security_camera_context') | length > 0 %}
-          {% set captured = states('input_datetime.home_security_camera_context_at') %}
-          {% set age_seconds = as_timestamp(now()) - as_timestamp(captured) %}
-          {% if age_seconds <= 120 %}
-            {{ states('input_text.home_security_camera_context') }}
-          {% endif %}
-        {% endif %}
+        {{ states('input_text.home_security_camera_context') if camera_fresh else '' }}
       alert_data: >-
         {% set payload = {
           'tag': 'home-security-alert',
           'push': {'interruption-level': 'time-sensitive'},
           'actions': [
             {
-              'action': 'HOME_SECURITY_ACK_' ~ current_incident_id,
-              'title': 'Acknowledge'
-            },
-            {
-              'action': 'HOME_SECURITY_FALSE_POSITIVE_' ~ current_incident_id,
-              'title': 'False positive',
-              'destructive': true
-            },
-            {
-              'action': 'HOME_SECURITY_DISARM_' ~ current_incident_id,
-              'title': 'Disarm',
+              'action': 'HOME_SECURITY_DISARM',
+              'title': 'Uitschakelen',
               'authenticationRequired': true,
               'destructive': true
             }
           ]
         } %}
         {% if camera_event_id | trim != '' %}
+          {# UniFi Protect NVR id #}
           {{ dict(
             payload,
             image='/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/'
@@ -84,39 +55,39 @@ sequence:
   - choose:
       - conditions: "{{ kind == 'alert' }}"
         sequence:
-          - action: notify.mobile_app_marvins_iphone_13_nieuw
+          - action: "{{ notify_service }}"
             data:
-              title: Home Security
-              message: >-
-                🚨 {{ mode_label }} — {{ trigger_label }}
-                Time: {{ now().strftime('%H:%M') }}
-                Entity: {{ trigger_entity | default('unknown') }}
+              title: Beveiliging
+              message: |-
+                🚨 {{ trigger_label }}
+                Tijd: {{ now().strftime('%H:%M') }}
                 Open zones: {{ states('sensor.home_security_open_zones') }}
-                Degraded: {{ states('sensor.home_security_degraded_sensors') }}
-                {% if camera_context | trim != '' %}Camera: {{ camera_context }}{% endif %}
-                {% if details is defined and details | trim != '' %}{{ details }}{% endif %}
+                {%- if camera_context | trim != '' %}
+                Camera: {{ camera_context }}
+                {%- endif %}
+                {%- if details | default('') | trim != '' %}
+                {{ details }}
+                {%- endif %}
               data: "{{ alert_data }}"
 
       - conditions: "{{ kind == 'blocked' }}"
         sequence:
-          - action: notify.mobile_app_marvins_iphone_13_nieuw
+          - action: "{{ notify_service }}"
             data:
-              title: Home Security
-              message: >-
-                {{ mode_label }} arming blocked.
-                Open zones: {{ states('sensor.home_security_open_zones') }}
-                {{ details if details is defined and details | trim != '' else '' }}
+              title: Beveiliging
+              message: |-
+                {{ mode_label }}-modus niet ingeschakeld.
+                Wacht op: {{ details | default('') }}
               data:
                 tag: home-security-blocked
 
       - conditions: "{{ kind == 'fault' }}"
         sequence:
-          - action: notify.mobile_app_marvins_iphone_13_nieuw
+          - action: "{{ notify_service }}"
             data:
-              title: Home Security
-              message: >-
-                Home security sensor fault.
-                Degraded: {{ states('sensor.home_security_degraded_sensors') }}
-                {{ details if details is defined and details | trim != '' else '' }}
+              title: Beveiliging
+              message: |-
+                ⚠️ {{ details | default('Sensorstoring.') }}
+                Niet beschikbaar: {{ states('sensor.home_security_unavailable_sensors') }}
               data:
                 tag: home-security-fault

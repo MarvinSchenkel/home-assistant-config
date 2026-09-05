@@ -12,13 +12,18 @@ trigger:
     event_type: automation_reloaded
   - trigger: state
     id: cycle_end
-    entity_id:
-      - binary_sensor.everyone_left_home
+    entity_id: binary_sensor.everyone_left_home
     to: "off"
   - trigger: state
     id: cycle_end
     entity_id: input_boolean.setting_guest_mode
     to: "on"
+  # Re-check presence once an alarm window expires back into armed_away
+  - trigger: state
+    id: cycle_end
+    entity_id: alarm_control_panel.home_security
+    from: triggered
+    to: armed_away
   - trigger: state
     id: disabled
     entity_id: input_boolean.home_security_enabled
@@ -26,8 +31,11 @@ trigger:
 condition:
   - or:
       - condition: state
-        entity_id: input_select.home_security_armed_mode
-        state: armed_away
+        entity_id: alarm_control_panel.home_security
+        state:
+          - armed_away
+          - pending
+          - triggered
       - condition: state
         entity_id: input_boolean.home_security_away_arm_pending
         state: "on"
@@ -48,5 +56,3 @@ condition:
          or is_state('input_boolean.home_security_away_arm_pending', 'on') }}
 action:
   - action: script.home_security_disarm
-    data:
-      clear_incident: false

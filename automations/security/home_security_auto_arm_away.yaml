@@ -21,7 +21,7 @@ trigger:
     for:
       minutes: 2
   - trigger: state
-    id: delayed_reconcile
+    id: enabled
     entity_id: input_boolean.home_security_enabled
     to: "on"
   - trigger: homeassistant
@@ -55,6 +55,7 @@ action:
         id:
           - new_cycle
           - guest_cleared
+          - enabled
           - delayed_reconcile
           - morning
       - condition: state

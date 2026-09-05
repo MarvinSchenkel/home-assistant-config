@@ -10,27 +10,17 @@ trigger:
       - event.g4_doorbell_doorbell
 action:
   - variables:
+      event_type: "{{ state_attr(trigger.entity_id, 'event_type') or '' }}"
       camera_context: >-
         {% if trigger.entity_id == 'event.g4_doorbell_doorbell' %}
-          Doorbell
-        {% else %}
-          {% set kind = (state_attr(trigger.entity_id, 'smart_detection_type')
-                         or state_attr(trigger.entity_id, 'detection_type')
-                         or state_attr(trigger.entity_id, 'event_type')
-                         or trigger.to_state.state
-                         or '') | lower %}
-          {% if 'person' in kind %}
-            Person detected
-          {% else %}
-            {{ '' }}
-          {% endif %}
+          Deurbel
+        {% elif 'person' in event_type | lower %}
+          Persoon gedetecteerd
         {% endif %}
   - condition: template
     value_template: "{{ camera_context | trim != '' }}"
   - action: script.home_security_capture_camera_context
     data:
-      context: "{{ camera_context }}"
-      event_id: >-
-        {{ state_attr(trigger.entity_id, 'event_id') or '' }}
-      event_type: >-
-        {{ state_attr(trigger.entity_id, 'event_type') or '' }}
+      context: "{{ camera_context | trim }}"
+      event_id: "{{ state_attr(trigger.entity_id, 'event_id') or '' }}"
+      event_type: "{{ event_type }}"

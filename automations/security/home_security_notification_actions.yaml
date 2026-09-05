@@ -6,35 +6,15 @@ id: f0c72d6b-2a89-49d9-a09f-3ce0d2d47109
 trigger:
   - trigger: event
     event_type: mobile_app_notification_action
+    event_data:
+      action: HOME_SECURITY_DISARM
 condition:
-  - condition: state
-    entity_id: input_boolean.home_security_incident_active
-    state: "on"
-  - condition: template
-    value_template: >-
-      {{ trigger.event.data.action.endswith(
-        '_' ~ states('input_text.home_security_incident_id')
-      ) }}
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.home_security
+        state: disarmed
 action:
-  - choose:
-      - conditions: >-
-          {{ trigger.event.data.action.startswith('HOME_SECURITY_ACK_') }}
-        sequence:
-          - action: script.home_security_clear_incident
-            data:
-              reset_observation_clock: false
-
-      - conditions: >-
-          {{ trigger.event.data.action.startswith('HOME_SECURITY_FALSE_POSITIVE_') }}
-        sequence:
-          - action: script.home_security_clear_incident
-            data:
-              reset_observation_clock: true
-
-      - conditions: >-
-          {{ trigger.event.data.action.startswith('HOME_SECURITY_DISARM_') }}
-        sequence:
-          - action: script.home_security_disarm
-            data:
-              manual: true
-              clear_incident: true
+  - action: script.home_security_disarm
+    data:
+      manual: true

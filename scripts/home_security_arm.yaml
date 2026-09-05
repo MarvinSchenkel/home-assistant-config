@@ -14,26 +14,22 @@ sequence:
       automatic_request: "{{ automatic | default(false) }}"
       ready_entity: >-
         {{ 'binary_sensor.home_security_away_perimeter_ready'
-           if mode == 'away'
+           if is_away
            else 'binary_sensor.home_security_night_perimeter_ready' }}
       pending_entity: >-
         {{ 'input_boolean.home_security_away_arm_pending'
-           if mode == 'away'
+           if is_away
            else 'input_boolean.home_security_night_arm_pending' }}
-      notified_entity: >-
-        {{ 'input_boolean.home_security_away_arm_block_notified'
-           if mode == 'away'
-           else 'input_boolean.home_security_night_arm_block_notified' }}
       suppression_entity: >-
         {{ 'input_boolean.home_security_away_manual_suppressed'
-           if mode == 'away'
+           if is_away
            else 'input_boolean.home_security_night_manual_suppressed' }}
       blockers: >-
         {{ states('sensor.home_security_away_blockers')
-           if mode == 'away'
+           if is_away
            else states('sensor.home_security_night_blockers') }}
       automatic_allowed: >-
-        {% if mode == 'away' %}
+        {% if is_away %}
           {{ is_state('binary_sensor.everyone_left_home', 'on')
              and is_state('input_boolean.setting_guest_mode', 'off')
              and is_state(suppression_entity, 'off') }}
@@ -49,38 +45,24 @@ sequence:
     entity_id: input_boolean.home_security_enabled
     state: "on"
   - condition: state
-    entity_id: input_boolean.home_security_incident_active
-    state: "off"
-  - condition: state
-    entity_id: input_select.home_security_armed_mode
+    entity_id: alarm_control_panel.home_security
     state: disarmed
   - condition: template
     value_template: "{{ not automatic_request or automatic_allowed }}"
   - choose:
       - conditions: "{{ is_state(ready_entity, 'on') }}"
         sequence:
-          - action: input_select.select_option
-            target:
-              entity_id: input_select.home_security_armed_mode
-            data:
-              option: "{{ 'armed_away' if is_away else 'armed_home' }}"
           - action: input_boolean.turn_off
             target:
               entity_id:
                 - "{{ suppression_entity }}"
                 - "{{ pending_entity }}"
-                - "{{ notified_entity }}"
           - action: "input_boolean.turn_{{ 'on' if automatic_request else 'off' }}"
             target:
               entity_id: input_boolean.home_security_automatic_arm
-          - action: timer.cancel
+          - action: "alarm_control_panel.alarm_arm_{{ 'away' if is_away else 'home' }}"
             target:
-              entity_id: timer.home_security_entry_delay
-          - action: input_text.set_value
-            target:
-              entity_id: input_text.home_security_pending_entry_source
-            data:
-              value: ""
+              entity_id: alarm_control_panel.home_security
           - if:
               - condition: template
                 value_template: >-
@@ -90,31 +72,22 @@ sequence:
               - action: script.home_security_notify
                 data:
                   kind: fault
-                  mode: away
-                  trigger_name: Degraded sensors
-                  details: >-
-                    Away mode armed with degraded indoor sensing:
-                    {{ states('sensor.home_security_degraded_sensors') }}
+                  details: Weg-modus is ingeschakeld met verminderde binnendetectie.
     default:
       - if:
           - condition: template
             value_template: >-
-              {{ not automatic_request or is_state(notified_entity, 'off') }}
+              {{ not automatic_request or is_state(pending_entity, 'off') }}
         then:
           - action: script.home_security_notify
             data:
               kind: blocked
               mode: "{{ mode }}"
-              trigger_name: "{{ 'Away' if is_away else 'Night' }} arming blocked"
-              details: >-
-                {{ 'Away' if is_away else 'Night' }} arming is waiting for:
-                {{ blockers }}
+              details: "{{ blockers }}"
       - if:
           - condition: template
             value_template: "{{ automatic_request }}"
         then:
           - action: input_boolean.turn_on
             target:
-              entity_id:
-                - "{{ pending_entity }}"
-                - "{{ notified_entity }}"
+              entity_id: "{{ pending_entity }}"

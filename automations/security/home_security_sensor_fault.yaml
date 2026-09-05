@@ -43,11 +43,7 @@ action:
   - variables:
       sensor_name: >-
         {{ state_attr(trigger.entity_id, 'friendly_name') or trigger.entity_id }}
-      current_mode: "{{ states('input_select.home_security_armed_mode') }}"
   - action: script.home_security_notify
     data:
       kind: fault
-      mode: >-
-        {{ 'away' if current_mode == 'armed_away' else 'home' }}
-      trigger_name: "{{ sensor_name }}"
-      details: "{{ sensor_name }} is unavailable."
+      details: "{{ sensor_name }} is niet beschikbaar."
