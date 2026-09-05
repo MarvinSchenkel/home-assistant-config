@@ -58,5 +58,5 @@ action:
         state: "on"
   - action: script.home_security_arm
     data:
-      mode: home
+      mode: night
       automatic: true
