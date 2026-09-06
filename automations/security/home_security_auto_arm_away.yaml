@@ -11,10 +11,6 @@ trigger:
     for:
       minutes: 2
   - trigger: state
-    id: retry
-    entity_id: binary_sensor.home_security_away_perimeter_ready
-    to: "on"
-  - trigger: state
     id: guest_cleared
     entity_id: input_boolean.setting_guest_mode
     to: "off"
@@ -49,18 +45,6 @@ action:
     then:
       - delay:
           seconds: "{{ 120 if trigger.id == 'delayed_reconcile' else 5 }}"
-  - condition: or
-    conditions:
-      - condition: trigger
-        id:
-          - new_cycle
-          - guest_cleared
-          - enabled
-          - delayed_reconcile
-          - morning
-      - condition: state
-        entity_id: input_boolean.home_security_away_arm_pending
-        state: "on"
   - action: script.home_security_arm
     data:
       mode: away

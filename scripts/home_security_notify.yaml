@@ -5,14 +5,18 @@ mode: parallel
 max: 20
 fields:
   kind:
-    description: alert, blocked or fault
+    description: alert, armed or fault
     required: true
   mode:
-    description: away or night, used for blocked notifications
+    description: away or night, used for armed notifications
   trigger_name:
     description: Friendly trigger name
   details:
     description: Additional details
+  bypassed:
+    description: Zones left unmonitored while armed
+  degraded:
+    description: Sensors that are unavailable while armed
 sequence:
   - variables:
       notify_service: notify.mobile_app_marvins_iphone_13_nieuw
@@ -70,16 +74,21 @@ sequence:
                 {%- endif %}
               data: "{{ alert_data }}"
 
-      - conditions: "{{ kind == 'blocked' }}"
+      - conditions: "{{ kind == 'armed' }}"
         sequence:
           - action: "{{ notify_service }}"
             data:
               title: Beveiliging
               message: |-
-                {{ mode_label }}-modus niet ingeschakeld.
-                Wacht op: {{ details | default('') }}
+                🛡️ {{ mode_label }}-modus ingeschakeld.
+                {%- if bypassed | default('') | trim != '' %}
+                Overbrugd: {{ bypassed }}
+                {%- endif %}
+                {%- if degraded | default('') | trim != '' %}
+                Verminderde detectie: {{ degraded }}
+                {%- endif %}
               data:
-                tag: home-security-blocked
+                tag: home-security-armed
 
       - conditions: "{{ kind == 'fault' }}"
         sequence:

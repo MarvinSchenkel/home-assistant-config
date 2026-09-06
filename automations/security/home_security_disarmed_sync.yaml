@@ -30,10 +30,7 @@ action:
           entity_id: input_boolean.home_security_night_manual_suppressed
   - action: input_boolean.turn_off
     target:
-      entity_id:
-        - input_boolean.home_security_automatic_arm
-        - input_boolean.home_security_away_arm_pending
-        - input_boolean.home_security_night_arm_pending
+      entity_id: input_boolean.home_security_automatic_arm
   - action: input_text.set_value
     target:
       entity_id:
