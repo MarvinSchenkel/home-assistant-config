@@ -41,14 +41,6 @@ input_boolean:
     name: Home Security Night Manual Suppressed
     icon: mdi:weather-night-off
 
-  home_security_away_arm_pending:
-    name: Home Security Away Arm Pending
-    icon: mdi:timer-sand
-
-  home_security_night_arm_pending:
-    name: Home Security Night Arm Pending
-    icon: mdi:timer-sand
-
   home_security_automatic_arm:
     name: Home Security Automatic Arm
     icon: mdi:shield-sync-outline
@@ -126,18 +118,6 @@ alarm_control_panel:
 
 template:
   - binary_sensor:
-      - name: Home Security Away Perimeter Ready
-        unique_id: home_security_away_perimeter_ready
-        state: >-
-          {{ expand('group.home_security_perimeter_contacts')
-             | selectattr('state', 'ne', 'off') | list | count == 0 }}
-
-      - name: Home Security Night Perimeter Ready
-        unique_id: home_security_night_perimeter_ready
-        state: >-
-          {{ expand('group.home_security_night_contacts')
-             | selectattr('state', 'ne', 'off') | list | count == 0 }}
-
       - name: Home Security Vacuum Suppression Active
         unique_id: home_security_vacuum_suppression_active
         device_class: running
@@ -152,20 +132,6 @@ template:
         state: >-
           {{ expand('group.home_security_perimeter_contacts')
              | selectattr('state', 'eq', 'on')
-             | map(attribute='name') | unique | join(', ') or 'Geen' }}
-
-      - name: Home Security Away Blockers
-        unique_id: home_security_away_blockers
-        state: >-
-          {{ expand('group.home_security_perimeter_contacts')
-             | selectattr('state', 'in', ['on', 'unknown', 'unavailable'])
-             | map(attribute='name') | unique | join(', ') or 'Geen' }}
-
-      - name: Home Security Night Blockers
-        unique_id: home_security_night_blockers
-        state: >-
-          {{ expand('group.home_security_night_contacts')
-             | selectattr('state', 'in', ['on', 'unknown', 'unavailable'])
              | map(attribute='name') | unique | join(', ') or 'Geen' }}
 
       - name: Home Security Unavailable Sensors
@@ -218,12 +184,6 @@ template:
             incident
           {% elif panel in ['armed_away', 'armed_night', 'pending'] %}
             {{ panel }}
-          {% elif states('sensor.home_security_away_blockers') != 'Geen'
-                or states('sensor.home_security_night_blockers') != 'Geen' %}
-            blocked
-          {% elif is_state('input_boolean.home_security_away_arm_pending', 'on')
-                or is_state('input_boolean.home_security_night_arm_pending', 'on') %}
-            arming
           {% elif states('sensor.home_security_degraded_sensors') != 'Geen' %}
             degraded
           {% else %}
@@ -236,8 +196,6 @@ template:
             {{ is_state('input_boolean.home_security_night_manual_suppressed', 'on') }}
           automatic_arm: >-
             {{ is_state('input_boolean.home_security_automatic_arm', 'on') }}
-          away_blockers: "{{ states('sensor.home_security_away_blockers') }}"
-          night_blockers: "{{ states('sensor.home_security_night_blockers') }}"
           open_zones: "{{ states('sensor.home_security_open_zones') }}"
           degraded_sensors: "{{ states('sensor.home_security_degraded_sensors') }}"
           unavailable_sensors: "{{ states('sensor.home_security_unavailable_sensors') }}"

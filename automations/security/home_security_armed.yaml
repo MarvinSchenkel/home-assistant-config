@@ -1,0 +1,32 @@
+---
+alias: home_security_armed
+description: Report zones that were bypassed when the alarm arms
+mode: queued
+id: be662742-5ed0-4d8c-b500-4941cd387e1e
+trigger:
+  # from disarmed only, so an expiring alarm returning to armed does not re-notify
+  - trigger: state
+    entity_id: alarm_control_panel.home_security
+    from: disarmed
+    to:
+      - armed_away
+      - armed_night
+action:
+  - variables:
+      is_away: "{{ trigger.to_state.state == 'armed_away' }}"
+      bypassed: >-
+        {{ expand('group.home_security_perimeter_contacts' if is_away
+                  else 'group.home_security_night_contacts')
+           | selectattr('state', 'in', ['on', 'unknown', 'unavailable'])
+           | map(attribute='name') | unique | join(', ') }}
+      degraded: >-
+        {% set names = states('sensor.home_security_degraded_sensors') %}
+        {{ names if is_away and names != 'Geen' else '' }}
+  - condition: template
+    value_template: "{{ bypassed != '' or degraded != '' }}"
+  - action: script.home_security_notify
+    data:
+      kind: armed
+      mode: "{{ 'away' if is_away else 'night' }}"
+      bypassed: "{{ bypassed }}"
+      degraded: "{{ degraded }}"

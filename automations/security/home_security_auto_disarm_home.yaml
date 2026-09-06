@@ -30,13 +30,9 @@ trigger:
     entity_id: input_boolean.home_security_enabled
     to: "off"
 condition:
-  - or:
-      - condition: state
-        entity_id: alarm_control_panel.home_security
-        state: armed_night
-      - condition: state
-        entity_id: input_boolean.home_security_night_arm_pending
-        state: "on"
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state: armed_night
   - condition: template
     value_template: >-
       {{ is_state('input_boolean.home_security_enabled', 'off')
@@ -48,7 +44,6 @@ condition:
   - condition: template
     value_template: >-
       {{ trigger.id != 'reconcile'
-         or is_state('input_boolean.home_security_automatic_arm', 'on')
-         or is_state('input_boolean.home_security_night_arm_pending', 'on') }}
+         or is_state('input_boolean.home_security_automatic_arm', 'on') }}
 action:
   - action: script.home_security_disarm
