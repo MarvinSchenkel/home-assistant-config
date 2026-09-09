@@ -54,8 +54,8 @@ trigger:
     below: -9
 
   - trigger: state
-    entity_id: sensor.gw3000a_solar_lux
-    to: "0"
+    entity_id: binary_sensor.outside_is_dark
+    to: "on"
 
   - trigger: numeric_state
     entity_id:
@@ -217,8 +217,8 @@ action:
                           - sensor.sun_adjusted_elevation
                         below: -9
                       - condition: state
-                        entity_id: sensor.gw3000a_solar_lux
-                        state: "0"
+                        entity_id: binary_sensor.outside_is_dark
+                        state: "on"
                   - condition: time
                     after: "16:00:00"
               - and:
