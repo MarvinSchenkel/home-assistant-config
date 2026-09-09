@@ -1,11 +1,15 @@
 ---
-# Outdoor darkness based on Ecowitt lux sensor (threshold: 700 lx)
+# Outdoor darkness based on Ecowitt lux sensor. The sensor reports in ~10 lx
+# steps, so 10 lx is its lowest non-zero reading and means pitch dark.
 binary_sensor:
   - name: outside_is_dark
     unique_id: 8b3f1a92-4c7e-4d1a-b8f3-6e2a91c0d5f7
+    # Without this an unavailable sensor reads as 0 lx, reporting darkness.
+    availability: >
+      {{ has_value("sensor.gw3000a_solar_lux") }}
     delay_on:
       seconds: 30
     delay_off:
       seconds: 30
     state: >
-      {{ states("sensor.gw3000a_solar_lux") | float(0) < 700 }}
+      {{ states("sensor.gw3000a_solar_lux") | float(0) < 10 }}
