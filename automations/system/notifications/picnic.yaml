@@ -24,10 +24,7 @@ variables:
     {{ as_timestamp(states('sensor.picnic_next_delivery_eta_end'), 0) }}
   eta_window: "{{ eta_start }}|{{ eta_end }}"
   days_left: >
-    {{
-      eta_start
-      | timestamp_custom('%d') | int
-      - as_timestamp(now()) | timestamp_custom('%d') | int }}
+    {{ ((eta_start | as_datetime | as_local).date() - now().date()).days }}
   day_name: >-
     {% if days_left == 0 %} vandaag
     {% elif days_left == 1 %} morgen
