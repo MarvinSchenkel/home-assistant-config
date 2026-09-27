@@ -1,0 +1,2 @@
+---
+rest: !include_dir_list ../entities/rest

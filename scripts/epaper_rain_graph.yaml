@@ -1,0 +1,70 @@
+---
+alias: epaper_rain_graph
+description: >
+  Draw the Buienradar 2-hour rain forecast as a bar chart on every OpenDisplay
+  e-paper display labelled "Rain graph". Needs the HACS OpenDisplay integration.
+mode: queued
+max: 2
+variables:
+  # Resolution of the display
+  w: 296
+  h: 128
+  fc: "{{ state_attr('sensor.buienradar_rain_forecast', 'forecasts') or [] }}"
+sequence:
+  - condition: template
+    value_template: "{{ fc | count > 0 }}"
+  - action: opendisplay.drawcustom
+    target:
+      label_id: rain_graph
+    data:
+      background: white
+      # Buienradar's 'value' is the graph height (0-100): light < 40 <= moderate < 70 <= heavy
+      payload: >-
+        {%- set n = fc | count -%}
+        {%- set top = 24 -%}
+        {%- set base = h - 16 -%}
+        {%- set bw = (w - 4) / n -%}
+        {%- set wet = fc | selectattr('value', 'gt', 0) | list -%}
+        {%- set ns = namespace(els=[]) -%}
+        {%- if not wet -%}
+          {%- set ns.els = [
+            {'type': 'icon', 'value': 'mdi:umbrella-closed-outline',
+             'x': (w / 2) | int - 24, 'y': (h / 2) | int - 44, 'size': 48},
+            {'type': 'text', 'value': 'Droog de komende 2 uur',
+             'x': (w / 2) | int, 'y': (h / 2) | int + 20, 'size': 18, 'anchor': 'mm'}
+          ] -%}
+        {%- else -%}
+          {%- set total = (fc | map(attribute='precipitation') | sum) * 5 / 60 -%}
+          {%- set ns.els = [
+            {'type': 'icon', 'value': 'mdi:weather-pouring', 'x': 2, 'y': 0, 'size': 20},
+            {'type': 'text', 'x': 26, 'y': 2, 'size': 16,
+             'value': 'Regen vanaf ' ~ wet[0].datetime[11:16] ~ '  ·  '
+                      ~ '%.1f' | format(total) ~ ' mm'}
+          ] -%}
+          {%- for level in [0.4, 0.7] -%}
+            {%- set y = base - ((base - top) * level) | int -%}
+            {%- set ns.els = ns.els + [
+              {'type': 'line', 'x_start': 2, 'x_end': w - 2, 'y_start': y, 'y_end': y,
+               'width': 1, 'dashed': true}
+            ] -%}
+          {%- endfor -%}
+          {%- for i in range(n) if fc[i].value > 0 -%}
+            {%- set color = 'red' if fc[i].value >= 70 else 'black' -%}
+            {%- set ns.els = ns.els + [
+              {'type': 'rectangle',
+               'x_start': 2 + (i * bw) | int, 'x_end': 2 + ((i + 1) * bw) | int - 2,
+               'y_start': base - ((base - top) * ([fc[i].value, 100] | min) / 100) | int,
+               'y_end': base, 'fill': color, 'outline': color, 'width': 1}
+            ] -%}
+          {%- endfor -%}
+          {%- set ns.els = ns.els + [
+            {'type': 'line', 'x_start': 0, 'x_end': w, 'y_start': base, 'y_end': base,
+             'width': 1},
+            {'type': 'text', 'value': 'Nu', 'x': 2, 'y': base + 2, 'size': 12},
+            {'type': 'text', 'value': fc[n // 2].datetime[11:16],
+             'x': (w / 2) | int, 'y': base + 2, 'size': 12, 'anchor': 'mt'},
+            {'type': 'text', 'value': fc[-1].datetime[11:16],
+             'x': w - 2, 'y': base + 2, 'size': 12, 'anchor': 'rt'}
+          ] -%}
+        {%- endif -%}
+        {{ ns.els }}
