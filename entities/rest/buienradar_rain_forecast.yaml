@@ -1,10 +1,12 @@
 ---
 # 2-hour rain nowcast in 5-minute slots, the data behind the Buienradar
 # rain graph. The Buienradar integration only exposes aggregates of this.
-resource_template: >-
-  https://graphdata.buienradar.nl/2.0/forecast/geo/Rain3Hour?lat={{
-  state_attr('zone.home', 'latitude') | round(2) }}&lon={{
-  state_attr('zone.home', 'longitude') | round(2) }}
+# Coordinates come from secrets: a template on zone.home renders during rest
+# setup, before the zone exists, and fails the whole rest integration.
+resource: https://graphdata.buienradar.nl/2.0/forecast/geo/Rain3Hour
+params:
+  lat: !secret home_lat
+  lon: !secret home_lon
 scan_interval: 300
 sensor:
   - name: Buienradar rain forecast
