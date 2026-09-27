@@ -6,9 +6,9 @@ description: >
 mode: queued
 max: 2
 variables:
-  # Resolution of the display
-  w: 296
-  h: 128
+  # Landscape resolution of the 2.7" panel (natively 168x384 portrait)
+  w: 384
+  h: 168
   fc: "{{ state_attr('sensor.buienradar_rain_forecast', 'forecasts') or [] }}"
 sequence:
   - condition: template
@@ -18,6 +18,8 @@ sequence:
       label_id: rain_graph
     data:
       background: white
+      # Mounted landscape with the LED on the left
+      rotate: 90
       # Buienradar's 'value' is the graph height (0-100): light < 40 <= moderate < 70 <= heavy
       payload: >-
         {%- set n = fc | count -%}
@@ -49,12 +51,11 @@ sequence:
             ] -%}
           {%- endfor -%}
           {%- for i in range(n) if fc[i].value > 0 -%}
-            {%- set color = 'red' if fc[i].value >= 70 else 'black' -%}
             {%- set ns.els = ns.els + [
               {'type': 'rectangle',
                'x_start': 2 + (i * bw) | int, 'x_end': 2 + ((i + 1) * bw) | int - 2,
                'y_start': base - ((base - top) * ([fc[i].value, 100] | min) / 100) | int,
-               'y_end': base, 'fill': color, 'outline': color, 'width': 1}
+               'y_end': base, 'fill': 'black', 'outline': 'black', 'width': 1}
             ] -%}
           {%- endfor -%}
           {%- set ns.els = ns.els + [
