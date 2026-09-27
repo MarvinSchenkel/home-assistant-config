@@ -1,0 +1,31 @@
+---
+alias: house_epaper_rain_graph
+description: >
+  Redraw the rain graph on the e-paper display when the Buienradar forecast
+  changes. Skipped while the forecast stays dry, so the display is not
+  refreshed every 5 minutes for nothing.
+mode: single
+id: 3ca120e8-865a-49eb-9618-15af2375ee94
+
+trigger:
+  - trigger: homeassistant
+    event: start
+  - trigger: event
+    event_type: automation_reloaded
+  - trigger: state
+    entity_id:
+      - sensor.buienradar_rain_forecast
+
+condition:
+  - condition: template
+    value_template: >-
+      {% set old = trigger.from_state.attributes.forecasts | default([])
+         if trigger.from_state is defined and trigger.from_state else [] %}
+      {% set new = trigger.to_state.attributes.forecasts | default([])
+         if trigger.to_state is defined and trigger.to_state else [] %}
+      {{ trigger.platform != 'state'
+         or old | selectattr('value', 'gt', 0) | list | count > 0
+         or new | selectattr('value', 'gt', 0) | list | count > 0 }}
+
+action:
+  - action: script.epaper_rain_graph

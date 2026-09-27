@@ -10,3 +10,8 @@ recorder:
 
   # Disable auto purging, I'm doing this using automations instead
   auto_purge: false
+
+  # Forecast slots are a ~3.5 KB attribute refreshed every 5 minutes
+  exclude:
+    entities:
+      - sensor.buienradar_rain_forecast
