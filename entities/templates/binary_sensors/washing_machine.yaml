@@ -6,7 +6,7 @@ binary_sensor:
     minutes: 6
   state: >
     {%-
-      if states("sensor.wasmachine_electric_consumption_a") | float > 0
+      if states("sensor.wasmachine_electric_consumption_a") | float(0) > 0
     -%}
       on
     {%- else -%}

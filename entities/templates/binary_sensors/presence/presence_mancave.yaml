@@ -8,6 +8,6 @@ binary_sensor:
           or is_state("media_player.mancave_tv", "on")
           or (
             is_state("sensor.apple_watch_marvin", "Mancave")
-            and states("sensor.apple_watch_marvin_distance") | int < 7
+            and states("sensor.apple_watch_marvin_distance") | float(99) < 7
           )
       }}
