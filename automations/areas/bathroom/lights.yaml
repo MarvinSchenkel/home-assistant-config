@@ -47,8 +47,6 @@ variables:
     - &turn_on
       action: scene.turn_on
       alias: "Turn the bathroom lights on"
-      data:
-        transition: 1
 
     - &turn_off
       action: light.turn_off
@@ -108,6 +106,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: scene.bathroom_lights_{{ spa_scene }}
+            data:
+              transition: 1
 
       - alias: "Keep the lights on in spa mode (when someone is taking a bath)"
         conditions:
@@ -133,6 +133,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: "scene.bathroom_lights_lezen"
+            data:
+              transition: 1
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:
@@ -160,6 +162,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 1
 
       - alias: "Turn the light off when presence is off for x-amount of minutes"
         conditions:
