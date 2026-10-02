@@ -138,6 +138,14 @@ action:
         sequence:
           - *turn_down
 
+      - alias: "Turn down while the garden door is open"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.garden_door_open
+            state: "on"
+        sequence:
+          - *turn_down
+
       - alias: "Turn up the heating in the morning"
         conditions:
           - condition: state

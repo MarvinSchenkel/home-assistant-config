@@ -84,7 +84,7 @@ action:
         conditions:
           - condition: state
             entity_id: input_select.bathroom_room_mode
-            state: "Wakker"
+            state: ["Wakker", "Spa"]
           - condition: time
             after: "17:00:00"
             before: "21:00:00"

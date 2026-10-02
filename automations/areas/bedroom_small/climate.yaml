@@ -57,6 +57,7 @@ action:
                 entity_id: binary_sensor.everyone_left_home
                 state: "on"
               - condition: time
+                after: "06:00:00"
                 before: "18:00:00"
         sequence:
           - *turn_down
