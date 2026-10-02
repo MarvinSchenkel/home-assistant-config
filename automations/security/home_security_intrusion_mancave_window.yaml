@@ -10,14 +10,15 @@ trigger:
     not_from:
       - unavailable
       - unknown
+condition:
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state: armed_away
 action:
   - variables:
       trigger_label: >-
         {{ state_attr(trigger.entity_id, 'friendly_name')
            or trigger.entity_id }}
-  - condition: state
-    entity_id: alarm_control_panel.home_security
-    state: armed_away
   - action: script.home_security_trigger
     data:
       trigger_name: "{{ trigger_label }}"
