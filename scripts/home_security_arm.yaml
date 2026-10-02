@@ -1,7 +1,8 @@
 ---
 alias: home_security_arm
 description: Arm home security after validating the requested mode
-mode: single
+mode: queued
+max: 5
 fields:
   mode:
     description: away or night

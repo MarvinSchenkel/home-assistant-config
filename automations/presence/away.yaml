@@ -1,7 +1,7 @@
 ---
 description: Mark person as away 10 minutes after leaving
 alias: presence_away
-mode: single
+mode: queued
 id: 3fb50eae-6c01-4048-81af-429f20854158
 
 trigger:
