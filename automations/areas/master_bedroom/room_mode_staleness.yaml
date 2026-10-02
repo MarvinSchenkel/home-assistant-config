@@ -55,6 +55,7 @@ action:
             for:
               minutes: 180
           - condition: time
+            after: "08:00:00"
             before: "18:00:00"
         sequence:
           - <<: *select_mode
