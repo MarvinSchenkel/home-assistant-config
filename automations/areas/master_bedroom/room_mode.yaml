@@ -29,18 +29,6 @@ trigger:
 
   - trigger: state
     entity_id:
-      - binary_sensor.presence_master_bedroom
-    to: "off"
-    for:
-      minutes: 30
-
-  - trigger: time
-    at:
-      - "08:00:00"
-      - "09:30:00"
-
-  - trigger: state
-    entity_id:
       - event.hue_switch_on
       - event.hue_switch_off
     id: hue_remote
@@ -69,8 +57,6 @@ action:
                       - condition: state
                         entity_id: input_select.master_bedroom_room_mode
                         state: "Dutje"
-              - condition: trigger
-                id: "button_marvin_one"
               - and:
                   - condition: trigger
                     id: "hue_remote"
@@ -87,46 +73,12 @@ action:
               option: "Slaap"
 
       - conditions:
-          - or:
-              - condition: trigger
-                id: "button_laura_hold"
-              - condition: trigger
-                id: "button_marvin_hold"
+          - condition: trigger
+            id: "button_laura_hold"
         sequence:
           - <<: *select_mode
             data:
               option: "Net wakker"
-
-      # - conditions:
-      #     - or:
-      #         - and:
-      #             - condition: state
-      #               entity_id: binary_sensor.weekend
-      #               state: "on"
-      #             - condition: time
-      #               after: "09:30:00"
-      #         - and:
-      #             - condition: state
-      #               entity_id: binary_sensor.weekend
-      #               state: "off"
-      #             - condition: time
-      #               after: "08:00:00"
-      #     - condition: time
-      #       before: "16:00:00"
-      #     - condition: state
-      #       entity_id:
-      #         - input_select.master_bedroom_room_mode
-      #       state: "Slaap"
-      #     - condition: state
-      #       entity_id:
-      #         - binary_sensor.presence_master_bedroom
-      #       state: "off"
-      #       for:
-      #         minutes: 30
-      #   sequence:
-      #     - <<: *select_mode
-      #       data:
-      #         option: "Net wakker"
 
       - conditions:
           - condition: trigger
