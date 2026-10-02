@@ -29,8 +29,12 @@ trigger:
       - "on"
 
   - trigger: state
-    entity_id:
-      - media_player.mancave_tv
+    entity_id: media_player.mancave_tv
+    to: ~
+
+  - trigger: state
+    entity_id: media_player.mancave_tv
+    attribute: source
 
   - trigger: state
     entity_id:
@@ -57,6 +61,11 @@ trigger:
     entity_id:
       - sensor.sun_elevation
     below: 17.5
+
+  - trigger: numeric_state
+    entity_id:
+      - sensor.sun_elevation
+    below: 1.0
 
   - trigger: state
     entity_id:
