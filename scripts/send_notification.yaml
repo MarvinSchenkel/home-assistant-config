@@ -114,7 +114,7 @@ sequence:
                 (type == 'home_only' and marvin_state in home_status)
                 ) }}"
               sequence:
-                - action: notify.mobile_app_marvins_iphone_13_nieuw
+                - action: notify.mobile_app_marvins_iphone_13
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ title }}"

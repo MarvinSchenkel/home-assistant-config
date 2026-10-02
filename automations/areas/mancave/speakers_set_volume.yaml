@@ -31,6 +31,7 @@ triggers:
     entity_id:
       - input_select.mancave_room_mode
       - binary_sensor.mac_studio_camera_in_use
+      - media_player.mass_mac_studio
 
   - trigger: state
     entity_id: media_player.mancave_tv
@@ -87,6 +88,10 @@ actions:
                 condition: state
                 entity_id: binary_sensor.mac_studio_camera_in_use
                 state: "on"
+              - alias: "I am listening music on my headphone"
+                entity_id: media_player.mass_mac_studio
+                condition: state
+                state: "playing"
               - alias: "We're playing a game"
                 condition: state
                 entity_id: media_player.mancave_tv

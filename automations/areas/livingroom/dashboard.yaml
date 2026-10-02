@@ -39,7 +39,7 @@ triggers:
 
 variables:
   # MA player id of media_player.mass_woonkamer_wiim
-  now_playing_player_id: "wiim_uuid:FF98F7F4-EEC9-70AF-5264-1F82FF98F7F4"
+  now_playing_player_id: "wiim_uuid:FF970016-49E9-8EA4-BAF0-4BEBFF970016"
   anchors:
     - &condition_watching_tv
       alias: "We're watching TV"

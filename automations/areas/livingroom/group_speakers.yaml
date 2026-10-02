@@ -58,7 +58,7 @@ variables:
       condition: template
       value_template: |-
         {{
-          'media_player.mass_woonkamer_wiim'
+          'media_player.mass_wiim_mini'
           in state_attr(mass_entity, 'group_members')
         }}
 
@@ -67,14 +67,14 @@ variables:
       action: script.speaker_group
       data:
         operation: join
-        target_player: media_player.mass_woonkamer_wiim
+        target_player: media_player.mass_wiim_mini
 
     - &ungroup
       alias: "Remove the speaker from the master group (serialized via script)"
       action: script.speaker_group
       data:
         operation: unjoin
-        target_player: media_player.mass_woonkamer_wiim
+        target_player: media_player.mass_wiim_mini
 
 conditions:
   - condition: state
@@ -93,7 +93,7 @@ action:
           - not:
               - condition: state
                 entity_id:
-                  - media_player.mass_woonkamer_wiim
+                  - media_player.mass_wiim_mini
                 state: playing
           - not:
               - condition: state
@@ -118,7 +118,7 @@ action:
           - not:
               - condition: state
                 entity_id:
-                  - media_player.mass_woonkamer_wiim
+                  - media_player.mass_wiim_mini
                 state: "off"
           - *condition_in_group
         sequence:

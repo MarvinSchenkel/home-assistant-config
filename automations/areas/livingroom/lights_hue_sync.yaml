@@ -91,9 +91,8 @@ action:
           - *condition_the_wife_is_not_home
         sequence:
           - action: huesyncbox.set_sync_state
-            target:
-              device_id: 9d38d5016fcd873b337b31b73387971d
             data:
+              device_id: "98394f3ef15617634ca970ef1efc9dfa"
               power: true
               sync: true
               brightness: 71
@@ -108,9 +107,8 @@ action:
           - *condition_watching_tv
         sequence:
           - action: huesyncbox.set_sync_state
-            target:
-              device_id: 9d38d5016fcd873b337b31b73387971d
             data:
+              device_id: "98394f3ef15617634ca970ef1efc9dfa"
               power: true
               sync: true
               brightness: 71

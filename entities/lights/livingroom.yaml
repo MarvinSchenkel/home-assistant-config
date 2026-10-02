@@ -2,8 +2,8 @@
 platform: group
 name: livingroom
 entities:
-  - light.spot_stairs
-  - light.spot_garden_side
+  - light.hue_datura_top
+  - light.hue_datura_bottom
   - light.dinner_door
   - light.dinner_wall
   - light.corner_couch
