@@ -1,6 +1,6 @@
 ---
 alias: areas_livingroom_christmas_tree
-description: Turns the livingroom lights on when motion has been detected
+description: Turns the christmas tree on when someone is in the livingroom
 mode: queued
 id: 74468068-43d1-40a0-8eec-822a4235adfc
 

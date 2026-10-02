@@ -278,7 +278,6 @@ action:
                     sequence:
                       - *airco_off
 
-      # Above away on purpose: an empty house is fine to cool on free power
       - alias: "Solar comfort hold — keep the office pleasant while exporting"
         conditions:
           - alias: "Work hours have started, bedtime hasn't"

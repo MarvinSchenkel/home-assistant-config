@@ -2,8 +2,6 @@
 lovelace:
   mode: yaml
   resources:
-    - url: /local/custom_js/color-thief.min.js
-      type: module
     - url: /browser_mod.js
       type: module
     - url: /local/community/mini-media-player/mini-media-player-bundle.js
