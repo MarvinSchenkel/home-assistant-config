@@ -1,6 +1,8 @@
 ---
 sensor:
   - name: sun_azimuth
-    unit_of_measurement: "degrees"
-    state: >-
-      {{ state_attr("sun.sun", "azimuth") | float(1) }}
+    unique_id: 55d7b4fe-e4ea-4d8a-8faf-d7ff5f9d7266
+    unit_of_measurement: "°"
+    state_class: measurement
+    availability: "{{ state_attr('sun.sun', 'azimuth') is number }}"
+    state: "{{ state_attr('sun.sun', 'azimuth') }}"

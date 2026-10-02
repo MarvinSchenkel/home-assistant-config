@@ -1,6 +1,9 @@
 ---
 sensor:
   - name: current_temperature
+    unique_id: 4644e504-e67c-4f91-bfa6-768d670aaa21
     unit_of_measurement: "°C"
-    state: >
-      {{ states('sensor.gw3000a_outdoor_temperature') | default(1) }}
+    device_class: temperature
+    state_class: measurement
+    availability: "{{ has_value('sensor.gw3000a_outdoor_temperature') }}"
+    state: "{{ states('sensor.gw3000a_outdoor_temperature') }}"

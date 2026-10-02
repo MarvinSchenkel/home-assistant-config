@@ -1,6 +1,8 @@
 ---
 sensor:
   - name: sun_elevation
-    unit_of_measurement: "degrees"
-    state: >-
-      {{ state_attr("sun.sun", "elevation") | float(1) }}
+    unique_id: 4da7f7fc-ef16-4c6d-ae79-f7f14bf592af
+    unit_of_measurement: "°"
+    state_class: measurement
+    availability: "{{ state_attr('sun.sun', 'elevation') is number }}"
+    state: "{{ state_attr('sun.sun', 'elevation') }}"

@@ -44,9 +44,9 @@ binary_sensor:
         and is_state('binary_sensor.sun_hot', 'on')
         and hot_change_in_mins >= 5
         and (
-          (states('sensor.current_temperature') | float > 19.0)
+          (states('sensor.current_temperature') | float(0) > 19.0)
           or (
-            states('sensor.current_temperature') | float > 16.0
+            states('sensor.current_temperature') | float(0) > 16.0
             and is_state('weather.lokaal_weer', 'sunny')
           )
         )
