@@ -9,5 +9,6 @@ trigger:
 
 binary_sensor:
   - name: presence_master_bedroom_door
+    unique_id: 2645659e-5238-446c-9a23-f0c25a28ff99
     auto_off: 10
     state: "on"

@@ -2,6 +2,7 @@
 # A binary sensor based on bed sensor indicating whether someone is in bed
 binary_sensor:
   name: someone_in_bed
+  unique_id: 1930d794-7916-47c6-b5dc-69240475fb57
   state: >
     {{ is_state("binary_sensor.presence_bed_laura", "on")
         or is_state("binary_sensor.presence_bed_marvin", "on") }}
