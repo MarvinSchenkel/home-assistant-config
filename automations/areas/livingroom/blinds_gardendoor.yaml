@@ -100,7 +100,6 @@ trigger:
     id: "reset"
 
 variables:
-  temperature_entity: "sensor.livingroom_temperature"
   anchors:
     - &cover_closed
       alias: "Close the blinds"
@@ -187,15 +186,11 @@ action:
         sequence:
           - choose:
               - conditions:
-                  - alias: "It was changed by a user"
+                  - alias: "Changed by a user, not the NS panel"
                     condition: template
-                    value_template: "{{ trigger.to_state.context.user_id != None }}"
-                  - alias: "It wasn't an NS panel button press"
-                    condition: template
-                    value_template: >
-                      "{{
-                          trigger.to_state.context.user_id
-                          != '98b8473f95de49ecbb11a513a51df542' }}"
+                    value_template: >-
+                      {{ trigger.to_state.context.user_id
+                         not in [none, '98b8473f95de49ecbb11a513a51df542'] }}
                 sequence:
                   - *manual_control_on
 
@@ -251,9 +246,9 @@ action:
                       - binary_sensor.is_hot_day
                     state: "on"
                   # But only when it's hotter outside than inside
-                  - >-
-                    {{ (states(temperature_entity) | float)
-                       < (states("sensor.current_temperature") | float) }}
+                  - condition: numeric_state
+                    entity_id: sensor.livingroom_temperature
+                    below: sensor.current_temperature
         sequence:
           - *cover_sun
 
