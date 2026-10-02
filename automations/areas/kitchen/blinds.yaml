@@ -81,22 +81,6 @@ condition:
 
 action:
   - choose:
-      - alias: "Close the blinds when hue remote down is pressed"
-        conditions:
-          - condition: trigger
-            id: "hue_dimmer_down_press"
-        sequence:
-          - *halfclosed
-          - *manual_control_on
-
-      - alias: "Open the blinds when hue remote up is pressed"
-        conditions:
-          - condition: trigger
-            id: "hue_dimmer_up_press"
-        sequence:
-          - *halfopen
-          - *manual_control_off
-
       - alias: "Check if we manually changed the blinds"
         conditions:
           - condition: trigger

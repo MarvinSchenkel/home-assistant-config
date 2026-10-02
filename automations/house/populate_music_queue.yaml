@@ -79,6 +79,7 @@ condition:
   - condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
+  - "{{ active_schedule in ['just_awake', 'early_morning', 'morning', 'day', 'evening'] }}"
 
 action:
   - if:
