@@ -20,7 +20,7 @@ trigger:
     from: ~
 
   - trigger: time
-    at: "21:00:00"
+    at: ["06:00:00", "21:00:00"]
 
 variables:
   anchors:
