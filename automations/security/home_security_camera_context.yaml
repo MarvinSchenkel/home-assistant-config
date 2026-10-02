@@ -21,6 +21,6 @@ action:
     value_template: "{{ camera_context | trim != '' }}"
   - action: script.home_security_capture_camera_context
     data:
-      context: "{{ camera_context | trim }}"
+      label: "{{ camera_context | trim }}"
       event_id: "{{ state_attr(trigger.entity_id, 'event_id') or '' }}"
       event_type: "{{ event_type }}"

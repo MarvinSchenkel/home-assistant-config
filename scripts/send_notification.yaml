@@ -26,7 +26,7 @@ variables:
   type: "{{ type | default('normal') }}"
   image: "{{ image | default('None') }}"
   video: "{{ video | default('None') }}"
-  home_status: ["Thuis", "Net Thuis"]
+  home_status: ["Thuis", "Net thuis"]
   away_status: ["Weg", "Net weg", "Lang weg"]
   laura_state: "{{ states('input_select.laura_status_dropdown') }}"
   marvin_state: "{{ states('input_select.marvin_status_dropdown') }}"
