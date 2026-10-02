@@ -59,7 +59,7 @@ variables:
       value_template: |-
         {{
           'media_player.mass_wiim_mini'
-          in state_attr(mass_entity, 'group_members')
+          in (state_attr(mass_entity, 'group_members') or [])
         }}
 
     - &group
