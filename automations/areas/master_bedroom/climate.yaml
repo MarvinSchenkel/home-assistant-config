@@ -275,21 +275,19 @@ action:
           - alias: "At least one of us is likely sleeping here tonight"
             condition: template
             value_template: "{{ anyone_likely_home_tonight }}"
-        sequence:
           # On a day the pre-cool worked, this is a no-op — that's the design goal
-          - if:
-              # Keeps matching while running, so a dropped command is retried
-              - >-
-                {{ room_temp >= target_sleep_temperature + temp_hysteresis
-                   or (airco_compressor_active
-                       and room_temp > target_sleep_temperature - temp_hysteresis) }}
-              # When it's cooler outside the window is the tool, not the compressor
-              - "{{ outdoor_temp >= room_temp - 1 }}"
-            then:
-              - variables:
-                  desired_temp: "{{ target_sleep_temperature }}"
-                  desired_fan: "auto"
-              - *airco_cool
+          # Keeps matching while running, so a dropped command is retried
+          - >-
+            {{ room_temp >= target_sleep_temperature + temp_hysteresis
+               or (airco_compressor_active
+                   and room_temp > target_sleep_temperature - temp_hysteresis) }}
+          # When it's cooler outside the window is the tool, not the compressor
+          - "{{ outdoor_temp >= room_temp - 1 }}"
+        sequence:
+          - variables:
+              desired_temp: "{{ target_sleep_temperature }}"
+              desired_fan: "auto"
+          - *airco_cool
 
       - alias: "Away — no comfort cooling for an empty room"
         conditions:
