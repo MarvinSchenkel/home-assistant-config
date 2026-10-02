@@ -6,4 +6,4 @@ entities:
   light.christmas_tree:
     state: "on"
     brightness: 40
-    color_temp: 500
+    color_temp_kelvin: 2000
