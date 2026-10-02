@@ -1,7 +1,7 @@
 ---
 description: Mark person as just left based on the device tracker
 alias: presence_just_left
-mode: single
+mode: queued
 id: 388b4902-87a3-4312-9f98-5a81fd720a9c
 
 trigger:
