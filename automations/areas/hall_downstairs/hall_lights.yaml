@@ -73,6 +73,10 @@ trigger:
     to: "movie"
     id: "movie"
 
+  - trigger: state
+    entity_id: input_boolean.setting_manual_lights
+    to: "off"
+
 condition:
   - condition: state
     alias: "Check if we can automate the lights"

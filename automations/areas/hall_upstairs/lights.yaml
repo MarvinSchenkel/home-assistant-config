@@ -85,6 +85,10 @@ trigger:
       - binary_sensor.smallbedroom_door_open
     to: "off"
 
+  - trigger: state
+    entity_id: input_boolean.setting_manual_lights
+    to: "off"
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights

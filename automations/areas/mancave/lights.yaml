@@ -96,7 +96,14 @@ trigger:
     entity_id:
       - binary_sensor.mancave_is_dark
       - input_select.mancave_room_mode
-      - media_player.mancave_tv
+
+  - trigger: state
+    entity_id: media_player.mancave_tv
+    to: ~
+
+  - trigger: state
+    entity_id: media_player.mancave_tv
+    attribute: source
 
 condition: []
 
