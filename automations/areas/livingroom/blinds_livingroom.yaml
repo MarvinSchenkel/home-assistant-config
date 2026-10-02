@@ -72,6 +72,12 @@ trigger:
       minutes: 8
 
   - trigger: state
+    entity_id: media_player.living_room_android
+    to: "off"
+    for:
+      minutes: 1
+
+  - trigger: state
     entity_id:
       - scene.livingroom_cover_closed
       - scene.livingroom_cover_halfclosed

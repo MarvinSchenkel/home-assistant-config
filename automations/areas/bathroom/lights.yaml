@@ -85,6 +85,14 @@ trigger:
       - input_select.bathroom_room_mode
       - binary_sensor.bathroom_is_dark
 
+  - trigger: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
+
+  - trigger: state
+    entity_id: input_boolean.setting_manual_lights
+    to: "off"
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights

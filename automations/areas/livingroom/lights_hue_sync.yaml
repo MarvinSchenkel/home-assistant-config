@@ -36,6 +36,12 @@ trigger:
     for:
       minutes: 10
 
+  - trigger: state
+    entity_id:
+      - sensor.marvin_status
+      - sensor.laura_status
+    to: ~
+
 variables:
   anchors:
     - &condition_is_presence_detected
