@@ -1,6 +1,7 @@
 ---
 sensor:
   name: rmn_next_pickup_in
+  unique_id: 62457bc5-d115-4777-a563-780785a6d315
   state: >
     {%- set paper = state_attr('sensor.rmn_papier', 'Days_until') %}
     {%- set gft = state_attr('sensor.rmn_gft', 'Days_until') %}

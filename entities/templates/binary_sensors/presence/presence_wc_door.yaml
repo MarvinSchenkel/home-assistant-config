@@ -9,5 +9,6 @@ triggers:
 
 binary_sensor:
   - name: presence_wc_door
+    unique_id: ed521669-b3fb-47ad-bce1-28fccc49732b
     auto_off: 10
     state: "on"
