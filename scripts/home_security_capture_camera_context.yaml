@@ -3,7 +3,7 @@ alias: home_security_capture_camera_context
 description: Record recent doorbell or person detection context
 mode: single
 fields:
-  context:
+  label:
     description: Human readable context
     required: true
   event_id:
@@ -15,7 +15,7 @@ sequence:
     target:
       entity_id: input_text.home_security_camera_context
     data:
-      value: "{{ context }}"
+      value: "{{ label }}"
   - action: input_text.set_value
     target:
       entity_id: input_text.home_security_camera_event_id
