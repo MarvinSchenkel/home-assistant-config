@@ -31,7 +31,10 @@ triggers:
     entity_id:
       - input_select.mancave_room_mode
       - binary_sensor.mac_studio_camera_in_use
-      - media_player.mass_mac_studio
+
+  - trigger: state
+    entity_id: media_player.mass_mac_studio
+    to: ~
 
   - trigger: state
     entity_id: media_player.mancave_tv
