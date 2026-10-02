@@ -112,8 +112,6 @@ variables:
     - &turn_on
       alias: "Turn on the lights"
       action: scene.turn_on
-      data:
-        transition: 2
 
 condition:
   - condition: state
@@ -141,6 +139,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: scene.livingroom_lights_movie
+            data:
+              transition: 2
 
       - alias: "Gradually turn on the lights the first time."
         conditions:
@@ -174,6 +174,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: '{{ current_light_scene }}'
+            data:
+              transition: 2
 
     default:
       - *turn_off
