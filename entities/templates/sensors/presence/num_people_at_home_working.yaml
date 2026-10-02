@@ -3,6 +3,7 @@
 # so we know when everyone at home is working
 sensor:
   - name: num_people_at_home_working
+    unique_id: 4bd343f8-e8fb-46c9-95de-f823ba792f5d
     unit_of_measurement: "people"
     state: >-
       {% set noOfPeople = 0 %}

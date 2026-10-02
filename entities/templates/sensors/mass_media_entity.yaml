@@ -1,4 +1,5 @@
 ---
 sensor:
   - name: mass_media_entity
+    unique_id: be44d75e-5585-42d9-bd46-f70f0a9f554c
     state: "media_player.mass_mancave_wiim_amp"

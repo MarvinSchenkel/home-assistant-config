@@ -3,6 +3,7 @@
 # so we know when everyone has gone to bed
 sensor:
   - name: num_people_at_home
+    unique_id: 2dfe2083-1b40-47f2-ae55-1c6718a8bfd4
     unit_of_measurement: "people"
     state: >-
       {% set noOfPeople = 0 %}

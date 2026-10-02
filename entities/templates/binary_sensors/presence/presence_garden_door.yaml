@@ -9,5 +9,6 @@ trigger:
 
 binary_sensor:
   - name: presence_garden_door
+    unique_id: 24734a5d-6cb2-43b5-95d9-3411e87fda72
     auto_off: 10
     state: "on"

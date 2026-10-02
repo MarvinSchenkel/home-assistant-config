@@ -9,5 +9,6 @@ trigger:
 
 binary_sensor:
   - name: presence_bathroom_door
+    unique_id: abb3fdda-dd31-49cc-ba35-a616260348ab
     auto_off: 10
     state: "on"

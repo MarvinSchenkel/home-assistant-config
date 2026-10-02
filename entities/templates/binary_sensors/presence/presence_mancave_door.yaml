@@ -9,5 +9,6 @@ trigger:
 
 binary_sensor:
   - name: presence_mancave_door
+    unique_id: b7f986b8-8781-4078-8a19-3036d6befc63
     auto_off: 10
     state: "on"
