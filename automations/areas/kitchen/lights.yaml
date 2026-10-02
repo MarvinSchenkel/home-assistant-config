@@ -141,8 +141,8 @@ action:
           - *condition_light_schedule_change
           - *is_presence_detected
           - or:
-            - *is_dark
-            - *is_coffee_machine_on
+              - *is_dark
+              - *is_coffee_machine_on
         sequence:
           - <<: *turn_on
             target:
@@ -154,8 +154,8 @@ action:
         conditions:
           - *is_presence_detected
           - or:
-            - *is_dark
-            - *is_coffee_machine_on
+              - *is_dark
+              - *is_coffee_machine_on
         sequence:
           - <<: *turn_on
             target:

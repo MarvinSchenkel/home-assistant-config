@@ -1,6 +1,6 @@
 ---
 # Predicts whether the coming night stays too warm for open-window cooling
-# (Dutch "tropische nacht" ~ minimum >= 20°C;)
+# (Dutch "tropische nacht" ~ minimum >= 20°C; 20.5 only arms the hold on clearly tropical nights)
 trigger:
   # 18:00 only: overnight consumers need the value frozen for the current night
   - trigger: time
