@@ -13,14 +13,14 @@ trigger:
     event_type: automation_reloaded
 
   - trigger: state
-    entity_id: media_player.mass_woonkamer_wiim
+    entity_id: media_player.mass_wiim_mini
     to: "playing"
 
 action:
   - choose:
       - conditions:
           - condition: state
-            entity_id: media_player.mass_woonkamer_wiim
+            entity_id: media_player.mass_wiim_mini
             state: "playing"
         sequence:
           - action: media_player.select_source

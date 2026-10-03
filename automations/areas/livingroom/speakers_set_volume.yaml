@@ -23,7 +23,7 @@ triggers:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
   - trigger: state
-    entity_id: media_player.mass_woonkamer_wiim
+    entity_id: media_player.mass_wiim_mini
     to: playing
   - trigger: state
     entity_id:

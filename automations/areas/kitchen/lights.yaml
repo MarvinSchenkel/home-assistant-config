@@ -43,6 +43,7 @@ trigger:
     entity_id:
       - binary_sensor.kitchen_is_dark
       - input_boolean.house_mode_cooking
+      - switch.decent_espresso_de1pro_de1_on
 
   - trigger: state
     entity_id:
@@ -62,13 +63,19 @@ variables:
       alias: "Turn the lights off"
       action: light.turn_off
       data:
-        entity_id: light.led_kitchen
+        entity_id: light.hue_led_coffee_corner
         transition: 3
 
     - &is_presence_detected
       alias: "Presence is detected"
       condition: state
       entity_id: binary_sensor.presence_kitchen
+      state: "on"
+
+    - &is_coffee_machine_on
+      alias: "Are we about to make a cup of coffee?"
+      condition: state
+      entity_id: switch.decent_espresso_de1pro_de1_on
       state: "on"
 
     - &is_dark
@@ -131,9 +138,11 @@ action:
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:
-          - *is_presence_detected
-          - *is_dark
           - *condition_light_schedule_change
+          - *is_presence_detected
+          - or:
+              - *is_dark
+              - *is_coffee_machine_on
         sequence:
           - <<: *turn_on
             target:
@@ -144,7 +153,9 @@ action:
       - alias: "Just turn the lights on according to schedule"
         conditions:
           - *is_presence_detected
-          - *is_dark
+          - or:
+              - *is_dark
+              - *is_coffee_machine_on
         sequence:
           - <<: *turn_on
             target:

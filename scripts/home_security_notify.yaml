@@ -19,7 +19,7 @@ fields:
     description: Sensors that are unavailable while armed
 sequence:
   - variables:
-      notify_service: notify.mobile_app_marvins_iphone_13_nieuw
+      notify_service: notify.mobile_app_marvins_iphone_13
       mode_label: "{{ 'Weg' if mode | default('') == 'away' else 'Nacht' }}"
       trigger_label: >-
         {% set label = trigger_name | default('') %}

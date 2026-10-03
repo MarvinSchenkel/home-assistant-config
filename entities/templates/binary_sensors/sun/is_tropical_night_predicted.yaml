@@ -1,6 +1,6 @@
 ---
 # Predicts whether the coming night stays too warm for open-window cooling
-# (Dutch "tropische nacht" ~ minimum >= 20°C; 19 here for forecast margin)
+# (Dutch "tropische nacht" ~ minimum >= 20°C; 20.5 only arms the hold on clearly tropical nights)
 trigger:
   # 18:00 only: overnight consumers need the value frozen for the current night
   - trigger: time
@@ -42,7 +42,7 @@ binary_sensor:
     state: >
       {%- if night_min_temperature == -100 -%}
         {{ 'on' if is_state('binary_sensor.is_tropical_night_predicted', 'on') else 'off' }}
-      {%- elif night_min_temperature >= 19.0 -%}
+      {%- elif night_min_temperature >= 20.5 -%}
         on
       {%- else -%}
         off

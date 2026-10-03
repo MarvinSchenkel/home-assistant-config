@@ -2,22 +2,8 @@
 binary_sensor:
   - name: marvin_is_working
     unique_id: ed8ecc89-81c9-455d-9394-88e926f5fee2
+    # The companion app's Active sensor already covers locked, asleep, screensaver and idle.
     state: >
-      {% set hour = as_timestamp(now()) | timestamp_custom("%H") | int  %}
-      {%
-        if (
-          not(
-            state_attr("binary_sensor.mac_studio_active", "Locked")
-            or state_attr("binary_sensor.mac_studio_active", "Screen Off")
-            or state_attr("binary_sensor.mac_studio_active", "Screensaver")
-            or state_attr("binary_sensor.mac_studio_active", "Sleeping")
-            or state_attr("binary_sensor.mac_studio_active", "Terminating")
-            or state_attr("binary_sensor.mac_studio_active", "Fast User Switched")
-          )
-        )
-        and hour >=7
-      %}
-      on
-      {% else %}
-      off
-      {% endif %}
+      {{ is_state("binary_sensor.mac_studio_active", "on") and now().hour >= 7 }}
+    # Idle flips true after a few minutes away from the desk, so ride out short breaks.
+    delay_off: "00:15:00"

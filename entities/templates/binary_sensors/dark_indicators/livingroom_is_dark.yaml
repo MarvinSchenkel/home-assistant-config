@@ -28,8 +28,7 @@ binary_sensor:
         if (
           states("sensor.livingroom_luminance_fp300") | int > 8
           and is_state("light.dinner_door", "off")
-          and is_state("light.kitchen_spot", "off")
-          and is_state("switch.sync_box_light_sync", "off")
+          and is_state("light.hue_kitchen", "off")
         )
         or states("sensor.livingroom_luminance_fp300") | int > 60
       -%}
