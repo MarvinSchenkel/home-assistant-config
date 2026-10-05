@@ -7,9 +7,11 @@ id: 74468068-43d1-40a0-8eec-822a4235adfc
 trigger:
   - trigger: homeassistant
     event: start
+    id: resync
 
   - trigger: event
     event_type: automation_reloaded
+    id: resync
 
   - trigger: time
     at: "20:00:00"
@@ -32,11 +34,19 @@ variables:
       alias: "Is there presence in the room?"
       condition: not
       conditions:
-        - condition: state
-          entity_id: binary_sensor.presence_livingroom
-          state: "off"
-          for:
-            minutes: 10
+        - or:
+            - condition: state
+              entity_id: binary_sensor.presence_livingroom
+              state: "off"
+              for:
+                minutes: 10
+            # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+            - and:
+                - condition: trigger
+                  id: resync
+                - condition: state
+                  entity_id: binary_sensor.presence_livingroom
+                  state: "off"
 
     - &turn_off
       alias: "Turn the christmas tree off"
