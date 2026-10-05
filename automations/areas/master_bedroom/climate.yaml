@@ -247,13 +247,14 @@ action:
                 entity_id: binary_sensor.is_hot_day_predicted
                 state: "on"
           # Keeps matching while running, so a changed target reaches the unit
+          # Neither starts nor keeps running when it's cooler outside: the window is the tool
           - alias: "The room is still above its pre-cool target"
             condition: template
             value_template: >-
-              {{ room_temp >= target_room_temperature + temp_hysteresis
-                 or (airco_compressor_active
-                     and room_temp > target_room_temperature - temp_hysteresis
-                     and outdoor_temp >= room_temp - 1) }}
+              {{ (room_temp >= target_room_temperature + temp_hysteresis
+                  or (airco_compressor_active
+                      and room_temp > target_room_temperature - temp_hysteresis))
+                 and outdoor_temp >= room_temp - 1 }}
         sequence:
           # Early-afternoon cooling is doubly cheap — exported solar + mild
           # outdoor temperatures mean high COP — and the room's mass stores it
@@ -343,11 +344,10 @@ action:
                           desired_fan: "quiet"
                       - *airco_cool
 
-                  - alias: "Room has cooled back down — release the compressor"
+                  - alias: "Anything the hold doesn't own is released"
                     conditions:
                       - condition: template
                         value_template: "{{ airco_compressor_active }}"
-                      - "{{ room_temp <= sleep_hold_temperature - temp_hysteresis }}"
                     sequence:
                       - *airco_off
 
