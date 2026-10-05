@@ -1,7 +1,7 @@
 ---
 description: Mark a person as extended away, 24h after they have gone
 alias: presence_extended_away
-mode: single
+mode: queued
 id: b0a446d1-8dfe-40c0-8ff9-e0df04c469db
 
 trigger:

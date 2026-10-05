@@ -1,6 +1,6 @@
 ---
 alias: home_security_notify
-description: Send a home security notification to Marvin
+description: Send a home security notification to Marvin, alerts also to Laura
 mode: parallel
 max: 20
 fields:
@@ -20,6 +20,9 @@ fields:
 sequence:
   - variables:
       notify_service: notify.mobile_app_marvins_iphone_13
+      alert_services:
+        - notify.mobile_app_marvins_iphone_13
+        - notify.mobile_app_iphone_van_l_a
       mode_label: "{{ 'Weg' if mode | default('') == 'away' else 'Nacht' }}"
       trigger_label: >-
         {% set label = trigger_name | default('') %}
@@ -59,10 +62,8 @@ sequence:
   - choose:
       - conditions: "{{ kind == 'alert' }}"
         sequence:
-          - action: "{{ notify_service }}"
-            data:
-              title: Beveiliging
-              message: |-
+          - variables:
+              alert_message: |-
                 🚨 {{ trigger_label }}
                 Tijd: {{ now().strftime('%H:%M') }}
                 Open zones: {{ states('sensor.home_security_open_zones') }}
@@ -72,7 +73,21 @@ sequence:
                 {%- if details | default('') | trim != '' %}
                 {{ details }}
                 {%- endif %}
-              data: "{{ alert_data }}"
+          # Lands even when a phone is unreachable
+          - action: persistent_notification.create
+            data:
+              notification_id: home-security-alert
+              title: Beveiliging
+              message: "{{ alert_message }}"
+          - repeat:
+              for_each: "{{ alert_services }}"
+              sequence:
+                - action: "{{ repeat.item }}"
+                  continue_on_error: true
+                  data:
+                    title: Beveiliging
+                    message: "{{ alert_message }}"
+                    data: "{{ alert_data }}"
 
       - conditions: "{{ kind == 'armed' }}"
         sequence:
