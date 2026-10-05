@@ -9,9 +9,11 @@ trace:
 trigger:
   - trigger: homeassistant
     event: start
+    id: resync
 
   - trigger: event
     event_type: automation_reloaded
+    id: resync
 
   - trigger: state
     entity_id:
@@ -48,11 +50,19 @@ variables:
       alias: "Is there presence in the room?"
       condition: not
       conditions:
-        - condition: state
-          entity_id: binary_sensor.presence_livingroom
-          state: "off"
-          for:
-            minutes: 10
+        - or:
+            - condition: state
+              entity_id: binary_sensor.presence_livingroom
+              state: "off"
+              for:
+                minutes: 10
+            # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+            - and:
+                - condition: trigger
+                  id: resync
+                - condition: state
+                  entity_id: binary_sensor.presence_livingroom
+                  state: "off"
 
     - &condition_is_dark
       alias: "Is it dark in the living room?"

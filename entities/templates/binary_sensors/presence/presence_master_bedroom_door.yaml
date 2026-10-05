@@ -2,8 +2,8 @@
 # A binary sensor that is triggered when opening the door
 # It triggers presence for 10sec, so that presence is not constantly
 # detected when someone does not close the door
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     entity_id: binary_sensor.master_bedroom_door_open
     to: "on"
 

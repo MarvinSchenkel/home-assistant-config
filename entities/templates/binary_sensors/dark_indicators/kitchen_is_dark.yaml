@@ -8,7 +8,7 @@ binary_sensor:
         if (
           states("sensor.pir_kitchen_illuminance") | int > 10
           and is_state("light.hue_led_coffee_corner", "off")
-          and is_state("light.kitchen_spot", "off")
+          and is_state("light.hue_kitchen", "off")
         )
         or states("sensor.pir_kitchen_illuminance") | int > 75
       -%}

@@ -1,19 +1,19 @@
 ---
 # A binary indicator tracking whether it is light or dark in the room
-trigger:
-  - platform: numeric_state
+triggers:
+  - trigger: numeric_state
     entity_id:
       - sensor.livingroom_luminance_fp300
     above: 8
     for:
       seconds: 5
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.livingroom_luminance_fp300
     above: 60
     for:
       seconds: 5
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.livingroom_luminance_fp300
     below: 8
