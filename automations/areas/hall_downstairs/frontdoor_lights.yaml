@@ -18,14 +18,6 @@ variables:
       entity_id: binary_sensor.g4_doorbell_motion
       state: "on"
 
-    - &condition_no_presence_detected
-      alias: "No presence has been detected for a while"
-      condition: state
-      entity_id: binary_sensor.g4_doorbell_motion
-      state: "off"
-      for:
-        seconds: 60
-
     - &condition_light_schedule_change
       alias: "Check if the automation got triggered by a light schedule change"
       condition: trigger
@@ -95,7 +87,9 @@ action:
 
       - alias: "Turn the light to the scheduled scene"
         conditions:
-          - *condition_no_presence_detected
+          - condition: state
+            entity_id: binary_sensor.g4_doorbell_motion
+            state: "off"
           - *condition_is_dark
         sequence:
           - <<: *turn_on

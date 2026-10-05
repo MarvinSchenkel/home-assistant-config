@@ -85,6 +85,24 @@ trigger:
       - binary_sensor.smallbedroom_door_open
     to: "off"
 
+  - trigger: state
+    entity_id:
+      - binary_sensor.smallbedroom_door_open
+    to: "on"
+    for:
+      minutes: 2
+
+  - trigger: state
+    entity_id: binary_sensor.hall_upstairs_is_dark
+
+  - trigger: state
+    entity_id: input_select.current_light_schedule
+    id: light_schedule_change
+
+  - trigger: state
+    entity_id: input_boolean.setting_manual_lights
+    to: "off"
+
 condition:
   - condition: state
     entity_id: input_boolean.setting_manual_lights
