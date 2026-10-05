@@ -14,11 +14,12 @@ trigger:
     to: "Spa"
     id: "spa_mode_on"
 
-  - trigger: device
-    device_id: 83b62358aeb49c31df79296b008b5045
-    domain: zha
-    type: remote_button_short_press
-    subtype: button_1
+  - trigger: event
+    event_type: "zha_event"
+    event_data:
+      device_ieee: "8c:65:a3:ff:fe:ba:4c:00"
+      command: "remote_button_short_press"
+      endpoint_id: 1
     id: "bath_button_single_press"
 
 condition:
