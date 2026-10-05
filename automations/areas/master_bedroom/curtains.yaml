@@ -42,7 +42,6 @@ trigger:
     id: awake
 
 variables:
-  temperature_entity: "sensor.pir_master_bedroom_temperature"
   anchors:
     - &close
       alias: "Close the curtains"
@@ -91,10 +90,9 @@ action:
               - binary_sensor.is_hot_day
             state: "on"
           # But only when it's hotter outside than inside
-          - condition: template
-            value_template: >-
-              {{ (states(temperature_entity) | float)
-                 < (states("sensor.current_temperature") | float) }}
+          - condition: numeric_state
+            entity_id: sensor.pir_master_bedroom_temperature
+            below: sensor.current_temperature
         sequence:
           - *close
 

@@ -91,7 +91,6 @@ trigger:
     id: "reset"
 
 variables:
-  temperature_entity: "sensor.livingroom_temperature"
   anchors:
     - &cover_closed
       alias: "Close the blinds"
@@ -188,7 +187,9 @@ action:
                       - binary_sensor.is_hot_day
                     state: "on"
                   # But only when it's hotter outside than inside
-                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+                  - condition: numeric_state
+                    entity_id: sensor.livingroom_temperature
+                    below: sensor.current_temperature
               - and:
                   - not:
                       - condition: state

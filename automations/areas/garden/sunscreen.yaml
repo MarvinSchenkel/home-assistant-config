@@ -6,7 +6,7 @@ description: >
     - Heavy wind / rain detected (retracts the screen)
     - Only redeploy for sun once the wind has been calm for 10 min, so a
       gust does not bounce the screen down and straight back up
-    - Manual override detected (weather retract always wins over it)
+    - The manual control switch (weather retract always wins over it)
 mode: queued
 max_exceeded: silent
 id: 028db081-471a-4fee-8373-844eca4943a9
@@ -14,9 +14,11 @@ id: 028db081-471a-4fee-8373-844eca4943a9
 trigger:
   - trigger: homeassistant
     event: start
+    id: resync
 
   - trigger: event
     event_type: automation_reloaded
+    id: resync
 
   - trigger: state
     entity_id:
@@ -42,12 +44,6 @@ trigger:
     to: "on"
     for:
       minutes: 10
-
-  # - trigger: state
-  #   entity_id:
-  #     - scene.garden_cover_open
-  #     - scene.garden_cover_sunblock
-  #   id: garden_screen
 
   - trigger: time
     at: "03:00:00"
@@ -83,19 +79,6 @@ action:
                 state: "off"
         sequence: *sunscreen_up
 
-      # - alias: "Check if the screen was manually changed"
-      #   conditions:
-      #     - condition: trigger
-      #       id: garden_screen
-      #     - alias: "It was changed by a user"
-      #       condition: template
-      #       value_template: "{{ trigger.to_state.context.user_id != None }}"
-      #   sequence:
-      #     - alias: "Set manual control, so the screen stays where it was put"
-      #       action: input_boolean.turn_on
-      #       target:
-      #         entity_id: input_boolean.sunscreen_manual_control
-
       - alias: "Reset manual override before the new day starts"
         conditions:
           - condition: trigger
@@ -122,18 +105,27 @@ action:
             state: "dinner"
         sequence: []
 
-      - alias: "Close the screen when it is hot and the wind has been calm 15 min"
+      - alias: "Close the screen when it is hot and the wind has been calm 10 min"
         conditions:
           - condition: state
             entity_id:
               - binary_sensor.sun_should_close_south_blinds
             state: "on"
-          - condition: state
-            entity_id:
-              - binary_sensor.weather_can_close_sunscreen
-            state: "on"
-            for:
-              minutes: 10
+          - or:
+              - condition: state
+                entity_id:
+                  - binary_sensor.weather_can_close_sunscreen
+                state: "on"
+                for:
+                  minutes: 10
+              # A restart re-stamps the calm timer, so a resync trusts the current state
+              - and:
+                  - condition: trigger
+                    id: resync
+                  - condition: state
+                    entity_id:
+                      - binary_sensor.weather_can_close_sunscreen
+                    state: "on"
         sequence:
           - *sunscreen_down
 

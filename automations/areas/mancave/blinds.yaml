@@ -88,17 +88,20 @@ trigger:
 
   - trigger: template
     value_template: >-
-      {{ (states("sensor.pir_mancave_temperature") | float)
-         < (states("sensor.current_temperature") | float) }}
+      {{ has_value("sensor.pir_mancave_temperature")
+         and has_value("sensor.current_temperature")
+         and (states("sensor.pir_mancave_temperature") | float)
+             < (states("sensor.current_temperature") | float) }}
 
   # Re-evaluate when it gets cooler outside than inside, so the blinds open up again
   - trigger: template
     value_template: >-
-      {{ (states("sensor.current_temperature") | float)
-         < (states("sensor.pir_mancave_temperature") | float) }}
+      {{ has_value("sensor.current_temperature")
+         and has_value("sensor.pir_mancave_temperature")
+         and (states("sensor.current_temperature") | float)
+             < (states("sensor.pir_mancave_temperature") | float) }}
 
 variables:
-  temperature_entity: "sensor.pir_mancave_temperature"
   anchors:
     - &manual_control_on
       alias: "Set manual control to on, so the blinds stay closed"
@@ -203,7 +206,9 @@ action:
                       - binary_sensor.is_hot_day
                     state: "on"
                   # But only when it's hotter outside than inside
-                  - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+                  - condition: numeric_state
+                    entity_id: sensor.pir_mancave_temperature
+                    below: sensor.current_temperature
 
         sequence:
           - *fully_closed

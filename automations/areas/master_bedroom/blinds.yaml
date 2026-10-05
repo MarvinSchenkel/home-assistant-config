@@ -77,11 +77,12 @@ trigger:
   # Re-evaluate when it gets cooler outside than inside, so the blinds open up again
   - trigger: template
     value_template: >-
-      {{ (states("sensor.current_temperature") | float)
-         < (states("sensor.pir_master_bedroom_temperature") | float) }}
+      {{ has_value("sensor.current_temperature")
+         and has_value("sensor.pir_master_bedroom_temperature")
+         and (states("sensor.current_temperature") | float)
+             < (states("sensor.pir_master_bedroom_temperature") | float) }}
 
 variables:
-  temperature_entity: "sensor.pir_master_bedroom_temperature"
   anchors:
     - &ventilating
       action: scene.turn_on
@@ -197,7 +198,9 @@ action:
               - binary_sensor.is_hot_day
             state: "on"
           # But only when it's hotter outside than inside
-          - '{{ (states(temperature_entity) | float) <  (states("sensor.current_temperature") | float) }}'
+          - condition: numeric_state
+            entity_id: sensor.pir_master_bedroom_temperature
+            below: sensor.current_temperature
         sequence:
           - *closed
 
