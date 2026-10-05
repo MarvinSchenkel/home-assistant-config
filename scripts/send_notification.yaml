@@ -24,8 +24,9 @@ fields:
 
 variables:
   type: "{{ type | default('normal') }}"
-  image: "{{ image | default('None') }}"
-  video: "{{ video | default('None') }}"
+  attachments: >-
+    {{ dict(([('image', image)] if image is defined else [])
+            + ([('video', video)] if video is defined else [])) }}
   home_status: ["Thuis", "Net thuis"]
   away_status: ["Weg", "Net weg", "Lang weg"]
   laura_state: "{{ states('input_select.laura_status_dropdown') }}"
@@ -38,7 +39,7 @@ sequence:
         - variables:
             receiver: "{{ receivers[repeat.index-1] }}"
             name: "{{ receiver[0] | upper }}{{ receiver[1:] }}"
-            title: "{{ title | default('Hey') }} {{ name }}!"
+            full_title: "{{ title | default('Hey') }} {{ name }}!"
 
         # Check if we need to notify the mancave TV
         - choose:
@@ -54,10 +55,8 @@ sequence:
                   continue_on_error: true
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
-                    title: "{{ title }}"
-                    data:
-                      image: "{{ image }}"
-                      video: "{{ video }}"
+                    title: "{{ full_title }}"
+                    data: "{{ attachments }}"
 
         # Send notification to the intercom via TTS and MA
         # Check woonkamer wakkker
@@ -117,10 +116,8 @@ sequence:
                 - action: notify.mobile_app_marvins_iphone_13
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
-                    title: "{{ title }}"
-                    data:
-                      image: "{{ image }}"
-                      video: "{{ video }}"
+                    title: "{{ full_title }}"
+                    data: "{{ attachments }}"
         - choose:
             - conditions: "{{ receiver == 'laura'
                 and (type == 'normal' or
@@ -131,7 +128,5 @@ sequence:
                 - action: notify.mobile_app_iphone_van_l_a
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
-                    title: "{{ title }}"
-                    data:
-                      image: "{{ image }}"
-                      video: "{{ video }}"
+                    title: "{{ full_title }}"
+                    data: "{{ attachments }}"
