@@ -144,7 +144,7 @@ template:
           {% if states('vacuum.norby') in ['unknown', 'unavailable'] %}
             {% set names = names + ['Norby'] %}
           {% endif %}
-          {{ names | unique | join(', ') or 'Geen' }}
+          {{ (names | unique | join(', ') or 'Geen') | truncate(255, true, '…', 0) }}
 
       - name: Home Security Degraded Sensors
         unique_id: home_security_degraded_sensors
@@ -155,7 +155,7 @@ template:
           {% if states('vacuum.norby') in ['unknown', 'unavailable'] %}
             {% set names = names + ['Norby'] %}
           {% endif %}
-          {{ names | unique | join(', ') or 'Geen' }}
+          {{ (names | unique | join(', ') or 'Geen') | truncate(255, true, '…', 0) }}
 
       - name: Home Security Last Incident
         unique_id: home_security_last_incident
