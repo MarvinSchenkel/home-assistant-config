@@ -54,7 +54,7 @@ known_devices.yaml
 google_calendars.yaml
 zigbee2mqtt
 
-# Keep specific custom components required for CI
-custom_components/*
-!custom_components/afvalbeheer/
-!custom_components/browser_mod/
+# Managed on the HA box
+custom_components/
+.HA_VERSION
+.ha_run.lock
