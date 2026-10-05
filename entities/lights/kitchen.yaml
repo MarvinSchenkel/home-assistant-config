@@ -1,5 +1,0 @@
----
-platform: group
-name: kitchen
-entities:
-  - light.kitchen_spot
