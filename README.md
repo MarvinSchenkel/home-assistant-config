@@ -23,11 +23,8 @@ Some of the highlights of my setup include:
     - Just away
     - Away
     - Away long
-    - Asleep
-    - Just awake
-    - Awake
 
-  This setup is inspired by [Phil Hawthorne's excellent blog](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). I use these different states to trigger various automations, for example [start a morning playlist](./automations/areas/bathroom/play_music.yaml) whenever we have just woken up.
+  This setup is inspired by [Phil Hawthorne's excellent blog](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). I use these different states to trigger various automations, for example to [arm the alarm](./automations/security/home_security_auto_arm_away.yaml) once everyone has left home.
 - 📢 **Notification system**: I use a [custom script](./scripts/send_notification.yaml) that determines whether to send us a push notification, a pop-up on the TV, an announcement on our speakers or a combination of the three.
 
 ## Tips / Design principles
