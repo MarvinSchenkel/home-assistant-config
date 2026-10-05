@@ -5,6 +5,11 @@ mode: queued
 id: 74468068-43d1-40a0-8eec-822a4235adfc
 
 trigger:
+  # Fires once a year, the first day after the christmas season
+  - trigger: template
+    value_template: "{{ now().month == 1 and now().day == 8 }}"
+    id: season_end
+
   - trigger: homeassistant
     event: start
     id: resync
@@ -60,8 +65,23 @@ variables:
       data:
         transition: 2
 
+condition:
+  - or:
+      - alias: "Christmas season (1 December to 7 January)"
+        condition: template
+        value_template: "{{ now().month == 12 or (now().month == 1 and now().day <= 7) }}"
+      - condition: trigger
+        id: season_end
+
 action:
   - choose:
+      - alias: "Turn the christmas tree off when the season is over."
+        conditions:
+          - condition: trigger
+            id: season_end
+        sequence:
+          - *turn_off
+
       - alias: "Turn on the christmas tree."
         conditions:
           - *condition_is_presence_detected
