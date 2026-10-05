@@ -26,6 +26,9 @@ triggers:
       - unknown
   - trigger: event
     event_type: event_template_reloaded
+  # A restart restores the old state, which only a trigger re-evaluates
+  - trigger: homeassistant
+    event: start
 
 binary_sensor:
   - name: bathroom_is_dark
