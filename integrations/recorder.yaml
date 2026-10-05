@@ -8,10 +8,22 @@ recorder:
   # The number of days of history to keep in the recorder database
   purge_keep_days: 3
 
-  # Disable auto purging, I'm doing this using automations instead
-  auto_purge: false
-
-  # Forecast slots are a ~3.5 KB attribute refreshed every 5 minutes
   exclude:
     entities:
+      # Forecast slots are a ~3.5 KB attribute refreshed every 5 minutes
       - sensor.buienradar_rain_forecast
+      # Fast-changing readings without a history consumer
+      - sensor.solaredge_i1_ac_frequency
+      - sensor.solaredge_i1_ac_current
+      - sensor.solaredge_i1_dc_current
+      - sensor.solaredge_i1_dc_voltage
+      - sensor.solaredge_i1_temp_sink
+      - sensor.gw3000a_wind_direction
+      - sensor.gw3000a_wind_speed
+      - sensor.gw3000a_solar_lux
+      - sensor.gw3000a_solar_radiation
+      - sensor.apple_watch_marvin_distance
+      - sensor.rk3326_free_memory
+      - sensor.statistical_characteristic
+    entity_globs:
+      - sensor.solaredge_i1_ac_voltage_*
