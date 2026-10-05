@@ -68,6 +68,16 @@ trigger:
     id: light_schedule_change
 
   - trigger: state
+    entity_id: binary_sensor.house_mode_someone_asleep
+    to: "on"
+    for:
+      minutes: 10
+
+  - trigger: state
+    entity_id: binary_sensor.house_mode_someone_asleep
+    to: "off"
+
+  - trigger: state
     entity_id: input_boolean.setting_manual_lights
     to: "off"
 
