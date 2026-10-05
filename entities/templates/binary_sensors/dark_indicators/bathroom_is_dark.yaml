@@ -1,19 +1,19 @@
 ---
 # A binary indicator tracking whether it is light or dark in the room
-trigger:
-  - platform: numeric_state
+triggers:
+  - trigger: numeric_state
     entity_id:
       - sensor.pir_bathroom_door_luminance
     above: 15
     for:
       seconds: 5
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.pir_bathroom_door_luminance
     above: 90
     for:
       seconds: 5
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id:
       - sensor.pir_bathroom_door_luminance
     below: 15

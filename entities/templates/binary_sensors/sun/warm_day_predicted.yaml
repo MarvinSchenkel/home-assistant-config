@@ -1,12 +1,12 @@
 ---
-trigger:
-  - platform: time
+triggers:
+  - trigger: time
     at: "06:00:00"
-  - platform: event
+  - trigger: event
     event_type: event_template_reloaded
 
-action:
-  - service: weather.get_forecasts
+actions:
+  - action: weather.get_forecasts
     data:
       type: hourly
     target:
