@@ -48,7 +48,7 @@ variables:
       value_template: |-
         {{
           target_media_player
-          in state_attr(mass_entity, 'group_members')
+          in (state_attr(mass_entity, 'group_members') or [])
         }}
 
     - &group
