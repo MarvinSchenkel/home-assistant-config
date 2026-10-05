@@ -99,6 +99,8 @@ trigger:
     to:
       - "Slaap"
       - "Dutje"
+    # Dutje already has the lights off; keep a reading lamp toggled by hand on at bedtime
+    not_from: "Dutje"
     id: "house_mode_someone_asleep"
 
   - trigger: state
