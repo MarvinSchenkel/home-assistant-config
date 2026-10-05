@@ -15,7 +15,7 @@ Feel free to have a look at my automations and draw some inspiration from them. 
 ## Features
 Some of the highlights of my setup include:
 - 📻 **Personal DJ**: As a core member of the [Music Assistant](https://music-assistant.io/) I obviously had to apply it to my smart home. I use a combination of a [music schedule](./automations/house/music_schedule.yaml) that changes based on the time of day along with some base playlists that I use to [dynamically populate my queue](https://github.com/MarvinSchenkel/home-assistant-config/blob/master/automations/house/populate_music_queue.yaml). This gives me an endless stream of music that matches the time of day _and_ it allows me to discover new music.
-- 🎶 **Follow-me music**: My music automatically follows me around the house whenever music is playing in the living room. I use [Sonos](https://www.sonos.com) speakers all throughout my house in combination with motion sensors to achieve this. Have a look at [this](./blueprints/automation/motion_group_sonos.yaml) blueprint for more information.
+- 🎶 **Follow-me music**: My music follows me around the house whenever music is playing in the living room. [Music Assistant](https://music-assistant.io/) streams to WiiM players (and one remaining Sonos in the bathroom), and presence sensors add a room's speaker to the living room group while someone is there. Have a look at [this](./blueprints/automation/group_speakers.yaml) blueprint for more information.
 - :sunny: **Automatic sun protection**: My blinds automatically close on hot days whenever the sun is shining directly on the south-facing windows. I use my solar panels to measure the sun's intensity and use the sun's azimuth/elevation to determine whether it is shining directly on my windows. Have a look at [these](./entities/templates/binary_sensors/sun) entities if you want to learn more.
 - :busts_in_silhouette: **Advanced presence detection**: I use [various automations](./automations/presence) to build an advance presence detection system that keeps track of different presence states:
     - Just home
@@ -23,11 +23,8 @@ Some of the highlights of my setup include:
     - Just away
     - Away
     - Away long
-    - Asleep
-    - Just awake
-    - Awake
 
-  This setup is inspired by [Phil Hawthorne's excellent blog](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). I use these different states to trigger various automations, for example [start a morning playlist](./automations/areas/bathroom/play_music.yaml) whenever we have just woken up.
+  This setup is inspired by [Phil Hawthorne's excellent blog](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). I use these different states to trigger various automations, for example to [arm the alarm](./automations/security/home_security_auto_arm_away.yaml) once everyone has left home.
 - 📢 **Notification system**: I use a [custom script](./scripts/send_notification.yaml) that determines whether to send us a push notification, a pop-up on the TV, an announcement on our speakers or a combination of the three.
 
 ## Tips / Design principles

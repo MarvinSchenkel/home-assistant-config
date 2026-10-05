@@ -17,7 +17,6 @@ ignore: |
   themes/*/*.yaml
   ui_lovelace_minimalist
   .git
-  automations/areas/attic/start_dryer.yaml
 rules:
   braces:
     level: error
