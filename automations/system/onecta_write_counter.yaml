@@ -1,0 +1,41 @@
+---
+description: >
+  Reset the daily count of airco commands at midnight and warn Marvin when
+  the climate automations come close to the Onecta API budget
+alias: system_onecta_write_counter
+mode: queued
+id: 3d092443-8ba3-4716-a86a-9127e20ef009
+
+trigger:
+  - trigger: time
+    at: "00:00:00"
+    id: reset
+
+  - trigger: numeric_state
+    entity_id: counter.onecta_writes_today
+    above: 149
+    id: budget
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: reset
+        sequence:
+          - action: counter.reset
+            target:
+              entity_id: counter.onecta_writes_today
+
+      - conditions:
+          - condition: trigger
+            id: budget
+        sequence:
+          - action: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+              emoji: "⚠️"
+              message: >
+                De airco automations hebben vandaag al
+                {{ states("counter.onecta_writes_today") }} commando's naar Onecta gestuurd.
+                Check de climate automations op flip-flop gedrag.

@@ -133,6 +133,9 @@ variables:
                 value: >-
                   off|{{ state_attr(airco_entity, 'temperature') }}|{{
                      state_attr(airco_entity, 'fan_mode') }}|pending
+            - action: counter.increment
+              target:
+                entity_id: counter.onecta_writes_today
             - action: climate.set_hvac_mode
               target:
                 entity_id: "{{ airco_entity }}"
@@ -159,6 +162,9 @@ variables:
             - condition: template
               value_template: "{{ states(airco_entity) != 'cool' }}"
           then:
+            - action: counter.increment
+              target:
+                entity_id: counter.onecta_writes_today
             - action: climate.set_hvac_mode
               target:
                 entity_id: "{{ airco_entity }}"
@@ -168,6 +174,9 @@ variables:
             - condition: template
               value_template: "{{ state_attr(airco_entity, 'temperature') != desired_temp }}"
           then:
+            - action: counter.increment
+              target:
+                entity_id: counter.onecta_writes_today
             - action: climate.set_temperature
               target:
                 entity_id: "{{ airco_entity }}"
@@ -177,6 +186,9 @@ variables:
             - condition: template
               value_template: "{{ state_attr(airco_entity, 'fan_mode') != desired_fan }}"
           then:
+            - action: counter.increment
+              target:
+                entity_id: counter.onecta_writes_today
             - action: climate.set_fan_mode
               target:
                 entity_id: "{{ airco_entity }}"
