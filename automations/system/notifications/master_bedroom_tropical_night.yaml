@@ -1,0 +1,54 @@
+---
+description: >
+  Warn about a tropical night shortly before bedtime, so the master bedroom
+  windows stay shut and the airco keeps the room cool
+alias: system_notifications_masterbedroom_tropical_night
+mode: single
+max_exceeded: silent
+id: 06eb5a5f-c8d4-4116-b50b-cfc4573dd278
+
+trigger:
+  # Polls often enough to catch the ~30 minutes before bedtime window below
+  - trigger: time_pattern
+    minutes: "/5"
+
+condition:
+  - condition: time
+    after: "18:00:00"
+  # Don't ping people who are asleep or napping
+  - not:
+      - condition: state
+        entity_id: input_select.master_bedroom_room_mode
+        state:
+          - "Slaap"
+          - "Dutje"
+  - alias: "Roughly 30 minutes before the scheduled sleep time"
+    condition: template
+    value_template: >
+      {% set sleep_entity = "input_datetime.master_bedroom_approx_target_sleep_time" %}
+      {% set sleep_parts = states(sleep_entity).split(":") %}
+      {% set sleep_minutes = sleep_parts[0] | int * 60 + sleep_parts[1] | int %}
+      {% set now_minutes = now().hour * 60 + now().minute %}
+      {{ 0 <= (sleep_minutes - now_minutes) <= 30 }}
+  - alias: "Tonight stays too warm for open windows"
+    condition: state
+    entity_id: binary_sensor.is_tropical_night_predicted
+    state: "on"
+  - alias: "Not notified in the last 6 hours"
+    condition: template
+    value_template: >
+      {{ this.attributes.last_triggered is none
+         or now() - this.attributes.last_triggered > timedelta(hours=6) }}
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+        - "intercom"
+      type: "home_only"
+      emoji: "🌡️"
+      message: >-
+        Het wordt een tropische nacht. Laat de ramen dicht,
+        de airco houdt de kamer koel.

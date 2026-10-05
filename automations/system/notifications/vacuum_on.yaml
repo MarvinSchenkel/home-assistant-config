@@ -9,6 +9,13 @@ trigger:
     entity_id: vacuum.norby
     to: "cleaning"
 
+condition:
+  - alias: "Not notified in the last 2 hours"
+    condition: template
+    value_template: >
+      {{ this.attributes.last_triggered is none
+         or now() - this.attributes.last_triggered > timedelta(hours=2) }}
+
 action:
   - action: script.send_notification
     data:
@@ -17,6 +24,3 @@ action:
         - "laura"
       type: "away_only"
       message: "🧹 Norby gaat aan de slag!"
-
-  - delay:
-      hours: 2

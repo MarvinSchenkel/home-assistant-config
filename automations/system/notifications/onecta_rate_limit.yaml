@@ -17,6 +17,13 @@ trigger:
     for:
       minutes: 5
 
+condition:
+  - alias: "Not notified in the last 12 hours"
+    condition: template
+    value_template: >
+      {{ this.attributes.last_triggered is none
+         or now() - this.attributes.last_triggered > timedelta(hours=12) }}
+
 action:
   - action: script.send_notification
     data:
@@ -26,7 +33,3 @@ action:
         ⚠️ De Daikin API limiet is bijna bereikt
         ({{ trigger.to_state.name }}: nog {{ trigger.to_state.state }} calls
         vandaag). Check de climate automations op flip-flop gedrag.
-
-  # Once per day is enough, the counter resets at midnight anyway
-  - delay:
-      hours: 12
