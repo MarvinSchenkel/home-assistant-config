@@ -1,0 +1,16 @@
+---
+binary_sensor:
+  - name: automations_or_scripts_unavailable
+    unique_id: 3e8677b4-1ba5-4810-b3d5-3df0409145d6
+    # Registry leftovers of removed automations come back as restored unavailable entities
+    state: >
+      {{ ((states.automation | list) + (states.script | list))
+         | selectattr("state", "eq", "unavailable")
+         | rejectattr("attributes.restored", "defined")
+         | list | count > 0 }}
+    attributes:
+      names: >
+        {{ ((states.automation | list) + (states.script | list))
+           | selectattr("state", "eq", "unavailable")
+           | rejectattr("attributes.restored", "defined")
+           | map(attribute="name") | sort | list }}
