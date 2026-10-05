@@ -1,0 +1,22 @@
+---
+description: Send a notification when the dishwasher is done
+alias: notification_dishwasher_done
+mode: single
+id: cc6e984e-43e7-40af-a39f-f1b8347400e3
+
+trigger:
+  - trigger: state
+    entity_id: sensor.vaatwasser_status
+    from: "run"
+    to: "finished"
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+        - "laura"
+        - "intercom"
+      emoji: "🍽️"
+      message: >
+        De vaatwasser is klaar

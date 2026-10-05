@@ -32,6 +32,16 @@ trigger:
     id: sauna_off
 
   - trigger: state
+    entity_id: binary_sensor.oven_running
+    to: "on"
+    id: oven_on
+
+  - trigger: state
+    entity_id: binary_sensor.oven_running
+    to: "off"
+    id: oven_off
+
+  - trigger: state
     entity_id: binary_sensor.wc_ventilation_demand
     to: "on"
     id: wc_on
@@ -49,6 +59,7 @@ trigger:
       - input_boolean.setting_guest_mode
       - binary_sensor.ventilation_night_purge
       - timer.house_ventilation_cooking_runon
+      - timer.house_ventilation_oven_runon
       - timer.house_ventilation_sauna_runon
       - timer.house_ventilation_wc_runon
 
@@ -145,6 +156,18 @@ action:
                 state: active
         sequence:
           - *set_speed_100
+
+      - alias: "Boost the ventilation while an oven runs"
+        conditions:
+          - or:
+              - condition: state
+                entity_id: binary_sensor.oven_running
+                state: "on"
+              - condition: state
+                entity_id: timer.house_ventilation_oven_runon
+                state: active
+        sequence:
+          - *set_speed_70
 
       - alias: "Use the summer night purge speed when it is eligible"
         conditions:
