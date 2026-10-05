@@ -1,0 +1,118 @@
+{
+  "views": [
+    {
+      "title": "Music",
+      "type": "sections",
+      "max_columns": 4,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:button-card",
+              "entity": "[[[\n  return states['sensor.mass_media_entity'].state\n]]]\n",
+              "styles": {
+                "card": [
+                  {
+                    "padding": "0%"
+                  },
+                  {
+                    "margin": "0%"
+                  },
+                  {
+                    "position": "absolute"
+                  },
+                  {
+                    "left": 0
+                  },
+                  {
+                    "top": 0
+                  },
+                  {
+                    "aspect-ratio": "1 / 1"
+                  },
+                  {
+                    "border": 0
+                  }
+                ],
+                "entity_picture": [
+                  {
+                    "width": "100%"
+                  },
+                  {
+                    "height": "100%"
+                  },
+                  {
+                    "padding": "0%"
+                  },
+                  {
+                    "margin": "0%"
+                  }
+                ]
+              },
+              "show_entity_picture": true,
+              "show_label": false,
+              "show_state": false,
+              "show_name": false
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:button-card",
+              "show_label": true,
+              "show_state": false,
+              "show_name": false,
+              "entity": "[[[\n  return states['sensor.mass_media_entity'].state\n]]]\n",
+              "label": "[[[\n  var mass_entity = states['sensor.mass_media_entity'].state\n  return states[mass_entity].attributes.media_title\n]]]\n",
+              "grid_options": {
+                "columns": "full",
+                "rows": 2
+              }
+            },
+            {
+              "type": "custom:button-card",
+              "show_label": true,
+              "show_state": false,
+              "show_name": false,
+              "styles": {
+                "card": [
+                  {
+                    "text-align": "center"
+                  },
+                  {
+                    "background-color": "transparent"
+                  },
+                  {
+                    "box-shadow": "none"
+                  },
+                  {
+                    "font-size": "45pt"
+                  },
+                  {
+                    "font-weight": 325
+                  },
+                  {
+                    "color": "[[[\n  const mass_entity = states['sensor.mass_media_entity'].state;\n  const colorThief = new ColorThief();\n  const img = new Image();\n  const image_url = states[mass_entity].attributes.entity_picture_local;\n\n  function calculateLuminance(r, g, b) {\n    // Normalize the RGB values\n    const [R, G, B] = [r / 255, g / 255, b / 255];                \n    // Adjust the RGB values for luminance calculation\n    const adjust = (value) => {\n        return (value <= 0.03928) ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);\n    };                \n    // Calculate luminance using the formula\n    const luminance = 0.2126 * adjust(R) + 0.7152 * adjust(G) + 0.0722 * adjust(B);                \n    return luminance;\n  }\n\n  function calculateContrastRatio(rgb1, rgb2) {\n    const luminance1 = calculateLuminance(rgb1[0], rgb1[1], rgb1[2]);\n    const luminance2 = calculateLuminance(rgb2[0], rgb2[1], rgb2[2]);\n\n    // Ensure luminance1 is the lighter color\n    const lighter = Math.max(luminance1, luminance2);\n    const darker = Math.min(luminance1, luminance2);\n\n    // Calculate and return the contrast ratio\n    return (lighter + 0.05) / (darker + 0.05);\n  }\n\n  function adjustBrightness(color, factor) {\n      return color.map(value => {\n          let newValue = value * factor;\n          return Math.min(255, Math.max(0, Math.round(newValue)));  // Ensure values stay in [0, 255]\n      });\n  }\n\n  function findLightestAndDarkestColors(rgbArray) {\n    if (rgbArray.length === 0) return { lightest: null, darkest: null };                  \n    let lightestColor = rgbArray[0];\n    let darkestColor = rgbArray[0];\n    let maxLuminance = calculateLuminance(...lightestColor);\n    let minLuminance = calculateLuminance(...darkestColor);                  \n    // Iterate over all colors in the array\n    rgbArray.forEach(color => {\n        const luminance = calculateLuminance(...color);                  \n        if (luminance > maxLuminance) {\n            maxLuminance = luminance;\n            lightestColor = color;\n        }                  \n        if (luminance < minLuminance) {\n            minLuminance = luminance;\n            darkestColor = color;\n        }\n    });                  \n    return [lightestColor, darkestColor];\n  }\n\n  function adjustTextColorToMeetContrast(dominantColor, textColor, isLightText) {\n    const minimumContrastRatio = 4.5;\n    let contrastRatio = calculateContrastRatio(dominantColor, textColor);                  \n    // Start with an adjustment factor (increase or decrease brightness)\n    let factor = isLightText ? 1.05 : 0.95;  // Light text should be lightened, dark text should be darkened                  \n    // Adjust the text color until the contrast ratio is at least 4.5\n    while (contrastRatio < minimumContrastRatio) {\n        textColor = adjustBrightness(textColor, factor);\n        contrastRatio = calculateContrastRatio(dominantColor, textColor);\n\n        // Prevent infinite loops in case it can't reach 4.5 (e.g., very similar colors)\n        if (textColor[0] === 255 || textColor[0] === 0) break;  // Fully white or fully black, no more adjustment possible\n    }                  \n    return `rgb(${textColor.join(', ')})`;\n  }\n\n  function adjustTextColorForContrastWithAdjustment(dominantColor, lightTextColor, darkTextColor) {\n    const minimumContrastRatio = 4.5;                  \n    // Calculate initial contrast ratios\n    const contrastWithLight = calculateContrastRatio(dominantColor, lightTextColor);\n    const contrastWithDark = calculateContrastRatio(dominantColor, darkTextColor);                  \n    // If either color meets the minimum contrast ratio, choose it\n    if (contrastWithLight >= minimumContrastRatio) {\n        return `rgb(${lightTextColor.join(', ')})`;  // Light color already meets contrast\n    } else if (contrastWithDark >= minimumContrastRatio) {\n        return `rgb(${darkTextColor.join(', ')})`;  // Dark color already meets contrast\n    }                  \n    // If neither meets contrast, adjust the closest one\n    const isLightText = contrastWithLight > contrastWithDark;\n    const closestTextColor = isLightText ? lightTextColor : darkTextColor;                  \n    // Adjust the chosen text color to meet the contrast ratio\n    return adjustTextColorToMeetContrast(dominantColor, closestTextColor, isLightText);\n  }\n\n  // wait 0ms for shadow dom\n  setTimeout(() => {                    \n    let button_card = this;\n    img.addEventListener('load', function() {\n      let dominantColor = colorThief.getColor(img);\n      console.log(dominantColor);\n      let colorPalette = colorThief.getPalette(img, 8);\n      let [lightestColor, darkestColor] = findLightestAndDarkestColors(colorPalette);\n      let color = adjustTextColorForContrastWithAdjustment(dominantColor, lightestColor, darkestColor);\n      let label = button_card.shadowRoot.getElementById(\"label\");\n      label.style.color = color;\n      document.body.style.background = `rgb(${dominantColor.join(', ')})`;\n    });                  \n    img.src = image_url;\n  }, 0);\n]]]\n"
+                  }
+                ]
+              },
+              "entity": "[[[\n  return states['sensor.mass_media_entity'].state\n]]]\n",
+              "label": "[[[\n  var mass_entity = states['sensor.mass_media_entity'].state\n  return states[mass_entity].attributes.media_artist\n]]]\n",
+              "grid_options": {
+                "columns": "full",
+                "rows": 2
+              }
+            }
+          ]
+        }
+      ],
+      "header": {
+        "layout": "responsive",
+        "badges_position": "bottom"
+      }
+    }
+  ]
+}

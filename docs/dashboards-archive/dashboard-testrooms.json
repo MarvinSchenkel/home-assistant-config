@@ -1,0 +1,2825 @@
+{
+  "views": [
+    {
+      "icon": "mdi:home",
+      "path": "home",
+      "type": "sections",
+      "max_columns": 3,
+      "sections": [
+        {
+          "max_columns": 3,
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading_style": "title",
+              "heading": "Begane grond",
+              "icon": "mdi:home-floor-0"
+            },
+            {
+              "type": "area",
+              "area": "hal_beneden",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-hal_beneden"
+            },
+            {
+              "type": "area",
+              "area": "kitchen",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light",
+                    "cover-shade"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-kitchen"
+            },
+            {
+              "type": "area",
+              "area": "tuin",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "cover-awning"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-tuin"
+            },
+            {
+              "type": "area",
+              "area": "wc",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-wc"
+            },
+            {
+              "type": "area",
+              "area": "living_room",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-living_room"
+            },
+            {
+              "type": "area",
+              "area": "woonkamer_tv",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-woonkamer_tv"
+            }
+          ]
+        },
+        {
+          "max_columns": 3,
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading_style": "title",
+              "heading": "Boven",
+              "icon": "mdi:home-floor-1"
+            },
+            {
+              "type": "area",
+              "area": "bathroom",
+              "display_type": "compact",
+              "sensor_classes": [
+                "temperature",
+                "humidity"
+              ],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-bathroom"
+            },
+            {
+              "type": "area",
+              "area": "hal_boven",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-hal_boven"
+            },
+            {
+              "type": "area",
+              "area": "smal_bedroom",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-smal_bedroom"
+            },
+            {
+              "type": "area",
+              "area": "master_bedroom",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-master_bedroom"
+            },
+            {
+              "type": "area",
+              "area": "logeerkamer",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-logeerkamer"
+            }
+          ]
+        },
+        {
+          "max_columns": 3,
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading_style": "title",
+              "heading": "Zolder",
+              "icon": "mdi:home-floor-2"
+            },
+            {
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light",
+                    "cover-shade"
+                  ]
+                }
+              ],
+              "alert_classes": [
+                "motion",
+                "moisture"
+              ],
+              "sensor_classes": [
+                "temperature"
+              ],
+              "features_position": "inline",
+              "display_type": "compact",
+              "type": "area",
+              "area": "mancave",
+              "exclude_entities": [],
+              "grid_options": {
+                "rows": 4,
+                "columns": 12
+              },
+              "navigation_path": "areas-mancave",
+              "color": ""
+            },
+            {
+              "type": "area",
+              "area": "zolder",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-zolder"
+            }
+          ]
+        },
+        {
+          "max_columns": 3,
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading_style": "title",
+              "heading": "Andere ruimten",
+              "icon": "mdi:home"
+            },
+            {
+              "type": "area",
+              "area": "kleine_slaapkamer",
+              "display_type": "compact",
+              "sensor_classes": [],
+              "exclude_entities": [],
+              "features": [
+                {
+                  "type": "area-controls",
+                  "controls": [
+                    "light"
+                  ]
+                }
+              ],
+              "grid_options": {
+                "rows": 1,
+                "columns": 12
+              },
+              "features_position": "inline",
+              "navigation_path": "areas-kleine_slaapkamer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Badkamer",
+      "path": "areas-bathroom",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.spot_right_bath",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.spot_left_sink",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.spot_right_shower",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.bathroom_spot_left_door",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.bathroom_old",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.badkamer_2",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.pir_bathroom_basic",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.bathroom_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.bathroom",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_melkweg",
+              "name": "Melkweg"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.badkamer_s_nachts",
+              "name": "'s Nachts"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_dromerigeschemering",
+              "name": "Dromerige schemering"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.badkamer_blossom",
+              "name": "Blossom"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_gedimd",
+              "name": "Gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.badkamer_gipskruid",
+              "name": "Gipskruid"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_sterrenlicht",
+              "name": "Sterrenlicht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.badkamer_amberbloesem",
+              "name": "Amberbloesem"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_helder",
+              "name": "Helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_peinzend",
+              "name": "Peinzend"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_robijngloed",
+              "name": "Robijngloed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.badkamer_kleuren_van_de_natuur",
+              "name": "Kleuren van de natuur"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bathroom_lights_natuurlijklicht",
+              "name": "Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bathroom_climate"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bathroom_group_sonos"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bathroom_lights_on"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bathroom_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bathroom_sonos_set_volume"
+            }
+          ]
+        }
+      ],
+      "badges": [
+        {
+          "entity": "sensor.ble_hum_bathroom_754a_temperature",
+          "type": "entity",
+          "color": "red"
+        },
+        {
+          "entity": "sensor.bathroom_ble_humidity",
+          "type": "entity",
+          "color": "indigo"
+        }
+      ]
+    },
+    {
+      "title": "Hal",
+      "path": "areas-hal_beneden",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_ambiance_lamp_1_2",
+              "name": "Beneden",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.hall_downstairs",
+              "name": "Beneden",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.front_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.hall_downstairs",
+              "name": "Beneden",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_ontspannen",
+              "name": "Beneden Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_nachtlampje",
+              "name": "Beneden Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_gedimd",
+              "name": "Beneden Gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_savannezonsondergang",
+              "name": "Beneden Savanne zonsondergang"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_energie",
+              "name": "Beneden Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_lezen",
+              "name": "Beneden Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_rusten",
+              "name": "Beneden Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_concentreren",
+              "name": "Beneden Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_helder",
+              "name": "Beneden Helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halldownstairs_lights_natuurlijklicht",
+              "name": "Beneden Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_hall_downstairs_climate"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_hall_downstairs_frontdoor_lights"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_hall_downstairs_lights_on"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_hall_downstairs_doorbell_message"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Keuken",
+      "path": "areas-kitchen",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.led_kitchen",
+              "name": "LED",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.keuken",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "cover.keuken_2_top",
+              "features": [
+                {
+                  "type": "cover-open-close"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "cover.keuken_2_bottom",
+              "features": [
+                {
+                  "type": "cover-open-close"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.kitchen",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Mediaspelers",
+              "icon": "mdi:multimedia"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.mass_sonos_kitchen"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_lights_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_natuurlijk_licht_2",
+              "name": "Natuurlijk licht 2"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_cover_halfclosed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kitchen_cover_halfopen"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_kitchen_blinds"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_kitchen_climate"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.kitchen_cooking_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_kitchen_lights"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_kitchen_sonos_set_volume"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Andere",
+              "icon": "mdi:shape"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.decent_espresso_de1pro_de1_on"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.decent_espresso_de1pro_de1_steam_heater_on"
+            },
+            {
+              "type": "tile",
+              "entity": "button.keuken_favorite_current_song",
+              "name": "Favorite current song"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.kitchen_current_cover_scene"
+            },
+            {
+              "type": "tile",
+              "entity": "select.decent_espresso_de1pro_de1_profile"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Kleine Slaapkamer",
+      "path": "areas-kleine_slaapkamer",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 2,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.kleine_slaapkamer",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_gedimd",
+              "name": "Gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_helder",
+              "name": "Helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.kleine_slaapkamer_lezen",
+              "name": "Lezen"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Mancave",
+      "path": "areas-mancave",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.mancave_hoek",
+              "name": "Hoek",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_color_lamp_1",
+              "name": "Wand",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.mancave_bureau",
+              "name": "Bureau",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.mancave_muur",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.esphome_presence_mancave_presence_mancave_light",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "cover.product_5_top",
+              "features": [
+                {
+                  "type": "cover-open-close"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "cover.product_5_bottom",
+              "features": [
+                {
+                  "type": "cover-open-close"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.mancave_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Mediaspelers",
+              "icon": "mdi:multimedia"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.mancave_wiim_amp",
+              "name": "WiiM Amp"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.kantoor"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.mancave_tv",
+              "name": "TV"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_slaperig",
+              "name": "Slaperig"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_gedimd",
+              "name": "Gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_snachts",
+              "name": "'s Nachts"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_blauweplaneet",
+              "name": "Blauwe planeet"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_glooiendeheuvels",
+              "name": "Glooiende heuvels"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_ontladen",
+              "name": "Ontladen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_opkomen",
+              "name": "Opkomen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_sterrenlicht",
+              "name": "Sterrenlicht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_nevel",
+              "name": "Nevel"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_fairfax",
+              "name": "Fairfax"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_arctischedageraad",
+              "name": "Arctische dageraad"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_stralen",
+              "name": "Stralen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_helder",
+              "name": "Helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_tokio",
+              "name": "Tokio"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_sprookjesboek",
+              "name": "Sprookjesboek"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_lights_natuurlijklicht",
+              "name": "Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_gouden_uren_2",
+              "name": "Gouden uren 2"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bedroom_cover_open"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.gardendoor_cover_sun"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_cover_ventilatingnight"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bedroom_cover_halfopen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bedroom_cover_closed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bedroom_cover_halfclosed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.gardendoor_cover_halfopen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_cover_halfclosed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.schenkel_power_hub_zolder_bijna_dicht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.gardendoor_cover_halfclosed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.beneden_dicht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bedroom_cover_ventilatingnight"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.bedroom_cover_ventilating"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_cover_tophalfopen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.gardendoor_cover_closed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.beneden_half_dicht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_cover_halfopen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_cover_halfopen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_cover_halfclosed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_cover_closed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_cover_open"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.gardendoor_cover_open"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.beneden_half_open"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.beneden_open"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_cover_closed"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.mancave_cover_ventilatingnight"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_mancave_blinds"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_mancave_lights"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_mancave_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_mancave_night_sound"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Andere",
+              "icon": "mdi:shape"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.mancave_room_mode"
+            }
+          ]
+        }
+      ],
+      "badges": [
+        {
+          "entity": "sensor.pir_mancave_temperature",
+          "type": "entity",
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "title": "Overloop",
+      "path": "areas-hal_boven",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 2,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_ambiance_lamp_1",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.hall_upstairs",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.hallupstairs_lights_rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.halupstairs_lights_natuurlijklicht"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_hall_upstairs_lights_on"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_hall_upstairs_room_mode"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Saar's kamer",
+      "path": "areas-smal_bedroom",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.smallbedroom_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.small_bedroom",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bedroom_small_blinds"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_small_bedroom_climate"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_bedroom_small_lights_2"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_small_bedroom_remote"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Slaapkamer",
+      "path": "areas-master_bedroom",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.master_bedroom_ceiling",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.master_bedroom_left",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.master_bedroom_right",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.m5stack_atom_lite_9faba8_presence_master_bedroom_light",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.slaapkamer",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.master_bedroom_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.master_bedroom",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_gedimd",
+              "name": "Gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_helder",
+              "name": "Helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.masterbedroom_lights_natuurlijklicht",
+              "name": "Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_master_bedroom_blinds"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_master_bedroom_climate"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_master_bedroom_group_speakers"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_master_bedroom_lights"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_master_bedroom_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_master_bedroom_sonos_set_volume"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Andere",
+              "icon": "mdi:shape"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.nspanel_master_bedroom_relay_1"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.nspanel_master_bedroom_relay_2"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Tuin",
+      "path": "areas-tuin",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 2,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "cover.sunscreen",
+              "features": [
+                {
+                  "type": "cover-open-close"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_garden_sunscreen"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "WC",
+      "path": "areas-wc",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.wc_spot_wckant",
+              "name": "Spot wckant",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.wc_spot_deurkant",
+              "name": "Spot deurkant",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.wc",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.wc_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.wc_lights_natuurlijklicht",
+              "name": "Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_wc_lights_off"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Woonkamer",
+      "path": "areas-living_room",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.kitchen_spot",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.spot_garden_side",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.spot_stairs",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.dinner_door",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.corner_couch",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.dinner_wall",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.woonkamer",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.esphome_presence_livingroom_presence_living_room_light",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.garden_door_open"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.livingroom_door_open",
+              "name": "Deur Openen"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.livingroom_thermostat",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "climate.livingroom",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Mediaspelers",
+              "icon": "mdi:multimedia"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.nspanel_pro"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.shield"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.apple_tv"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.nvidia_shield"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.living_room_tv_2"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.home_assistant_voice_0901fa_media_player"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Beveiliging",
+              "icon": "mdi:security"
+            },
+            {
+              "type": "picture-entity",
+              "entity": "camera.rk3326",
+              "show_state": false,
+              "show_name": false,
+              "grid_options": {
+                "columns": 6,
+                "rows": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_peinzend",
+              "name": "Peinzend"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_sprookjesboek",
+              "name": "Sprookjesboek"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_s_nachts",
+              "name": "'s Nachts"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_movie",
+              "name": "Movie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_slaperig",
+              "name": "Slaperig"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_blossom",
+              "name": "Blossom"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_amberbloesem",
+              "name": "Amberbloesem"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_opkomen",
+              "name": "Opkomen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_stralen",
+              "name": "Stralen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_ontladen",
+              "name": "Ontladen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_glooiendeheuvels",
+              "name": "Glooiende heuvels"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_gipskruid",
+              "name": "Gipskruid"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_dromerige_schemering",
+              "name": "Dromerige schemering"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.livingroom_lights_natuurlijklicht",
+              "name": "Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.woonkamer_gouden_uren",
+              "name": "Gouden uren"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_blinds_gardendoor"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_blinds_livingroom"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_christmas_tree"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_climate"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_lights"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_lights_hue_sync"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_sonos_set_volume"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_vacuum_on"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_nspanel"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_nspanel_brightness"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_nspanel_doorbell"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_nspanel_theme"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_livingroom_play_music"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Andere",
+              "icon": "mdi:shape"
+            },
+            {
+              "type": "tile",
+              "entity": "vacuum.norby"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.nspanel_screensaver"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.nspanel_screen"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.sync_box_power"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.sync_box_light_sync"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.livingroom_current_cover_scene"
+            },
+            {
+              "type": "tile",
+              "entity": "number.sync_box_brightness"
+            },
+            {
+              "type": "tile",
+              "entity": "select.sync_box_hdmi_input"
+            },
+            {
+              "type": "tile",
+              "entity": "select.sync_box_entertainment_area"
+            },
+            {
+              "type": "tile",
+              "entity": "select.sync_box_intensity"
+            },
+            {
+              "type": "tile",
+              "entity": "select.sync_box_sync_mode"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Woonkamer TV",
+      "path": "areas-woonkamer_tv",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 2,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_play_1_2",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_play_1",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_play_gradient_lightstrip_1",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.woonkamer_tv",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ],
+          "column_span": 2
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Zoey's kamer",
+      "path": "areas-logeerkamer",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.hue_ambiance_lamp_1_3",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.logeerkamer",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.middlebedroom_door_open"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Klimaat",
+              "icon": "mdi:home-thermometer"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.middle_bedroom",
+              "features": [
+                {
+                  "type": "target-temperature"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.logeerkamer_lezen_2"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    },
+    {
+      "title": "Zolder",
+      "path": "areas-zolder",
+      "subview": true,
+      "type": "sections",
+      "header": {
+        "badges_position": "bottom"
+      },
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Verlichting",
+              "icon": "mdi:lamps"
+            },
+            {
+              "type": "tile",
+              "entity": "light.attic_spot_left",
+              "name": "Spot links ",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.attic_spot_right",
+              "name": "Spot rechts ",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.zolder",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedekkingen",
+              "icon": "mdi:blinds-horizontal"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.aeg_droger_doorstate"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Acties",
+              "icon": "mdi:robot"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_rusten",
+              "name": "Rusten"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_concentreren",
+              "name": "Concentreren"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.zolder_nachtlampje",
+              "name": "Nachtlampje"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_helder",
+              "name": "Helder"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_energie",
+              "name": "Energie"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_lezen",
+              "name": "Lezen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_gedimd",
+              "name": "Gedimd"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_ontspannen",
+              "name": "Ontspannen"
+            },
+            {
+              "type": "tile",
+              "entity": "scene.attic_lights_natuurlijklicht",
+              "name": "Natuurlijk licht"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.areas_attic_lights_on"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Andere",
+              "icon": "mdi:shape"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_clearcyclepersonalizationcmd"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_executecommand"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_executecommand_2"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_executecommand_3"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_executecommand_4"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_executecommand_5"
+            },
+            {
+              "type": "tile",
+              "entity": "button.aeg_droger_executecommand_6"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_cyclepersonalization_refresh"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_cyclepersonalization_tdeconomy_eco"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_cyclepersonalization_tdeconomy_night"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_uilockmode"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_userselections_refresh"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_userselections_tdeconomy_eco"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.aeg_droger_userselections_tdeconomy_night"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.wasmachine"
+            },
+            {
+              "type": "tile",
+              "entity": "number.aeg_droger_cyclepersonalization_anticreasevalue"
+            },
+            {
+              "type": "tile",
+              "entity": "number.aeg_droger_cyclepersonalization_dryingtime"
+            },
+            {
+              "type": "tile",
+              "entity": "number.aeg_droger_stoptime"
+            },
+            {
+              "type": "tile",
+              "entity": "number.aeg_droger_userselections_anticreasevalue"
+            },
+            {
+              "type": "tile",
+              "entity": "number.aeg_droger_userselections_dryingtime"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_cyclepersonalization_drynessvalue"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_cyclepersonalization_humiditytarget"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_cyclepersonalization_programuid"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_dwywdatatodryer_programuid"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_dwywselect_command"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_dwywtdtteparameters_programuid"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_endofcyclesound"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_remotenotificationpending"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_userselections_drynessvalue"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_userselections_humiditytarget"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_userselections_memoryid"
+            },
+            {
+              "type": "tile",
+              "entity": "select.aeg_droger_userselections_programuid"
+            }
+          ]
+        }
+      ],
+      "badges": []
+    }
+  ]
+}

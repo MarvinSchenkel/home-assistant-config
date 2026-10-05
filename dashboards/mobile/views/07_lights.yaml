@@ -19,13 +19,13 @@ cards:
           - type: "vertical-stack"
             cards:
               - type: tile
-                entity: light.spot_garden_side
+                entity: light.hue_datura_bottom
               - type: tile
-                entity: light.spot_stairs
+                entity: light.hue_datura_top
               - type: tile
                 entity: light.corner_couch
               - type: tile
-                entity: light.kitchen_spot
+                entity: light.hue_kitchen
               - type: tile
                 entity: light.wc
           - type: "vertical-stack"
@@ -35,7 +35,7 @@ cards:
               - type: tile
                 entity: light.dinner_wall
               - type: tile
-                entity: light.led_kitchen
+                entity: light.hue_led_coffee_corner
               - type: tile
                 entity: light.hall_downstairs
       - type: markdown
@@ -64,8 +64,6 @@ cards:
                 entity: light.master_bedroom_ceiling
               - type: tile
                 entity: light.master_bedroom_right
-              - type: tile
-                entity: light.fibaro_small_bedroom
       - type: markdown
         card_mod:
           style: |

@@ -1,6 +1,6 @@
 ---
 lovelace:
-  mode: yaml
+  resource_mode: yaml
   resources:
     - url: /local/custom_js/color-thief.min.js
       type: module
@@ -20,21 +20,9 @@ lovelace:
       type: module
 
   dashboards:
-    lovelace-tablet:
-      mode: yaml
-      filename: dashboards/slate/slate.yaml
-      title: Slate
-      icon: mdi:view-dashboard
-      show_in_sidebar: true
     lovelace-mobile:
       mode: yaml
       filename: dashboards/mobile/mobile.yaml
-      title: Mobile
-      icon: mdi:cellphone
-      show_in_sidebar: true
-    lovelace-nspanel:
-      mode: yaml
-      filename: dashboards/nspanel/nspanel.yaml
       title: Mobile
       icon: mdi:cellphone
       show_in_sidebar: true
