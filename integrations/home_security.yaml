@@ -126,7 +126,8 @@ template:
         state: >-
           {{ is_state('vacuum.norby', 'cleaning')
              or is_state('vacuum.norby', 'returning')
-             or is_state('timer.home_security_vacuum_grace', 'active') }}
+             or is_state('timer.home_security_vacuum_grace', 'active')
+             or (states('vacuum.norby') in ['unavailable', 'unknown'] and this.state == 'on') }}
 
     sensor:
       - name: Home Security Open Zones
