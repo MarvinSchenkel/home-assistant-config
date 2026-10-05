@@ -1,0 +1,100 @@
+---
+description: >
+  Tell Marvin when Home Assistant needs attention: a new repair, broken
+  automations or scripts, or the living room music player dropping off
+alias: system_notifications_health_watchdog
+mode: queued
+id: c3a22133-9659-4a53-87dd-97d05cd5f290
+
+variables:
+  message: >-
+    {%- if trigger.id == "repair" -%}
+      Nieuwe reparatie: {{ trigger.event.data.domain }} / {{ trigger.event.data.issue_id }}
+    {%- elif trigger.id == "unavailable" -%}
+      Onbeschikbaar: {{ (state_attr("binary_sensor.automations_or_scripts_unavailable", "names")
+                         or []) | join(", ") }}
+    {%- else -%}
+      De WiiM Mini in de woonkamer is al 30 minuten onbeschikbaar
+    {%- endif -%}
+  anchors:
+    - &notify
+      alias: "Notify Marvin unless the same message went out in the last 24 hours"
+      if:
+        - condition: template
+          value_template: >
+            {% set at = (state_attr("sensor.health_watchdog_sent", "sent") or {}).get(message) %}
+            {{ at is none or as_datetime(at) < now() - timedelta(hours=24) }}
+      then:
+        - action: script.send_notification
+          data:
+            receivers:
+              - "marvin"
+            emoji: "🩺"
+            message: "{{ message }}"
+        - event: health_watchdog_sent
+          event_data:
+            message: "{{ message }}"
+
+trigger:
+  - trigger: event
+    event_type: repairs_issue_registry_updated
+    event_data:
+      action: create
+    id: repair
+
+  - trigger: state
+    entity_id: binary_sensor.automations_or_scripts_unavailable
+    to: "on"
+    for:
+      minutes: 10
+    id: unavailable
+
+  - trigger: state
+    entity_id: media_player.mass_wiim_mini
+    to: "unavailable"
+    for:
+      minutes: 30
+    id: music_player
+
+  - trigger: state
+    entity_id: input_boolean.setting_automatic_music
+    to: "on"
+    id: music_player
+
+action:
+  - choose:
+      - alias: "A new repair that is not ignored"
+        conditions:
+          - condition: trigger
+            id: repair
+          - condition: template
+            value_template: >
+              {% set found = issue(trigger.event.data.domain, trigger.event.data.issue_id) %}
+              {{ found is none or found.dismissed_version is none }}
+        sequence:
+          - *notify
+
+      - alias: "Automations or scripts unavailable for 10 minutes"
+        conditions:
+          - condition: trigger
+            id: unavailable
+          - condition: state
+            entity_id: binary_sensor.automations_or_scripts_unavailable
+            state: "on"
+        sequence:
+          - *notify
+
+      - alias: "The living room music player is gone while automatic music is on"
+        conditions:
+          - condition: trigger
+            id: music_player
+          - condition: state
+            entity_id: media_player.mass_wiim_mini
+            state: "unavailable"
+            for:
+              minutes: 30
+          - condition: state
+            entity_id: input_boolean.setting_automatic_music
+            state: "on"
+        sequence:
+          - *notify

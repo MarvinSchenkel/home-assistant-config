@@ -1,0 +1,18 @@
+---
+trigger:
+  - trigger: event
+    event_type: health_watchdog_sent
+sensor:
+  - name: health_watchdog_sent
+    unique_id: 27d1a822-5844-4524-ae84-843c89b645d3
+    device_class: timestamp
+    state: "{{ now().isoformat() }}"
+    attributes:
+      # Message -> last sent time, entries older than 24 hours are dropped
+      sent: >
+        {% set ns = namespace(sent={}) %}
+        {% for message, at in (this.attributes.get("sent") or {}).items()
+           if as_datetime(at) > now() - timedelta(hours=24) %}
+          {% set ns.sent = dict(ns.sent, **{message: at}) %}
+        {% endfor %}
+        {{ dict(ns.sent, **{trigger.event.data.message: now().isoformat()}) }}
