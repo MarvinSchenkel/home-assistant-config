@@ -1,118 +1,87 @@
 ---
-description: Send me a notification when a sensor's battery gets low
+description: >
+  Send me a notification when a battery of a device labeled
+  battery_monitored gets low, plus a weekly list of all low batteries.
 alias: system_notifications_battery_low
 mode: queued
 id: 10d6cc7f-dabc-452d-976f-fdc683d7bbe7
 
 trigger:
-  - trigger: numeric_state
-    entity_id:
-      - sensor.pir_wc_battery_level
-      - sensor.pir_master_bedroom_battery_level
-      - sensor.pir_kitchen_battery_level
-      - sensor.pir_hall_upstairs_battery_level
-      - sensor.pir_hall_downstairs_battery_level
-      - sensor.pir_bathroom_battery_level
-      - sensor.flood_sensor_battery_level
-      - sensor.pir_smallbedroom_battery_level
-      - sensor.mancave_door_battery_level
-      - sensor.gardendoor_sensor_battery_level
-      - sensor.front_door_battery_level
-      - sensor.livingroom_door_battery_level
-      - sensor.smallbedroom_door_battery_level
-      - sensor.bathroom_door_battery_level
-      - sensor.master_bedroom_door_battery_level
-      - sensor.wc_door_battery_level
-      - sensor.smallbedroom_blinds_battery_level
-      - sensor.button_kitchen_battery_level
-      - sensor.button_laura_battery_level
-    below: 1
-    id: "battery_dead"
-    for:
-      minutes: 30
-  - trigger: numeric_state
-    entity_id:
-      - sensor.pir_wc_battery_level
-      - sensor.pir_master_bedroom_battery_level
-      - sensor.pir_kitchen_battery_level
-      - sensor.pir_hall_upstairs_battery_level
-      - sensor.pir_hall_downstairs_battery_level
-      - sensor.pir_bathroom_battery_level
-      - sensor.flood_sensor_battery_level
-      - sensor.pir_smallbedroom_battery_level
-      - sensor.mancave_door_battery_level
-      - sensor.gardendoor_sensor_battery_level
-      - sensor.front_door_battery_level
-      - sensor.livingroom_door_battery_level
-      - sensor.smallbedroom_door_battery_level
-      - sensor.bathroom_door_battery_level
-      - sensor.master_bedroom_door_battery_level
-      - sensor.wc_door_battery_level
-      - sensor.smallbedroom_blinds_battery_level
-      - sensor.button_kitchen_battery_level
-      - sensor.button_laura_battery_level
-    below: 20
-    above: 0
-    id: "battery_low"
-    for:
-      minutes: 30
-  - trigger: state
-    entity_id:
-      - sensor.pir_wc_battery_level
-      - sensor.pir_master_bedroom_battery_level
-      - sensor.pir_kitchen_battery_level
-      - sensor.pir_hall_upstairs_battery_level
-      - sensor.pir_hall_downstairs_battery_level
-      - sensor.pir_bathroom_battery_level
-      - sensor.flood_sensor_battery_level
-      - sensor.pir_smallbedroom_battery_level
-      - sensor.mancave_door_battery_level
-      - sensor.gardendoor_sensor_battery_level
-      - sensor.front_door_battery_level
-      - sensor.livingroom_door_battery_level
-      - sensor.smallbedroom_door_battery_level
-      - sensor.bathroom_door_battery_level
-      - sensor.master_bedroom_door_battery_level
-      - sensor.wc_door_battery_level
-      - sensor.smallbedroom_blinds_battery_level
-      - sensor.button_kitchen_battery_level
-      - sensor.button_laura_battery_level
-    to: "unavailable"
-    for:
-      minutes: 10
-    id: "battery_unavailable"
+  - trigger: battery.level_crossed_threshold
+    target:
+      label_id: battery_monitored
+    options:
+      threshold:
+        type: below
+        value:
+          number: 20
+    id: "battery_level_low"
+
+  - trigger: battery.became_low
+    target:
+      label_id: battery_monitored
+    id: "battery_flag_low"
+
+  - trigger: time
+    at: "10:00:00"
+    weekday: sun
+    id: "weekly_digest"
 
 action:
   - choose:
       - conditions:
           - condition: trigger
-            id: "battery_dead"
+            id: "weekly_digest"
         sequence:
-          - action: script.send_notification
-            data:
-              receivers:
-                - "marvin"
-              message: >-
-                De batterij van de sensor
-                {{ trigger.to_state.attributes.friendly_name }} is leeg!
+          - variables:
+              low_batteries: >-
+                {% set ns = namespace(items=[]) %}
+                {% for device in label_devices('battery_monitored') %}
+                  {% set name = device_attr(device, 'name_by_user')
+                     or device_attr(device, 'name') %}
+                  {% for entity in device_entities(device)
+                     if is_state_attr(entity, 'device_class', 'battery') %}
+                    {% set level = states(entity) %}
+                    {% if entity.startswith('sensor.') and is_number(level)
+                       and level | float < 20 %}
+                      {% set pct = level | float | round(0) | int %}
+                      {% set ns.items = ns.items + [name ~ ' (' ~ pct ~ '%)'] %}
+                    {% elif entity.startswith('binary_sensor.') and level == 'on' %}
+                      {% set ns.items = ns.items + [name ~ ' (laag)'] %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+                {{ ns.items }}
+          - if:
+              - "{{ low_batteries | count > 0 }}"
+            then:
+              - action: script.send_notification
+                data:
+                  receivers:
+                    - "marvin"
+                  emoji: "🪫"
+                  message: >-
+                    Deze batterijen zijn bijna leeg: {{ low_batteries | join(', ') }}
 
       - conditions:
           - condition: trigger
-            id: "battery_unavailable"
+            id: "battery_flag_low"
         sequence:
           - action: script.send_notification
             data:
               receivers:
                 - "marvin"
+              emoji: "🪫"
               message: >-
-                De batterij van de sensor
-                {{ trigger.to_state.attributes.friendly_name }} is niet meer beschikbaar!
+                De batterij van {{ state_attr(trigger.entity_id, 'friendly_name') }}
+                is bijna leeg!
 
     default:
       - action: script.send_notification
         data:
           receivers:
             - "marvin"
+          emoji: "🪫"
           message: >-
-            De batterij van de sensor
-            {{ trigger.to_state.attributes.friendly_name }} is minder dan 20%!
+            De batterij van {{ state_attr(trigger.entity_id, 'friendly_name') }}
+            is minder dan 20% ({{ states(trigger.entity_id) }}%)!
