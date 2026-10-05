@@ -1,0 +1,8 @@
+---
+binary_sensor:
+  - name: oven_running
+    unique_id: 24596d31-6d5b-431e-b401-08fa89cf5f13
+    device_class: running
+    state: >
+      {{ is_state("sensor.combioven_status", "run")
+         or is_state("sensor.stoomoven_status", "run") }}
