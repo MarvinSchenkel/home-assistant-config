@@ -1,0 +1,24 @@
+---
+description: Send a notification when an oven has finished preheating
+alias: notification_oven_preheated
+mode: queued
+id: 832b7346-eeb2-4d61-a8cf-c6273f9300d9
+
+trigger:
+  - trigger: state
+    entity_id: sensor.combioven_voorverwarming_voltooid
+    to: "present"
+    id: "combioven"
+  - trigger: state
+    entity_id: sensor.stoomoven_voorverwarming_voltooid
+    to: "present"
+    id: "stoomoven"
+
+action:
+  - action: script.send_notification
+    data:
+      receivers:
+        - "marvin"
+      type: "home_only"
+      emoji: "🔥"
+      message: "De {{ trigger.id }} is op temperatuur"
