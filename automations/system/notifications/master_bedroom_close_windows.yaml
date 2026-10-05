@@ -34,6 +34,11 @@ condition:
     condition: state
     entity_id: binary_sensor.everyone_left_home
     state: "off"
+  - alias: "Not notified in the last 12 hours"
+    condition: template
+    value_template: >
+      {{ this.attributes.last_triggered is none
+         or now() - this.attributes.last_triggered > timedelta(hours=12) }}
 
 action:
   - action: script.send_notification
@@ -47,7 +52,3 @@ action:
       message: >-
         Het wordt warm vandaag. Sluit de ramen en gordijnen op de grote
         slaapkamer om de koelte binnen te houden.
-
-  # Once-per-day debounce, since mode is single
-  - delay:
-      hours: 12

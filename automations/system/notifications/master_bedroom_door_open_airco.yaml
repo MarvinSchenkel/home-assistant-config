@@ -38,6 +38,11 @@ condition:
     value_template: >
       {{ states("climate.airco_master_bedroom")
          in ["cool", "dry", "heat", "heat_cool"] }}
+  - alias: "Not notified in the last hour"
+    condition: template
+    value_template: >
+      {{ this.attributes.last_triggered is none
+         or now() - this.attributes.last_triggered > timedelta(hours=1) }}
 
 action:
   - action: script.send_notification
@@ -50,7 +55,3 @@ action:
       message: >-
         De airco op de grote slaapkamer draait, maar de deur staat open.
         Doe de deur dicht om de koelte binnen te houden.
-
-  # Debounce: mode is single, so this blocks re-notifying for an hour
-  - delay:
-      hours: 1
