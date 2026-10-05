@@ -5,7 +5,9 @@ mode: restart
 id: d4141a14-063e-43fb-aa74-c588f2b8b17b
 trigger:
   - trigger: state
-    entity_id: vacuum.norby
+    entity_id:
+      - vacuum.norby
+      - vacuum.minty
     from:
       - cleaning
       - returning

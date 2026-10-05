@@ -124,10 +124,18 @@ template:
         unique_id: home_security_vacuum_suppression_active
         device_class: running
         state: >-
-          {{ is_state('vacuum.norby', 'cleaning')
-             or is_state('vacuum.norby', 'returning')
-             or is_state('timer.home_security_vacuum_grace', 'active')
-             or (states('vacuum.norby') in ['unavailable', 'unknown'] and this.state == 'on') }}
+          {{ ['vacuum.norby', 'vacuum.minty']
+             | select('is_state', ['cleaning', 'returning']) | list | count > 0
+             or (this.attributes.active_vacuums | default([]))
+             | select('is_state', ['unavailable', 'unknown']) | list | count > 0
+             or is_state('timer.home_security_vacuum_grace', 'active') }}
+        attributes:
+          # A vacuum that drops offline mid-clean stays active until it reports again
+          active_vacuums: >-
+            {{ ['vacuum.norby', 'vacuum.minty']
+               | select('is_state', ['cleaning', 'returning']) | list
+               + (this.attributes.active_vacuums | default([]))
+               | select('is_state', ['unavailable', 'unknown']) | list }}
 
     sensor:
       - name: Home Security Open Zones
