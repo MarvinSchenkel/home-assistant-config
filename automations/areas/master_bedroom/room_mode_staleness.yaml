@@ -48,17 +48,4 @@ action:
             data:
               option: "Wakker"
 
-      - conditions:
-          - condition: state
-            entity_id: input_select.master_bedroom_room_mode
-            state: "Dutje"
-            for:
-              minutes: 180
-          - condition: time
-            before: "18:00:00"
-        sequence:
-          - <<: *select_mode
-            data:
-              option: "Wakker"
-
     default: []

@@ -9,6 +9,13 @@ trigger:
     entity_id:
       - input_select.master_bedroom_room_mode
 
+condition:
+  # The hall has no Dutje option, so it keeps its mode while the bedroom naps
+  - not:
+      - condition: state
+        entity_id: input_select.master_bedroom_room_mode
+        state: "Dutje"
+
 action:
   - action: input_select.select_option
     entity_id: input_select.hall_upstairs_room_mode
