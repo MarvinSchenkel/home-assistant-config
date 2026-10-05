@@ -45,6 +45,12 @@ trigger:
       - event.hue_switch_off
     id: hue_remote
 
+  - trigger: time
+    id: "bedtime"
+    at:
+      - "22:00:00"
+      - "23:30:00"
+
 variables:
   anchors:
     - &select_mode
@@ -55,8 +61,14 @@ action:
   - choose:
       - conditions:
           - or:
-              - condition: trigger
-                id: "button_laura_one"
+              # In Dutje a single press only toggles Laura's lamp (lights automation)
+              - and:
+                  - condition: trigger
+                    id: "button_laura_one"
+                  - not:
+                      - condition: state
+                        entity_id: input_select.master_bedroom_room_mode
+                        state: "Dutje"
               - condition: trigger
                 id: "button_marvin_one"
               - and:
@@ -123,5 +135,19 @@ action:
           - <<: *select_mode
             data:
               option: "Wakker"
+
+      - conditions:
+          - condition: trigger
+            id: "bedtime"
+          - condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state: "Dutje"
+          - condition: state
+            entity_id: binary_sensor.someone_in_bed
+            state: "on"
+        sequence:
+          - <<: *select_mode
+            data:
+              option: "Slaap"
 
     default: []
