@@ -38,7 +38,7 @@ triggers:
       seconds: 15
 
 variables:
-  # MA player id of media_player.mass_woonkamer_wiim
+  # MA player id of media_player.mass_wiim_mini
   now_playing_player_id: "wiim_uuid:FF970016-49E9-8EA4-BAF0-4BEBFF970016"
   anchors:
     - &condition_watching_tv
