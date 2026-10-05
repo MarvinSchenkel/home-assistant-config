@@ -1,6 +1,6 @@
 ---
 # A binary indicator tracking whether it is light or dark in the room
-trigger:
+triggers:
   - trigger: numeric_state
     entity_id:
       - sensor.pir_hall_downstairs_illuminance
