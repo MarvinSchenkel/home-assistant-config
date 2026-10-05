@@ -1,0 +1,58 @@
+---
+description: >
+  Let Minty clean the mancave once a day while it is empty and Marvin is not
+  working. Minty is not part of the alarm's vacuum suppression, so it only
+  starts while the alarm is disarmed.
+alias: areas_mancave_vacuum
+mode: single
+id: 767afcf1-00f6-40c2-97fc-75f63741e426
+
+trigger:
+  - trigger: state
+    entity_id: binary_sensor.presence_mancave
+    to: "off"
+    for:
+      minutes: 30
+
+  - trigger: state
+    entity_id: binary_sensor.marvin_is_working
+    to: "off"
+
+  - trigger: state
+    entity_id: alarm_control_panel.home_security
+    to: "disarmed"
+
+  - trigger: state
+    entity_id: sensor.minty_last_clean_end
+
+  - trigger: time
+    at: "09:00:00"
+
+condition:
+  - condition: state
+    entity_id: binary_sensor.marvin_is_working
+    state: "off"
+  - condition: state
+    entity_id: binary_sensor.presence_mancave
+    state: "off"
+    for:
+      minutes: 30
+  - condition: time
+    after: "09:00:00"
+    before: "20:00:00"
+  - condition: state
+    entity_id: alarm_control_panel.home_security
+    state: "disarmed"
+  - condition: state
+    entity_id: vacuum.minty
+    state: "docked"
+  - alias: "Not cleaned yet today"
+    condition: template
+    value_template: >
+      {% set last = as_datetime(states("sensor.minty_last_clean_end")) %}
+      {{ last is none or (last | as_local).date() < now().date() }}
+
+action:
+  - action: vacuum.start
+    target:
+      entity_id: vacuum.minty

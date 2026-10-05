@@ -1,9 +1,10 @@
 ---
 description: >
   Automatically run Norby's cleaning schedule every night at 1am,
-  alternating between a standard daily clean and a Monday deep clean.
+  alternating between a standard daily clean and a Monday deep clean,
+  plus an after-meal clean once the kitchen is empty after cooking.
 alias: areas_livingroom_vacuum_on
-mode: queued
+mode: restart
 id: 11f981e7-b67c-47c3-ba3b-f51ef83a9414
 
 variables:
@@ -20,13 +21,68 @@ variables:
       target:
         entity_id: button.norby_deep_clean
 
+    - &run_after_meal_clean
+      alias: "Trigger native after-meal routine"
+      action: button.press
+      target:
+        entity_id: button.norby_na_de_maaltijd
+
 trigger:
   - trigger: time
     at: "01:00:00"
+    id: nightly
+
+  - trigger: state
+    entity_id: input_boolean.house_mode_cooking
+    from: "on"
+    to: "off"
+    id: cooking_done
 
 action:
   - choose:
+      - alias: "Clean the kitchen once nobody has been there for 20 minutes after cooking"
+        conditions:
+          - condition: trigger
+            id: cooking_done
+        sequence:
+          - if:
+              - not:
+                  - condition: state
+                    entity_id: binary_sensor.presence_kitchen
+                    state: "off"
+                    for:
+                      minutes: 20
+            then:
+              # Also covers a kitchen that was already empty for less than 20 minutes
+              - wait_for_trigger:
+                  - trigger: template
+                    value_template: >
+                      {{ is_state("binary_sensor.presence_kitchen", "off")
+                         and now() - states.binary_sensor.presence_kitchen.last_changed
+                             > timedelta(minutes=20) }}
+                timeout:
+                  hours: 3
+                continue_on_timeout: false
+          - condition: state
+            entity_id: input_boolean.setting_guest_mode
+            state: "off"
+          - condition: state
+            entity_id: input_boolean.setting_automatic_vacuum
+            state: "on"
+          - condition: state
+            entity_id: alarm_control_panel.home_security
+            state: "disarmed"
+          - condition: time
+            after: "12:00:00"
+            before: "21:30:00"
+          - condition: state
+            entity_id: vacuum.norby
+            state: "docked"
+          - *run_after_meal_clean
+
       - conditions:
+          - condition: trigger
+            id: nightly
           - alias: "Do not automate when a guest is over"
             condition: state
             entity_id: input_boolean.setting_guest_mode
