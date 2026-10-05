@@ -1,36 +1,66 @@
 ---
-description: Automatically send notification when doorbell is pressed
+description: >
+  Send a notification with a snapshot when someone rings the doorbell, and
+  light up the front door and the hall for a few minutes when it is dark.
 alias: system_notifications_doorbell
+# Restart so a second ring notifies again and extends the lights
+mode: restart
 id: cb689da9-474a-48af-b945-e68e48fa6eeb
 
 trigger:
-  - trigger: event
-    event_type: "ring"
+  - trigger: event.received
+    target:
+      entity_id: event.g4_doorbell_doorbell
+    options:
+      event_type:
+        - ring
 
 variables:
-  video_start: "{{ (utcnow() - timedelta(seconds=5)).isoformat() }}"
-  video_end: "{{ utcnow().isoformat() }}"
   event_id: "{{ state_attr('event.g4_doorbell_doorbell', 'event_id') }}"
 
 action:
-  - choose:
-      - conditions:
-          - "{{ event_id is string }}"
-        sequence:
-          - action: script.send_notification
-            data:
-              receivers:
-                - "marvin"
-              message: >-
-                🛎️ De bel gaat!
-              image: >
-                "{{ '/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/'
-                    + event_id }}"
-
-    default:
+  - parallel:
       - action: script.send_notification
         data:
           receivers:
             - "marvin"
+            - "laura"
           message: >-
             🛎️ De bel gaat!
+          image: "/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/{{ event_id }}"
+
+      - if:
+          - condition: state
+            entity_id: binary_sensor.g4_doorbell_is_dark
+            state: "on"
+        then:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.frontdoor_lights_lezen
+            data:
+              transition: 1
+
+          - if:
+              - condition: state
+                alias: "Check if we can automate the lights"
+                entity_id: input_boolean.setting_manual_lights
+                state: "off"
+            then:
+              - action: scene.turn_on
+                target:
+                  entity_id: >-
+                    scene.halldownstairs_lights_{{ states("input_select.current_light_schedule") }}
+                data:
+                  transition: 1
+
+          - delay:
+              minutes: 3
+
+          - alias: "Hand the lights back to the area automations"
+            action: automation.trigger
+            target:
+              entity_id:
+                - automation.areas_hall_downstairs_frontdoor_lights
+                - automation.areas_hall_downstairs_lights_on
+            data:
+              skip_condition: false
