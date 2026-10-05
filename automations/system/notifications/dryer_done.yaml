@@ -9,6 +9,14 @@ trigger:
     entity_id: sensor.aeg_droger_timetoend
     below: 1
 
+condition:
+  - alias: "Ignore the first reading after a restart or an unavailable blip"
+    condition: template
+    value_template: >
+      {{ trigger.platform == 'numeric_state'
+         and trigger.from_state is not none
+         and is_number(trigger.from_state.state) }}
+
 action:
   - action: script.send_notification
     data:
