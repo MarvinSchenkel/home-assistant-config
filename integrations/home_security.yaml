@@ -112,6 +112,8 @@ alarm_control_panel:
     armed_away:
       # Entry delay so a legitimate arrival can disarm before the alarm fires
       delay_time: 60
+    armed_night:
+      delay_time: 30
     disarmed:
       # No panic triggering while disarmed
       trigger_time: 0

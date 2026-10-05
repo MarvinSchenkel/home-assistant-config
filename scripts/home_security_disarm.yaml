@@ -7,14 +7,18 @@ fields:
     description: Suppress automatic rearming for the current cycle
 sequence:
   - variables:
-      panel_state: "{{ states('alarm_control_panel.home_security') }}"
+      # An entry delay counts as the mode it came from
+      panel_state: >-
+        {% set panel = 'alarm_control_panel.home_security' %}
+        {{ state_attr(panel, 'previous_state') if is_state(panel, 'pending')
+           else states(panel) }}
       manual_request: "{{ manual | default(false) }}"
   # Triggered hides which mode was armed, so a manual disarm suppresses both cycles
   - if:
       - condition: template
         value_template: >-
           {{ manual_request
-             and panel_state in ['armed_away', 'pending', 'triggered'] }}
+             and panel_state in ['armed_away', 'triggered'] }}
     then:
       - action: input_boolean.turn_on
         target:

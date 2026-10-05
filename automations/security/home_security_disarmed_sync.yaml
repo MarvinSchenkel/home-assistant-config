@@ -8,13 +8,18 @@ trigger:
     entity_id: alarm_control_panel.home_security
     to: disarmed
 action:
+  - variables:
+      # An entry delay counts as the mode it came from
+      from_mode: >-
+        {{ trigger.from_state.attributes.previous_state
+           if trigger.from_state.state == 'pending' else trigger.from_state.state }}
   # A disarm straight from the panel card carries a user context and skips
   # script.home_security_disarm, so apply the manual suppression here too
   - if:
       - condition: template
         value_template: >-
           {{ trigger.to_state.context.user_id is not none
-             and trigger.from_state.state in ['armed_away', 'pending', 'triggered'] }}
+             and from_mode in ['armed_away', 'triggered'] }}
     then:
       - action: input_boolean.turn_on
         target:
@@ -23,7 +28,7 @@ action:
       - condition: template
         value_template: >-
           {{ trigger.to_state.context.user_id is not none
-             and trigger.from_state.state in ['armed_night', 'triggered'] }}
+             and from_mode in ['armed_night', 'triggered'] }}
     then:
       - action: input_boolean.turn_on
         target:
