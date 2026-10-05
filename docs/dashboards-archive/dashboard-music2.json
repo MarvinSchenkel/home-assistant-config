@@ -1,0 +1,23 @@
+{
+  "views": [
+    {
+      "title": "Home",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Nieuwe sectie"
+            },
+            {
+              "type": "iframe",
+              "url": "http://192.168.1.80:8095/#/home?player=Huis&showFullscreenPlayer=true",
+              "aspect_ratio": "50%"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
