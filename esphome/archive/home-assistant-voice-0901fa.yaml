@@ -10,7 +10,7 @@ esphome:
   friendly_name: ${friendly_name}
 api:
   encryption:
-    key: liAW8H/NyuLfVAgpz3sf2oFCLuRevm08428FO/oJY18=
+    key: !secret api_encryption_key
 
 wifi:
   ssid: !secret wifi_ssid
