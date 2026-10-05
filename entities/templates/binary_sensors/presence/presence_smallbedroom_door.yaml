@@ -9,5 +9,6 @@ triggers:
 
 binary_sensor:
   - name: presence_smallbedroom_door
+    unique_id: 96eee21a-6db4-4594-8eda-eb45c425f133
     auto_off: 10
     state: "on"

@@ -9,5 +9,6 @@ triggers:
 
 binary_sensor:
   - name: presence_front_door
+    unique_id: 60511aca-7bc6-462a-83c2-65cc88a44b51
     auto_off: 10
     state: "on"

@@ -1,6 +1,7 @@
 ---
 sensor:
   - name: sun_adjusted_elevation
+    unique_id: f59d591a-918d-4379-b86f-8419fc162a53
     unit_of_measurement: "degrees"
     state: >-
       {{ ( (states("sensor.sun_elevation") | float(1) * 100.0)
