@@ -31,8 +31,6 @@ variables:
 
     - &turn_on
       action: scene.turn_on
-      data:
-        transition: 1
 
     - &condition_is_dark
       alias: "Is it dark in the room?"
@@ -224,6 +222,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: scene.masterbedroom_lights_nachtlampje
+            data:
+              transition: 1
 
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:
@@ -249,6 +249,8 @@ action:
           - <<: *turn_on
             target:
               entity_id: "{{ current_light_scene }}"
+            data:
+              transition: 1
 
     default:
       - *turn_off
