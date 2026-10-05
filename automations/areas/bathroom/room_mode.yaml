@@ -21,6 +21,23 @@ trigger:
     subtype: button_1
     id: "bath_button_single_press"
 
+condition:
+  # The bathroom has no Dutje option, so it keeps its mode while the bedroom naps
+  - or:
+      - not:
+          - condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state: "Dutje"
+      - condition: trigger
+        id: "spa_mode_on"
+      - and:
+          - condition: trigger
+            id: "bath_button_single_press"
+          - not:
+              - condition: state
+                entity_id: input_select.bathroom_room_mode
+                state: "Spa"
+
 action:
   - choose:
       - conditions:
