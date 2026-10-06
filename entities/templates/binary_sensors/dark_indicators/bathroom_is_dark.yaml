@@ -33,7 +33,7 @@ triggers:
 binary_sensor:
   - name: bathroom_is_dark
     unique_id: 1cf2b12e-9202-410e-bcc9-9ff2cf812f5a
-    availability: "{{ has_value('sensor.pir_bathroom_door_luminance') }}"
+    # No availability: a missing lux reading counts as dark, so motion lights keep working
     state: >
       {%-
         if (
