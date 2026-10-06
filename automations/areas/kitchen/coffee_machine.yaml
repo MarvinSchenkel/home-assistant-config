@@ -1,91 +1,31 @@
 ---
 description: >
-  Wake the espresso machine when the house wakes up on a workday and put it
-  to sleep when everyone is asleep or away
+  Warm up the espresso machine 10 minutes after the first person comes
+  downstairs in the morning
 alias: areas_kitchen_coffee_machine
-mode: queued
+mode: single
 id: d6d17c78-edc4-4eae-944f-e4dd4df60d2a
 
 trigger:
+  # Net wakker is the living room's first presence after the night; it lasts 40 minutes
   - trigger: state
-    entity_id:
-      - input_select.master_bedroom_room_mode
-      - input_select.livingroom_room_mode
-    from: "Slaap"
-    to:
-      - "Net wakker"
-      - "Wakker"
-    id: wake
+    entity_id: input_select.livingroom_room_mode
+    to: "Net wakker"
+    for:
+      minutes: 10
 
-  - trigger: state
-    entity_id:
-      - input_select.master_bedroom_room_mode
-      - input_select.livingroom_room_mode
-    to: "Slaap"
-
-  - trigger: state
+condition:
+  - condition: time
+    after: "05:00:00"
+    before: "11:00:00"
+  - condition: state
     entity_id: binary_sensor.everyone_left_home
-    to: "on"
+    state: "off"
+  - condition: state
+    entity_id: switch.decent_espresso_de1pro_de1_on
+    state: "off"
 
 action:
-  - choose:
-      - alias: "Wake the machine on a workday morning and tell Marvin when it is hot"
-        conditions:
-          - condition: trigger
-            id: wake
-          - condition: state
-            entity_id: binary_sensor.workday
-            state: "on"
-          - condition: state
-            entity_id: input_select.marvin_status_dropdown
-            state:
-              - "Thuis"
-              - "Net thuis"
-          - condition: time
-            after: "05:30:00"
-            before: "10:00:00"
-          - alias: "Not used yet this morning (the second room waking up must not restart it)"
-            condition: state
-            entity_id: switch.decent_espresso_de1pro_de1_on
-            state: "off"
-            for:
-              hours: 3
-        sequence:
-          - action: switch.turn_on
-            target:
-              entity_id: switch.decent_espresso_de1pro_de1_on
-          - wait_for_trigger:
-              - trigger: state
-                entity_id: sensor.decent_espresso_de1pro_de1_substate
-                from: "heating"
-                to: "ready"
-            timeout:
-              minutes: 15
-            continue_on_timeout: false
-          - action: script.send_notification
-            data:
-              receivers:
-                - "marvin"
-              type: "home_only"
-              emoji: "☕"
-              message: >
-                De koffiemachine is opgewarmd
-
-      - alias: "Put the machine to sleep when everyone sleeps or left home"
-        conditions:
-          - condition: state
-            entity_id: switch.decent_espresso_de1pro_de1_on
-            state: "on"
-          - or:
-              - condition: state
-                entity_id:
-                  - input_select.master_bedroom_room_mode
-                  - input_select.livingroom_room_mode
-                state: "Slaap"
-              - condition: state
-                entity_id: binary_sensor.everyone_left_home
-                state: "on"
-        sequence:
-          - action: switch.turn_off
-            target:
-              entity_id: switch.decent_espresso_de1pro_de1_on
+  - action: switch.turn_on
+    target:
+      entity_id: switch.decent_espresso_de1pro_de1_on
