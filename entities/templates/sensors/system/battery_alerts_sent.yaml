@@ -1,0 +1,24 @@
+---
+trigger:
+  - trigger: event
+    event_type:
+      - battery_alert_sent
+      - battery_alert_cleared
+sensor:
+  - name: battery_alerts_sent
+    unique_id: 97e41fda-f3b6-42f8-93e5-8090b308d3c8
+    device_class: timestamp
+    state: "{{ now().isoformat() }}"
+    attributes:
+      # Battery entity -> time of its low-battery push, removed once the battery is replaced
+      sent: >
+        {% set entity_id = trigger.event.data.entity_id %}
+        {% set ns = namespace(sent={}) %}
+        {% for entity, at in (this.attributes.get("sent") or {}).items()
+           if entity != entity_id %}
+          {% set ns.sent = dict(ns.sent, **{entity: at}) %}
+        {% endfor %}
+        {% if trigger.event.event_type == "battery_alert_sent" %}
+          {% set ns.sent = dict(ns.sent, **{entity_id: now().isoformat()}) %}
+        {% endif %}
+        {{ ns.sent }}
