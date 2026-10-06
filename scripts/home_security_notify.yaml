@@ -1,6 +1,6 @@
 ---
 alias: home_security_notify
-description: Send a home security notification to Marvin, alerts also to Laura
+description: Send a home security notification to Marvin
 mode: parallel
 max: 20
 fields:
@@ -20,9 +20,6 @@ fields:
 sequence:
   - variables:
       notify_service: notify.mobile_app_marvins_iphone_13
-      alert_services:
-        - notify.mobile_app_marvins_iphone_13
-        - notify.mobile_app_iphone_van_l_a
       mode_label: "{{ 'Weg' if mode | default('') == 'away' else 'Nacht' }}"
       trigger_label: >-
         {% set label = trigger_name | default('') %}
@@ -79,15 +76,11 @@ sequence:
               notification_id: home-security-alert
               title: Beveiliging
               message: "{{ alert_message }}"
-          - repeat:
-              for_each: "{{ alert_services }}"
-              sequence:
-                - action: "{{ repeat.item }}"
-                  continue_on_error: true
-                  data:
-                    title: Beveiliging
-                    message: "{{ alert_message }}"
-                    data: "{{ alert_data }}"
+          - action: "{{ notify_service }}"
+            data:
+              title: Beveiliging
+              message: "{{ alert_message }}"
+              data: "{{ alert_data }}"
 
       - conditions: "{{ kind == 'armed' }}"
         sequence:
