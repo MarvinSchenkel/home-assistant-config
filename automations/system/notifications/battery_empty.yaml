@@ -1,7 +1,8 @@
 ---
 description: >
   Send me a notification when a battery of a device labeled
-  battery_monitored gets low, plus a weekly list of all low batteries.
+  battery_monitored gets low, once until the battery is replaced,
+  plus a weekly list of all low batteries.
 alias: system_notifications_battery_low
 mode: queued
 id: 10d6cc7f-dabc-452d-976f-fdc683d7bbe7
@@ -22,12 +23,32 @@ trigger:
       label_id: battery_monitored
     id: "battery_flag_low"
 
+  # A replaced battery re-arms the one-time low-battery push
+  - trigger: battery.level_crossed_threshold
+    target:
+      label_id: battery_monitored
+    options:
+      threshold:
+        type: above
+        value:
+          number: 50
+    id: "battery_recovered"
+
+  - trigger: battery.no_longer_low
+    target:
+      label_id: battery_monitored
+    id: "battery_flag_recovered"
+
   - trigger: time
     at: "10:00:00"
     weekday: sun
     id: "weekly_digest"
 
 action:
+  - variables:
+      already_sent: >-
+        {{ trigger.entity_id is defined and trigger.entity_id in
+           (state_attr('sensor.battery_alerts_sent', 'sent') or {}) }}
   - choose:
       - conditions:
           - condition: trigger
@@ -65,7 +86,19 @@ action:
 
       - conditions:
           - condition: trigger
+            id:
+              - "battery_recovered"
+              - "battery_flag_recovered"
+          - "{{ already_sent }}"
+        sequence:
+          - event: battery_alert_cleared
+            event_data:
+              entity_id: "{{ trigger.entity_id }}"
+
+      - conditions:
+          - condition: trigger
             id: "battery_flag_low"
+          - "{{ not already_sent }}"
         sequence:
           - action: script.send_notification
             data:
@@ -75,13 +108,23 @@ action:
               message: >-
                 De batterij van {{ state_attr(trigger.entity_id, 'friendly_name') }}
                 is bijna leeg!
+          - event: battery_alert_sent
+            event_data:
+              entity_id: "{{ trigger.entity_id }}"
 
-    default:
-      - action: script.send_notification
-        data:
-          receivers:
-            - "marvin"
-          emoji: "🪫"
-          message: >-
-            De batterij van {{ state_attr(trigger.entity_id, 'friendly_name') }}
-            is minder dan 20% ({{ states(trigger.entity_id) }}%)!
+      - conditions:
+          - condition: trigger
+            id: "battery_level_low"
+          - "{{ not already_sent }}"
+        sequence:
+          - action: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+              emoji: "🪫"
+              message: >-
+                De batterij van {{ state_attr(trigger.entity_id, 'friendly_name') }}
+                is minder dan 20% ({{ states(trigger.entity_id) }}%)!
+          - event: battery_alert_sent
+            event_data:
+              entity_id: "{{ trigger.entity_id }}"
