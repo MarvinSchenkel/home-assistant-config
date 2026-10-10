@@ -1,0 +1,65 @@
+---
+alias: areas_livingroom_fireplace
+description: Turns the fireplace on when it is dark outside and someone is in the livingroom
+mode: queued
+id: 5379bbcc-30ca-48ac-b2ec-7cb088c486c8
+
+trigger:
+  - trigger: homeassistant
+    event: start
+    id: resync
+
+  - trigger: event
+    event_type: automation_reloaded
+    id: resync
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.outside_is_dark
+    from: ~
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "on"
+
+  - trigger: state
+    entity_id:
+      - binary_sensor.presence_livingroom
+    to: "off"
+    for:
+      minutes: 10
+
+action:
+  - choose:
+      - alias: "Turn the fireplace on."
+        conditions:
+          - alias: "Is it dark outside?"
+            condition: state
+            entity_id: binary_sensor.outside_is_dark
+            state: "on"
+          - alias: "Is there presence in the room?"
+            condition: not
+            conditions:
+              - or:
+                  - condition: state
+                    entity_id: binary_sensor.presence_livingroom
+                    state: "off"
+                    for:
+                      minutes: 10
+                  # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+                  - and:
+                      - condition: trigger
+                        id: resync
+                      - condition: state
+                        entity_id: binary_sensor.presence_livingroom
+                        state: "off"
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.fireplace
+
+    default:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.fireplace
