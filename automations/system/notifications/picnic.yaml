@@ -1,11 +1,24 @@
 ---
-description: Send a notification when the short window of the picnic delivery is known
+description: >
+  Announce a Picnic delivery the evening before and in the morning, then
+  follow the exact window in a Live Activity from 1 hour before delivery
 alias: system_notifications_picnic_today
 # Queued so the second trigger of a start+end change sees the stored window
 mode: queued
 id: 19f54bfb-fae0-46a2-b72c-75cbf467dfd2
 
 trigger:
+  - trigger: time
+    at: "18:00:00"
+    id: day_before
+  - trigger: time
+    at: "08:00:00"
+    id: morning
+  - trigger: time
+    at:
+      entity_id: sensor.picnic_next_delivery_eta_start
+      offset: "-01:00:00"
+    id: live
   - trigger: state
     entity_id:
       - sensor.picnic_next_delivery_eta_start
@@ -13,44 +26,124 @@ trigger:
     not_to:
       - unavailable
       - unknown
+    id: live
+  - trigger: state
+    entity_id: sensor.picnic_bezorgtijd_laatste_bestelling
+    not_from:
+      - unavailable
+      - unknown
+    not_to:
+      - unavailable
+      - unknown
+    id: live_end
   - trigger: time
-    at: "08:30:00"
-    id: reminder
+    at: sensor.picnic_next_delivery_eta_end
+    id: live_end
 
 variables:
+  phones:
+    - notify.mobile_app_marvins_iphone_13
+    - notify.mobile_app_iphone_van_l_a
+  live_tag: picnic_delivery
   eta_start: >
     {{ as_timestamp(states('sensor.picnic_next_delivery_eta_start'), 0) }}
   eta_end: >
     {{ as_timestamp(states('sensor.picnic_next_delivery_eta_end'), 0) }}
-  eta_window: "{{ eta_start }}|{{ eta_end }}"
-  days_left: >
-    {{ ((eta_start | as_datetime | as_local).date() - now().date()).days }}
-  day_name: >-
-    {% if days_left == 0 %} vandaag
-    {% elif days_left == 1 %} morgen
-    {% endif %}
-
-condition:
-  - "{{ days_left < 2 }}"
-  - "{{ eta_end > eta_start > as_timestamp(now()) }}"
-  # Picnic API outages flap the sensors; only a changed window is news
-  - "{{ trigger.id == 'reminder'
-      or eta_window != states('input_text.picnic_last_notified_eta') }}"
+  slot_start: >
+    {{ as_timestamp(states('sensor.picnic_begin_van_het_tijdslot_van_de_volgende_bestelling'), 0) }}
+  slot_end: >
+    {{ as_timestamp(states('sensor.picnic_einde_van_het_tijdslot_van_de_volgende_bestelling'), 0) }}
+  # The short ETA window is only known on the delivery day, fall back to the booked slot
+  has_eta: >
+    {{ eta_end > eta_start > 0
+       and (eta_start | timestamp_custom('%Y-%m-%d'))
+           == (slot_start | timestamp_custom('%Y-%m-%d')) }}
+  window_start: "{{ eta_start if has_eta else slot_start }}"
+  window_end: "{{ eta_end if has_eta else slot_end }}"
+  window: >-
+    {{ window_start | timestamp_custom('%H:%M') }}
+    en {{ window_end | timestamp_custom('%H:%M') }}
+  delivery_date: "{{ slot_start | timestamp_custom('%Y-%m-%d') }}"
+  live_window: "{{ eta_start }}|{{ eta_end }}"
+  live_shown: "{{ states('input_text.picnic_last_notified_eta') }}"
 
 action:
-  - action: input_text.set_value
-    target:
-      entity_id: input_text.picnic_last_notified_eta
-    data:
-      value: "{{ eta_window }}"
-  - action: script.send_notification
-    data:
-      receivers:
-        - "marvin"
-        - "laura"
-        - "intercom"
-      emoji: "🛒"
-      message: >-
-        Picnic bezorgt {{ day_name }} tussen
-        {{ eta_start | timestamp_custom('%H:%M') }}
-        en {{ eta_end | timestamp_custom('%H:%M') }}!
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: day_before
+          - "{{ delivery_date == (now() + timedelta(days=1)).strftime('%Y-%m-%d') }}"
+        sequence:
+          - action: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+                - "laura"
+              emoji: "🛒"
+              message: "Picnic komt morgen bezorgen tussen {{ window }}."
+
+      - conditions:
+          - condition: trigger
+            id: morning
+          - "{{ delivery_date == now().strftime('%Y-%m-%d') }}"
+        sequence:
+          - action: script.send_notification
+            data:
+              receivers:
+                - "marvin"
+                - "laura"
+                - "intercom"
+              emoji: "🛒"
+              message: "Picnic bezorgt vandaag tussen {{ window }}!"
+
+      # The ETA shifts a lot in the last hour, so only the first push alerts
+      - conditions:
+          - condition: trigger
+            id: live
+          - "{{ eta_end > eta_start > 0 }}"
+          - "{{ eta_start - 3600 <= as_timestamp(now()) < eta_end }}"
+          - "{{ live_window != live_shown }}"
+        sequence:
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.picnic_last_notified_eta
+            data:
+              value: "{{ live_window }}"
+          - repeat:
+              for_each: "{{ phones }}"
+              sequence:
+                - action: "{{ repeat.item }}"
+                  continue_on_error: true
+                  data:
+                    title: "Picnic"
+                    message: >-
+                      Bezorging tussen {{ eta_start | timestamp_custom('%H:%M') }}
+                      en {{ eta_end | timestamp_custom('%H:%M') }}
+                    data:
+                      tag: "{{ live_tag }}"
+                      live_update: true
+                      silent: "{{ live_shown != '' }}"
+                      critical_text: "{{ eta_start | timestamp_custom('%H:%M') }}"
+                      chronometer: true
+                      when: "{{ eta_start | int }}"
+                      notification_icon: "mdi:cart-outline"
+
+      - conditions:
+          - condition: trigger
+            id: live_end
+          - "{{ live_shown != '' }}"
+        sequence:
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.picnic_last_notified_eta
+            data:
+              value: ""
+          - repeat:
+              for_each: "{{ phones }}"
+              sequence:
+                - action: "{{ repeat.item }}"
+                  continue_on_error: true
+                  data:
+                    message: "clear_notification"
+                    data:
+                      tag: "{{ live_tag }}"
