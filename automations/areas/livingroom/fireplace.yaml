@@ -55,11 +55,18 @@ action:
                         entity_id: binary_sensor.presence_livingroom
                         state: "off"
         sequence:
+          # The fireplace beeps on every command, even when it is already in that state
+          - condition: state
+            entity_id: switch.fireplace
+            state: "off"
           - action: switch.turn_on
             target:
               entity_id: switch.fireplace
 
     default:
+      - condition: state
+        entity_id: switch.fireplace
+        state: "on"
       - action: switch.turn_off
         target:
           entity_id: switch.fireplace
