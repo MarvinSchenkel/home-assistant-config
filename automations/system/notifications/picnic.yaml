@@ -3,7 +3,6 @@ description: >
   Announce a Picnic delivery the evening before and in the morning, then
   follow the exact window in a Live Activity from 1 hour before delivery
 alias: system_notifications_picnic_today
-# Queued so the second trigger of a start+end change sees the stored window
 mode: queued
 id: 19f54bfb-fae0-46a2-b72c-75cbf467dfd2
 
@@ -71,8 +70,6 @@ variables:
     {{ window_start | timestamp_custom('%H:%M') }}
     en {{ window_end | timestamp_custom('%H:%M') }}
   delivery_date: "{{ slot_start | timestamp_custom('%Y-%m-%d') }}"
-  live_window: "{{ eta_start }}|{{ eta_end }}"
-  live_shown: "{{ states('input_text.picnic_last_notified_eta') }}"
 
 action:
   - choose:
@@ -103,19 +100,13 @@ action:
               emoji: "🛒"
               message: "Picnic bezorgt vandaag tussen {{ window }}!"
 
-      # The ETA shifts a lot in the last hour, so only the first push alerts
+      # Pushes with the same tag update the Live Activity in place, only the first one alerts
       - conditions:
           - condition: trigger
             id: live
           - "{{ eta_end > eta_start > 0 }}"
           - "{{ eta_start - 3600 <= as_timestamp(now()) < eta_end }}"
-          - "{{ live_window != live_shown }}"
         sequence:
-          - action: input_text.set_value
-            target:
-              entity_id: input_text.picnic_last_notified_eta
-            data:
-              value: "{{ live_window }}"
           - repeat:
               for_each: "{{ phones }}"
               sequence:
@@ -129,7 +120,7 @@ action:
                     data:
                       tag: "{{ live_tag }}"
                       live_update: true
-                      silent: "{{ live_shown != '' }}"
+                      silent: true
                       critical_text: "{{ eta_start | timestamp_custom('%H:%M') }}"
                       chronometer: true
                       when: "{{ eta_start | int }}"
@@ -139,11 +130,6 @@ action:
           - condition: trigger
             id: live_end
         sequence:
-          - action: input_text.set_value
-            target:
-              entity_id: input_text.picnic_last_notified_eta
-            data:
-              value: ""
           - repeat:
               for_each: "{{ phones }}"
               sequence:
