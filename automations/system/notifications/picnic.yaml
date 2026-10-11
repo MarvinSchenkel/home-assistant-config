@@ -27,6 +27,13 @@ trigger:
       - unavailable
       - unknown
     id: live
+  # The entity time trigger is not retroactive, resync after a restart or reload
+  - trigger: homeassistant
+    event: start
+    id: live
+  - trigger: event
+    event_type: automation_reloaded
+    id: live
   - trigger: state
     entity_id: sensor.picnic_bezorgtijd_laatste_bestelling
     not_from:
