@@ -131,7 +131,6 @@ action:
       - conditions:
           - condition: trigger
             id: live_end
-          - "{{ live_shown != '' }}"
         sequence:
           - action: input_text.set_value
             target:
