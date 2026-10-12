@@ -7,6 +7,8 @@ mode: queued
 id: c3a22133-9659-4a53-87dd-97d05cd5f290
 
 variables:
+  repair: >-
+    {{ trigger.event.data.domain ~ "/" ~ trigger.event.data.issue_id if trigger.id == "repair" else "" }}
   message: >-
     {%- if trigger.id == "repair" -%}
       Nieuwe reparatie: {{ trigger.event.data.domain }} / {{ trigger.event.data.issue_id }}
@@ -34,8 +36,9 @@ variables:
         - event: health_watchdog_sent
           event_data:
             message: "{{ message }}"
+            repair: "{{ repair }}"
 
-trigger:
+triggers:
   - trigger: event
     event_type: repairs_issue_registry_updated
     event_data:
@@ -61,16 +64,24 @@ trigger:
     to: "on"
     id: music_player
 
-action:
+conditions:
+  - alias: "Repairs: only new ones that are not ignored and were not notified before"
+    or:
+      - not:
+          - condition: trigger
+            id: repair
+      - condition: template
+        value_template: >
+          {% set found = issue(trigger.event.data.domain, trigger.event.data.issue_id) %}
+          {{ (found is none or found.dismissed_version is none)
+             and repair not in (state_attr("sensor.health_watchdog_sent", "repairs") or {}) }}
+
+actions:
   - choose:
-      - alias: "A new repair that is not ignored"
+      - alias: "A new repair"
         conditions:
           - condition: trigger
             id: repair
-          - condition: template
-            value_template: >
-              {% set found = issue(trigger.event.data.domain, trigger.event.data.issue_id) %}
-              {{ found is none or found.dismissed_version is none }}
         sequence:
           - *notify
 
