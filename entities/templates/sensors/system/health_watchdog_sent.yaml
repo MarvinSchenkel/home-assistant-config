@@ -1,12 +1,17 @@
 ---
-trigger:
+triggers:
   - trigger: event
     event_type: health_watchdog_sent
+  - trigger: event
+    event_type: repairs_issue_registry_updated
+    event_data:
+      action: remove
 sensor:
   - name: health_watchdog_sent
     unique_id: 27d1a822-5844-4524-ae84-843c89b645d3
     device_class: timestamp
-    state: "{{ now().isoformat() }}"
+    state: >
+      {{ now().isoformat() if trigger.event.event_type == "health_watchdog_sent" else this.state }}
     attributes:
       # Message -> last sent time, entries older than 24 hours are dropped
       sent: >
@@ -15,4 +20,24 @@ sensor:
            if as_datetime(at) > now() - timedelta(hours=24) %}
           {% set ns.sent = dict(ns.sent, **{message: at}) %}
         {% endfor %}
-        {{ dict(ns.sent, **{trigger.event.data.message: now().isoformat()}) }}
+        {% if trigger.event.event_type == "health_watchdog_sent" %}
+          {% set ns.sent = dict(ns.sent, **{trigger.event.data.message: now().isoformat()}) %}
+        {% endif %}
+        {{ ns.sent }}
+      # Notified repair (domain/issue_id) -> last time it was sent or removed,
+      # dropped after 7 days so a repair that stayed gone that long is pushed again
+      repairs: >
+        {% set ns = namespace(repairs={}) %}
+        {% for repair, at in (this.attributes.get("repairs") or {}).items()
+           if as_datetime(at) > now() - timedelta(days=7) %}
+          {% set ns.repairs = dict(ns.repairs, **{repair: at}) %}
+        {% endfor %}
+        {% if trigger.event.event_type == "health_watchdog_sent" %}
+          {% set repair = trigger.event.data.repair %}
+        {% else %}
+          {% set repair = trigger.event.data.domain ~ "/" ~ trigger.event.data.issue_id %}
+        {% endif %}
+        {% if repair and (trigger.event.event_type == "health_watchdog_sent" or repair in ns.repairs) %}
+          {% set ns.repairs = dict(ns.repairs, **{repair: now().isoformat()}) %}
+        {% endif %}
+        {{ ns.repairs }}
