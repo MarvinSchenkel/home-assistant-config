@@ -1,0 +1,1424 @@
+{
+  "kiosk_mode": {
+    "hide_header": true
+  },
+  "navbar-templates": {
+    "navbar": {
+      "haptic": {
+        "url": true,
+        "tap_action": false,
+        "hold_action": true,
+        "double_tap_action": true
+      },
+      "mobile": {
+        "show_labels": false,
+        "mode": "floating"
+      },
+      "media_player": {
+        "entity": "media_player.mass_sonos_kitchen",
+        "show": false,
+        "album_cover_background": true,
+        "desktop_position": "top-left"
+      },
+      "routes": [
+        {
+          "url": "/dashboard-test/0",
+          "icon": "mdi:home",
+          "label": "Home"
+        },
+        {
+          "url": "/dashboard-test/begane-grond",
+          "icon": "mdi:home-floor-b",
+          "label": "Begane grond",
+          "hold_action": {
+            "action": "navigate",
+            "navigation_path": "/config/devices/dashboard"
+          }
+        },
+        {
+          "url": "/dashboard-test/eerste-verdieping",
+          "icon": "mdi:home-floor-1",
+          "label": "Eerste verdieping"
+        },
+        {
+          "icon": "mdi:home-floor-2",
+          "label": "Zolder",
+          "url": "/dashboard-test/zolder"
+        },
+        {
+          "url": "/dashboard-test/instellingen",
+          "icon": "mdi:cog",
+          "label": "Instellingen"
+        },
+        {
+          "icon": "mdi:dots-horizontal",
+          "label": "More",
+          "tap_action": {
+            "action": "open-popup"
+          },
+          "popup": [
+            {
+              "icon": "mdi:music",
+              "url": "/d5369777_music_assistant_nightly",
+              "label": "Music Assistant"
+            },
+            {
+              "icon": "mdi:bug",
+              "url": "/dashboard-test/debug",
+              "label": "Debug"
+            },
+            {
+              "icon": "mdi:hammer",
+              "url": "/developer-tools/state",
+              "label": "Ontwikkelaarshulpmiddelen"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "views": [
+    {
+      "title": "Home",
+      "type": "sections",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Home",
+              "heading_style": "title",
+              "badges": []
+            },
+            {
+              "type": "tile",
+              "entity": "switch.doorbell_chime",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.house_mode_cooking",
+              "name": "Kook modus",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.garden_current_cover_scene",
+              "icon": "mdi:awning",
+              "tap_action": {
+                "action": "fire-dom-event",
+                "browser_mod": {
+                  "service": "browser_mod.popup",
+                  "data": {
+                    "title": "Zonnescherm",
+                    "content": {
+                      "type": "vertical-stack",
+                      "cards": [
+                        {
+                          "type": "entities",
+                          "entities": [
+                            {
+                              "name": "Omhoog",
+                              "entity": "scene.garden_cover_open"
+                            },
+                            {
+                              "name": "Zonnestand",
+                              "entity": "scene.garden_cover_sunblock"
+                            },
+                            {
+                              "name": "Eetstand",
+                              "entity": "scene.garden_cover_dinner"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "Zonnescherm",
+                          "type": "tile",
+                          "entity": "cover.sunscreen",
+                          "features": [
+                            {
+                              "type": "cover-position"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "vacuum.norby",
+              "vertical": false,
+              "features_position": "bottom",
+              "features": [
+                {
+                  "type": "vacuum-commands",
+                  "commands": [
+                    "start_pause",
+                    "stop",
+                    "clean_spot"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.setting_automatic_music",
+              "name": "Autom. muziek",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "conditional",
+              "conditions": [
+                {
+                  "condition": "state",
+                  "entity": "media_player.mass_mancave_wiim_amp",
+                  "state_not": "unavailable"
+                }
+              ],
+              "card": {
+                "type": "custom:mini-media-player",
+                "entity": "media_player.mass_mancave_wiim_amp",
+                "info": "short",
+                "artwork": "cover",
+                "hide": {
+                  "source": true,
+                  "power": true,
+                  "icon": true,
+                  "name": true,
+                  "volume": true
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "fan.itho",
+              "vertical": false,
+              "features_position": "bottom"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.living_room_android",
+              "vertical": false,
+              "features_position": "bottom"
+            },
+            {
+              "type": "custom:navbar-card",
+              "template": "navbar"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "icon": "",
+              "heading": "Shortcuts",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "automation.house_populate_music_queue",
+              "icon": "mdi:playlist-music",
+              "name": "Nieuwe playlist",
+              "color": "primary",
+              "hide_state": true,
+              "tap_action": {
+                "action": "call-service",
+                "service": "automation.trigger",
+                "data": {
+                  "entity_id": "automation.house_populate_music_queue"
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.master_bedroom_room_mode",
+              "name": "Slaapkamer wakker",
+              "color": "primary",
+              "icon": "mdi:weather-sunny",
+              "hide_state": true,
+              "tap_action": {
+                "action": "call-service",
+                "service": "input_select.select_option",
+                "confirmation": {
+                  "text": "Weet je zeker dat je de slaapkamer op wakker wilt zetten?"
+                },
+                "data": {
+                  "option": "Wakker",
+                  "entity_id": "input_select.master_bedroom_room_mode"
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.gardendoor_current_cover_scene",
+              "icon": "mdi:blinds",
+              "name": "TV Luxaflex dicht",
+              "color": "primary",
+              "hide_state": true,
+              "tap_action": {
+                "action": "call-service",
+                "service": "script.close_blinds_tv_livingroom"
+              }
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Overig",
+              "heading_style": "title",
+              "badges": []
+            },
+            {
+              "show_state": false,
+              "show_name": false,
+              "camera_view": "live",
+              "type": "picture-entity",
+              "entity": "camera.g4_doorbell_high",
+              "image": "https://demo.home-assistant.io/stub_config/bedroom.png",
+              "camera_image": "camera.g4_doorbell_high",
+              "name": "Camera deur"
+            }
+          ]
+        }
+      ],
+      "max_columns": 4,
+      "cards": [],
+      "badges": [
+        {
+          "type": "entity",
+          "show_name": false,
+          "show_state": true,
+          "show_icon": true,
+          "entity": "sensor.marvin_status",
+          "color": "",
+          "show_entity_picture": true
+        },
+        {
+          "type": "entity",
+          "show_name": false,
+          "show_state": true,
+          "show_icon": true,
+          "entity": "sensor.laura_status",
+          "color": "",
+          "show_entity_picture": true
+        },
+        {
+          "type": "entity",
+          "entity": "alarm_control_panel.home_security"
+        },
+        {
+          "type": "entity-filter",
+          "entities": [
+            {
+              "entity": "input_boolean.setting_guest_mode",
+              "state_content": "name"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "state",
+              "entity_id": "input_boolean.setting_guest_mode",
+              "state": "on"
+            }
+          ]
+        },
+        {
+          "type": "entity-filter",
+          "entities": [
+            {
+              "entity": "sensor.rmn_next_garbage_pickup_badge",
+              "state_content": "state"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "state",
+              "state_not": "Geen"
+            }
+          ]
+        },
+        {
+          "type": "entity-filter",
+          "entities": [
+            {
+              "entity": "sensor.bathroom_ble_humidity"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "numeric_state",
+              "entity_id": "sensor.bathroom_ble_humidity",
+              "above": 75
+            }
+          ]
+        },
+        {
+          "type": "entity-filter",
+          "entities": [
+            {
+              "entity": "sensor.sauna_temperature"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "numeric_state",
+              "entity_id": "sensor.sauna_temperature",
+              "above": 50
+            }
+          ]
+        },
+        {
+          "type": "entity-filter",
+          "entities": [
+            {
+              "entity": "sensor.aeg_droger_timetoend"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "numeric_state",
+              "entity_id": "sensor.aeg_droger_timetoend",
+              "above": 0
+            }
+          ]
+        },
+        {
+          "type": "entity",
+          "show_name": false,
+          "show_state": true,
+          "show_icon": true,
+          "entity": "weather.lokaal_weer",
+          "state_content": "temperature"
+        },
+        {
+          "type": "entity",
+          "show_name": false,
+          "show_state": false,
+          "show_icon": true,
+          "entity": "sensor.rmn_restafval",
+          "color": "",
+          "show_entity_picture": false,
+          "icon": "mdi:robot-happy",
+          "tap_action": {
+            "action": "assist"
+          }
+        }
+      ],
+      "icon": "mdi:home"
+    },
+    {
+      "type": "sections",
+      "max_columns": 4,
+      "title": "Begane grond",
+      "path": "begane-grond",
+      "icon": "mdi:home-floor-b",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:navbar-card",
+              "template": "navbar"
+            },
+            {
+              "type": "heading",
+              "heading": "Woonkamer",
+              "heading_style": "title",
+              "badges": [
+                {
+                  "type": "entity",
+                  "entity": "sensor.livingroom_temperature",
+                  "color": "state",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.presence_livingroom",
+                  "color": "state",
+                  "show_state": false,
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ],
+              "icon": ""
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.livingroom_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.gardendoor_current_cover_scene",
+              "icon": "mdi:blinds",
+              "name": "Tuindeur",
+              "tap_action": {
+                "action": "fire-dom-event",
+                "browser_mod": {
+                  "service": "browser_mod.popup",
+                  "data": {
+                    "title": "Tuindeur",
+                    "content": {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "name": "Half Open",
+                          "entity": "scene.gardendoor_cover_halfopen"
+                        },
+                        {
+                          "name": "Half Dicht",
+                          "entity": "scene.gardendoor_cover_halfclosed"
+                        },
+                        {
+                          "name": "Dicht",
+                          "entity": "scene.gardendoor_cover_closed"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.livingroom_current_cover_scene",
+              "icon": "mdi:blinds",
+              "name": "Woonkamer",
+              "tap_action": {
+                "action": "fire-dom-event",
+                "browser_mod": {
+                  "service": "browser_mod.popup",
+                  "data": {
+                    "title": "Woonkamer",
+                    "content": {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "name": "Half Open",
+                          "entity": "scene.livingroom_cover_halfopen"
+                        },
+                        {
+                          "name": "Half Dicht",
+                          "entity": "scene.livingroom_cover_halfclosed"
+                        },
+                        {
+                          "name": "Dicht",
+                          "entity": "scene.livingroom_cover_closed"
+                        },
+                        {
+                          "name": "Ventileren Nacht",
+                          "entity": "scene.livingroom_cover_ventilatingnight"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.livingroom_cover_manual_control",
+              "icon": "mdi:blinds",
+              "name": "Handmatige Luxaflex",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "climate.livingroom",
+              "name": "Verwarming",
+              "show_entity_picture": false,
+              "vertical": false,
+              "hide_state": false
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.livingroom_manual_control"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Keuken",
+              "heading_style": "title",
+              "badges": [
+                {
+                  "type": "entity",
+                  "entity": "sensor.pir_kitchen_temperature",
+                  "color": "state",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.presence_kitchen",
+                  "color": "state",
+                  "show_state": false,
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.kitchen_current_cover_scene",
+              "icon": "mdi:blinds",
+              "name": "Luxaflex",
+              "tap_action": {
+                "action": "fire-dom-event",
+                "browser_mod": {
+                  "service": "browser_mod.popup",
+                  "data": {
+                    "title": "Keuken",
+                    "content": {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "name": "Half Open",
+                          "entity": "scene.kitchen_cover_halfopen"
+                        },
+                        {
+                          "name": "Half Dicht",
+                          "entity": "scene.kitchen_cover_halfclosed"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.kitchen_cover_manual_control",
+              "name": "Handmatige Luxaflex",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "switch.decent_espresso_de1pro_de1_on",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sections",
+      "max_columns": 4,
+      "title": "Eerste verdieping",
+      "path": "eerste-verdieping",
+      "icon": "mdi:home-floor-1",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:navbar-card",
+              "template": "navbar"
+            },
+            {
+              "type": "heading",
+              "heading": "Badkamer",
+              "heading_style": "title",
+              "badges": [
+                {
+                  "type": "entity",
+                  "show_state": false,
+                  "show_icon": true,
+                  "entity": "binary_sensor.presence_bathroom",
+                  "color": "state",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.bathroom_room_mode"
+            },
+            {
+              "type": "tile",
+              "name": "Luchtvochtigheid",
+              "entity": "sensor.bathroom_ble_humidity"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.bathroom_floor",
+              "features_position": "bottom",
+              "vertical": false,
+              "name": "Vloerverwarming",
+              "show_entity_picture": false,
+              "hide_state": false
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Slaapkamer",
+              "heading_style": "title",
+              "badges": [
+                {
+                  "type": "entity",
+                  "entity": "sensor.pir_master_bedroom_temperature",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "entity",
+                  "show_state": false,
+                  "show_icon": true,
+                  "entity": "binary_sensor.presence_master_bedroom",
+                  "color": "state",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.master_bedroom_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.bedroom_current_cover_scene",
+              "icon": "mdi:blinds",
+              "tap_action": {
+                "action": "fire-dom-event",
+                "browser_mod": {
+                  "service": "browser_mod.popup",
+                  "data": {
+                    "title": "Slaapkamer",
+                    "content": {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "name": "Ventileren",
+                          "entity": "scene.bedroom_cover_ventilating"
+                        },
+                        {
+                          "name": "Ventileren Nacht",
+                          "entity": "scene.bedroom_cover_ventilatingnight"
+                        },
+                        {
+                          "name": "Half Open",
+                          "entity": "scene.bedroom_cover_halfopen"
+                        },
+                        {
+                          "name": "Half Dicht",
+                          "entity": "scene.bedroom_cover_halfclosed"
+                        },
+                        {
+                          "name": "Open",
+                          "entity": "scene.bedroom_cover_open"
+                        },
+                        {
+                          "name": "Dicht",
+                          "entity": "scene.bedroom_cover_closed"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "cover.master_bedroom_curtains",
+              "features": [
+                {
+                  "type": "cover-position"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "climate.master_bedroom",
+              "name": "Verwarming"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_bed_marvin",
+              "name": "Bed Marvin",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_bed_laura",
+              "name": "Bed Laura",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "light.master_bedroom_lights",
+              "features_position": "bottom",
+              "vertical": false
+            },
+            {
+              "type": "tile",
+              "entity": "climate.airco_master_bedroom"
+            },
+            {
+              "type": "custom:gap-card"
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.masterbedroom_cover_manual_control",
+              "name": "Handmatige Luxaflex",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.masterbedroom_climate_manual_control"
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.masterbedroom_manual_control"
+            },
+            {
+              "type": "tile",
+              "entity": "input_number.master_bedroom_sleep_hold_temperature",
+              "features": [
+                {
+                  "type": "numeric-input"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Zoey's slaapkamer",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "cover.small_bedroom",
+              "name": "Gordijnen",
+              "features": [
+                {
+                  "type": "cover-position"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "climate.small_bedroom",
+              "name": "Verwarming"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sections",
+      "max_columns": 4,
+      "title": "Zolder",
+      "path": "zolder",
+      "icon": "mdi:home-floor-2",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:navbar-card",
+              "template": "navbar"
+            },
+            {
+              "type": "heading",
+              "heading": "Mancave",
+              "heading_style": "title",
+              "badges": [
+                {
+                  "type": "entity",
+                  "show_state": true,
+                  "show_icon": true,
+                  "entity": "sensor.pir_mancave_temperature",
+                  "color": "state",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.presence_mancave",
+                  "color": "state",
+                  "show_state": false,
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.mancave_room_mode"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.mancave_current_cover_scene",
+              "icon": "mdi:blinds",
+              "tap_action": {
+                "action": "fire-dom-event",
+                "browser_mod": {
+                  "service": "browser_mod.popup",
+                  "data": {
+                    "title": "Mancave",
+                    "content": {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "name": "Half Open",
+                          "entity": "scene.mancave_cover_halfopen"
+                        },
+                        {
+                          "name": "Half Dicht",
+                          "entity": "scene.mancave_cover_halfclosed"
+                        },
+                        {
+                          "name": "Top-half Open",
+                          "entity": "scene.mancave_cover_tophalfopen"
+                        },
+                        {
+                          "name": "Dicht",
+                          "entity": "scene.mancave_cover_closed"
+                        },
+                        {
+                          "name": "Ventileren Nacht",
+                          "entity": "scene.mancave_cover_ventilatingnight"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.mancave_cover_manual_control",
+              "name": "Handmatige Luxaflex",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "light.mancave",
+              "features_position": "bottom",
+              "vertical": false
+            },
+            {
+              "type": "tile",
+              "grid_options": {
+                "columns": 6,
+                "rows": 2
+              },
+              "entity": "vacuum.minty",
+              "vertical": false,
+              "features": [
+                {
+                  "type": "vacuum-commands",
+                  "commands": [
+                    "start_pause",
+                    "stop",
+                    "clean_spot"
+                  ]
+                }
+              ],
+              "features_position": "bottom"
+            },
+            {
+              "type": "tile",
+              "entity": "light.mancave_led",
+              "vertical": false,
+              "features_position": "bottom"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.ac_mancave"
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.mancave_climate_manual_control"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Overloop",
+              "heading_style": "title",
+              "badges": [
+                {
+                  "type": "entity",
+                  "show_state": true,
+                  "show_icon": true,
+                  "entity": "sensor.pir_zolder_air_temperature",
+                  "color": "state",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.pir_third_floor_stairs",
+                  "color": "state",
+                  "show_state": false,
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.sauna_temperature",
+              "name": "Sauna"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Waskamer",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.ac_waskamer",
+              "vertical": false,
+              "features_position": "bottom"
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.waskamer_climate_manual_control"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sections",
+      "max_columns": 4,
+      "title": "Instellingen",
+      "path": "instellingen",
+      "icon": "mdi:cog",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:navbar-card",
+              "template": "navbar"
+            },
+            {
+              "type": "heading",
+              "heading_style": "title",
+              "heading": "Verlichting"
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.current_light_schedule",
+              "icon": "mdi:theme-light-dark"
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.setting_automatic_vacuum",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.setting_manual_lights",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "icon_tap_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "tile",
+              "entity": "input_select.current_music_schedule",
+              "features_position": "bottom",
+              "vertical": false
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Bedtijden",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "input_datetime.master_bedroom_approx_target_sleep_time"
+            },
+            {
+              "type": "tile",
+              "entity": "input_datetime.mancave_approx_target_sleep_time"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Nieuwe sectie"
+            },
+            {
+              "type": "tile",
+              "entity": "input_boolean.home_security_enabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sections",
+      "max_columns": 4,
+      "title": "Debug",
+      "path": "debug",
+      "icon": "mdi:bug",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:navbar-card",
+              "template": "navbar"
+            },
+            {
+              "type": "heading",
+              "heading": "Aanwezigheid",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_livingroom",
+              "name": "Woonkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_kitchen",
+              "name": "Keuken",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_wc",
+              "name": "WC",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_hall_downstairs",
+              "name": "Hal beneden",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_hall_upstairs",
+              "name": "Hal boven",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_master_bedroom",
+              "name": "Grote slaapkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_bathroom",
+              "name": "Badkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_mancave",
+              "name": "Mancave",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.presence_attic",
+              "name": "Zolder",
+              "state_content": "last-changed"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Licht / Donker",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.livingroom_is_dark",
+              "name": "Woonkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.kitchen_is_dark",
+              "name": "Keuken",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.hall_is_dark",
+              "name": "Hal beneden",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.hall_upstairs_is_dark",
+              "name": "Hal boven",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.master_bedroom_is_dark",
+              "name": "Grote slaapkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.bathroom_is_dark",
+              "name": "Badkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.mancave_is_dark",
+              "name": "Mancave",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.attic_is_dark",
+              "name": "Zolder",
+              "state_content": "last-changed"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Deuren",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.front_door_open",
+              "name": "Voordeur",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.garden_door_open",
+              "name": "Tuin",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.smallbedroom_door_open",
+              "name": "Slaapkamer Saar",
+              "state_content": "last-changed",
+              "features_position": "bottom",
+              "vertical": false
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.bathroom_door_open",
+              "name": "Badkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.livingroom_door_open",
+              "name": "Woonkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.wc_door_open",
+              "name": "WC",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.master_bedroom_door_open",
+              "name": "Slaapkamer",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.mancave_door_open",
+              "name": "Mancave",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.middlebedroom_door_open",
+              "state_content": "last-changed"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Weer",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.sun_hot",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.sun_should_close_south_blinds",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.sun_at_south_windows",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.weather_can_close_sunscreen",
+              "features_position": "bottom",
+              "vertical": false,
+              "icon": "mdi:weather-snowy-rainy",
+              "name": "Kan zonnescherm dicht"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.is_hot_day"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.is_hot_day_predicted"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.is_tropical_night_predicted"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.current_temperature",
+              "vertical": false,
+              "features_position": "bottom"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "Overig",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.bathroom_shower_detected",
+              "name": "Iemand aan het douchen?",
+              "state_content": "last-changed"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.hue_motion_bathroom",
+              "vertical": false,
+              "features_position": "bottom"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
