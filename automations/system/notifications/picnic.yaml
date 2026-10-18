@@ -70,6 +70,14 @@ variables:
     {{ window_start | timestamp_custom('%H:%M') }}
     en {{ window_end | timestamp_custom('%H:%M') }}
   delivery_date: "{{ slot_start | timestamp_custom('%Y-%m-%d') }}"
+  live_window: "{{ eta_start | int }}|{{ eta_end | int }}"
+  last_live_window: "{{ states('input_text.picnic_live_window') }}"
+  # Only push when the window opens or either edge moved 5 minutes or more since the last push
+  live_window_moved: >
+    {% set last = (last_live_window | string).split('|') %}
+    {{ last | count != 2
+       or (eta_start - last[0] | float(0)) | abs >= 300
+       or (eta_end - last[1] | float(0)) | abs >= 300 }}
 
 action:
   - choose:
@@ -106,7 +114,14 @@ action:
             id: live
           - "{{ eta_end > eta_start > 0 }}"
           - "{{ eta_start - 3600 <= as_timestamp(now()) < eta_end }}"
+          - "{{ live_window_moved }}"
         sequence:
+          # Stored before pushing so the queued run of the sibling ETA trigger skips
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.picnic_live_window
+            data:
+              value: "{{ live_window }}"
           - repeat:
               for_each: "{{ phones }}"
               sequence:
@@ -139,3 +154,8 @@ action:
                     message: "clear_notification"
                     data:
                       tag: "{{ live_tag }}"
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.picnic_live_window
+            data:
+              value: ""
