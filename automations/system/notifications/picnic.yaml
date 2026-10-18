@@ -35,9 +35,8 @@ trigger:
     id: live
   - trigger: state
     entity_id: sensor.picnic_bezorgtijd_laatste_bestelling
-    not_from:
-      - unavailable
-      - unknown
+    # The sensor is unknown until the open order is delivered, so only skip restarts
+    not_from: unavailable
     not_to:
       - unavailable
       - unknown
