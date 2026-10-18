@@ -136,7 +136,9 @@ action:
                       tag: "{{ live_tag }}"
                       live_update: true
                       silent: true
-                      critical_text: "{{ eta_start | timestamp_custom('%H:%M') }}"
+                      # The countdown replaces the message line, so the full window goes here
+                      critical_text: >-
+                        {{ eta_start | timestamp_custom('%H:%M') }}–{{ eta_end | timestamp_custom('%H:%M') }}
                       chronometer: true
                       when: "{{ eta_start | int }}"
                       notification_icon: "mdi:cart-outline"
