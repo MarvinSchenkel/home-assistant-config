@@ -55,6 +55,7 @@ sequence:
                 ) }}"
               sequence:
                 - action: notify.mobile_app_marvins_iphone_13
+                  continue_on_error: true
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ full_title }}"
@@ -67,6 +68,7 @@ sequence:
                 ) }}"
               sequence:
                 - action: notify.mobile_app_iphone_van_l_a
+                  continue_on_error: true
                   data:
                     message: "{{ emoji | default('') }} {{ message }}"
                     title: "{{ full_title }}"
