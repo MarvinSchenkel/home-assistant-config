@@ -20,14 +20,24 @@ variables:
 
 action:
   - parallel:
+      # One call per receiver so nobody waits on the other's notification
       - action: script.send_notification
         data:
           receivers:
             - "marvin"
+          message: >-
+            🛎️ De bel gaat!
+          image: "/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/{{ event_id }}"
+          interruption_level: time-sensitive
+
+      - action: script.send_notification
+        data:
+          receivers:
             - "laura"
           message: >-
             🛎️ De bel gaat!
           image: "/api/unifiprotect/thumbnail/5b2cd98901627e03e70003e9/{{ event_id }}"
+          interruption_level: time-sensitive
 
       - if:
           - condition: state
