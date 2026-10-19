@@ -95,15 +95,10 @@ sequence:
                           {% else %}
                             {{ message }}
                           {% endif %}
-                    - action: tts.speak
+                    - action: script.intercom_announce
                       continue_on_error: true
-                      target:
-                        entity_id: tts.home_assistant_cloud
                       data:
-                        cache: true
-                        language: nl-NL
                         message: "{{ speech_message | trim | lower }}"
-                        media_player_entity_id: '{{ states("sensor.mass_media_entity") }}'
 
         # Send mobile notifications
         - choose:

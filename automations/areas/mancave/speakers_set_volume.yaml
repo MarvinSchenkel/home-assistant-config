@@ -24,6 +24,10 @@ triggers:
       - input_boolean.setting_automatic_music
 
   - trigger: state
+    entity_id: script.intercom_announce
+    to: "off"
+
+  - trigger: state
     entity_id: media_player.mass_mancave_wiim_amp
     to: "playing"
 
@@ -55,6 +59,10 @@ conditions:
     condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
+  - alias: "Leave the announcement volume alone while the intercom speaks"
+    condition: state
+    entity_id: script.intercom_announce
+    state: "off"
 
 actions:
   - variables:

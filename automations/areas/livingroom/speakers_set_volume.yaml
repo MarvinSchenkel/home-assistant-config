@@ -21,6 +21,9 @@ triggers:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
   - trigger: state
+    entity_id: script.intercom_announce
+    to: "off"
+  - trigger: state
     entity_id: media_player.mass_wiim_mini
     to: playing
   - trigger: state
@@ -69,6 +72,10 @@ conditions:
     condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
+  - alias: "Leave the announcement volume alone while the intercom speaks"
+    condition: state
+    entity_id: script.intercom_announce
+    state: "off"
   - condition: and
     conditions:
       - not:
