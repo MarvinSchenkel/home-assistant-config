@@ -16,9 +16,8 @@ sequence:
   - action: tts.speak
     continue_on_error: true
     target:
-      entity_id: tts.home_assistant_cloud
+      entity_id: tts.marvin_voice
     data:
       cache: true
-      language: nl-NL
       message: "{{ message }}"
       media_player_entity_id: '{{ states("sensor.mass_media_entity") }}'
