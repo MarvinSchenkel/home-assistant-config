@@ -1,0 +1,6 @@
+---
+# On while send_notification speaks over the intercom, so the speaker volume
+# automations leave the announcement volume alone
+name: Intercom omroep bezig
+icon: mdi:bullhorn
+initial: false

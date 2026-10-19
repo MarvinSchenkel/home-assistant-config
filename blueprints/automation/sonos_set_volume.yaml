@@ -94,6 +94,7 @@ trigger:
     entity_id:
       - input_select.current_music_schedule
       - input_boolean.setting_automatic_music
+      - input_boolean.intercom_announcing
 
   - trigger: state
     entity_id: !input sonos
@@ -110,6 +111,10 @@ condition:
     condition: state
     entity_id: input_boolean.setting_automatic_music
     state: "on"
+  - alias: "Leave the announcement volume alone while the intercom speaks"
+    condition: state
+    entity_id: input_boolean.intercom_announcing
+    state: "off"
   - condition: and
     conditions: !input custom_conditions
 
