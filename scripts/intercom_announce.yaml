@@ -1,9 +1,9 @@
 ---
 alias: intercom_announce
 description: >
-  Speak a message on the Music Assistant group. Queued, so an overlapping
-  notification never clears input_boolean.intercom_announcing while another
-  one is still playing.
+  Speak a message on the Music Assistant group. Queued, so overlapping
+  notifications play one after another. The speaker volume automations
+  stay out of the way while this script is on, which covers the whole queue.
 mode: queued
 max: 10
 
@@ -12,9 +12,6 @@ fields:
     description: The text to speak
 
 sequence:
-  - action: input_boolean.turn_on
-    target:
-      entity_id: input_boolean.intercom_announcing
   # Blocks until MA has played the announcement and restored the speakers
   - action: tts.speak
     continue_on_error: true
@@ -25,6 +22,3 @@ sequence:
       language: nl-NL
       message: "{{ message }}"
       media_player_entity_id: '{{ states("sensor.mass_media_entity") }}'
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.intercom_announcing
