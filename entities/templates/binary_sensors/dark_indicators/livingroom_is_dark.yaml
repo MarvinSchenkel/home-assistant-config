@@ -16,16 +16,34 @@ triggers:
   - trigger: numeric_state
     entity_id:
       - sensor.livingroom_luminance_fp300
-    below: 8
+    below: 9
     for:
       seconds: 5
+  # The outdoor sensor reports often in fine steps, the FP300 only in coarse steps at dusk
+  - trigger: numeric_state
+    entity_id:
+      - sensor.gw3000a_solar_lux
+    below: 1600
+    for:
+      minutes: 2
+  - trigger: numeric_state
+    entity_id:
+      - sensor.gw3000a_solar_lux
+    above: 1600
+    for:
+      minutes: 2
 
 binary_sensor:
   - name: livingroom_is_dark
     unique_id: 4eea3312-788b-4007-a87a-b1c68904dae3
     state: >
+      {#- 1600 lx outdoors is about 10 lx indoors with the blinds open (indoor ~ 0.006 x outdoor) -#}
       {%-
-        if (
+        if has_value("sensor.gw3000a_solar_lux")
+        and states("sensor.gw3000a_solar_lux") | float < 1600
+      -%}
+        on
+      {%- elif (
           states("sensor.livingroom_luminance_fp300") | int > 8
           and is_state("light.dinner_door", "off")
           and is_state("light.hue_kitchen", "off")
