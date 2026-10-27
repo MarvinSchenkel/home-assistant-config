@@ -1,0 +1,44 @@
+---
+description: >
+  Power the Music Assistant test lab bench on workdays only. The lab's daily
+  deep run starts at 07:30 and the bench is in the guest room, so it must
+  never be powered at night.
+alias: system_ma_lab_test_bench
+mode: single
+id: 70d26b39-d91c-4f84-9edf-0f73482d9bc8
+
+trigger:
+  - trigger: time
+    at: "07:15:00"
+    id: turn_on
+
+  - trigger: time
+    at: "19:00:00"
+    id: turn_off
+
+condition:
+  - condition: time
+    weekday:
+      - mon
+      - tue
+      - wed
+      - thu
+      - fri
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: turn_on
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.ma_lab_test_bench
+
+      - conditions:
+          - condition: trigger
+            id: turn_off
+        sequence:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.ma_lab_test_bench
