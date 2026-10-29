@@ -18,12 +18,8 @@ recorder:
       - sensor.solaredge_i1_dc_current
       - sensor.solaredge_i1_dc_voltage
       - sensor.solaredge_i1_temp_sink
-      - sensor.gw3000a_wind_direction
-      - sensor.gw3000a_wind_speed
-      - sensor.gw3000a_solar_lux
       - sensor.gw3000a_solar_radiation
       - sensor.apple_watch_marvin_distance
       - sensor.rk3326_free_memory
-      - sensor.statistical_characteristic
     entity_globs:
       - sensor.solaredge_i1_ac_voltage_*
