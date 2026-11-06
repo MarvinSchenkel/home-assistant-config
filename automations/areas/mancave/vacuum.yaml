@@ -2,9 +2,10 @@
 description: >
   Let Minty clean the mancave once a day while it is empty and Marvin is not
   working, also while the alarm is armed. Never start while Saar naps
-  (master bedroom in Dutje); catch up once the nap ends.
+  (master bedroom in Dutje), send Minty back to the dock when a nap starts,
+  and catch up once the nap ends.
 alias: areas_mancave_vacuum
-mode: single
+mode: queued
 id: 767afcf1-00f6-40c2-97fc-75f63741e426
 
 trigger:
@@ -13,49 +14,80 @@ trigger:
     to: "off"
     for:
       minutes: 30
+    id: start
 
   - trigger: state
     entity_id: binary_sensor.marvin_is_working
     to: "off"
+    id: start
 
   - trigger: state
     entity_id: sensor.minty_last_clean_end
+    id: start
 
   - trigger: time
     at: "09:00:00"
+    id: start
 
   - trigger: state
     entity_id: input_select.master_bedroom_room_mode
     from: "Dutje"
+    id: start
 
-condition:
-  - condition: state
-    entity_id: binary_sensor.marvin_is_working
-    state: "off"
-  - condition: state
-    entity_id: binary_sensor.presence_mancave
-    state: "off"
-    for:
-      minutes: 30
-  - condition: time
-    after: "09:00:00"
-    before: "20:00:00"
-  - alias: "Saar is not napping"
-    condition: not
-    conditions:
-      - condition: state
-        entity_id: input_select.master_bedroom_room_mode
-        state: "Dutje"
-  - condition: state
-    entity_id: vacuum.minty
-    state: "docked"
-  - alias: "Not cleaned yet today"
-    condition: template
-    value_template: >
-      {% set last = as_datetime(states("sensor.minty_last_clean_end")) %}
-      {{ last is none or (last | as_local).date() < now().date() }}
+  - trigger: state
+    entity_id: input_select.master_bedroom_room_mode
+    to: "Dutje"
+    id: nap_started
 
 action:
-  - action: vacuum.start
-    target:
-      entity_id: vacuum.minty
+  - choose:
+      - alias: "Send Minty back to the dock when Saar's nap starts"
+        conditions:
+          - condition: trigger
+            id: nap_started
+          - condition: state
+            entity_id: vacuum.minty
+            state:
+              - "cleaning"
+              - "paused"
+              - "idle"
+        sequence:
+          - action: vacuum.return_to_base
+            target:
+              entity_id: vacuum.minty
+
+      - alias: "Daily clean while the mancave is empty"
+        conditions:
+          - condition: trigger
+            id: start
+          - condition: state
+            entity_id: binary_sensor.marvin_is_working
+            state: "off"
+          - condition: state
+            entity_id: binary_sensor.presence_mancave
+            state: "off"
+            for:
+              minutes: 30
+          - condition: time
+            after: "09:00:00"
+            before: "20:00:00"
+          - alias: "Saar is not napping"
+            condition: not
+            conditions:
+              - condition: state
+                entity_id: input_select.master_bedroom_room_mode
+                state: "Dutje"
+          - condition: state
+            entity_id: vacuum.minty
+            state: "docked"
+          - alias: "Not cleaned yet today"
+            condition: template
+            value_template: >
+              {% set last = as_datetime(states("sensor.minty_last_clean_end")) %}
+              {{ last is none or (last | as_local).date() < now().date() }}
+        sequence:
+          - action: vacuum.start
+            target:
+              entity_id: vacuum.minty
+
+    default: []
