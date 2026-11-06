@@ -1,7 +1,8 @@
 ---
 description: >
   Let Minty clean the mancave once a day while it is empty and Marvin is not
-  working, also while the alarm is armed.
+  working, also while the alarm is armed. Never start while Saar naps
+  (master bedroom in Dutje); catch up once the nap ends.
 alias: areas_mancave_vacuum
 mode: single
 id: 767afcf1-00f6-40c2-97fc-75f63741e426
@@ -23,6 +24,10 @@ trigger:
   - trigger: time
     at: "09:00:00"
 
+  - trigger: state
+    entity_id: input_select.master_bedroom_room_mode
+    from: "Dutje"
+
 condition:
   - condition: state
     entity_id: binary_sensor.marvin_is_working
@@ -35,6 +40,12 @@ condition:
   - condition: time
     after: "09:00:00"
     before: "20:00:00"
+  - alias: "Saar is not napping"
+    condition: not
+    conditions:
+      - condition: state
+        entity_id: input_select.master_bedroom_room_mode
+        state: "Dutje"
   - condition: state
     entity_id: vacuum.minty
     state: "docked"
