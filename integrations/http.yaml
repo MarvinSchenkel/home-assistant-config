@@ -1,0 +1,7 @@
+---
+# Caddy reverse proxy on CT 117 (192.168.1.100) serves HA at https://homeassistant.home.<zone>.
+# Direct http://192.168.1.80:8123 keeps working.
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.100
