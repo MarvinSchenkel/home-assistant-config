@@ -1,0 +1,11 @@
+---
+# On during Sint Maarten (11 November, 18:00-20:30).
+# The front door and hall lights stay off then, so the lantern kids skip the house.
+binary_sensor:
+  - name: house_mode_sint_maarten
+    unique_id: 9477c914-c5d1-410c-b416-dfb571204488
+    state: >
+      {{
+        now().month == 11 and now().day == 11
+        and today_at("18:00") <= now() < today_at("20:30")
+      }}
