@@ -1,6 +1,6 @@
 ---
 alias: areas_hall_downstairs_frontdoor_lights
-description: Turns the frontdoor light on/off based on sunset and sunrise
+description: Turns the frontdoor light on/off based on sunset and sunrise, kept off during Sint Maarten
 mode: restart
 id: a2c1f562-ff56-43e8-a2bc-9fcaaaf490ed
 
@@ -16,6 +16,12 @@ variables:
     - &condition_is_presence_detected
       condition: state
       entity_id: binary_sensor.g4_doorbell_motion
+      state: "on"
+
+    - &condition_is_sint_maarten
+      alias: "Sint Maarten: keep the light off so the lantern kids skip the house"
+      condition: state
+      entity_id: binary_sensor.house_mode_sint_maarten
       state: "on"
 
     - &condition_light_schedule_change
@@ -55,6 +61,9 @@ trigger:
     entity_id: input_select.current_light_schedule
     id: light_schedule_change
 
+  - trigger: state
+    entity_id: binary_sensor.house_mode_sint_maarten
+
   - trigger: homeassistant
     event: start
 
@@ -63,6 +72,12 @@ trigger:
 
 action:
   - choose:
+      - alias: "Keep the light off during Sint Maarten"
+        conditions:
+          - *condition_is_sint_maarten
+        sequence:
+          - *turn_off
+
       - alias: "Very subtly change the lights when a light schedule change is detected."
         conditions:
           - *condition_is_dark

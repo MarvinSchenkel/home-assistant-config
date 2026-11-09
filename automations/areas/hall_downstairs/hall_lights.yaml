@@ -1,6 +1,6 @@
 ---
 alias: areas_hall_downstairs_lights
-description: Turns the hallway lights on when motion has been detected
+description: Turns the hallway lights on when motion has been detected, kept off during Sint Maarten
 mode: restart
 id: 797b07af-7b1f-4c4f-bd8f-be9708c64e63
 
@@ -24,6 +24,12 @@ variables:
     - &condition_is_dark
       condition: state
       entity_id: binary_sensor.hall_is_dark
+      state: "on"
+
+    - &condition_is_sint_maarten
+      alias: "Sint Maarten: keep the light off so the lantern kids skip the house"
+      condition: state
+      entity_id: binary_sensor.house_mode_sint_maarten
       state: "on"
 
     - &condition_light_schedule_change
@@ -75,6 +81,9 @@ trigger:
     entity_id: input_boolean.setting_manual_lights
     to: "off"
 
+  - trigger: state
+    entity_id: binary_sensor.house_mode_sint_maarten
+
 condition:
   - condition: state
     alias: "Check if we can automate the lights"
@@ -83,6 +92,12 @@ condition:
 
 action:
   - choose:
+      - alias: "Keep the light off during Sint Maarten"
+        conditions:
+          - *condition_is_sint_maarten
+        sequence:
+          - *turn_off
+
       - conditions:
           - condition: trigger
             alias: "Check if we started watching a movie"
