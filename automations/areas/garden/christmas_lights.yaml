@@ -31,9 +31,9 @@ trigger:
 
 condition:
   - or:
-      - alias: "Christmas season (1 December to 7 January)"
+      - alias: "Christmas season (1 November to 7 January)"
         condition: template
-        value_template: "{{ now().month == 12 or (now().month == 1 and now().day <= 7) }}"
+        value_template: "{{ now().month in [11, 12] or (now().month == 1 and now().day <= 7) }}"
       - condition: trigger
         id: season_end
 
