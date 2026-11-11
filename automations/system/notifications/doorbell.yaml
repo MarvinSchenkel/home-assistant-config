@@ -1,7 +1,8 @@
 ---
 description: >
   Send a notification with a snapshot when someone rings the doorbell, and
-  light up the front door and the hall for a few minutes when it is dark.
+  light up the front door and the hall for a few minutes when it is dark
+  (not during Sint Maarten).
 alias: system_notifications_doorbell
 # Restart so a second ring notifies again and extends the lights
 mode: restart
@@ -43,6 +44,10 @@ action:
           - condition: state
             entity_id: binary_sensor.g4_doorbell_is_dark
             state: "on"
+          - condition: state
+            alias: "Sint Maarten: keep the front door and hall dark"
+            entity_id: binary_sensor.house_mode_sint_maarten
+            state: "off"
         then:
           - action: scene.turn_on
             target:
