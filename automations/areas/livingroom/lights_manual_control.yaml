@@ -3,8 +3,9 @@ alias: areas_livingroom_lights_manual_control
 description: >-
   Marks the livingroom and kitchen lights as manually controlled when one of
   the tap dial switches is used, so the lights automations leave them alone.
-  Resets when both rooms have been empty for a while or when the expiry timer
-  finishes.
+  Resets when both rooms have been empty for a while, when the TV turns off
+  (so the lights go back to the schedule scene after watching) or when the
+  expiry timer finishes.
 mode: queued
 id: 2ca5abab-72d9-4770-9b29-f60f4e02aaa5
 trace:
@@ -36,6 +37,12 @@ trigger:
     for:
       minutes: 10
     id: rooms_empty
+
+  - trigger: state
+    entity_id: media_player.living_room_android
+    from: "on"
+    to: "off"
+    id: tv_off
 
   - trigger: state
     entity_id: input_boolean.livingroom_manual_control
@@ -83,6 +90,18 @@ action:
             state: "off"
             for:
               minutes: 10
+        sequence:
+          - action: script.manual_control_deactivate
+            data:
+              helper: livingroom_manual_control
+
+      - alias: "Release manual control when the TV turns off"
+        conditions:
+          - condition: trigger
+            id: tv_off
+          - condition: state
+            entity_id: input_boolean.livingroom_manual_control
+            state: "on"
         sequence:
           - action: script.manual_control_deactivate
             data:
