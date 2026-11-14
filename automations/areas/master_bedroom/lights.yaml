@@ -70,9 +70,11 @@ variables:
 trigger:
   - trigger: homeassistant
     event: start
+    id: resync
 
   - trigger: event
     event_type: automation_reloaded
+    id: resync
 
   - trigger: state
     entity_id:
@@ -236,5 +238,38 @@ action:
             data:
               transition: 1
 
-    default:
-      - *turn_off
+      - alias: "Turn the lights off when no presence has been detected for 60 seconds"
+        conditions:
+          - or:
+              - condition: state
+                entity_id: binary_sensor.presence_master_bedroom
+                state: "off"
+                for:
+                  seconds: 60
+              # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+              - and:
+                  - condition: trigger
+                    id: resync
+                  - condition: state
+                    entity_id: binary_sensor.presence_master_bedroom
+                    state: "off"
+        sequence:
+          - *turn_off
+
+      - alias: "Turn the lights off when it is not dark"
+        conditions:
+          - not:
+              - *condition_is_dark
+        sequence:
+          - *turn_off
+
+      - alias: "Turn the lights off when the room is asleep"
+        conditions:
+          - <<: *condition_is_room_mode
+            state:
+              - "Slaap"
+              - "Dutje"
+        sequence:
+          - *turn_off
+
+    default: []

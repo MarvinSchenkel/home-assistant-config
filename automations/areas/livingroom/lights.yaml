@@ -67,23 +67,28 @@ variables:
   current_light_scene: >
     scene.livingroom_lights_{{ states("input_select.current_light_schedule") }}
   anchors:
+    - &condition_no_presence_detected
+      alias: "No presence in the room for 10 minutes"
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_livingroom
+          state: "off"
+          for:
+            minutes: 10
+        # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+        - and:
+            - condition: trigger
+              id: resync
+            - condition: state
+              entity_id: binary_sensor.presence_livingroom
+              state: "off"
+
     - &condition_is_presence_detected
       alias: "Is there presence in the room?"
       condition: not
       conditions:
-        - or:
-            - condition: state
-              entity_id: binary_sensor.presence_livingroom
-              state: "off"
-              for:
-                minutes: 10
-            # A restart re-stamps last_changed, so the boot run takes an empty room as empty
-            - and:
-                - condition: trigger
-                  id: resync
-                - condition: state
-                  entity_id: binary_sensor.presence_livingroom
-                  state: "off"
+        - *condition_no_presence_detected
 
     - &condition_is_dark
       alias: "Is it dark in the living room?"
@@ -187,5 +192,17 @@ action:
             data:
               transition: 2
 
-    default:
-      - *turn_off
+      - alias: "Turn the lights off when no presence has been detected for 10 minutes"
+        conditions:
+          - *condition_no_presence_detected
+        sequence:
+          - *turn_off
+
+      - alias: "Turn the lights off when it is not dark"
+        conditions:
+          - not:
+              - *condition_is_dark
+        sequence:
+          - *turn_off
+
+    default: []

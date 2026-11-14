@@ -9,9 +9,11 @@ trace:
 trigger:
   - trigger: homeassistant
     event: start
+    id: resync
 
   - trigger: event
     event_type: automation_reloaded
+    id: resync
 
   - trigger: state
     entity_id: binary_sensor.presence_kitchen
@@ -170,5 +172,30 @@ action:
         sequence:
           - stop: "Ignore this trigger"
 
-    default:
-      - *turn_off
+      - alias: "Turn the lights off when no presence has been detected for 50 seconds"
+        conditions:
+          - or:
+              - condition: state
+                entity_id: binary_sensor.presence_kitchen
+                state: "off"
+                for:
+                  seconds: 50
+              # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+              - and:
+                  - condition: trigger
+                    id: resync
+                  - condition: state
+                    entity_id: binary_sensor.presence_kitchen
+                    state: "off"
+        sequence:
+          - *turn_off
+
+      - alias: "Turn the lights off when they are not needed"
+        conditions:
+          - not:
+              - *is_dark
+              - *is_coffee_machine_on
+        sequence:
+          - *turn_off
+
+    default: []
