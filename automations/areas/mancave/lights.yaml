@@ -72,9 +72,11 @@ variables:
 trigger:
   - trigger: homeassistant
     event: start
+    id: resync
 
   - trigger: event
     event_type: automation_reloaded
+    id: resync
 
   - trigger: state
     entity_id: binary_sensor.presence_mancave
@@ -189,6 +191,31 @@ action:
             data:
               option: '{{ light_schedule }}'
 
-    default:
-      - *turn_off
-      - *turn_off_led
+      - alias: "Turn the lights off when no presence has been detected for 5 minutes"
+        conditions:
+          - or:
+              - condition: state
+                entity_id: binary_sensor.presence_mancave
+                state: "off"
+                for:
+                  seconds: 300
+              # A restart re-stamps last_changed, so the boot run takes an empty room as empty
+              - and:
+                  - condition: trigger
+                    id: resync
+                  - condition: state
+                    entity_id: binary_sensor.presence_mancave
+                    state: "off"
+        sequence:
+          - *turn_off
+          - *turn_off_led
+
+      - alias: "Turn the lights off when it is not dark"
+        conditions:
+          - not:
+              - *condition_is_dark
+        sequence:
+          - *turn_off
+          - *turn_off_led
+
+    default: []
