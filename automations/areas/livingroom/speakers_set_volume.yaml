@@ -6,11 +6,11 @@ id: e483505d-49b0-4912-9152-11764858fd7c
 
 max_exceeded: silent
 variables:
-  just_awake_volume: 16
-  early_morning_volume: 18
-  morning_volume: 22
-  day_volume: 24
-  evening_volume: 22
+  just_awake_volume: 8
+  early_morning_volume: 9
+  morning_volume: 11
+  day_volume: 12
+  evening_volume: 11
   sonos: media_player.mass_woonkamer_nad
   mass_entity: "{{ sonos }}"
   music_schedule: |
