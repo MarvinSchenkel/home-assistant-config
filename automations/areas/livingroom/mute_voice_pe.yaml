@@ -15,9 +15,8 @@ variables:
   current_volume: '{{ state_attr("media_player.mass_woonkamer_nad", "volume_level") }}'
 
 conditions:
-  # Music streams through the WiiM Mini; the NAD only carries the volume
   - condition: state
-    entity_id: media_player.mass_wiim_mini
+    entity_id: media_player.mass_woonkamer_nad
     state: playing
 
 actions:
