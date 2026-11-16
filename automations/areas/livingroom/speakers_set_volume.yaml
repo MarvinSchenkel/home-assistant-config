@@ -24,7 +24,7 @@ triggers:
     entity_id: script.intercom_announce
     to: "off"
   - trigger: state
-    entity_id: media_player.mass_wiim_mini
+    entity_id: media_player.mass_woonkamer_nad
     to: playing
   - trigger: state
     entity_id:

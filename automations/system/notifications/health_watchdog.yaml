@@ -16,7 +16,7 @@ variables:
       Onbeschikbaar: {{ (state_attr("binary_sensor.automations_or_scripts_unavailable", "names")
                          or []) | join(", ") }}
     {%- else -%}
-      De WiiM Mini in de woonkamer is al 30 minuten onbeschikbaar
+      De NAD in de woonkamer is al 30 minuten onbeschikbaar
     {%- endif -%}
   anchors:
     - &notify
@@ -53,7 +53,7 @@ triggers:
     id: unavailable
 
   - trigger: state
-    entity_id: media_player.mass_wiim_mini
+    entity_id: media_player.mass_woonkamer_nad
     to: "unavailable"
     for:
       minutes: 30
@@ -100,7 +100,7 @@ actions:
           - condition: trigger
             id: music_player
           - condition: state
-            entity_id: media_player.mass_wiim_mini
+            entity_id: media_player.mass_woonkamer_nad
             state: "unavailable"
             for:
               minutes: 30
