@@ -55,6 +55,7 @@ google_calendars.yaml
 zigbee2mqtt
 
 # Managed on the HA box
-custom_components/
+custom_components/*
+!custom_components/nad_telnet/
 .HA_VERSION
 .ha_run.lock
