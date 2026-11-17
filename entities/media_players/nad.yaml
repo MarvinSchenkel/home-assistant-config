@@ -1,10 +1,12 @@
 ---
-platform: nad
-type: Telnet
+# Custom component (custom_components/nad_telnet): the core `nad` platform
+# mixes up replies with the T758's pushed updates and flaps on/off
+platform: nad_telnet
 host: 192.168.1.177
 port: 23
 name: NAD T758
 sources:
   1: "Apple TV"
+  3: "Shield"
   4: "WiiM"
   5: "Switch"

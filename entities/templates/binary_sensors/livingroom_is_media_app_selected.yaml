@@ -3,8 +3,7 @@ binary_sensor:
   - name: livingroom_is_media_app_selected
     unique_id: d47d06d0-66fd-4d45-8d89-efafbcba96ee
     state: >
-      {%  set to_state =
-          state_attr("media_player.apple_tv", "app_id")
+      {%- set apple_tv = state_attr("media_player.apple_tv", "app_id")
           in [
             "com.amazon.aiv.AIVApp",
             "com.netflix.Netflix",
@@ -13,7 +12,8 @@ binary_sensor:
             "com.plexapp.plex",
             "nl.omroep.uitzendinggemist"
           ]
-          or state_attr("media_player.nvidia_shield", "app_id")
+      %}
+      {%- set shield = state_attr("media_player.nvidia_shield", "app_id")
           in [
             "com.netflix.ninja",
             "com.amazon.amazonvideo.livingroom",
@@ -21,6 +21,15 @@ binary_sensor:
             "com.plexapp.android"
           ]
       %}
+      {#- Only the device on the NAD's active input counts; without the NAD, either does #}
+      {%- set nad = "media_player.nad_t758" %}
+      {%- if states(nad) in ["unavailable", "unknown"] %}
+        {%- set to_state = apple_tv or shield %}
+      {%- else %}
+        {%- set input = state_attr(nad, "source") if is_state(nad, "on") %}
+        {%- set to_state = (input == "Apple TV" and apple_tv)
+            or (input == "Shield" and shield) %}
+      {%- endif %}
       {%-
         if state_attr("media_player.nvidia_shield", "app_id")
         == "Failed to write while dumping service window: Broken pipe"
