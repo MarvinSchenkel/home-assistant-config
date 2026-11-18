@@ -6,5 +6,5 @@
 binary_sensor:
   - name: sun_hot
     unique_id: 259bf4cb-3522-41a7-b274-beb9a4c62991
-    availability: "{{ has_value('sensor.solaredge_i1_ac_power') }}"
-    state: "{{ states('sensor.solaredge_i1_ac_power') | float(0) > 1400 }}"
+    availability: "{{ has_value('sensor.zolder_solaredge_se3500h_vermogen') }}"
+    state: "{{ states('sensor.zolder_solaredge_se3500h_vermogen') | float(0) > 1400 }}"

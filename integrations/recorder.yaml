@@ -13,13 +13,12 @@ recorder:
       # Forecast slots are a ~3.5 KB attribute refreshed every 5 minutes
       - sensor.buienradar_rain_forecast
       # Fast-changing readings without a history consumer
-      - sensor.solaredge_i1_ac_frequency
-      - sensor.solaredge_i1_ac_current
-      - sensor.solaredge_i1_dc_current
-      - sensor.solaredge_i1_dc_voltage
-      - sensor.solaredge_i1_temp_sink
+      - sensor.solaredge_se3500h_frequentie
+      - sensor.zolder_solaredge_se3500h_stroom
+      - sensor.zolder_solaredge_se3500h_dc_current
+      - sensor.solaredge_se3500h_dc_voltage
+      - sensor.zolder_solaredge_se3500h_temperatuur
+      - sensor.solaredge_se3500h_spanning
       - sensor.gw3000a_solar_radiation
       - sensor.apple_watch_marvin_distance
       - sensor.rk3326_free_memory
-    entity_globs:
-      - sensor.solaredge_i1_ac_voltage_*
