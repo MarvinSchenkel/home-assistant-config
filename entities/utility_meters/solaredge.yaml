@@ -1,4 +1,4 @@
 ---
 solar_production_daily:
-  source: sensor.solaredge_i1_ac_energy_kwh
+  source: sensor.zolder_solaredge_se3500h_energie
   cycle: daily
