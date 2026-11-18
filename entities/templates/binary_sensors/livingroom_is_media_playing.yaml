@@ -2,6 +2,9 @@
 binary_sensor:
   - name: livingroom_is_media_playing
     unique_id: 585ffa16-ab8b-4438-9efe-3c9eb044760a
+    # The Shield's ADB state detection drops to idle for one poll now and then while Plex plays
+    delay_off:
+      seconds: 30
     state: >
       {{
         is_state('binary_sensor.livingroom_is_media_app_selected', 'on')
