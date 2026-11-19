@@ -16,7 +16,7 @@ sequence:
   - action: tts.speak
     continue_on_error: true
     target:
-      entity_id: tts.marvin_voice
+      entity_id: tts.toby
     data:
       cache: true
       message: "{{ message }}"
