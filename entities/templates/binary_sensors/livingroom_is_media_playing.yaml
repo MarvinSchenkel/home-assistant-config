@@ -2,7 +2,8 @@
 binary_sensor:
   - name: livingroom_is_media_playing
     unique_id: 585ffa16-ab8b-4438-9efe-3c9eb044760a
-    # The Shield's ADB state detection drops to idle for exactly one 10 s poll now and then while Plex plays (measured 2026-11-18: 5 blips, all 10.0-10.3 s)
+    # Plex on the Shield comes from the Plex integration (push, reliable); ADB wake-lock counts for Plex vary (2-4), so ADB only counts for other apps.
+    # delay_off: ADB state detection drops to idle for one 10 s poll now and then (measured 2026-11-18: 10.0-10.3 s blips)
     delay_off:
       seconds: 15
     state: >
@@ -10,7 +11,11 @@ binary_sensor:
         is_state('binary_sensor.livingroom_is_media_app_selected', 'on')
         and (
           is_state('media_player.apple_tv', 'playing')
-          or is_state('media_player.nvidia_shield', 'playing')
+          or is_state('media_player.livingroom_shield_plex', 'playing')
+          or (
+            is_state('media_player.nvidia_shield', 'playing')
+            and not is_state_attr('media_player.nvidia_shield', 'app_id', 'com.plexapp.android')
+          )
         )
         and is_state('media_player.living_room_android', 'on')
       }}
