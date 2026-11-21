@@ -16,7 +16,6 @@ action:
       receivers:
         - "marvin"
         - "laura"
-        - "intercom"
       emoji: "🍽️"
       message: >
         De vaatwasser is klaar
