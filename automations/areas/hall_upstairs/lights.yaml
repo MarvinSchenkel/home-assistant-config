@@ -26,14 +26,32 @@ variables:
       entity_id: binary_sensor.hall_upstairs_is_dark
       state: "on"
 
-    - &condition_is_zoey_door_closed
-      alias: "Is Zoey's door closed?"
+    - &condition_is_saar_door_closed
+      alias: "Is Saar's door closed?"
       or:
         - condition: state
           entity_id: binary_sensor.smallbedroom_door_open
           state: "off"
         - condition: state
           entity_id: binary_sensor.smallbedroom_door_open
+          state: "on"
+          for:
+            minutes: 2
+
+    - &condition_is_master_bedroom_door_closed
+      alias: "Is the master bedroom door closed while someone sleeps there?"
+      or:
+        - not:
+            condition: state
+            entity_id: input_select.master_bedroom_room_mode
+            state:
+              - "Dutje"
+              - "Slaap"
+        - condition: state
+          entity_id: binary_sensor.master_bedroom_door_open
+          state: "off"
+        - condition: state
+          entity_id: binary_sensor.master_bedroom_door_open
           state: "on"
           for:
             minutes: 2
@@ -83,11 +101,13 @@ trigger:
   - trigger: state
     entity_id:
       - binary_sensor.smallbedroom_door_open
+      - binary_sensor.master_bedroom_door_open
     to: "off"
 
   - trigger: state
     entity_id:
       - binary_sensor.smallbedroom_door_open
+      - binary_sensor.master_bedroom_door_open
     to: "on"
     for:
       minutes: 2
@@ -114,7 +134,8 @@ action:
           - *condition_is_presence_detected
           - *condition_is_dark
           - *condition_is_nobody_asleep
-          - *condition_is_zoey_door_closed
+          - *condition_is_saar_door_closed
+          - *condition_is_master_bedroom_door_closed
         sequence:
           - <<: *turn_on
             target:
