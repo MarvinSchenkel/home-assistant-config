@@ -4,7 +4,7 @@ description: >
   with music that suits the music schedule of the day
 alias: house_populate_music_queue
 id: 7f94ed28-03ab-4dbf-b509-973f867931a9
-mode: queued
+mode: restart
 
 trigger:
   - trigger: state
@@ -88,6 +88,12 @@ action:
     then:
       - delay:
           minutes: 1
+  # Turning on automatic music also changes the music schedule in the same
+  # instant: two runs replaced the queue at once and Music Assistant broke the
+  # speaker group. mode: restart + this delay keeps only the last trigger.
+  - alias: "Debounce simultaneous triggers"
+    delay:
+      seconds: 3
   - if:
       # Clear queue at the start of the day
       - "{{ not is_state(mass_entity, 'playing') }}"

@@ -92,6 +92,16 @@ action:
                 state: "off"
         sequence:
           - *pause
+          - alias: "Unjoin all speakers, so the next start regroups them cleanly"
+            repeat:
+              for_each: >-
+                {{ (state_attr(mass_entity, 'group_members') or [])
+                   | reject('eq', mass_entity) | list }}
+              sequence:
+                - action: script.speaker_group
+                  data:
+                    operation: unjoin
+                    target_player: "{{ repeat.item }}"
 
       - conditions:
           - condition: state
