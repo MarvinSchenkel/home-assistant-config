@@ -43,6 +43,11 @@ trigger:
     entity_id:
       - input_boolean.setting_automatic_music
 
+  - trigger: state
+    entity_id:
+      - media_player.mass_mancave_wiim_amp
+    to: "playing"
+
 variables:
   mass_entity: '{{ states("sensor.mass_media_entity") }}'
   anchors:
@@ -90,11 +95,6 @@ action:
               - binary_sensor.presence_livingroom
             state: "on"
           - not: *condition_watching_tv
-          - not:
-              - condition: state
-                entity_id:
-                  - media_player.mass_woonkamer_nad
-                state: playing
           - not:
               - condition: state
                 entity_id:
