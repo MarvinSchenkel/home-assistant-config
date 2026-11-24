@@ -14,8 +14,12 @@ badges:
         state: "on"
   - type: entity-filter
     entities:
-      - entity: sensor.rmn_next_garbage_pickup_badge
-        state_content: state
+      - entity: sensor.rmn_morgen
+        name: Morgen
+        icon: "mdi:trash-can-outline"
+        state_content:
+          - name
+          - state
     conditions:
       - condition: state
         state_not: Geen

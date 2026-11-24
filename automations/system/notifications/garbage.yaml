@@ -10,9 +10,14 @@ trigger:
     at: "18:00:00"
 
 condition:
-  - condition: state
-    entity_id: sensor.rmn_next_pickup_in
-    state: "1"
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: sensor.rmn_morgen
+        state:
+          - "Geen"
+          - "unknown"
+          - "unavailable"
 
 action:
   - action: script.send_notification
@@ -22,4 +27,4 @@ action:
         - "laura"
         - "intercom"
       emoji: "🗑️"
-      message: "Morgen wordt {{ states('sensor.rmn_next_garbage_pickup') }} opgehaald!"
+      message: "Morgen wordt {{ states('sensor.rmn_morgen') }} opgehaald!"
