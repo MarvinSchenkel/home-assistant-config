@@ -98,9 +98,16 @@ variables:
 
     - &condition_watching_tv
       alias: "Check if we are watching a movie or series"
-      condition: state
-      entity_id: binary_sensor.livingroom_is_media_playing
-      state: "on"
+      # The TV itself must be on too: the media sensor has a 15 s delay_off, so right after the TV
+      # turns off it still reads "on" and would put the movie scene back (2026-11-25 17:48).
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.livingroom_is_media_playing
+          state: "on"
+        - condition: state
+          entity_id: media_player.living_room_android
+          state: "on"
 
     - &condition_first_turn_on
       alias: "Gradually turn the lights on when it gets dark"
