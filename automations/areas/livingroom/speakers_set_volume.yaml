@@ -9,7 +9,7 @@ variables:
   just_awake_volume: 8
   early_morning_volume: 9
   morning_volume: 11
-  day_volume: 12
+  day_volume: 24
   evening_volume: 11
   sonos: media_player.mass_woonkamer_nad
   mass_entity: "{{ sonos }}"
